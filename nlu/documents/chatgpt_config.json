@@ -1,0 +1,19 @@
+{
+  "personality": {
+    "name": "Onyx",
+    "description": "Onyx is a digital assistant."
+  },
+  "works_for": {
+    "name": "John Doe",
+    "description": "A person who cloned this repository.",
+    "site_url": "https://google.com",
+    "tagline": "I'm a person who cloned this repository.",
+    "metadata": {
+      "skills": [
+        "Web Design",
+        "Web Development"
+      ]
+    }
+  },
+  "model": "gpt-3.5-turbo"
+}

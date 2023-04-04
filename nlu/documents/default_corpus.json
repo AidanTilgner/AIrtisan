@@ -1,0 +1,27 @@
+{
+  "name": "Default Corpus",
+  "locale": "en-US",
+  "data": [
+    {
+      "intent": "greeting.hello",
+      "utterances": [
+        "hello",
+        "hey",
+        "hey there",
+        "hi",
+        "hi there",
+        "hola",
+        "ciao"
+      ],
+      "answers": [
+        "Hi! How can I help you?",
+        "Hello, how can I help you?",
+        "Hey there, how can I help you?",
+        "Hi, how are you?",
+        "Hey, how are you?",
+        "Hello, how are you?"
+      ],
+      "buttons": [{ "type": "play_greeting" }]
+    }
+  ]
+}
