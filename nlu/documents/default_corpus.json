@@ -42,7 +42,8 @@
       "answers": [
         "We provide a large number of services, from design to development, content moderation, and even chatbot development. See more about our services on <a href=\"https://vvibrant.dev/services\">our services page</a>"
       ],
-      "buttons": [{ "type": "see_services" }]
+      "buttons": [{ "type": "see_services" }],
+      "enhance": true
     },
     {
       "intent": "describe_state.well.with.inquiry.state",

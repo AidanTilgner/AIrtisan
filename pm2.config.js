@@ -3,7 +3,7 @@
 module.exports = {
   apps: [
     {
-      name: "onyx-chat",
+      name: "onyx-chat-vvibrant",
       script: "npm run start",
     },
   ],
