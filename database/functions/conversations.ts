@@ -109,7 +109,13 @@ export const createConversationIfNotExists = async (sessionId: string) => {
       await createConversationFromSessionId(sessionId);
     }
 
-    if (conversation?.chats.length > 2) {
+    const lengthMapper = {
+      2: true,
+      6: true,
+      10: true,
+    };
+
+    if (lengthMapper[conversation?.chats.length]) {
       const newName = await getGeneratedNameBasedOnContent(
         conversation.chats.map((chat) => ({
           message: chat.message,
