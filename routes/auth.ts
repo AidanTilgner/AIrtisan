@@ -8,7 +8,11 @@ import {
 } from "../database/functions/admin";
 import { Router } from "express";
 import { checkIsSuperAdmin } from "../middleware/auth";
-import { generateAccessToken, verifyRefreshToken } from "../utils/crypto";
+import {
+  generateAccessToken,
+  verifyAccessToken,
+  verifyRefreshToken,
+} from "../utils/crypto";
 import {
   createRefreshToken,
   getRefreshToken,
@@ -146,6 +150,33 @@ router.put("/:id", checkIsSuperAdmin, async (req, res) => {
       return;
     }
     res.status(200).send({ message: "Admin updated successfully." });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ message: "Internal server error." });
+  }
+});
+
+router.post("/check", async (req, res) => {
+  try {
+    const { access_token } = req.body;
+
+    const verified = verifyAccessToken(access_token);
+    if (!verified) {
+      res.status(401).send({
+        message: "Invalid access token provided.",
+        data: {
+          authenticated: false,
+        },
+      });
+      return;
+    }
+
+    res.status(200).send({
+      message: "Access token verified successfully.",
+      data: {
+        authenticated: true,
+      },
+    });
   } catch (err) {
     console.error(err);
     res.status(500).send({ message: "Internal server error." });

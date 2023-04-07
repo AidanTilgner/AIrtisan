@@ -6,11 +6,6 @@ import { BrowserRouter } from "react-router-dom";
 const domContainer = document.querySelector("#root");
 const root = createRoot(domContainer);
 
-const accessToken = localStorage.getItem("accessToken");
-if (!accessToken) {
-  window.location.href = "/login";
-}
-
 root.render(
   <React.StrictMode>
     <BrowserRouter>

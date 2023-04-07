@@ -14,12 +14,14 @@ import {
   enhanceChatIfNecessary,
   enhanceChatIfNecessaryWithGPT4All,
 } from "../nlu/enhancement";
+import { checkAPIKey } from "../middleware/auth";
 
 config();
 const router = Router();
 
 router.use(logSession);
 router.use(addIPToSession);
+router.use(checkAPIKey);
 
 router.post("/", async (req, res) => {
   try {

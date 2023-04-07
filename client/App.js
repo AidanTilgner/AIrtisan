@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Navbar from "./library/components/Navigation/Navbar/Navbar";
 import withStyles from "react-css-modules";
 import styles from "./App.module.scss";
@@ -8,8 +8,23 @@ import { MantineProvider } from "@mantine/core";
 import { NotificationsProvider } from "@mantine/notifications";
 import Preview from "./library/pages/Preview/Preview";
 import Welcome from "./library/pages/Welcome/Welcome";
+import { api, checkAuth } from "./library/helpers/fetching";
 
 function App() {
+  useEffect(() => {
+    const accessToken = localStorage.getItem("accessToken");
+    if (!accessToken) {
+      window.location.href = "/login";
+    }
+
+    (async () => {
+      const authed = await checkAuth();
+      if (!authed) {
+        window.location.href = "/login";
+      }
+    })();
+  }, []);
+
   return (
     <div className={styles.App}>
       <MantineProvider

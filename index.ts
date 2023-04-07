@@ -27,7 +27,6 @@ app.use(Express.json());
 app.use(Express.urlencoded({ extended: true }));
 
 app.use(logIP);
-app.use(checkAPIKey);
 
 app.use("/nlu", NLURouter);
 app.use("/chat", ChatRouter);
@@ -40,11 +39,7 @@ app.get("/login", (req, res) => {
 
 if (process.env.ALLOW_TRAINING_UI === "true") {
   console.info("Training mode enabled");
-  app.use(
-    "/",
-    checkIsAdminAndShowLoginIfNot,
-    Express.static(path.join(__dirname, "public", "training"))
-  );
+  app.use("/", Express.static(path.join(__dirname, "public", "training")));
   app.get("/*", checkIsAdminAndShowLoginIfNot, (req, res) => {
     res.sendFile(path.join(__dirname, "public", "training", "index.html"));
   });

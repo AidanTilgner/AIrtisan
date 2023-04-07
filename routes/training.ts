@@ -13,8 +13,11 @@ import { Router } from "express";
 import { retrain, getNLUResponse } from "../nlu";
 import { getDataForIntent, getIntents, getAllButtons } from "../nlu/metadata";
 import { getChatsThatNeedReview } from "../database/functions/conversations";
+import { checkIsAdmin } from "../middleware/auth";
 
 const router = Router();
+
+router.use(checkIsAdmin);
 
 router.post("/say", async (req, res) => {
   const text = req.body.text || req.query.text;

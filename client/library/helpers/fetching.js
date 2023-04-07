@@ -6,6 +6,18 @@ export const api = axios.create({
   withCredentials: true,
 });
 
+api.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  (error) => {
+    if (error.response.status === 401) {
+      window.location.href = "/login";
+    }
+    return Promise.reject(error);
+  }
+);
+
 export const retrainModel = async () => {
   return await api
     .post("/training/retrain")
@@ -372,4 +384,26 @@ export const markChatAsShouldReview = async ({ chat_id, reason }) => {
       });
       return err;
     });
+};
+
+export const checkAuth = async () => {
+  const accessToken = localStorage.getItem("accessToken");
+  if (accessToken) {
+    return await api
+      .post("/auth/check", {
+        access_token: accessToken,
+      })
+      .then((res) => {
+        return res.data.data;
+      })
+      .catch((err) => {
+        console.error(err);
+        showNotification({
+          title: "Error",
+          message: "Something went wrong",
+        });
+        return err;
+      });
+  }
+  return false;
 };
