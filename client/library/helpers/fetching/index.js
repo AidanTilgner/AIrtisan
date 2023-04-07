@@ -397,7 +397,7 @@ export const checkAuth = async () => {
         access_token: accessToken,
       })
       .then((res) => {
-        return res.data.data;
+        return res.data.data.authenticated;
       })
       .catch((err) => {
         console.error(err);
@@ -432,4 +432,20 @@ export const refreshAccessToken = async () => {
       });
   }
   return false;
+};
+
+export const checkIsSuperAdmin = async () => {
+  return await api
+    .post("/auth/is_super_admin")
+    .then((res) => {
+      return res.data.data.is_super_admin;
+    })
+    .catch((err) => {
+      console.error(err);
+      showNotification({
+        title: "Error",
+        message: "Something went wrong",
+      });
+      return err;
+    });
 };

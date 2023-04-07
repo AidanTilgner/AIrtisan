@@ -9,20 +9,16 @@ import { NotificationsProvider } from "@mantine/notifications";
 import Preview from "./library/pages/Preview/Preview";
 import Welcome from "./library/pages/Welcome/Welcome";
 import { api, checkAuth } from "./library/helpers/fetching";
+import { useUser } from "./library/contexts/User";
+import Auth from "./library/pages/Auth/Auth";
 
 function App() {
+  const { isLoggedIn, isSuperAdmin } = useUser();
+
   useEffect(() => {
-    const accessToken = localStorage.getItem("accessToken");
-    if (!accessToken) {
+    if (!isLoggedIn) {
       window.location.href = "/login";
     }
-
-    (async () => {
-      const authed = await checkAuth();
-      if (!authed) {
-        window.location.href = "/login";
-      }
-    })();
   }, []);
 
   return (
@@ -60,6 +56,11 @@ function App() {
               <Route index element={<Welcome />} />
               <Route path="interactive" element={<Interactive />} />
               <Route path="preview" element={<Preview />} />
+              {isSuperAdmin && (
+                <Route path="admin">
+                  <Route path="auth" element={<Auth />} />
+                </Route>
+              )}
             </Route>
           </Routes>
         </NotificationsProvider>

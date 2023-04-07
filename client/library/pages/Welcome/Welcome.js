@@ -1,9 +1,12 @@
 import React from "react";
 import withStyles from "react-css-modules";
 import { Link } from "react-router-dom";
+import { useUser } from "../../contexts/User";
 import styles from "./Welcome.module.scss";
 
 function Welcome() {
+  const { isSuperAdmin } = useUser();
+
   return (
     <div className={styles.welcome}>
       <h1>Welcome</h1>
@@ -15,6 +18,11 @@ function Welcome() {
         <li>
           <Link to="/preview">Preview Production Bot</Link>
         </li>
+        {isSuperAdmin && (
+          <li>
+            <Link to="/admin/auth">Handle some auth</Link>
+          </li>
+        )}
       </ul>
     </div>
   );

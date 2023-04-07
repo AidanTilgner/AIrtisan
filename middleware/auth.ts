@@ -21,14 +21,9 @@ export const checkAPIKey = async (
   res: Response,
   next: NextFunction
 ) => {
-  if (isDev) {
-    next();
-    return;
-  }
-  const key =
-    req.headers["x-api-key"] ||
+  const key = (req.headers["x-api-key"] ||
     req.query["x-api-key"] ||
-    req.headers["authorization"]?.split(" ")?.[1];
+    req.headers["authorization"]?.split(" ")?.[1]) as string;
 
   if (!key) {
     res.status(401).send({ message: "No API key provided." });
@@ -69,7 +64,7 @@ export const checkAPIKey = async (
     return;
   }
 
-  if (!(keyInDB.key === key)) {
+  if (!keyInDB.compareKey(key)) {
     logger.log("Invalid API key provided");
     sendWarningEmail(
       "A request was made with an invalid API key.",
@@ -100,12 +95,16 @@ export const checkIsAdmin = async (
 
     const { id } = verifyAccessToken(access_token) as { id: number };
 
+    console.log("Id: ", id);
+
     const admin = await getAdmin(id);
 
     if (!admin) {
       res.status(401).send({ message: "Invalid access token provided." });
       return;
     }
+
+    req["admin"] = admin;
 
     next();
   } catch (err) {
@@ -143,6 +142,8 @@ export const checkIsSuperAdmin = async (
       res.status(401).send({ message: "Unauthorized." });
       return;
     }
+
+    req["admin"] = admin;
 
     next();
   } catch (err) {

@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from "typeorm";
+import { comparePassword } from "../../utils/crypto";
 
 @Entity()
 export class ApiKey {
@@ -22,4 +23,8 @@ export class ApiKey {
 
   @UpdateDateColumn()
   updated_at!: Date;
+
+  public compareKey(key: string) {
+    return comparePassword(key, this.key);
+  }
 }

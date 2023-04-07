@@ -4,13 +4,28 @@ import styles from "./Navbar.module.scss";
 import { Button, Burger } from "@mantine/core";
 import { retrainModel } from "../../../helpers/fetching";
 import { Link, useLocation } from "react-router-dom";
+import { useUser } from "../../../contexts/User";
 
 function Navbar() {
   const isMobile = window.innerWidth < 768;
   const [opened, setOpened] = React.useState(false);
   const location = useLocation();
 
+  const { isSuperAdmin } = useUser();
+
   const currentPath = location.pathname;
+
+  const superAdminRoutes = isSuperAdmin ? (
+    <>
+      <li
+        className={
+          currentPath === "/admin/auth" ? styles.active : styles.inactive
+        }
+      >
+        <Link to="/admin/auth">Auth</Link>
+      </li>
+    </>
+  ) : null;
 
   return (
     <div className={styles.navbar}>
@@ -24,7 +39,12 @@ function Navbar() {
         />
       )}
       {opened && (
-        <ul className={styles.mobile_items}>
+        <ul
+          className={styles.mobile_items}
+          onClick={() => {
+            setOpened(false);
+          }}
+        >
           <li
             className={
               currentPath === "/interactive" ? styles.active : styles.inactive
@@ -39,6 +59,7 @@ function Navbar() {
           >
             <Link to="/preview">Preview</Link>
           </li>
+          {superAdminRoutes}
           {/* <li>
           <Button
             onClick={() => {
@@ -67,6 +88,7 @@ function Navbar() {
           >
             <Link to="/preview">Preview</Link>
           </li>
+          {superAdminRoutes}
           {/* <li>
             <Button
 

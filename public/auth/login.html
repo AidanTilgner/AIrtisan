@@ -35,7 +35,7 @@
       loginButton.addEventListener("click", async () => {
         const username = document.getElementById("username").value;
         const password = document.getElementById("password").value;
-        fetch("/auth/signin", {
+        fetch("/auth/admin/signin", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -53,6 +53,13 @@
             localStorage.setItem("refreshToken", refreshToken);
             window.location.href = "/";
           });
+      });
+
+      window.addEventListener("keydown", (e) => {
+        // if the key is enter, submit the form
+        if (e.key === "Enter") {
+          loginButton.click();
+        }
       });
     </script>
   </body>

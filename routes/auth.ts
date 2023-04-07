@@ -7,39 +7,55 @@ import {
   deleteAdmin,
 } from "../database/functions/admin";
 import { Router } from "express";
-import { checkIsSuperAdmin } from "../middleware/auth";
+import { checkIsSuperAdmin, checkIsAdmin } from "../middleware/auth";
 import {
   generateAccessToken,
   verifyAccessToken,
   verifyRefreshToken,
+  generateRandomPassword,
 } from "../utils/crypto";
 import {
   createRefreshToken,
   getRefreshToken,
 } from "../database/functions/token";
+import {
+  createApiKey,
+  deleteApiKey,
+  getApiKey,
+  getAllApiKeys,
+} from "../database/functions/apiKey";
 
 const router = Router();
 
-router.post("/register", checkIsSuperAdmin, async (req, res) => {
+router.post("/admin/register", checkIsSuperAdmin, async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { username } = req.body;
+
+    const generatedPassword = generateRandomPassword();
+
     const result = await createAdmin({
       username,
-      password,
+      password: generatedPassword,
       role: "admin",
     });
     if (!result) {
       res.status(500).send({ message: "Internal server error." });
       return;
     }
-    res.status(200).send({ message: "Admin created successfully." });
+    res.status(200).send({
+      message: "Admin created successfully.",
+      data: {
+        username,
+        password: generatedPassword,
+      },
+    });
   } catch (err) {
     console.error(err);
     res.status(500).send({ message: "Internal server error." });
   }
 });
 
-router.post("/signin", async (req, res) => {
+router.post("/admin/signin", async (req, res) => {
   try {
     const { username, password } = req.body;
     const admin = await getAdminByUsername(username);
@@ -96,7 +112,7 @@ router.post("/refresh", async (req, res) => {
   }
 });
 
-router.get("/", checkIsSuperAdmin, async (req, res) => {
+router.get("/admins", checkIsSuperAdmin, async (req, res) => {
   try {
     const admins = await getAdmins();
     res.status(200).send({
@@ -111,27 +127,7 @@ router.get("/", checkIsSuperAdmin, async (req, res) => {
   }
 });
 
-router.get("/:id", checkIsSuperAdmin, async (req, res) => {
-  try {
-    const { id } = req.params;
-    const admin = await getAdmin(parseInt(id));
-    if (!admin) {
-      res.status(404).send({ message: "Admin not found." });
-      return;
-    }
-    res.status(200).send({
-      message: "Admin fetched successfully.",
-      data: {
-        admin,
-      },
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send({ message: "Internal server error." });
-  }
-});
-
-router.put("/:id", checkIsSuperAdmin, async (req, res) => {
+router.put("/admin/:id", checkIsSuperAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     const { username, password, role } = req.body;
@@ -161,6 +157,7 @@ router.post("/check", async (req, res) => {
     const { access_token } = req.body;
 
     const verified = verifyAccessToken(access_token);
+
     if (!verified) {
       res.status(401).send({
         message: "Invalid access token provided.",
@@ -176,6 +173,137 @@ router.post("/check", async (req, res) => {
       data: {
         authenticated: true,
       },
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ message: "Internal server error." });
+  }
+});
+
+router.post("/is_super_admin", checkIsAdmin, async (req, res) => {
+  try {
+    const admin = req["admin"];
+
+    res.status(200).send({
+      message: "Access token verified successfully.",
+      data: {
+        is_super_admin: admin.role === "superadmin",
+      },
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ message: "Internal server error." });
+  }
+});
+
+router.get("/me", checkIsAdmin, async (req, res) => {
+  try {
+    const admin = req["admin"];
+
+    res.status(200).send({
+      message: "Access token verified successfully.",
+      data: {
+        admin,
+      },
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ message: "Internal server error." });
+  }
+});
+
+router.get("/admin/:id", checkIsSuperAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const admin = await getAdmin(parseInt(id));
+    if (!admin) {
+      res.status(404).send({ message: "Admin not found." });
+      return;
+    }
+    res.status(200).send({
+      message: "Admin fetched successfully.",
+      data: {
+        admin,
+      },
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ message: "Internal server error." });
+  }
+});
+
+router.delete("/admin/:id", checkIsSuperAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const admin = await getAdmin(parseInt(id));
+    if (!admin) {
+      res.status(404).send({ message: "Admin not found." });
+      return;
+    }
+    const result = await deleteAdmin(parseInt(id));
+    if (!result) {
+      res.status(500).send({ message: "Internal server error." });
+      return;
+    }
+    res.status(200).send({ message: "Admin deleted successfully." });
+  } catch (err) {
+    console.error(err);
+
+    res.status(500).send({ message: "Internal server error." });
+  }
+});
+
+router.post("/api-key/register", checkIsAdmin, async (req, res) => {
+  try {
+    const { name } = req.body;
+
+    const { generated_key, result } = await createApiKey(name);
+
+    if (!result || !generated_key) {
+      res.status(500).send({ message: "Internal server error." });
+      return;
+    }
+
+    res.status(200).send({
+      message: "API key created successfully.",
+      data: {
+        apiKey: {
+          ...result,
+          key: generated_key,
+        },
+      },
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ message: "Internal server error." });
+  }
+});
+
+router.delete("/api-key/:id", checkIsAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const result = await deleteApiKey(parseInt(id));
+
+    if (!result) {
+      res.status(500).send({ message: "Internal server error." });
+      return;
+    }
+
+    res.status(200).send({ message: "API key deleted successfully." });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ message: "Internal server error." });
+  }
+});
+
+router.get("/api-keys", checkIsAdmin, async (req, res) => {
+  try {
+    const apiKeys = await getAllApiKeys();
+
+    res.status(200).send({
+      message: "API keys fetched successfully.",
+      data: { apiKeys },
     });
   } catch (err) {
     console.error(err);

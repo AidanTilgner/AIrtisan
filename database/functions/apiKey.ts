@@ -1,14 +1,18 @@
 import { entities, dataSource } from "..";
 import { generateRandomApiKey } from "../../utils/crypto";
+import { hashPassword } from "../../utils/crypto";
 
 export const createApiKey = async (name: string) => {
   try {
     const key = generateRandomApiKey();
     const newKey = new entities.ApiKey();
-    newKey.key = key;
+    newKey.key = hashPassword(key);
     newKey.for = name;
     const result = await dataSource.manager.save(newKey);
-    return result;
+    return {
+      result,
+      generated_key: key,
+    };
   } catch (err) {
     console.error(err);
     return null;

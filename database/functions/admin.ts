@@ -27,7 +27,7 @@ export const createAdmin = async ({
 export const getAdmin = async (id: number) => {
   try {
     const admin = await dataSource.manager.findOne(entities.Admin, {
-      where: { id },
+      where: { id: id },
     });
     return admin;
   } catch (err) {
@@ -51,7 +51,13 @@ export const getAdminByUsername = async (username: string) => {
 export const getAdmins = async () => {
   try {
     const admins = await dataSource.manager.find(entities.Admin);
-    return admins;
+    return admins.map((admin) => {
+      const { password, ...rest } = admin;
+
+      return {
+        ...rest,
+      };
+    });
   } catch (err) {
     console.error(err);
     return null;
