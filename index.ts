@@ -39,8 +39,14 @@ app.get("/login", (req, res) => {
 
 if (process.env.ALLOW_TRAINING_UI === "true") {
   console.info("Training mode enabled");
+  app.get("/build/bundle.js", (req, res) => {
+    res.sendFile(
+      path.join(__dirname, "public", "training", "build", "bundle.js")
+    );
+  });
   app.use("/", Express.static(path.join(__dirname, "public", "training")));
-  app.get("/*", checkIsAdminAndShowLoginIfNot, (req, res) => {
+  app.get("/*", (req, res) => {
+    console.log("hit here: ", req.url);
     res.sendFile(path.join(__dirname, "public", "training", "index.html"));
   });
 }

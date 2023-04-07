@@ -3,6 +3,9 @@ import { getModelResponse } from "../utils/gpt4all";
 import { getConversationChatsFromSessionId } from "../database/functions/conversations";
 import { getDataForIntent } from "./metadata";
 import chatGPTConfif from "./documents/chatgpt_config.json";
+import { config } from "dotenv";
+
+config();
 
 const getInitialPrompt = () => `
   You are a chatbot named ${chatGPTConfif.personality.name}. You work for ${
@@ -175,6 +178,15 @@ export const enhanceChatIfNecessary = async ({
   try {
     const intentData = await getDataForIntent(intent);
     if (!intentData || !intentData.enhance) {
+      return {
+        answer,
+        enhanced: false,
+      };
+    }
+
+    const { ALLOW_CHAT_ENHANCEMENT } = process.env;
+
+    if (ALLOW_CHAT_ENHANCEMENT !== "true") {
       return {
         answer,
         enhanced: false,

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { checkIsSuperAdmin, checkAuth } from "../helpers/fetching";
+import { checkIsSuperAdmin, checkAuth, getMe } from "../helpers/fetching";
 
 const initialVal = {
   user: null,
@@ -21,10 +21,11 @@ const UserProvider = ({ children }) => {
       const authed = await checkAuth();
       if (authed) {
         setIsLoggedIn(true);
-        setUser(authed);
       } else {
         setIsLoggedIn(false);
       }
+      const user = await getMe();
+      setUser(user);
       const isSuperAdmin = await checkIsSuperAdmin();
       setIsSuperAdmin(isSuperAdmin);
     })();

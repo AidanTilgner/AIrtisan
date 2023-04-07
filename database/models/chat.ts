@@ -25,6 +25,11 @@ export class Chat {
   @Column()
   intent!: string;
 
+  @Column({
+    nullable: true,
+  })
+  confidence!: number;
+
   @Column()
   role!: ChatRole;
 
@@ -38,6 +43,11 @@ export class Chat {
     nullable: true,
   })
   review_text!: string;
+
+  @Column({
+    nullable: true,
+  })
+  reviewer: string;
 
   @ManyToOne(() => Conversation, (conversation) => conversation.chats)
   conversation!: Conversation;

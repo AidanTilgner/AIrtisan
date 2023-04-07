@@ -15,6 +15,32 @@ function Navbar() {
 
   const currentPath = location.pathname;
 
+  const routes = (
+    <>
+      <li
+        className={
+          currentPath === "/interactive" ? styles.active : styles.inactive
+        }
+      >
+        <Link to="/interactive">Interactive</Link>
+      </li>
+      <li
+        className={currentPath === "/preview" ? styles.active : styles.inactive}
+      >
+        <Link to="/preview">Preview</Link>
+      </li>
+      <li
+        className={
+          currentPath === "/review/conversations"
+            ? styles.active
+            : styles.inactive
+        }
+      >
+        <Link to="/review/conversations">Review Conversations</Link>
+      </li>
+    </>
+  );
+
   const superAdminRoutes = isSuperAdmin ? (
     <>
       <li
@@ -45,62 +71,34 @@ function Navbar() {
             setOpened(false);
           }}
         >
-          <li
-            className={
-              currentPath === "/interactive" ? styles.active : styles.inactive
-            }
-          >
-            <Link to="/interactive">Interactive</Link>
-          </li>
-          <li
-            className={
-              currentPath === "/preview" ? styles.active : styles.inactive
-            }
-          >
-            <Link to="/preview">Preview</Link>
-          </li>
+          {routes}
           {superAdminRoutes}
-          {/* <li>
-          <Button
-            onClick={() => {
-              retrainModel();
-            }}
-            variant="outline"
-          >
-            Refresh Model
-          </Button>
-        </li> */}
-        </ul>
-      )}
-      {!isMobile && (
-        <ul className={styles.items}>
-          <li
-            className={
-              currentPath === "/interactive" ? styles.active : styles.inactive
-            }
-          >
-            <Link to="/interactive">Interactive</Link>
-          </li>
-          <li
-            className={
-              currentPath === "/preview" ? styles.active : styles.inactive
-            }
-          >
-            <Link to="/preview">Preview</Link>
-          </li>
-          {superAdminRoutes}
-          {/* <li>
+          <li>
             <Button
-
               onClick={() => {
                 retrainModel();
-              }
-
+              }}
               variant="outline"
             >
               Refresh Model
             </Button>
-          </li> */}
+          </li>
+        </ul>
+      )}
+      {!isMobile && (
+        <ul className={styles.items}>
+          {routes}
+          {superAdminRoutes}
+          <li>
+            <Button
+              onClick={() => {
+                retrainModel();
+              }}
+              variant="outline"
+            >
+              Refresh Model
+            </Button>
+          </li>
         </ul>
       )}
     </div>

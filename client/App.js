@@ -8,18 +8,12 @@ import { MantineProvider } from "@mantine/core";
 import { NotificationsProvider } from "@mantine/notifications";
 import Preview from "./library/pages/Preview/Preview";
 import Welcome from "./library/pages/Welcome/Welcome";
-import { api, checkAuth } from "./library/helpers/fetching";
-import { useUser } from "./library/contexts/User";
 import Auth from "./library/pages/Auth/Auth";
+import ReviewConversations from "./library/pages/Review/ReviewConversations";
+import { useUser } from "./library/contexts/User";
 
 function App() {
-  const { isLoggedIn, isSuperAdmin } = useUser();
-
-  useEffect(() => {
-    if (!isLoggedIn) {
-      window.location.href = "/login";
-    }
-  }, []);
+  const { isSuperAdmin } = useUser();
 
   return (
     <div className={styles.App}>
@@ -56,6 +50,9 @@ function App() {
               <Route index element={<Welcome />} />
               <Route path="interactive" element={<Interactive />} />
               <Route path="preview" element={<Preview />} />
+              <Route path="review">
+                <Route path="conversations" element={<ReviewConversations />} />
+              </Route>
               {isSuperAdmin && (
                 <Route path="admin">
                   <Route path="auth" element={<Auth />} />

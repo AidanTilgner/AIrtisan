@@ -1,5 +1,7 @@
+import { getGeneratedNameBasedOnContent } from "../../nlu/utils";
 import { entities, dataSource } from "../index";
 import { ChatRole } from "../models/chat";
+import { Conversation } from "../models/conversation";
 
 export const getConversations = async () => {
   const conversations = await dataSource.manager.find(entities.Conversation);
@@ -38,7 +40,8 @@ export const createChatFromSessionId = async (
   message: string,
   intent: string,
   role: ChatRole,
-  enhanced: boolean
+  enhanced: boolean,
+  confidence?: number
 ) => {
   try {
     const conversation = await getConversationFromSessionId(sessionId);
@@ -54,6 +57,9 @@ export const createChatFromSessionId = async (
     chat.role = role;
     chat.enhanced = enhanced;
     chat.conversation = conversation;
+    if (confidence) {
+      chat.confidence = confidence;
+    }
     await dataSource.manager.save(chat);
     return chat;
   } catch (err) {
@@ -102,6 +108,17 @@ export const createConversationIfNotExists = async (sessionId: string) => {
     if (!conversation) {
       await createConversationFromSessionId(sessionId);
     }
+
+    if (conversation?.chats.length > 2) {
+      const newName = await getGeneratedNameBasedOnContent(
+        conversation.chats.map((chat) => ({
+          message: chat.message,
+          role: chat.role,
+        }))
+      );
+      conversation.generated_name = newName;
+      await dataSource.manager.save(conversation);
+    }
   } catch (err) {
     console.error(err);
     return null;
@@ -113,7 +130,8 @@ export const addChatToConversationAndCreateIfNotExists = async (
   message: string,
   intent: string,
   role: ChatRole,
-  enhanced: boolean
+  enhanced: boolean,
+  confidence?: number
 ) => {
   try {
     await createConversationIfNotExists(sessionId);
@@ -122,7 +140,8 @@ export const addChatToConversationAndCreateIfNotExists = async (
       message,
       intent,
       role,
-      enhanced
+      enhanced,
+      confidence
     );
     const newConversation = await getConversationFromSessionId(sessionId);
     return {
@@ -159,8 +178,63 @@ export const getChatsThatNeedReview = async () => {
   try {
     const chats = await dataSource.manager.find(entities.Chat, {
       where: { needs_review: true },
+      relations: ["conversation"],
     });
     return chats;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};
+
+export const getConversationsThatNeedReview = async () => {
+  try {
+    const chats = await getChatsThatNeedReview();
+    const ids = chats.map((chat) => chat.conversation.id);
+    const filteredIds = ids.filter((id, index) => {
+      return ids.indexOf(id) === index;
+    });
+    const conversations: Conversation[] = [];
+    for (const id of filteredIds) {
+      const conversation = await dataSource.manager.findOne(
+        entities.Conversation,
+        {
+          where: { id: id },
+          relations: ["chats"],
+        }
+      );
+      if (conversation) {
+        const conversationWithNeededReview = {
+          ...conversation,
+          chats_to_review: conversation.chats.filter(
+            (chat) => chat.needs_review
+          ),
+        };
+        conversations.push(conversationWithNeededReview);
+      }
+    }
+    console.log("CONVERSATIONS", conversations);
+    return conversations;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};
+
+export const markChatAsReviewed = async (chatId: number, username: string) => {
+  try {
+    const chat = await dataSource.manager.findOne(entities.Chat, {
+      where: { id: chatId },
+    });
+
+    if (!chat) {
+      return null;
+    }
+
+    chat.needs_review = false;
+    chat.reviewer = username;
+    await dataSource.manager.save(chat);
+    return chat;
   } catch (err) {
     console.error(err);
     return null;

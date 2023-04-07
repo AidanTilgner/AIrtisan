@@ -8,11 +8,9 @@ const domContainer = document.querySelector("#root");
 const root = createRoot(domContainer);
 
 root.render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <UserProvider>
-        <App />
-      </UserProvider>
-    </BrowserRouter>
-  </React.StrictMode>
+  <BrowserRouter>
+    <UserProvider>
+      <App />
+    </UserProvider>
+  </BrowserRouter>
 );

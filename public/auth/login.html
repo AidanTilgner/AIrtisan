@@ -51,7 +51,13 @@
             const refreshToken = data.data.refresh_token;
             localStorage.setItem("accessToken", accessToken);
             localStorage.setItem("refreshToken", refreshToken);
-            window.location.href = "/";
+            const redirectUrlSearchParam = new URLSearchParams(
+              window.location.search
+            ).get("redirectUrl");
+            const redirectUrl = redirectUrlSearchParam
+              ? decodeURIComponent(redirectUrlSearchParam)
+              : "/";
+            window.location.href = redirectUrl;
           });
       });
 
@@ -75,8 +81,14 @@
         }).then(async (res) => {
           const response = await res.json();
           if (response.data.authenticated) {
-            window.location.href = "/";
-          }
+            const redirectUrlSearchParam = new URLSearchParams(
+              window.location.search
+            ).get("redirectUrl");
+            const redirectUrl = redirectUrlSearchParam
+              ? decodeURIComponent(redirectUrlSearchParam)
+              : "/";
+            window.location.href = redirectUrl;
+          } // http://localhost:3050/login?redirectUrl=http://localhost:3050/review/chats
         });
       }
     </script>

@@ -15,7 +15,8 @@ api.interceptors.response.use(
   },
   (error) => {
     if (error.response.status === 401) {
-      window.location.href = "/login";
+      const currentUrl = window.location.href;
+      window.location.href = "/login?redirectUrl=" + currentUrl;
     }
     return Promise.reject(error);
   }
@@ -439,6 +440,22 @@ export const checkIsSuperAdmin = async () => {
     .post("/auth/is_super_admin")
     .then((res) => {
       return res.data.data.is_super_admin;
+    })
+    .catch((err) => {
+      console.error(err);
+      showNotification({
+        title: "Error",
+        message: "Something went wrong",
+      });
+      return err;
+    });
+};
+
+export const getMe = async () => {
+  return await api
+    .get("/auth/me")
+    .then((res) => {
+      return res.data.data.admin;
     })
     .catch((err) => {
       console.error(err);

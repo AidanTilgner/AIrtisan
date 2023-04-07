@@ -52,7 +52,8 @@ router.post("/", checkAPIKey, async (req, res) => {
       botAnswer,
       intent,
       "assistant",
-      enhanced
+      enhanced,
+      confidence
     );
 
     const chats = await getChatsFromSessionId(session_id);
@@ -133,7 +134,8 @@ router.post("/as_admin", checkIsAdmin, async (req, res) => {
       botAnswer,
       intent,
       "assistant",
-      enhanced
+      enhanced,
+      confidence
     );
 
     const chats = await getChatsFromSessionId(session_id);

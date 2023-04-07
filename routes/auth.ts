@@ -200,10 +200,12 @@ router.get("/me", checkIsAdmin, async (req, res) => {
   try {
     const admin = req["admin"];
 
+    const { password, ...adminWithoutPassword } = admin;
+
     res.status(200).send({
       message: "Access token verified successfully.",
       data: {
-        admin,
+        admin: adminWithoutPassword,
       },
     });
   } catch (err) {
