@@ -55,7 +55,7 @@
   input {
     height: 100%;
     border: none;
-    padding: 0 24px;
+    padding: 0 14px;
     box-sizing: border-box;
     font-size: 16px;
     outline: none;
@@ -69,6 +69,17 @@
     &:focus {
       border-left: 2.5px solid rgba($color: #fff, $alpha: 0.75);
       opacity: 1;
+      padding: 0 14px;
+    }
+
+    @media (min-width: 768px) {
+      padding: 0 14px;
+
+      &:focus {
+        border-left: 2.5px solid rgba($color: #fff, $alpha: 0.75);
+        opacity: 1;
+        padding: 0 14px;
+      }
     }
   }
 
