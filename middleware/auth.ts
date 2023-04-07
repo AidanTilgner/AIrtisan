@@ -4,6 +4,8 @@ import { Logger } from "../utils/logger";
 import { sendWarningEmail } from "../utils/email";
 import api_keys from "../api-keys.json";
 import { getRequesterInfo } from "../utils/analysis";
+import { getAdmin } from "../database/functions/admin";
+import { verifyAccessToken, verifyRefreshToken } from "../utils/crypto";
 
 config();
 
@@ -77,4 +79,104 @@ export const checkAPIKey = (
   }
 
   next();
+};
+
+export const checkIsAdmin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const access_token =
+      (req.headers["x-access-token"] as string) ||
+      (req.query["x-access-token"] as string) ||
+      req.headers["authorization"]?.split(" ")?.[1];
+
+    if (!access_token) {
+      res.status(401).send({ message: "No access token provided." });
+      return;
+    }
+
+    const { id } = verifyAccessToken(access_token) as { id: number };
+
+    const admin = await getAdmin(id);
+
+    if (!admin) {
+      res.status(401).send({ message: "Invalid access token provided." });
+      return;
+    }
+
+    next();
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ message: "Internal server error." });
+  }
+};
+
+export const checkIsSuperAdmin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const access_token =
+      (req.headers["x-access-token"] as string) ||
+      (req.query["x-access-token"] as string) ||
+      req.headers["authorization"]?.split(" ")?.[1];
+
+    if (!access_token) {
+      res.status(401).send({ message: "No access token provided." });
+      return;
+    }
+
+    const { id } = verifyAccessToken(access_token) as { id: number };
+
+    const admin = await getAdmin(id);
+
+    if (!admin) {
+      res.status(401).send({ message: "Invalid access token provided." });
+      return;
+    }
+
+    if (admin.role !== "superadmin") {
+      res.status(401).send({ message: "Unauthorized." });
+      return;
+    }
+
+    next();
+  } catch (err) {
+    res.status(500).send({ message: "Internal server error." });
+    logger.log(err.message);
+  }
+};
+
+export const checkIsAdminAndShowLoginIfNot = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const access_token =
+      (req.headers["x-access-token"] as string) ||
+      (req.query["x-access-token"] as string) ||
+      req.headers["authorization"]?.split(" ")?.[1];
+
+    if (!access_token) {
+      res.redirect("/login");
+      return;
+    }
+
+    const { id } = verifyAccessToken(access_token) as { id: number };
+
+    const admin = await getAdmin(id);
+
+    if (!admin) {
+      res.redirect("/login");
+      return;
+    }
+
+    next();
+  } catch (err) {
+    res.redirect("/login");
+  }
 };

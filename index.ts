@@ -3,9 +3,14 @@ import { config } from "dotenv";
 import NLURouter from "./routes/nlu";
 import ChatRouter from "./routes/chat";
 import TrainingRouter from "./routes/training";
+import AuthRouter from "./routes/auth";
 import { train } from "./nlu/index";
 import { logIP } from "./middleware/analysis";
-import { checkAPIKey } from "./middleware/auth";
+import {
+  checkAPIKey,
+  checkIsAdmin,
+  checkIsAdminAndShowLoginIfNot,
+} from "./middleware/auth";
 import path from "path";
 import "reflect-metadata";
 import { initializeDatabase } from "./database";
@@ -27,11 +32,20 @@ app.use(checkAPIKey);
 app.use("/nlu", NLURouter);
 app.use("/chat", ChatRouter);
 app.use("/training", TrainingRouter);
+app.use("/auth", AuthRouter);
 
-if (process.env.NODE_ENV === "development") {
-  console.log("Training mode enabled");
-  app.use("/", Express.static(path.join(__dirname, "public", "training")));
-  app.get("/*", (req, res) => {
+app.get("/login", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "auth", "login.html"));
+});
+
+if (process.env.ALLOW_TRAINING_UI === "true") {
+  console.info("Training mode enabled");
+  app.use(
+    "/",
+    checkIsAdminAndShowLoginIfNot,
+    Express.static(path.join(__dirname, "public", "training"))
+  );
+  app.get("/*", checkIsAdminAndShowLoginIfNot, (req, res) => {
     res.sendFile(path.join(__dirname, "public", "training", "index.html"));
   });
 }

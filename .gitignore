@@ -8,3 +8,4 @@ datastore/*
 storage/analytics/*
 storage/metadata/*
 storage/logs/*
+.secrets*

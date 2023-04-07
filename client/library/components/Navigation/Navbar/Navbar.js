@@ -1,22 +1,45 @@
 import React from "react";
 import withStyles from "react-css-modules";
 import styles from "./Navbar.module.scss";
-import { Button } from "@mantine/core";
+import { Button, Burger } from "@mantine/core";
 import { retrainModel } from "../../../helpers/fetching";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 function Navbar() {
+  const isMobile = window.innerWidth < 768;
+  const [opened, setOpened] = React.useState(false);
+  const location = useLocation();
+
+  const currentPath = location.pathname;
+
   return (
     <div className={styles.navbar}>
       <h2 className={styles.title}>Onyx Chat</h2>
-      <ul className={styles.items}>
-        <li>
-          <Link to="/interactive">Interactive</Link>
-        </li>
-        <li>
-          <Link to="/preview">Preview</Link>
-        </li>
-        {/* <li>
+      {isMobile && (
+        <Burger
+          opened={opened}
+          onClick={() => {
+            setOpened(!opened);
+          }}
+        />
+      )}
+      {opened && (
+        <ul className={styles.mobile_items}>
+          <li
+            className={
+              currentPath === "/interactive" ? styles.active : styles.inactive
+            }
+          >
+            <Link to="/interactive">Interactive</Link>
+          </li>
+          <li
+            className={
+              currentPath === "/preview" ? styles.active : styles.inactive
+            }
+          >
+            <Link to="/preview">Preview</Link>
+          </li>
+          {/* <li>
           <Button
             onClick={() => {
               retrainModel();
@@ -26,7 +49,38 @@ function Navbar() {
             Refresh Model
           </Button>
         </li> */}
-      </ul>
+        </ul>
+      )}
+      {!isMobile && (
+        <ul className={styles.items}>
+          <li
+            className={
+              currentPath === "/interactive" ? styles.active : styles.inactive
+            }
+          >
+            <Link to="/interactive">Interactive</Link>
+          </li>
+          <li
+            className={
+              currentPath === "/preview" ? styles.active : styles.inactive
+            }
+          >
+            <Link to="/preview">Preview</Link>
+          </li>
+          {/* <li>
+            <Button
+
+              onClick={() => {
+                retrainModel();
+              }
+
+              variant="outline"
+            >
+              Refresh Model
+            </Button>
+          </li> */}
+        </ul>
+      )}
     </div>
   );
 }
