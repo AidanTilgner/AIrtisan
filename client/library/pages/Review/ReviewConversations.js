@@ -91,8 +91,8 @@ function Conversation({
   };
 
   const getFormattedTitle = (conversation) => {
-    const lastChat = conversation.chats_to_review[0];
-    return getShortenedText(lastChat.message, 18);
+    const generatedName = conversation.generated_name;
+    return getShortenedText(generatedName, 18);
   };
 
   const getShortenedText = (text, maxLength = 36) => {
@@ -217,7 +217,9 @@ function Conversation({
                     <div
                       className={styles.test_tag}
                       title="Retry this chat."
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
                         handleRetryChat(chat.message);
                       }}
                     >
