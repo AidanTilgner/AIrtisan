@@ -4,33 +4,39 @@ import { Logger } from "./logger";
 
 config();
 
-const { MAILGUN_USER, MAILGUN_PASSWORD, MAILGUN_FROM, MAIL_TO } = process.env;
+const mailLogger = new Logger({ name: "email" });
+
+const { MAIL_USER, MAIL_PASS, MAIL_FROM, MAIL_TO } = process.env;
 
 // create transporter with mailgun credentials
 const transporter = nodemailer.createTransport({
-  service: "Mailgun",
+  service: "Gmail",
   auth: {
-    user: MAILGUN_USER,
-    pass: MAILGUN_PASSWORD,
+    user: MAIL_USER,
+    pass: MAIL_PASS,
   },
 });
 
 const mailOpts = {
-  from: MAILGUN_FROM,
+  from: MAIL_FROM,
 };
 
 export async function sendEmail({
-  to,
   subject,
   text,
   html,
+  to = MAIL_TO as string,
 }: {
-  to: string;
   subject: string;
   text?: string;
   html: string;
+  to?: string;
 }) {
   try {
+    if (!to) {
+      mailLogger.error("No email address provided");
+      return null;
+    }
     const info = await transporter.sendMail({
       ...mailOpts,
       to,
@@ -40,27 +46,29 @@ export async function sendEmail({
     });
     return info;
   } catch (err) {
-    console.error(err);
+    mailLogger.error("Error sending mail: ", err);
+    return null;
   }
 }
 
-const warningLogger = new Logger({
-  log_type: "warning",
-  name: "email",
-});
+const warningLogger = new Logger({ name: "warning" });
 
 export const sendWarningEmail = async (message: string, other: any) => {
   try {
     const { NODE_ENV } = process.env;
+    if (!MAIL_TO) {
+      mailLogger.error("Trying to send email without MAIL_TO set");
+      return;
+    }
     if (NODE_ENV === "development") {
-      console.info("Warning email not sent in development mode");
+      console.warn("Warning email not sent in development mode");
       return;
     }
     const info = await sendEmail({
       to: MAIL_TO,
-      subject: "Warning from Onyx Chat",
+      subject: "Warning from Onyx",
       html: `
-        <h2 style="color:red">Warning From Onyx Chat:</h2>
+        <h2 style="color:red">Warning From Onyx:</h2>
         <p>${message}</p>
         <hr />
         <h4>Other Info:</h4>
@@ -68,10 +76,11 @@ export const sendWarningEmail = async (message: string, other: any) => {
       `,
     });
     if (info) {
-      warningLogger.log("Warning email dispatched");
+      warningLogger.info("Warning email dispatched");
     }
     return info;
   } catch (err) {
-    console.error(err);
+    mailLogger.error("Error sending warning email: ", err);
+    return;
   }
 };

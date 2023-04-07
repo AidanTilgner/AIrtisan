@@ -34,3 +34,9 @@ export const verifyRefreshToken = (token: string) => {
 export const generateRandomPassword = (length: number = 8) => {
   return randomBytes(length).toString("hex");
 };
+
+export const generateRandomApiKey = (length: number = 32) => {
+  const key = randomBytes(length).toString("hex");
+  const formatted = `sk-${key}`;
+  return formatted;
+};

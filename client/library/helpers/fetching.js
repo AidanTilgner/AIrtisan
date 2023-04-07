@@ -4,6 +4,9 @@ import { showNotification } from "@mantine/notifications";
 export const api = axios.create({
   baseURL: "/",
   withCredentials: true,
+  headers: {
+    "x-access-token": localStorage.getItem("accessToken"),
+  },
 });
 
 api.interceptors.response.use(
@@ -394,6 +397,29 @@ export const checkAuth = async () => {
         access_token: accessToken,
       })
       .then((res) => {
+        return res.data.data;
+      })
+      .catch((err) => {
+        console.error(err);
+        showNotification({
+          title: "Error",
+          message: "Something went wrong",
+        });
+        return err;
+      });
+  }
+  return false;
+};
+
+export const refreshAccessToken = async () => {
+  const refreshToken = localStorage.getItem("refreshToken");
+  if (refreshToken) {
+    return await api
+      .post("/auth/refresh", {
+        refresh_token: refreshToken,
+      })
+      .then((res) => {
+        localStorage.setItem("accessToken", res.data.data.access_token);
         return res.data.data;
       })
       .catch((err) => {

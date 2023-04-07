@@ -2,10 +2,10 @@ import type { Request, Response, NextFunction } from "express";
 import { config } from "dotenv";
 import { Logger } from "../utils/logger";
 import { sendWarningEmail } from "../utils/email";
-import api_keys from "../api-keys.json";
 import { getRequesterInfo } from "../utils/analysis";
 import { getAdmin } from "../database/functions/admin";
 import { verifyAccessToken, verifyRefreshToken } from "../utils/crypto";
+import { getApiKey } from "../database/functions/apiKey";
 
 config();
 
@@ -14,10 +14,9 @@ const logger = new Logger({
   name: "authentication",
 });
 
-const API_KEYS = api_keys;
 const isDev = process.env.NODE_ENV === "development";
 
-export const checkAPIKey = (
+export const checkAPIKey = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -48,27 +47,29 @@ export const checkAPIKey = (
     res.status(401).send({
       message: "No service specified. Please specify request origin service.",
     });
-    sendWarningEmail(
-      "A request was made without a service specified.",
-      getRequesterInfo(req)
-    );
+    // sendWarningEmail(
+    //   "A request was made without a service specified.",
+    //   getRequesterInfo(req)
+    // );
     logger.log("A request was made without a service specified.");
     return;
   }
 
-  const expectedKey = API_KEYS[service];
+  const keyInDB = await getApiKey(service);
 
-  if (!expectedKey) {
-    res.status(401).send({ message: "Invalid service provided." });
+  if (!keyInDB) {
+    res.status(401).send({
+      message: "No API key found for the specified service.",
+    });
     sendWarningEmail(
-      "A request was made with an invalid service",
+      "A request was made with a service that has no API key.",
       getRequesterInfo(req)
     );
-    logger.log("A request was made with an invalid service.");
+    logger.log("A request was made with a service that has no API key.");
     return;
   }
 
-  if (!(expectedKey === key)) {
+  if (!(keyInDB.key === key)) {
     logger.log("Invalid API key provided");
     sendWarningEmail(
       "A request was made with an invalid API key.",
