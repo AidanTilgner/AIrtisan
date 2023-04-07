@@ -15,7 +15,8 @@ api.interceptors.response.use(
   },
   (error) => {
     if (error.response.status === 401) {
-      window.location.href = "/login";
+      const currentUrl = window.location.href;
+      window.location.href = "/login?redirectUrl=" + currentUrl;
     }
     return Promise.reject(error);
   }

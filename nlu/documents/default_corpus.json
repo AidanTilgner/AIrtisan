@@ -61,6 +61,7 @@
       "utterances": ["Yes"],
       "answers": [],
       "enhance": true
-    }
+    },
+    { "intent": "ooga.booga", "utterances": ["ooga.booga"], "answers": [] }
   ]
 }

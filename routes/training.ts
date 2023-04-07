@@ -245,7 +245,7 @@ router.get("/buttons", async (req, res) => {
   res.send(toSend);
 });
 
-router.get("/need_review", async (req, res) => {
+router.get("/chats/need_review", async (req, res) => {
   const data = await getChatsThatNeedReview();
 
   const toSend = {

@@ -159,6 +159,7 @@ export const getChatsThatNeedReview = async () => {
   try {
     const chats = await dataSource.manager.find(entities.Chat, {
       where: { needs_review: true },
+      relations: ["conversation"],
     });
     return chats;
   } catch (err) {
