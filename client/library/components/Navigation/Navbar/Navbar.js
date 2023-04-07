@@ -31,10 +31,12 @@ function Navbar() {
       </li>
       <li
         className={
-          currentPath === "/review/chats" ? styles.active : styles.inactive
+          currentPath === "/review/conversations"
+            ? styles.active
+            : styles.inactive
         }
       >
-        <Link to="/review/chats">Review Chats</Link>
+        <Link to="/review/conversations">Review Conversations</Link>
       </li>
     </>
   );

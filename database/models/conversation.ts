@@ -15,10 +15,15 @@ export class Conversation {
   @PrimaryGeneratedColumn()
   id!: number;
 
+  @Column({
+    nullable: true,
+  })
+  generated_name: string;
+
   @Column()
   session_id!: string;
 
-  @OneToMany(() => Chat, (chat) => chat.conversation)
+  @OneToMany(() => Chat, (chat) => chat.conversation, { eager: true })
   chats!: Chat[];
 
   @CreateDateColumn()

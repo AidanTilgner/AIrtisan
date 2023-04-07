@@ -62,6 +62,11 @@
       "answers": [],
       "enhance": true
     },
-    { "intent": "ooga.booga", "utterances": ["ooga.booga"], "answers": [] }
+    { "intent": "ooga.booga", "utterances": ["ooga.booga"], "answers": [] },
+    {
+      "intent": "express.interest",
+      "utterances": ["That's pretty neat"],
+      "answers": ["I'm glad you think so!"]
+    }
   ]
 }

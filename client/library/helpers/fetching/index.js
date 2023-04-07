@@ -450,3 +450,19 @@ export const checkIsSuperAdmin = async () => {
       return err;
     });
 };
+
+export const getMe = async () => {
+  return await api
+    .get("/auth/me")
+    .then((res) => {
+      return res.data.data.admin;
+    })
+    .catch((err) => {
+      console.error(err);
+      showNotification({
+        title: "Error",
+        message: "Something went wrong",
+      });
+      return err;
+    });
+};

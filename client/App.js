@@ -9,7 +9,7 @@ import { NotificationsProvider } from "@mantine/notifications";
 import Preview from "./library/pages/Preview/Preview";
 import Welcome from "./library/pages/Welcome/Welcome";
 import Auth from "./library/pages/Auth/Auth";
-import ReviewChats from "./library/pages/Review/ReviewChats";
+import ReviewConversations from "./library/pages/Review/ReviewConversations";
 import { useUser } from "./library/contexts/User";
 
 function App() {
@@ -51,7 +51,7 @@ function App() {
               <Route path="interactive" element={<Interactive />} />
               <Route path="preview" element={<Preview />} />
               <Route path="review">
-                <Route path="chats" element={<ReviewChats />} />
+                <Route path="conversations" element={<ReviewConversations />} />
               </Route>
               {isSuperAdmin && (
                 <Route path="admin">

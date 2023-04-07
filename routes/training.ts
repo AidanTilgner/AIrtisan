@@ -12,7 +12,11 @@ import {
 import { Router } from "express";
 import { retrain, getNLUResponse } from "../nlu";
 import { getDataForIntent, getIntents, getAllButtons } from "../nlu/metadata";
-import { getChatsThatNeedReview } from "../database/functions/conversations";
+import {
+  getChatsThatNeedReview,
+  getConversationsThatNeedReview,
+  markChatAsReviewed,
+} from "../database/functions/conversations";
 import { checkIsAdmin } from "../middleware/auth";
 
 const router = Router();
@@ -250,6 +254,41 @@ router.get("/chats/need_review", async (req, res) => {
 
   const toSend = {
     message: "Got need review",
+    success: true,
+    data,
+  };
+
+  res.send(toSend);
+});
+
+router.get("/conversations/need_review", async (req, res) => {
+  const data = await getConversationsThatNeedReview();
+
+  const toSend = {
+    message: "Got need review",
+    success: true,
+    data,
+  };
+
+  res.send(toSend);
+});
+
+router.post("/chats/reviewed/:chat_id", async (req, res) => {
+  const { chat_id } = req.params;
+  const { username } = req.body;
+
+  const data = await markChatAsReviewed(Number(chat_id), username);
+
+  if (!data) {
+    res.send({
+      message: "Chat not found",
+      success: false,
+    });
+    return;
+  }
+
+  const toSend = {
+    message: "Chat marked as reviewed",
     success: true,
     data,
   };
