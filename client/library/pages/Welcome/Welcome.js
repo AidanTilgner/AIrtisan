@@ -18,6 +18,9 @@ function Welcome() {
         <li>
           <Link to="/preview">Preview Production Bot</Link>
         </li>
+        <li>
+          <Link to="/review/conversations">Review wonky conversations</Link>
+        </li>
         {isSuperAdmin && (
           <li>
             <Link to="/admin/auth">Handle some auth</Link>
