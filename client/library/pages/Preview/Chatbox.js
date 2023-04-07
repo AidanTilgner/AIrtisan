@@ -85,8 +85,6 @@ function ChatBox() {
     }
   }, [botMessageLoading]);
 
-  const submitChatForReview = (chat_id) => {};
-
   return (
     <div className={chatStyles.chatBox}>
       <div className={chatStyles.chatBoxMessages}>

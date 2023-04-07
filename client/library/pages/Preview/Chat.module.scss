@@ -4,11 +4,12 @@
   box-shadow: inset 0.2px 0.2px 10px rgba($color: #000000, $alpha: 0.5);
   height: 500px; // ! should be modified
   position: relative;
+  background-color: #000000;
   background: linear-gradient(
     90deg,
-    rgba(135, 9, 232, 0.25) 25%,
-    rgba(22, 20, 219, 0.25) 60%,
-    rgba(0, 0, 0, 0.25) 100%
+    rgba(135, 9, 232, 0.35) 25%,
+    rgba(22, 20, 219, 0.35) 60%,
+    rgba(0, 0, 0, 0.35) 100%
   );
   padding-inline: 0;
   padding-bottom: 64px;
@@ -64,9 +65,11 @@
     font-family: "QuickSand", sans-serif;
     width: 100%;
     transition: all 0.3s ease-in-out;
+    opacity: 0.9;
 
     &:focus {
       border-left: 2.5px solid rgba($color: #fff, $alpha: 0.75);
+      opacity: 1;
     }
   }
 

@@ -2,6 +2,16 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: calc(100vh - 116px);
+  height: calc(100vh - 86px);
+  // background-color: black;
+  padding-inline: 24px;
+
+  @media (min-width: 768px) {
+    height: calc(100vh - 116px);
+    padding-inline: 56px;
+  }
+}
+
+.chatboxContainer {
   background-color: black;
 }

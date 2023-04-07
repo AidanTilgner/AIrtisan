@@ -95,8 +95,6 @@ export const checkIsAdmin = async (
 
     const { id } = verifyAccessToken(access_token) as { id: number };
 
-    console.log("Id: ", id);
-
     const admin = await getAdmin(id);
 
     if (!admin) {

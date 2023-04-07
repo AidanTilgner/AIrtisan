@@ -61,6 +61,24 @@
           loginButton.click();
         }
       });
+
+      if (localStorage.getItem("accessToken")) {
+        fetch("/auth/check", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-access-token": localStorage.getItem("accessToken"),
+          },
+          body: JSON.stringify({
+            access_token: localStorage.getItem("accessToken"),
+          }),
+        }).then(async (res) => {
+          const response = await res.json();
+          if (response.data.authenticated) {
+            window.location.href = "/";
+          }
+        });
+      }
     </script>
   </body>
 </html>

@@ -353,7 +353,7 @@ export const getAllButtons = async () => {
 
 export const postChat = async ({ message, session_id }) => {
   return await api
-    .post("/chat", {
+    .post("/chat/as_admin", {
       message,
       session_id,
     })
@@ -369,7 +369,7 @@ export const postChat = async ({ message, session_id }) => {
 
 export const markChatAsShouldReview = async ({ chat_id, reason }) => {
   return await api
-    .post(`/chat/${chat_id}/should_review`, {
+    .post(`/chat/as_admin/${chat_id}/should_review`, {
       review_message: reason,
     })
     .then((res) => {

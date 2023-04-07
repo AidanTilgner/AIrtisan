@@ -8,7 +8,9 @@ function Preview() {
     <div className={styles.preview}>
       <h1>Preview</h1>
       <br />
-      <Chatbox />
+      <div className={styles.chatboxContainer}>
+        <Chatbox />
+      </div>
     </div>
   );
 }
