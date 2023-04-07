@@ -28,10 +28,11 @@ import {
   getAllButtons,
 } from "../../helpers/fetching";
 import { showNotification } from "@mantine/notifications";
-import { TrashSimple, Copy, Check } from "phosphor-react";
+import { TrashSimple, Copy, Check, Lightning } from "phosphor-react";
 import { copyToClipboard } from "../../helpers/utilities";
 import { getShortenedMessage } from "../../helpers/formating";
 import { useMediaQuery } from "@mantine/hooks";
+import { useSearchParams } from "react-router-dom";
 
 function Interactive() {
   const [text, setText] = useState(localStorage.getItem("lastText") || "");
@@ -88,6 +89,15 @@ function Interactive() {
       });
     });
   };
+
+  const [urlSearchParams, setUrlSearchParams] = useSearchParams();
+
+  useEffect(() => {
+    if (urlSearchParams.get("run")) {
+      setText(urlSearchParams.get("run"));
+      submitText();
+    }
+  }, []);
 
   const submitNewAnswer = async () => {
     addAnswerToIntent({
@@ -392,9 +402,21 @@ function Interactive() {
                         <div
                           className={`${styles.utterance_copy} ${styles.utterance_icon}`}
                           title="Copy utterance"
-                          onClick={() => copy(utterance)}
+                          onClick={() => {
+                            copy(utterance);
+                          }}
                         >
                           <Copy size={12} />
+                        </div>
+                        <div
+                          className={`${styles.utterance_run} ${styles.utterance_icon}`}
+                          title="Run utterance"
+                          onClick={() => {
+                            setText(utterance);
+                            submitText();
+                          }}
+                        >
+                          <Lightning size={12} />
                         </div>
                       </div>
                     </Text>

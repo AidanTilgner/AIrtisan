@@ -102,8 +102,6 @@ function Conversation({
     return text;
   };
 
-  console.log("User: ", user);
-
   const handleMarkReviewed = async (chatId) => {
     await markChatAsReviewed(chatId, user.username);
     const conversations = await getConversationsThatNeedReview();
