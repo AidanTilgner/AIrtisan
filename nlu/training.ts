@@ -2,12 +2,20 @@ import default_corpus from "./documents/default_corpus.json";
 import { writeFileSync } from "fs";
 import { prettify_json } from "../utils/prettier";
 
+type corpusDataPoint = {
+  intent: string;
+  utterances: string[];
+  answers: string[];
+  buttons?: { type: string }[];
+  enhance?: boolean;
+};
+
 export const addData = async (data: {
   intent: string;
   utterances: string[];
   answers: string[];
 }) => {
-  const corpusData = default_corpus.data;
+  const corpusData = default_corpus.data as corpusDataPoint[];
 
   const existingIntent = corpusData.find(
     (intent) => intent.intent === data.intent
@@ -32,7 +40,7 @@ export const addData = async (data: {
 };
 
 export const addResponseToIntent = async (intent: string, response: string) => {
-  const corpusData = default_corpus.data;
+  const corpusData = default_corpus.data as corpusDataPoint[];
 
   const existingIntent = corpusData.find((item) => item.intent === intent);
   if (existingIntent) {
@@ -64,7 +72,7 @@ export const removeResponseFromIntent = async (
   intent: string,
   response: string
 ) => {
-  const corpusData = default_corpus.data;
+  const corpusData = default_corpus.data as corpusDataPoint[];
 
   const existingIntent = corpusData.find((item) => item.intent === intent);
   if (existingIntent) {
@@ -92,7 +100,7 @@ export const addOrUpdateUtteranceOnIntent = async (
   utterance: string
 ) => {
   // check the old intent for this utterance, if it exists, remove it
-  const corpusData = default_corpus.data;
+  const corpusData = default_corpus.data as corpusDataPoint[];
   const oldIntent = corpusData.find((item) => item.intent === old_intent);
   if (oldIntent) {
     oldIntent.utterances = oldIntent.utterances.filter(
@@ -133,7 +141,7 @@ export const removeUtteranceFromIntent = async (
   intent: string,
   utterance: string
 ) => {
-  const corpusData = default_corpus.data;
+  const corpusData = default_corpus.data as corpusDataPoint[];
 
   const existingIntent = corpusData.find((item) => item.intent === intent);
   if (existingIntent) {
@@ -159,7 +167,7 @@ export const addUtteranceToIntent = async (
   intent: string,
   utterance: string
 ) => {
-  const corpusData = default_corpus.data;
+  const corpusData = default_corpus.data as corpusDataPoint[];
 
   const existingIntent = corpusData.find((item) => item.intent === intent);
   if (existingIntent) {
@@ -188,7 +196,7 @@ export const addUtteranceToIntent = async (
 };
 
 export const enhanceIntent = (intent: string, shouldEnhance: boolean) => {
-  const corpusData = default_corpus.data;
+  const corpusData = default_corpus.data as corpusDataPoint[];
 
   const existingIntent = corpusData.find((item) => item.intent === intent);
   if (existingIntent) {

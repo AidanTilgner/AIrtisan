@@ -11,6 +11,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  box-sizing: border-box;
 }
 
 .title {
@@ -20,4 +21,25 @@
   text-decoration: none;
   padding: 0;
   margin: 0;
+}
+
+.items {
+  list-style-type: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+
+  a {
+    text-decoration: none;
+    color: black;
+    font-size: 16px;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+
+    &:hover {
+      color: #2256f2;
+    }
+  }
 }

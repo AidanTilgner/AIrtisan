@@ -117,9 +117,50 @@ export const addChatToConversationAndCreateIfNotExists = async (
 ) => {
   try {
     await createConversationIfNotExists(sessionId);
-    await createChatFromSessionId(sessionId, message, intent, role, enhanced);
+    const newChat = await createChatFromSessionId(
+      sessionId,
+      message,
+      intent,
+      role,
+      enhanced
+    );
     const newConversation = await getConversationFromSessionId(sessionId);
-    return newConversation;
+    return {
+      conversation: newConversation,
+      chat: newChat,
+    };
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};
+
+export const markChatForReview = async (chatId: number, reviewText: string) => {
+  try {
+    const chat = await dataSource.manager.findOne(entities.Chat, {
+      where: { id: chatId },
+    });
+
+    if (!chat) {
+      return null;
+    }
+
+    chat.needs_review = true;
+    chat.review_text = reviewText;
+    await dataSource.manager.save(chat);
+    return chat;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};
+
+export const getChatsThatNeedReview = async () => {
+  try {
+    const chats = await dataSource.manager.find(entities.Chat, {
+      where: { needs_review: true },
+    });
+    return chats;
   } catch (err) {
     console.error(err);
     return null;

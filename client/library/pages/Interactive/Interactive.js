@@ -31,6 +31,7 @@ import { showNotification } from "@mantine/notifications";
 import { TrashSimple, Copy, Check } from "phosphor-react";
 import { copyToClipboard } from "../../helpers/utilities";
 import { getShortenedMessage } from "../../helpers/formating";
+import { useMediaQuery } from "@mantine/hooks";
 
 function Interactive() {
   const [text, setText] = useState(localStorage.getItem("lastText") || "");
@@ -215,6 +216,8 @@ function Interactive() {
     });
   };
 
+  const isMobile = useMediaQuery("(max-width: 768px)");
+
   if (loading) {
     return <Loader />;
   }
@@ -222,7 +225,7 @@ function Interactive() {
   return (
     <div className={styles.Interactive}>
       <Grid
-        gutter={36}
+        gutter={isMobile ? 24 : 36}
         justify="space-between"
         align="space-between"
         style={{ width: "100%" }}
@@ -241,7 +244,7 @@ function Interactive() {
             py={14}
             px={24}
             sx={(theme) => ({
-              width: "40%",
+              width: isMobile ? "100%" : "40%",
             })}
           >
             <Flex
@@ -253,6 +256,7 @@ function Interactive() {
                 Say anything...
               </Title>
               <Flex
+                direction={isMobile ? "column" : "row"}
                 justify={"space-between"}
                 style={{ width: "100%" }}
                 gap={24}
@@ -275,7 +279,7 @@ function Interactive() {
         </Grid.Col>
         {data?.answer.length > 0 && (
           <>
-            <Grid.Col span={6}>
+            <Grid.Col span={isMobile ? 12 : 6}>
               <Grid>
                 <Grid.Col span={12}>
                   <Box
@@ -301,7 +305,7 @@ function Interactive() {
                 </Grid.Col>
               </Grid>
             </Grid.Col>
-            <Grid.Col span={6}>
+            <Grid.Col span={isMobile ? 12 : 6}>
               <Text
                 size="md"
                 weight={500}
@@ -352,7 +356,7 @@ function Interactive() {
                 sx={() => ({ marginTop: "24px" })}
               />
             </Grid.Col>
-            <Grid.Col span={6}>
+            <Grid.Col span={isMobile ? 12 : 6}>
               <Text
                 size="md"
                 weight={500}
@@ -419,7 +423,7 @@ function Interactive() {
                 </Button>
               </Flex>
             </Grid.Col>
-            <Grid.Col span={6}>
+            <Grid.Col span={isMobile ? 12 : 6}>
               <Text
                 size="md"
                 weight={500}
@@ -495,7 +499,7 @@ function Interactive() {
                 </Button>
               </Flex>
             </Grid.Col>
-            <Grid.Col span={6}>
+            <Grid.Col span={isMobile ? 12 : 6}>
               <Text
                 size="md"
                 weight={500}

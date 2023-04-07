@@ -12,6 +12,7 @@ import {
 import { Router } from "express";
 import { retrain, getNLUResponse } from "../nlu";
 import { getDataForIntent, getIntents, getAllButtons } from "../nlu/metadata";
+import { getChatsThatNeedReview } from "../database/functions/conversations";
 
 const router = Router();
 
@@ -236,6 +237,18 @@ router.get("/buttons", async (req, res) => {
     message: "Got buttons",
     success: true,
     data: buttons,
+  };
+
+  res.send(toSend);
+});
+
+router.get("/need_review", async (req, res) => {
+  const data = await getChatsThatNeedReview();
+
+  const toSend = {
+    message: "Got need review",
+    success: true,
+    data,
   };
 
   res.send(toSend);

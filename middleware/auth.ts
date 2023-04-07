@@ -31,10 +31,10 @@ export const checkAPIKey = (
 
   if (!key) {
     res.status(401).send({ message: "No API key provided." });
-    sendWarningEmail(
-      "A request was made without an API key.",
-      getRequesterInfo(req)
-    );
+    // sendWarningEmail(
+    //   "A request was made without an API key.",
+    //   getRequesterInfo(req)
+    // );
     logger.log("A request was made without an API key.");
     return;
   }

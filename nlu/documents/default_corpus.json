@@ -22,6 +22,45 @@
         "Hello, how are you?"
       ],
       "buttons": [{ "type": "play_greeting" }]
+    },
+    {
+      "intent": "inquiry.identity",
+      "utterances": ["Who are you?"],
+      "answers": [
+        "I am Onyx, I'm a digital assistant at VVibrant Web Solutions"
+      ],
+      "enhance": true
+    },
+    {
+      "intent": "greeting.goodbye",
+      "utterances": ["Goodbye", "See ya!", "Adios"],
+      "answers": ["Goodbye!"]
+    },
+    {
+      "intent": "inquiry.services",
+      "utterances": ["What services do you provide?", "What does VVibrant do?"],
+      "answers": [
+        "We provide a large number of services, from design to development, content moderation, and even chatbot development. See more about our services on <a href=\"https://vvibrant.dev/services\">our services page</a>"
+      ],
+      "buttons": [{ "type": "see_services" }]
+    },
+    {
+      "intent": "describe_state.well.with.inquiry.state",
+      "utterances": ["I'm well, you?"],
+      "answers": ["I'm glad to hear it! I'm great myself."]
+    },
+    {
+      "intent": "confirmation.no",
+      "utterances": ["No"],
+      "answers": [],
+      "enhance": true
+    },
+    { "intent": "confi", "utterances": [], "answers": [] },
+    {
+      "intent": "confirmation.yes",
+      "utterances": ["Yes"],
+      "answers": [],
+      "enhance": true
     }
   ]
 }

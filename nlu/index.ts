@@ -1,7 +1,6 @@
 import { dockStart } from "@nlpjs/basic";
 import { generateMetadata } from "./metadata";
 import { extractAttachments, filterAttachments } from "./attachments";
-import { enhanceChatIfNeccessary } from "./enhancement";
 
 export let manager = null;
 

@@ -1,17 +1,40 @@
 {
   "personality": {
     "name": "Onyx",
-    "description": "Onyx is a digital assistant."
+    "description": "Onyx is a digital assistant at VVibrant Web Solutions."
   },
   "works_for": {
-    "name": "John Doe",
-    "description": "A person who cloned this repository.",
-    "site_url": "https://google.com",
-    "tagline": "I'm a person who cloned this repository.",
+    "name": "VVibrant Web Solutions",
+    "description": "VVibrant Web Solutions is a web design and development company based in the United States, with a focus on Psychedelic Therapy Centers.",
+    "site_url": "https://vvibrant.dev",
+    "tagline": "Rewire your web presence.",
     "metadata": {
-      "skills": [
+      "services": [
         "Web Design",
-        "Web Development"
+        "Web Development",
+        "Web Hosting",
+        "Web Maintenance",
+        "Chatbot Integration",
+        "Blog Content"
+      ],
+      "location": "Oregon, United States",
+      "founded": "2023",
+      "people": [
+        {
+          "name": "Aidan Tilgner",
+          "role": "Co-Founder, CEO, CTO",
+          "contact": {
+            "email": "aidan.tilgner@vvibrant.dev",
+            "phone": "+1 503-200-7472"
+          }
+        },
+        {
+          "name": "Julian Scire",
+          "role": "Co-Founder, CMO",
+          "contact": {
+            "email": "scirejulian72@gmail.com"
+          }
+        }
       ]
     }
   },

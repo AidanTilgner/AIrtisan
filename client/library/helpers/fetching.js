@@ -335,3 +335,41 @@ export const getAllButtons = async () => {
       return err;
     });
 };
+
+export const postChat = async ({ message, session_id }) => {
+  return await api
+    .post("/chat", {
+      message,
+      session_id,
+    })
+    .then((res) => res.data.data)
+    .catch((err) => {
+      console.error(err);
+      showNotification({
+        title: "Error",
+        message: "Something went wrong",
+      });
+    });
+};
+
+export const markChatAsShouldReview = async ({ chat_id, reason }) => {
+  return await api
+    .post(`/chat/${chat_id}/should_review`, {
+      review_message: reason,
+    })
+    .then((res) => {
+      showNotification({
+        title: "Success",
+        message: "Chat marked as should review",
+      });
+      return res.data.data;
+    })
+    .catch((err) => {
+      console.error(err);
+      showNotification({
+        title: "Error",
+        message: "Something went wrong",
+      });
+      return err;
+    });
+};

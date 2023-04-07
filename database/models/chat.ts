@@ -31,6 +31,14 @@ export class Chat {
   @Column()
   enhanced: boolean = false;
 
+  @Column()
+  needs_review: boolean = false;
+
+  @Column({
+    nullable: true,
+  })
+  review_text!: string;
+
   @ManyToOne(() => Conversation, (conversation) => conversation.chats)
   conversation!: Conversation;
 

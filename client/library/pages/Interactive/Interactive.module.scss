@@ -5,7 +5,11 @@
   align-items: center;
   justify-content: center;
   padding-block: 64px;
-  padding-inline: 56px;
+  padding-inline: 24px;
+
+  @media (min-width: 768px) {
+    padding-inline: 56px;
+  }
 }
 
 .chat_bubble {
@@ -51,6 +55,12 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+
+    @media (max-width: 768px) {
+      .answer_icons {
+        visibility: initial !important;
+      }
+    }
 
     &:hover {
       padding-left: 10px;
@@ -113,6 +123,12 @@
     align-items: center;
     justify-content: space-between;
 
+    @media (max-width: 768px) {
+      .answer_icons {
+        visibility: initial !important;
+      }
+    }
+
     &:hover {
       padding-left: 10px;
       border-color: #2256f2;
@@ -173,6 +189,12 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+
+    @media (max-width: 768px) {
+      .answer_icons {
+        visibility: initial !important;
+      }
+    }
 
     &:hover {
       padding-left: 24px;

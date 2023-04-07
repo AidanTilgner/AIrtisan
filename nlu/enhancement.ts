@@ -1,4 +1,5 @@
 import { openai } from "../utils/openai";
+import { getModelResponse } from "../utils/gpt4all";
 import { getConversationChatsFromSessionId } from "../database/functions/conversations";
 import { getDataForIntent } from "./metadata";
 import chatGPTConfif from "./documents/chatgpt_config.json";
@@ -6,7 +7,7 @@ import chatGPTConfif from "./documents/chatgpt_config.json";
 const getInitialPrompt = () => `
   You are a chatbot named ${chatGPTConfif.personality.name}. You work for ${
   chatGPTConfif.works_for.name
-}, who is described as ${chatGPTConfif.works_for.description}.
+}, which is a company described "${chatGPTConfif.works_for.description}".
   
   Utilizing the tagline "${
     chatGPTConfif.works_for.tagline
@@ -14,12 +15,23 @@ const getInitialPrompt = () => `
   chatGPTConfif.works_for.name
 }.
   
-  You should highlight his following skills:
-  ${chatGPTConfif.works_for.metadata.skills
-    .map((skill) => `- ${skill}`)
+  You should highlight their following services:
+  ${chatGPTConfif.works_for.metadata.services
+    .map((service) => `- ${service}`)
     .join("\n")}
-  
-  You live on his website at https://aidantilgner.dev.
+
+  Keep in mind the following information about the company:
+  It is located at ${chatGPTConfif.works_for.metadata.location}
+
+  The current people to mention are:
+  ${chatGPTConfif.works_for.metadata.people
+    .map(
+      (person) =>
+        `- ${person.name}, ${person.role} | email: ${person.contact.email}`
+    )
+    .join("\n")}
+
+  You live on the company website at ${chatGPTConfif.works_for.site_url}.
 
   You should act as a normal assistant, but not hide that you are a robot.
   
@@ -49,6 +61,29 @@ const getInitialPrompt = () => `
   - Never conceal that you are a digital assistant called Onyx
   - Have fun!
   `;
+const confidenceMapper = (conf: number) => {
+  if (conf < 0.5) {
+    return "low";
+  }
+
+  if (conf < 0.75) {
+    return "medium";
+  }
+
+  return "high";
+};
+
+const intructionsStatement = (conf: number) => {
+  if (conf < 0.5) {
+    return "Instructions: Please provide a response that makes sense in context, and sounds natural.";
+  }
+
+  if (conf < 0.75) {
+    return "Instructions: Please provide an enhanced, natural response based on the intent and the original response.";
+  }
+
+  return "Instructions: Please provide a variation on the original response, keeping in mind the intent.";
+};
 
 const getFormattedPrompt = (
   message: string,
@@ -56,36 +91,15 @@ const getFormattedPrompt = (
   response: string,
   confidence: number
 ) => {
-  const confidenceMapper = (conf: number) => {
-    if (conf < 0.5) {
-      return "low";
-    }
-
-    if (conf < 0.75) {
-      return "medium";
-    }
-
-    return "high";
-  };
-
   const userStatement = `A user said: "${message}"`;
   const intentStatement = `The intent was classified as "${intent}" with a confidence of ${confidence}%, which is ${confidenceMapper(
     confidence
   )}`;
   const responseStatement = `The original response was "${response}"`;
-  const intructionsStatement = () => {
-    if (confidence < 0.5) {
-      return "Instructions: Please provide a response that makes sense in context, and sounds natural.";
-    }
 
-    if (confidence < 0.75) {
-      return "Instructions: Please provide an enhanced, natural response based on the intent and the original response.";
-    }
-
-    return "Instructions: Please provide a variation on the original response, keeping in mind the intent.";
-  };
-
-  return `${userStatement}. ${intentStatement}. ${responseStatement}. ${intructionsStatement()}`;
+  return `${userStatement}. ${intentStatement}. ${responseStatement}. ${intructionsStatement(
+    confidence
+  )}`;
 };
 
 export const getSpicedUpAnswer = async (
@@ -142,12 +156,19 @@ export const getSpicedUpAnswer = async (
   }
 };
 
-export const enhanceChatIfNeccessary = async (
-  answer: string,
-  intent: string,
-  confidence: number,
-  session_id: string
-): Promise<{
+export const enhanceChatIfNecessary = async ({
+  message,
+  answer,
+  intent,
+  confidence,
+  session_id,
+}: {
+  message: string;
+  answer: string;
+  intent: string;
+  confidence: number;
+  session_id: string;
+}): Promise<{
   answer: string;
   enhanced: boolean;
 }> => {
@@ -161,7 +182,101 @@ export const enhanceChatIfNeccessary = async (
     }
 
     if (intentData.enhance) {
-      const newAnswer = await getSpicedUpAnswer(answer, {
+      const newAnswer = await getSpicedUpAnswer(message, {
+        intent,
+        response: answer,
+        session_id,
+        confidence,
+      });
+
+      return {
+        answer: newAnswer,
+        enhanced: true,
+      };
+    }
+
+    return {
+      answer,
+      enhanced: false,
+    };
+  } catch (err) {
+    console.error(err);
+    return {
+      answer,
+      enhanced: false,
+    };
+  }
+};
+
+export const getGpt4AllPrompt = async (
+  message: string,
+  answer: string,
+  intent: string,
+  confidence: number
+) => {
+  return `
+  ${message}
+  `;
+};
+
+export const getSpicedUpAnswerWithGPT4All = async (
+  message: string,
+  {
+    intent,
+    response,
+    session_id,
+    confidence,
+  }: {
+    intent: string;
+    response: string;
+    session_id: string;
+    confidence: number;
+  }
+) => {
+  try {
+    const useablePrompt = await getGpt4AllPrompt(
+      message,
+      response,
+      intent,
+      confidence
+    );
+
+    const generatedResponse = await getModelResponse(useablePrompt);
+
+    return generatedResponse;
+  } catch (err) {
+    console.error(err);
+    return message;
+  }
+};
+
+export const enhanceChatIfNecessaryWithGPT4All = async ({
+  message,
+  answer,
+  intent,
+  confidence,
+  session_id,
+}: {
+  message: string;
+  answer: string;
+  intent: string;
+  confidence: number;
+  session_id: string;
+}): Promise<{
+  answer: string;
+  enhanced: boolean;
+}> => {
+  try {
+    const intentData = await getDataForIntent(intent);
+    if (!intentData || !intentData.enhance) {
+      return {
+        answer,
+        enhanced: false,
+      };
+    }
+
+    if (intentData.enhance) {
+      const newAnswer = await getSpicedUpAnswerWithGPT4All(message, {
         intent,
         response: answer,
         session_id,

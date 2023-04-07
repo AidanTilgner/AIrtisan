@@ -6,6 +6,8 @@ import { Routes, Route } from "react-router-dom";
 import Interactive from "./library/pages/Interactive/Interactive";
 import { MantineProvider } from "@mantine/core";
 import { NotificationsProvider } from "@mantine/notifications";
+import Preview from "./library/pages/Preview/Preview";
+import Welcome from "./library/pages/Welcome/Welcome";
 
 function App() {
   return (
@@ -38,8 +40,12 @@ function App() {
       >
         <NotificationsProvider position="bottom-right">
           <Navbar />
-          <Routes location="/">
-            <Route path="/" element={<Interactive />} />
+          <Routes>
+            <Route path="/">
+              <Route index element={<Welcome />} />
+              <Route path="interactive" element={<Interactive />} />
+              <Route path="preview" element={<Preview />} />
+            </Route>
           </Routes>
         </NotificationsProvider>
       </MantineProvider>
