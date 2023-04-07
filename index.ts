@@ -46,7 +46,6 @@ if (process.env.ALLOW_TRAINING_UI === "true") {
   });
   app.use("/", Express.static(path.join(__dirname, "public", "training")));
   app.get("/*", (req, res) => {
-    console.log("hit here: ", req.url);
     res.sendFile(path.join(__dirname, "public", "training", "index.html"));
   });
 }

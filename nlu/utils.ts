@@ -14,6 +14,11 @@ export const getGeneratedNameBasedOnContent = async (
     
     You would say: "Greeting and introduction"
 
+    Important criteria:
+    - The name should be short
+    - The name should be descriptive
+    - Only respond with the name itself
+
     Please generate a name for a conversation where some chats are: ${chats
       .map((chat) => `"${chat.role} - ${chat.message}"`)
       .join(", ")}
