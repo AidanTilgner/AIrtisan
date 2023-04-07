@@ -213,7 +213,7 @@ export const getConversationsThatNeedReview = async () => {
         conversations.push(conversationWithNeededReview);
       }
     }
-    console.log("CONVERSATIONS", conversations);
+
     return conversations;
   } catch (err) {
     console.error(err);
