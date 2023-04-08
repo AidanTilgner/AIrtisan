@@ -10,16 +10,11 @@ export const getManger = () => {
 
 export const train = async () => {
   const dock = await dockStart({
-    settings: {
-      nlp: {
-        corpora: ["nlu/documents/default_corpus.json"],
-      },
-    },
     use: ["Basic"],
   });
   // Add the NLU here
   const nlp = dock.get("nlp");
-  //   await nlp.addCorpus("./nlu/documents/default_corpus.json");
+  await nlp.addCorpus("./nlu/documents/default_corpus.json");
   await nlp.train();
   manager = nlp;
   generateMetadata();
@@ -31,15 +26,11 @@ export const retrain = async () => {
     manager = null;
 
     const dock = await dockStart({
-      settings: {
-        nlp: {
-          corpora: ["nlu/documents/default_corpus.json"],
-        },
-      },
       use: ["Basic"],
     });
 
     const nlp = dock.get("nlp");
+    await nlp.addCorpus("./nlu/documents/default_corpus.json");
     await nlp.train();
 
     manager = nlp;
