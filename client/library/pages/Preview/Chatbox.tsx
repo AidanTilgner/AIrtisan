@@ -12,7 +12,13 @@ const generateRandomSessionId = () => {
 };
 
 function ChatBox() {
-  const [messages, setMessages] = React.useState([
+  const [messages, setMessages] = React.useState<
+    {
+      content: string;
+      side: "user" | "bot";
+      chat_id: string | null;
+    }[]
+  >([
     {
       content: "Hey there, I’m Onyx. Can I help you with anything?",
       side: "bot",
@@ -28,11 +34,11 @@ function ChatBox() {
     sessionStorage.setItem("session_id", sessionId);
   }, []);
 
-  const handleSubmitMessage = (message) => {
+  const handleSubmitMessage = (message: string) => {
     if (!message) return;
     const newMessage = {
       content: message,
-      side: "user",
+      side: "user" as "user" | "bot",
       chat_id: null,
     };
     const newMessages = [...messages, newMessage];
@@ -70,11 +76,11 @@ function ChatBox() {
       });
   };
 
-  const endRef = React.useRef(null);
-  const inputRef = React.useRef(null);
+  const endRef = React.useRef<HTMLDivElement>(null);
+  const inputRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
-    endRef.current.scrollIntoView({ behavior: "smooth" });
+    if (endRef.current) endRef.current.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   const [isFocused, setIsFocused] = React.useState(false);
@@ -90,6 +96,7 @@ function ChatBox() {
       <div className={chatStyles.chatBoxMessages}>
         {messages.map((message, index) => (
           <Chat
+            loading={false}
             content={message.content}
             side={message.side}
             key={index}
@@ -119,9 +126,9 @@ function ChatBox() {
           placeholder="It’s like you’re talking to a person"
           onKeyDown={async (e) => {
             if (e.key === "Enter") {
-              const message = e.target.value;
+              const message = e.currentTarget.value;
               handleSubmitMessage(message);
-              e.target.value = "";
+              e.currentTarget.value = "";
             }
           }}
           disabled={botMessageLoading}
@@ -134,7 +141,17 @@ function ChatBox() {
 
 export default withStyles(chatStyles)(ChatBox);
 
-function Chat({ content, side, loading, id }) {
+function Chat({
+  content,
+  side,
+  loading,
+  id,
+}: {
+  content: string;
+  side: "bot" | "user";
+  loading: boolean;
+  id: string | null;
+}) {
   const [reported, setReported] = React.useState(false);
 
   const submitChatForReview = () => {

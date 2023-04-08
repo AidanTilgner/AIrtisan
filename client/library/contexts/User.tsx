@@ -1,18 +1,29 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { checkIsSuperAdmin, checkAuth, getMe } from "../helpers/fetching";
+import { Admin } from "../../documentation/main";
 
-const initialVal = {
+interface UserContextType {
+  user: Admin | null;
+  setUser: React.Dispatch<React.SetStateAction<Admin | null>>;
+  isLoggedIn: boolean;
+  setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
+  isSuperAdmin: boolean;
+  setIsSuperAdmin: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const initialVal: UserContextType = {
   user: null,
   setUser: () => {},
   isLoggedIn: false,
   setIsLoggedIn: () => {},
   isSuperAdmin: false,
+  setIsSuperAdmin: () => {},
 };
 
 const UserContext = createContext(initialVal);
 
 const UserProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<Admin | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(true);
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
 

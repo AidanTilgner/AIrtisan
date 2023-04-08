@@ -36,16 +36,50 @@ import { useMediaQuery } from "@mantine/hooks";
 import { useSearchParams } from "react-router-dom";
 
 function Interactive() {
-  const [text, setText] = useState(localStorage.getItem("lastText") || "");
+  const [text, setText] = useState<string>(
+    localStorage.getItem("lastText") || ""
+  );
 
   useEffect(() => {
     localStorage.setItem("lastText", text);
   }, [text]);
 
-  const [data, setData] = useState({
+  const [data, setData] = useState<{
+    intent: string;
+    entities: any;
+    answer: string;
+    attachments:
+      | {
+          links?: undefined;
+          buttons?: undefined;
+        }
+      | {
+          links: {
+            href: string;
+            text: string;
+            domain: string;
+          }[];
+          buttons: {
+            type: string;
+            metadata: string;
+          }[];
+        };
+    initial_text: string;
+    confidence: number;
+    intent_data: {
+      intent: string;
+      utterances: string[];
+      answers: string[];
+      enhance: boolean;
+      buttons: {
+        type: string;
+        metadata: string;
+      }[];
+    };
+  }>({
     intent: "",
     answer: "",
-    attachments: { buttons: [] },
+    attachments: { buttons: [], links: [] },
     entities: [],
     initial_text: "",
     intent_data: {
@@ -55,13 +89,16 @@ function Interactive() {
       enhance: false,
       buttons: [],
     },
+    confidence: 0,
   });
   const [newAnswer, setNewAnswer] = useState("");
   const [newUtterance, setNewUtterance] = useState("");
   const [newIntent, setNewIntent] = useState(data.intent);
   const [newButton, setNewButton] = useState({ type: "" });
-  const [allIntents, setAllIntents] = useState([]);
-  const [allButtons, setAllButtons] = useState([]);
+  const [allIntents, setAllIntents] = useState<string[]>([]);
+  const [allButtons, setAllButtons] = useState<
+    { type: string; metadata?: any }[]
+  >([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -95,7 +132,7 @@ function Interactive() {
 
   useEffect(() => {
     if (urlSearchParams.get("run")) {
-      setText(urlSearchParams.get("run"));
+      setText(urlSearchParams.get("run") || "");
       submitText();
     }
   }, []);
@@ -114,7 +151,7 @@ function Interactive() {
     });
   };
 
-  const removeAnswer = async (answer) => {
+  const removeAnswer = async (answer: string) => {
     removeAnswerFromIntent({
       intent: data.intent,
       answer,
@@ -141,7 +178,7 @@ function Interactive() {
     });
   };
 
-  const removeUtterance = (utterance) => {
+  const removeUtterance = (utterance: string) => {
     removeUtteranceFromIntent({
       intent: data.intent,
       utterance,
@@ -168,7 +205,7 @@ function Interactive() {
     });
   };
 
-  const copy = (text) => {
+  const copy = (text: string) => {
     copyToClipboard(text);
     showNotification({
       title: "Copied to Clipboard",
@@ -278,7 +315,7 @@ function Interactive() {
                   onChange={(e) => setText(e.target.value)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
-                      submitText(e);
+                      submitText();
                     }
                   }}
                   sx={() => ({ width: "100%" })}
@@ -340,7 +377,7 @@ function Interactive() {
                   onChange={(v) => setNewIntent(v)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
-                      submitNewUtteranceForIntent(e);
+                      submitNewUtteranceForIntent();
                     }
                   }}
                   size="sm"
@@ -435,7 +472,7 @@ function Interactive() {
                   onChange={(e) => setNewUtterance(e.target.value)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
-                      addUtterance(e);
+                      addUtterance();
                     }
                   }}
                   size="sm"
@@ -511,7 +548,7 @@ function Interactive() {
                   onChange={(e) => setNewAnswer(e.target.value)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
-                      submitNewAnswer(e);
+                      submitNewAnswer();
                     }
                   }}
                   size="sm"
@@ -544,7 +581,7 @@ function Interactive() {
                 {data?.intent_data?.buttons?.map((button, index) => {
                   return (
                     <Text
-                      key={button + Math.random()}
+                      key={button.type + Math.random()}
                       className={styles.button}
                       weight={400}
                       size="sm"

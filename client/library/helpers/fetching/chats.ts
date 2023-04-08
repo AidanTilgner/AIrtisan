@@ -1,3 +1,4 @@
+import { FetchRequest } from "../../../documentation/server";
 import { api } from "./index";
 import { showNotification } from "@mantine/notifications";
 
@@ -29,7 +30,7 @@ export const getConversationsThatNeedReview = async () => {
   }
 };
 
-export const markChatAsReviewed = async (chatId, username) => {
+export const markChatAsReviewed = async (chatId: number, username: string) => {
   try {
     const res = await api.post(`/training/chats/reviewed/${chatId}`, {
       username,

@@ -11,13 +11,21 @@ import {
 } from "../../helpers/fetching/admin";
 import { TrashSimple, Copy } from "phosphor-react";
 import { showNotification } from "@mantine/notifications";
+import { Admin, ApiKey } from "../../../documentation/main";
 
 function Auth() {
-  const [admins, setAdmins] = React.useState([]);
-  const [apiKeys, setApiKeys] = React.useState([]);
+  const [admins, setAdmins] = React.useState<Admin[]>([]);
+  const [apiKeys, setApiKeys] = React.useState<ApiKey[]>([]);
 
   useEffect(() => {
-    getAdmins().then(({ admins }) => {
+    getAdmins().then((res) => {
+      if ("error" in res) {
+        return showNotification({
+          title: "Error",
+          message: res.error,
+        });
+      }
+      const { admins } = res;
       setAdmins(admins);
     });
     getAllApiKeys().then(({ apiKeys }) => {
@@ -37,13 +45,27 @@ function Auth() {
 
   const addNewAdmin = () => {
     if (!newAdmin.username || !newAdmin.role) return;
-    addAdmin(newAdmin).then(({ username, password }) => {
+    addAdmin(newAdmin).then((res) => {
+      if ("error" in res) {
+        return showNotification({
+          title: "Error",
+          message: res.error,
+        });
+      }
+      const { username, password } = res;
       setNewAdmin({ username: "", role: "admin" });
       setAddedAdmin({
         username,
         password,
       });
-      getAdmins().then(({ admins }) => {
+      getAdmins().then((res) => {
+        if ("error" in res) {
+          return showNotification({
+            title: "Error",
+            message: res.error,
+          });
+        }
+        const { admins } = res;
         setAdmins(admins);
       });
     });
@@ -63,7 +85,13 @@ function Auth() {
         title: "Success",
         message: "Admin deleted",
       });
-      getAdmins().then(({ admins }) => {
+      getAdmins().then((res) => {
+        if ("error" in res) {
+          return showNotification({
+            title: "Error",
+            message: res.error,
+          });
+        }
         setAdmins(admins);
       });
     });

@@ -7,18 +7,14 @@ import {
 } from "../../helpers/fetching/chats";
 import { Button } from "@mantine/core";
 import { useUser } from "../../contexts/User";
-import {
-  MagicWand,
-  WarningCircle,
-  TestTube,
-  ArrowsClockwise,
-} from "phosphor-react";
-import { useSearchParams } from "react-router-dom";
+import { MagicWand, WarningCircle, ArrowsClockwise } from "phosphor-react";
 import { useNavigate } from "react-router-dom";
+import { Chat, ConversationsToReview } from "../../../documentation/main";
 
 function ReviewConversations() {
-  const [conversations, setConversations] = React.useState([]);
-  const { user } = useUser();
+  const [conversations, setConversations] = React.useState<
+    ConversationsToReview[]
+  >([]);
 
   React.useEffect(() => {
     (async () => {
@@ -27,7 +23,8 @@ function ReviewConversations() {
     })();
   }, []);
 
-  const [openedConversation, setOpenedConversation] = React.useState(null);
+  const [openedConversation, setOpenedConversation] =
+    React.useState<ConversationsToReview | null>(null);
 
   const reloadConversations = async () => {
     const conversations = await getConversationsThatNeedReview();
@@ -65,9 +62,14 @@ function Conversation({
   openedConversation,
   setOpenedConversation,
   reloadConversations,
+}: {
+  conversation: ConversationsToReview;
+  openedConversation: ConversationsToReview | null;
+  setOpenedConversation: (conversation: ConversationsToReview | null) => void;
+  reloadConversations: () => void;
 }) {
   const [seeFullConversation, setSeeFullConversation] = React.useState(false);
-  const [chats, setChats] = React.useState([]);
+  const [chats, setChats] = React.useState<Chat[]>([]);
   const { user } = useUser();
 
   console.log(
@@ -103,14 +105,15 @@ function Conversation({
     return text;
   };
 
-  const handleMarkReviewed = async (chatId) => {
+  const handleMarkReviewed = async (chatId: number) => {
+    if (!user) return;
     await markChatAsReviewed(chatId, user.username);
     reloadConversations();
   };
 
   const navigate = useNavigate();
 
-  const handleRetryChat = async (chatContent) => {
+  const handleRetryChat = async (chatContent: string) => {
     const urlSearchParams = new URLSearchParams({
       run: chatContent,
     }).toString();
@@ -167,7 +170,9 @@ function Conversation({
                       .
                     </p>
                     <p>
-                      User gave reason: "<b>{chat.review_text}</b>"
+                      User gave reason: {'"'}
+                      <b>{chat.review_text}</b>
+                      {'"'}
                     </p>
                   </div>
                 )}
@@ -205,6 +210,7 @@ function Conversation({
                       <div className={styles.review_button}>
                         <Button
                           onClick={() => {
+                            if (!chat.id) return;
                             handleMarkReviewed(chat.id);
                             reloadChats();
                           }}
