@@ -68,6 +68,11 @@
       "intent": "express.interest",
       "utterances": ["That's pretty neat", "That's interesting"],
       "answers": ["I'm glad you think so!"]
+    },
+    {
+      "intent": "inquiry.specific_service",
+      "utterances": ["That's cool, what about ux design?"],
+      "answers": []
     }
   ]
 }
