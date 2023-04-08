@@ -1,4 +1,3 @@
-import { FetchRequest } from "../../../documentation/server";
 import { api } from "./index";
 import { showNotification } from "@mantine/notifications";
 
@@ -7,7 +6,7 @@ export const getChatsThatNeedReview = async () => {
     const res = await api.get("/training/chats/need_review");
     return res.data.data;
   } catch (err) {
-    console.log(err);
+    console.error(err);
     showNotification({
       title: "Error",
       message: "There was an error getting chats that need review.",
@@ -21,7 +20,7 @@ export const getConversationsThatNeedReview = async () => {
     const res = await api.get("/training/conversations/need_review");
     return res.data.data;
   } catch (err) {
-    console.log(err);
+    console.error(err);
     showNotification({
       title: "Error",
       message: "There was an error getting conversations that need review.",
@@ -37,7 +36,7 @@ export const markChatAsReviewed = async (chatId: number, username: string) => {
     });
     return res.data.data;
   } catch (err) {
-    console.log(err);
+    console.error(err);
     showNotification({
       title: "Error",
       message: "There was an error marking the chat as reviewed.",

@@ -72,12 +72,6 @@ function Conversation({
   const [chats, setChats] = React.useState<Chat[]>([]);
   const { user } = useUser();
 
-  console.log(
-    "See full conversation: ",
-    seeFullConversation,
-    conversation.chats
-  );
-
   const getConversationChats = seeFullConversation
     ? conversation.chats
     : conversation.chats.filter((c, i, chats) => {
