@@ -28,8 +28,8 @@ function Auth() {
       const { admins } = res;
       setAdmins(admins);
     });
-    getAllApiKeys().then(({ apiKeys }) => {
-      setApiKeys(apiKeys);
+    getAllApiKeys().then(({ api_keys }) => {
+      setApiKeys(api_keys);
     });
   }, []);
 
@@ -114,8 +114,8 @@ function Auth() {
         name: apiKey.for,
         key: apiKey.key,
       });
-      getAllApiKeys().then(({ apiKeys }) => {
-        setApiKeys(apiKeys);
+      getAllApiKeys().then(({ api_keys }) => {
+        setApiKeys(api_keys);
       });
     });
   };
@@ -134,8 +134,8 @@ function Auth() {
         title: "Success",
         message: "Key deleted",
       });
-      getAllApiKeys().then(({ apiKeys }) => {
-        setApiKeys(apiKeys);
+      getAllApiKeys().then(({ api_key }) => {
+        setApiKeys(api_key);
       });
     });
   };
@@ -230,8 +230,8 @@ function Auth() {
       </div>
       <h2>All Api Keys</h2>
       <div className={styles.apiKeys}>
-        {apiKeys.length ? (
-          apiKeys.map((apiKey) => {
+        {apiKeys?.length ? (
+          apiKeys?.map((apiKey) => {
             return (
               <div className={styles.card} key={apiKey.for}>
                 <div className={styles.toptext}>{apiKey.for}</div>
