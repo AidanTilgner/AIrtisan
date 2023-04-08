@@ -116,11 +116,12 @@ function Conversation({
   }, [seeFullConversation]);
 
   const getFormattedTitle = (conversation: ConversationType) => {
-    const generatedName = conversation.generated_name;
+    const generatedName = conversation.generated_name || "Unnamed Conversation";
     return getShortenedText(generatedName, 18);
   };
 
   const getShortenedText = (text: string, maxLength = 36) => {
+    if (!text) return "";
     if (text.length > maxLength) {
       return text.substring(0, maxLength) + "...";
     }
