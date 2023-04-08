@@ -81,6 +81,10 @@
       ],
       "enhance": true
     },
-    { "intent": "test", "utterances": ["testtest"], "answers": [] }
+    {
+      "intent": "test",
+      "utterances": ["testtest"],
+      "answers": ["test complete"]
+    }
   ]
 }

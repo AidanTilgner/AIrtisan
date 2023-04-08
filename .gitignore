@@ -2,8 +2,10 @@
 node_modules
 db
 api-keys.json
-*.model.*
-build
+*model.*
+# dont allow build unless it's in the training directory
+!training/*
+build/*
 datastore/*
 storage/analytics/*
 storage/metadata/*
