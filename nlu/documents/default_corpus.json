@@ -48,7 +48,8 @@
     {
       "intent": "describe_state.well.with.inquiry.state",
       "utterances": ["I'm well, you?"],
-      "answers": ["I'm glad to hear it! I'm great myself."]
+      "answers": ["I'm glad to hear it! I'm great myself."],
+      "enhance": true
     },
     {
       "intent": "confirmation.no",
@@ -70,9 +71,20 @@
       "answers": ["I'm glad you think so!"]
     },
     {
+      "intent": "inquiry.value_proposition",
+      "utterances": ["Why should I hire you?", "That's cool, what about ux design?"],
+      "answers": [
+        "There are a multitude of reasons why our services could bring value to your business. From increasing conversions with an optimized landing page, to partial sales automation with a custom chatbot, our services are here to help your business succeed."
+      ],
+      "enhance": true
+    },
+    {
       "intent": "inquiry.specific_service",
-      "utterances": ["That's cool, what about ux design?"],
-      "answers": []
+      "utterances": ["Do you do UX design?"],
+      "answers": [
+        "We offer many services: web design, web development, content generation, chatbot development, and many more. Inquire further at <a href=\"https://vvibrant.dev/contact\">our contact page</a>"
+      ]
+>>>>>>> 7baf235f91c45ec878a5322b06a24d1b2e34bc5e
     }
   ]
 }

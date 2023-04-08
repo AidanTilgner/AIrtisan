@@ -11,6 +11,7 @@ import {
   Grid,
   Loader,
   Text,
+  Textarea,
   TextInput,
   Title,
 } from "@mantine/core";
@@ -504,7 +505,7 @@ function Interactive() {
                 gap={24}
                 sx={() => ({ marginTop: "14px" })}
               >
-                <TextInput
+                <Textarea
                   placeholder={`Add an answer for "${data?.initial_text}"`}
                   value={newAnswer}
                   onChange={(e) => setNewAnswer(e.target.value)}
