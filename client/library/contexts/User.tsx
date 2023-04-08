@@ -22,7 +22,7 @@ const initialVal: UserContextType = {
 
 const UserContext = createContext(initialVal);
 
-const UserProvider = ({ children }) => {
+const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<Admin | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(true);
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
@@ -34,6 +34,8 @@ const UserProvider = ({ children }) => {
         setIsLoggedIn(true);
       } else {
         setIsLoggedIn(false);
+        const currentUrl = window.location.href;
+        window.location.href = "/login?redirectUrl=" + currentUrl;
       }
       const user = await getMe();
       setUser(user);

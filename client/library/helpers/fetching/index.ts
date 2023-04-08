@@ -13,10 +13,17 @@ api.interceptors.response.use(
   (response) => {
     return response;
   },
-  (error) => {
+  async (error) => {
     if (error.response.status === 401) {
-      const currentUrl = window.location.href;
-      window.location.href = "/login?redirectUrl=" + currentUrl;
+      // first try refreshing the token
+      const refreshed = await refreshAccessToken();
+      // then retry the request
+      if (refreshed) {
+        return api.request(error.config);
+      } else {
+        const currentUrl = window.location.href;
+        window.location.href = "/login?redirectUrl=" + currentUrl;
+      }
     }
     return Promise.reject(error);
   }
