@@ -3,7 +3,6 @@ import {
   PrimaryGeneratedColumn,
   Column,
   ManyToOne,
-  JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
 } from "typeorm";
@@ -33,11 +32,11 @@ export class Chat {
   @Column()
   role!: ChatRole;
 
-  @Column()
-  enhanced: boolean = false;
+  @Column({ type: "boolean" })
+  enhanced = false;
 
-  @Column()
-  needs_review: boolean = false;
+  @Column({ type: "boolean" })
+  needs_review = false;
 
   @Column({
     nullable: true,

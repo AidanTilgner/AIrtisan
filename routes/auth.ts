@@ -239,19 +239,23 @@ router.delete("/admin/:id", checkIsSuperAdmin, async (req, res) => {
     const { id } = req.params;
     const admin = await getAdmin(parseInt(id));
     if (!admin) {
-      res.status(404).send({ message: "Admin not found." });
+      res.status(404).send({ message: "Admin not found.", success: true });
       return;
     }
     const result = await deleteAdmin(parseInt(id));
     if (!result) {
-      res.status(500).send({ message: "Internal server error." });
+      res
+        .status(500)
+        .send({ message: "Internal server error.", success: true });
       return;
     }
-    res.status(200).send({ message: "Admin deleted successfully." });
+    res
+      .status(200)
+      .send({ message: "Admin deleted successfully.", success: true });
   } catch (err) {
     console.error(err);
 
-    res.status(500).send({ message: "Internal server error." });
+    res.status(500).send({ message: "Internal server error.", success: true });
   }
 });
 
@@ -259,7 +263,14 @@ router.post("/api-key/register", checkIsAdmin, async (req, res) => {
   try {
     const { name } = req.body;
 
-    const { generated_key, result } = await createApiKey(name);
+    const created = await createApiKey(name);
+
+    if (!created) {
+      res.status(500).send({ message: "Internal server error." });
+      return;
+    }
+
+    const { generated_key, result } = created;
 
     if (!result || !generated_key) {
       res.status(500).send({ message: "Internal server error." });
@@ -288,14 +299,18 @@ router.delete("/api-key/:id", checkIsAdmin, async (req, res) => {
     const result = await deleteApiKey(parseInt(id));
 
     if (!result) {
-      res.status(500).send({ message: "Internal server error." });
+      res
+        .status(500)
+        .send({ message: "Internal server error.", success: true });
       return;
     }
 
-    res.status(200).send({ message: "API key deleted successfully." });
+    res
+      .status(200)
+      .send({ message: "API key deleted successfully.", success: true });
   } catch (err) {
     console.error(err);
-    res.status(500).send({ message: "Internal server error." });
+    res.status(500).send({ message: "Internal server error.", success: true });
   }
 });
 

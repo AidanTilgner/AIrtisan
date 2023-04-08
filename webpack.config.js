@@ -1,11 +1,14 @@
 const path = require("path");
 
 module.exports = {
-  entry: "./client/index.js",
+  entry: "./client/index.tsx",
   output: {
     path: path.resolve(__dirname, "public/training/build"),
     filename: "bundle.js",
     publicPath: "./build/",
+  },
+  resolve: {
+    extensions: [".js", ".jsx", ".ts", ".tsx"],
   },
   module: {
     rules: [
@@ -22,6 +25,7 @@ module.exports = {
       {
         test: /\.module\.s(a|c)ss$/,
         use: [
+          { loader: "@teamsupercell/typings-for-css-modules-loader" },
           "style-loader",
           {
             loader: "css-loader",
@@ -34,6 +38,11 @@ module.exports = {
           },
           "sass-loader",
         ],
+      },
+      {
+        test: /\.tsx?$/,
+        use: "ts-loader",
+        exclude: /node_modules/,
       },
     ],
   },
