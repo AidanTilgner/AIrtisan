@@ -156,7 +156,10 @@ function Conversation({
             : ""
         }`}
         onClick={() => {
-          if (openedConversation && openedConversation.id === conversation.id) {
+          if (
+            openedConversation &&
+            openedConversation?.id === conversation.id
+          ) {
             setOpenedConversation(null);
           } else {
             setOpenedConversation({
@@ -236,7 +239,7 @@ function Conversation({
                       <div className={styles.review_button}>
                         <Button
                           onClick={() => {
-                            if (!chat.id) return;
+                            if (!chat?.id) return;
                             handleMarkReviewed(chat.id);
                             reloadChats();
                           }}
