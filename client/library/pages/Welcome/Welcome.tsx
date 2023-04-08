@@ -26,6 +26,18 @@ function Welcome() {
             <Link to="/admin/auth">Handle some auth</Link>
           </li>
         )}
+        <li>
+          Something wrong?{" "}
+          <button
+            onClick={() => {
+              localStorage.clear();
+              window.location.reload();
+            }}
+          >
+            clear
+          </button>{" "}
+          your cookies and local storage and try again.
+        </li>
       </ul>
     </div>
   );

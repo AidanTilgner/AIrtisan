@@ -17,6 +17,9 @@ function Navbar() {
 
   const routes = (
     <>
+      <li className={currentPath === "/" ? styles.active : styles.inactive}>
+        <Link to="/">Welcome</Link>
+      </li>
       <li
         className={
           currentPath === "/interactive" ? styles.active : styles.inactive
