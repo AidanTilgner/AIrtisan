@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import withStyles from "react-css-modules";
 import styles from "./ReviewConversations.module.scss";
 import {
   getConversationsThatNeedReview,
@@ -82,7 +81,7 @@ function ReviewConversations() {
   );
 }
 
-export default withStyles(styles)(ReviewConversations);
+export default ReviewConversations;
 
 function Conversation({
   conversation,

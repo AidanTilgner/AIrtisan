@@ -1,5 +1,4 @@
 import React from "react";
-import withStyles from "react-css-modules";
 import styles from "./Navbar.module.scss";
 import { Button, Burger } from "@mantine/core";
 import { retrainModel } from "../../../helpers/fetching";
@@ -108,4 +107,4 @@ function Navbar() {
   );
 }
 
-export default withStyles(styles)(Navbar);
+export default Navbar;

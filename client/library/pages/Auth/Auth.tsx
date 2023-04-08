@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import styles from "./Auth.module.scss";
-import withStyles from "react-css-modules";
 import {
   getAdmins,
   addAdmin,
@@ -271,4 +270,4 @@ function Auth() {
   );
 }
 
-export default withStyles(styles)(Auth);
+export default Auth;

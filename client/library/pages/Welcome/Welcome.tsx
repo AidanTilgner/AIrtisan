@@ -1,5 +1,4 @@
 import React from "react";
-import withStyles from "react-css-modules";
 import { Link } from "react-router-dom";
 import { useUser } from "../../contexts/User";
 import styles from "./Welcome.module.scss";
@@ -43,4 +42,4 @@ function Welcome() {
   );
 }
 
-export default withStyles(styles)(Welcome);
+export default Welcome;

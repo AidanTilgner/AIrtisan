@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import styles from "./Interactive.module.scss";
-import withStyles from "react-css-modules";
 import {
   Autocomplete,
   Box,
@@ -97,7 +96,7 @@ function Interactive() {
   const [newButton, setNewButton] = useState({ type: "" });
   const [allIntents, setAllIntents] = useState<string[]>([]);
   const [allButtons, setAllButtons] = useState<
-    { type: string; metadata?: any }[]
+    { type: string; metadata?: unknown }[]
   >([]);
   const [loading, setLoading] = useState(false);
 
@@ -128,7 +127,7 @@ function Interactive() {
     });
   };
 
-  const [urlSearchParams, setUrlSearchParams] = useSearchParams();
+  const [urlSearchParams] = useSearchParams();
 
   useEffect(() => {
     if (urlSearchParams.get("run")) {
@@ -280,7 +279,7 @@ function Interactive() {
       >
         <Grid.Col
           span={12}
-          sx={(theme) => ({
+          sx={() => ({
             display: "flex",
             justifyContent: "center",
           })}
@@ -291,7 +290,7 @@ function Interactive() {
             bg={"white"}
             py={14}
             px={24}
-            sx={(theme) => ({
+            sx={() => ({
               width: isMobile ? "100%" : "40%",
             })}
           >
@@ -362,8 +361,11 @@ function Interactive() {
                   marginBottom: "14px",
                 })}
               >
-                When you say "{data?.initial_text}", you have the intent "
-                {data.intent}":
+                When you say {'"'}
+                {data?.initial_text}
+                {'"'}, you have the intent {'"'}
+                {data.intent}
+                {'"'}:
               </Text>
 
               <Flex
@@ -400,7 +402,7 @@ function Interactive() {
               <Checkbox
                 label="Enhance answers on this intent."
                 checked={data.intent_data?.enhance || false}
-                onChange={(e) => toggleEnhance()}
+                onChange={() => toggleEnhance()}
                 sx={() => ({ marginTop: "24px" })}
               />
             </Grid.Col>
@@ -413,14 +415,16 @@ function Interactive() {
                   marginBottom: "14px",
                 })}
               >
-                When you say one of the following phrases, you have the intent "
-                {data.intent}"
+                When you say one of the following phrases, you have the intent{" "}
+                {'"'}
+                {data.intent}
+                {'"'}
               </Text>
               <Box
                 className={styles.utterances}
                 sx={() => ({ textAlign: "left" })}
               >
-                {data?.intent_data?.utterances.map((utterance, index) => {
+                {data?.intent_data?.utterances.map((utterance) => {
                   return (
                     <Text
                       key={utterance + Math.random()}
@@ -492,14 +496,15 @@ function Interactive() {
                   marginBottom: "14px",
                 })}
               >
-                When you have the intent "{data.intent}", Onyx will give one of
-                the following answers:
+                When you have the intent {'"'}
+                {data.intent}
+                {'"'}, Onyx will give one of the following answers:
               </Text>
               <Box
                 className={styles.answers}
                 sx={() => ({ textAlign: "left" })}
               >
-                {data?.intent_data?.answers.map((answer, index) => {
+                {data?.intent_data?.answers.map((answer) => {
                   return (
                     <Text
                       key={answer + Math.random()}
@@ -568,7 +573,9 @@ function Interactive() {
                   marginBottom: "14px",
                 })}
               >
-                When you have the intent "{data.intent}",
+                When you have the intent {'"'}
+                {data.intent}
+                {'"'},
                 {data.intent_data?.buttons?.length
                   ? " these buttons will be sent to the client:"
                   : " you can have buttons sent to the client:"}
@@ -578,7 +585,7 @@ function Interactive() {
                 className={styles.buttons}
                 sx={() => ({ textAlign: "left" })}
               >
-                {data?.intent_data?.buttons?.map((button, index) => {
+                {data?.intent_data?.buttons?.map((button) => {
                   return (
                     <Text
                       key={button.type + Math.random()}
@@ -644,4 +651,4 @@ function Interactive() {
   );
 }
 
-export default withStyles(styles)(Interactive);
+export default Interactive;

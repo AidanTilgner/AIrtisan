@@ -4,7 +4,6 @@ db
 api-keys.json
 *model.*
 # dont allow build unless it's in the training directory
-!training/*
 build/*
 datastore/*
 storage/analytics/*

@@ -1,8 +1,7 @@
-import React, { useEffect, useLayoutEffect } from "react";
-import withStyles from "react-css-modules";
-import chatStyles from "./Chat.module.scss";
+import React, { useEffect } from "react";
 import { postChat, markChatAsShouldReview } from "../../helpers/fetching";
 import { Warning } from "phosphor-react";
+import chatStyles from "./Chat.module.scss";
 
 const generateRandomSessionId = () => {
   const random = Math.random();
@@ -62,6 +61,7 @@ function ChatBox() {
         }, 1000);
       })
       .catch((err) => {
+        console.error(err);
         setTimeout(() => {
           setBotMessageLoading(false);
           setMessages([
@@ -139,7 +139,7 @@ function ChatBox() {
   );
 }
 
-export default withStyles(chatStyles)(ChatBox);
+export default ChatBox;
 
 function Chat({
   content,
@@ -166,11 +166,12 @@ function Chat({
       chat_id: id,
       reason,
     })
-      .then((res) => {
+      .then(() => {
         window.alert("Chat reported successfully!");
         setReported(true);
       })
       .catch((err) => {
+        console.error(err);
         window.alert("There was an error, please try again later.");
       });
   };

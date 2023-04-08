@@ -20,6 +20,6 @@ module.exports = {
     "@typescript-eslint/no-explicit-any": "warn",
     "@typescript-eslint/no-var-requires": "warn",
     // console logs are not allowed
-    "no-console": ["warn", { allow: ["warn", "error"] }],
+    "no-console": ["warn", { allow: ["warn", "error", "info"] }],
   },
 };

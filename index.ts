@@ -44,6 +44,17 @@ if (process.env.ALLOW_TRAINING_UI === "true") {
       path.join(__dirname, "public", "training", "build", "bundle.js")
     );
   });
+  app.get("/build/bundle.js.map", (req, res) => {
+    res.sendFile(
+      path.join(__dirname, "public", "training", "build", "bundle.js.map")
+    );
+  });
+  app.get("/build/bundle.css", (req, res) => {
+    res.sendFile(
+      path.join(__dirname, "public", "training", "build", "bundle.css")
+    );
+  });
+
   app.use("/", Express.static(path.join(__dirname, "public", "training")));
   app.get("/*", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "training", "index.html"));

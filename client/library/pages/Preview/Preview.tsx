@@ -1,5 +1,4 @@
 import React from "react";
-import withStyles from "react-css-modules";
 import styles from "./Preview.module.scss";
 import Chatbox from "./Chatbox";
 import { Button, Flex } from "@mantine/core";
@@ -33,4 +32,4 @@ function Preview() {
   );
 }
 
-export default withStyles(styles)(Preview);
+export default Preview;
