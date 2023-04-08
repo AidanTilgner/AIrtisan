@@ -79,7 +79,7 @@ function Auth() {
     });
   };
 
-  const handleDeleteAdmin = (id) => {
+  const handleDeleteAdmin = (id: number) => {
     deleteAdmin({ id }).then(() => {
       showNotification({
         title: "Success",
@@ -187,6 +187,7 @@ function Auth() {
                   <button
                     className={styles.delete_button}
                     onClick={() => {
+                      if (!admin?.id) return;
                       handleDeleteAdmin(admin.id);
                     }}
                     title="Delete"
