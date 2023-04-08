@@ -44,3 +44,17 @@ export const markChatAsReviewed = async (chatId: number, username: string) => {
     });
   }
 };
+
+export const getConversations = async () => {
+  try {
+    const res = await api.get("/training/conversations/all");
+    return res.data.data;
+  } catch (err) {
+    console.error(err);
+    showNotification({
+      title: "Error",
+      message: "There was an error getting conversations.",
+      color: "red",
+    });
+  }
+};

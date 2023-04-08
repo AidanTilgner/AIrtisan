@@ -4,40 +4,67 @@ import styles from "./ReviewConversations.module.scss";
 import {
   getConversationsThatNeedReview,
   markChatAsReviewed,
+  getConversations,
 } from "../../helpers/fetching/chats";
 import { Button } from "@mantine/core";
 import { useUser } from "../../contexts/User";
 import { MagicWand, WarningCircle, ArrowsClockwise } from "phosphor-react";
 import { useNavigate } from "react-router-dom";
-import { Chat, ConversationsToReview } from "../../../documentation/main";
+import {
+  Chat,
+  Conversation as ConversationType,
+  ConversationToReview,
+} from "../../../documentation/main";
 
 function ReviewConversations() {
   const [conversations, setConversations] = React.useState<
-    ConversationsToReview[]
+    ConversationToReview[]
+  >([]);
+  const [allConversations, setAllConversations] = React.useState<
+    ConversationType[]
   >([]);
 
   React.useEffect(() => {
     (async () => {
       const conversations = await getConversationsThatNeedReview();
       setConversations(conversations);
+
+      const allConversations = await getConversations();
+      setAllConversations(allConversations);
     })();
   }, []);
 
   const [openedConversation, setOpenedConversation] =
-    React.useState<ConversationsToReview | null>(null);
+    React.useState<ConversationToReview | null>(null);
 
   const reloadConversations = async () => {
     const conversations = await getConversationsThatNeedReview();
     setConversations(conversations);
   };
 
+  const [viewAllConversations, setViewAllConversations] = React.useState(false);
+
+  const conversationsToView = viewAllConversations
+    ? allConversations
+    : conversations;
+
   return (
     <div className={styles.ReviewConversations}>
-      <h1>Review Conversations</h1>
+      <div className={styles.header}>
+        <h1>Review Conversations</h1>
+        <Button
+          variant="outline"
+          onClick={() => {
+            setViewAllConversations(!viewAllConversations);
+          }}
+        >
+          {viewAllConversations ? "View To Review" : "View All"}
+        </Button>
+      </div>
       <div className={styles.interface_container}>
         <div className={styles.conversations}>
-          {conversations.length ? (
-            conversations.map((conversation) => (
+          {conversationsToView.length ? (
+            conversationsToView.map((conversation) => (
               <Conversation
                 key={conversation.id}
                 conversation={conversation}
@@ -63,36 +90,37 @@ function Conversation({
   setOpenedConversation,
   reloadConversations,
 }: {
-  conversation: ConversationsToReview;
-  openedConversation: ConversationsToReview | null;
-  setOpenedConversation: (conversation: ConversationsToReview | null) => void;
+  conversation: ConversationToReview | ConversationType;
+  openedConversation: ConversationToReview | ConversationType | null;
+  setOpenedConversation: (conversation: ConversationToReview | null) => void;
   reloadConversations: () => void;
 }) {
-  const [seeFullConversation, setSeeFullConversation] = React.useState(false);
+  const [seeFullConversation, setSeeFullConversation] = React.useState(true);
   const [chats, setChats] = React.useState<Chat[]>([]);
   const { user } = useUser();
 
   const getConversationChats = seeFullConversation
     ? conversation.chats
-    : conversation.chats.filter((c, i, chats) => {
+    : conversation.chats?.filter((c, i, chats) => {
         // chat is either in chats_to_review, or the next chat is in chats_to_review
         return c.needs_review || chats[i + 1]?.needs_review;
       });
 
-  useEffect(() => {
-    setChats(getConversationChats);
-  }, [seeFullConversation]);
-
   const reloadChats = () => {
-    setChats(getConversationChats);
+    const chats = getConversationChats || [];
+    setChats(chats);
   };
 
-  const getFormattedTitle = (conversation) => {
+  useEffect(() => {
+    reloadChats();
+  }, [seeFullConversation]);
+
+  const getFormattedTitle = (conversation: ConversationType) => {
     const generatedName = conversation.generated_name;
     return getShortenedText(generatedName, 18);
   };
 
-  const getShortenedText = (text, maxLength = 36) => {
+  const getShortenedText = (text: string, maxLength = 36) => {
     if (text.length > maxLength) {
       return text.substring(0, maxLength) + "...";
     }
@@ -131,14 +159,18 @@ function Conversation({
           if (openedConversation && openedConversation.id === conversation.id) {
             setOpenedConversation(null);
           } else {
-            setOpenedConversation(conversation);
+            setOpenedConversation({
+              ...conversation,
+              chats_to_review:
+                "chats_to_review" in conversation
+                  ? conversation.chats_to_review
+                  : [],
+            });
           }
         }}
       >
         <h3 className={styles.title}>{getFormattedTitle(conversation)}</h3>
-        <p className={styles.bottomtext}>
-          {conversation.chats_to_review[0].intent}
-        </p>
+        <p className={styles.bottomtext}>{conversation.chats[0].message}</p>
         {conversation.chats.some((c) => !!c.enhanced) && (
           <div className={styles.tag}>enhanced</div>
         )}
@@ -248,7 +280,7 @@ function Conversation({
               }}
               variant="default"
             >
-              {seeFullConversation ? "To Review" : "Full Conversation"}
+              {seeFullConversation ? "Just To Review" : "Full Conversation"}
             </Button>
           </div>
         </div>

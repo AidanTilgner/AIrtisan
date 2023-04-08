@@ -7,33 +7,16 @@ export const getGeneratedNameBasedOnContent = async (
   }[]
 ) => {
   try {
-    const prompt = `
-    You are an AI name generator. Which means the user will prompt you, and you will response with a, based on criteria.
-    For example:
-    The user says: "Please generate a name for a conversation where some chats are: "User - Hello", "Bot - Hi", "User - How are you?"
-    
-    You would say: "Greeting and introduction"
-
-    Important criteria:
-    - The name should be short
-    - The name should be descriptive
-    - Only respond with the name itself
-
-    Please generate a name for a conversation where some chats are: ${chats
-      .map((chat) => `"${chat.role} - ${chat.message}"`)
-      .join(", ")}
-        `;
-    const response = await openai.createChatCompletion({
-      model: "gpt-3.5-turbo",
-      messages: [
-        {
-          content: prompt,
-          role: "user",
-        },
-      ],
+    const prompt = `Write a short sentence in past tense that describes the users intent in this conversation: : ${chats
+      .map((chat) => `${chat.role}:"${chat.message}"`)
+      .join(", ")}-`;
+    const response = await openai.createCompletion({
+      model: "text-curie-001",
+      prompt: prompt,
+      temperature: 0.6,
     });
 
-    const generatedName = response.data.choices[0].message.content;
+    const generatedName = response.data.choices[0].text;
 
     const filteredGeneratedName = generatedName
       .replace('"', "")

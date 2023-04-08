@@ -25,6 +25,15 @@
   }
 }
 
+.header {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 36px;
+}
+
 .conversations {
   width: 100%;
 }
@@ -166,14 +175,15 @@
   }
 
   .buttons {
-    position: fixed;
+    position: sticky;
     bottom: 14px;
     right: 0;
     left: 0;
-    padding: 0 36px;
+    padding: 0 0;
     display: flex;
     justify-content: flex-end;
     gap: 24px;
+    z-index: 100;
 
     @media (min-width: 768px) {
       position: sticky;
@@ -181,6 +191,11 @@
       right: 0;
       left: 0;
       padding: 0;
+    }
+
+    button {
+      position: relative;
+      z-index: inherit;
     }
   }
 

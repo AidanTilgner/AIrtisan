@@ -40,6 +40,6 @@ export interface Chat {
   updated_at: Date;
 }
 
-export interface ConversationsToReview extends Conversation {
+export interface ConversationToReview extends Conversation {
   chats_to_review: Chat[];
 }

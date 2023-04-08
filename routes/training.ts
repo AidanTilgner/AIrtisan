@@ -16,6 +16,7 @@ import {
   getChatsThatNeedReview,
   getConversationsThatNeedReview,
   markChatAsReviewed,
+  getConversations,
 } from "../database/functions/conversations";
 import { checkIsAdmin } from "../middleware/auth";
 
@@ -213,6 +214,8 @@ router.put("/intent/:intent/buttons", async (req, res) => {
     data,
     retrained,
   };
+
+  res.send(toSend);
 });
 
 router.delete("/intent/:intent/button", async (req, res) => {
@@ -289,6 +292,26 @@ router.post("/chats/reviewed/:chat_id", async (req, res) => {
 
   const toSend = {
     message: "Chat marked as reviewed",
+    success: true,
+    data,
+  };
+
+  res.send(toSend);
+});
+
+router.get("/conversations/all", async (req, res) => {
+  const data = await getConversations();
+
+  if (!data) {
+    res.send({
+      message: "Conversations not found",
+      success: false,
+    });
+    return;
+  }
+
+  const toSend = {
+    message: "Got all conversations",
     success: true,
     data,
   };
