@@ -28,17 +28,10 @@ function ReviewConversations() {
   }, []);
 
   const [openedConversation, setOpenedConversation] = React.useState(null);
-  const [seeFullConversation, setSeeFullConversation] = React.useState(false);
 
-  const getConversationChats = (conversation) => {
-    if (seeFullConversation) {
-      return conversation.chats;
-    } else {
-      return conversation.chats.filter((c, i, chats) => {
-        // chat is either in chats_to_review, or the next chat is in chats_to_review
-        return c.needs_review || chats[i + 1]?.needs_review;
-      });
-    }
+  const reloadConversations = async () => {
+    const conversations = await getConversationsThatNeedReview();
+    setConversations(conversations);
   };
 
   return (
@@ -53,10 +46,7 @@ function ReviewConversations() {
                 conversation={conversation}
                 openedConversation={openedConversation}
                 setOpenedConversation={setOpenedConversation}
-                getConversationChats={getConversationChats}
-                seeFullConversation={seeFullConversation}
-                setSeeFullConversation={setSeeFullConversation}
-                setConversations={setConversations}
+                reloadConversations={reloadConversations}
               />
             ))
           ) : (
@@ -74,20 +64,31 @@ function Conversation({
   conversation,
   openedConversation,
   setOpenedConversation,
-  getConversationChats,
-  seeFullConversation,
-  setSeeFullConversation,
-  setConversations,
+  reloadConversations,
 }) {
+  const [seeFullConversation, setSeeFullConversation] = React.useState(false);
   const [chats, setChats] = React.useState([]);
   const { user } = useUser();
 
+  console.log(
+    "See full conversation: ",
+    seeFullConversation,
+    conversation.chats
+  );
+
+  const getConversationChats = seeFullConversation
+    ? conversation.chats
+    : conversation.chats.filter((c, i, chats) => {
+        // chat is either in chats_to_review, or the next chat is in chats_to_review
+        return c.needs_review || chats[i + 1]?.needs_review;
+      });
+
   useEffect(() => {
-    setChats(getConversationChats(conversation));
-  }, []);
+    setChats(getConversationChats);
+  }, [seeFullConversation]);
 
   const reloadChats = () => {
-    setChats(getConversationChats(conversation));
+    setChats(getConversationChats);
   };
 
   const getFormattedTitle = (conversation) => {
@@ -104,8 +105,7 @@ function Conversation({
 
   const handleMarkReviewed = async (chatId) => {
     await markChatAsReviewed(chatId, user.username);
-    const conversations = await getConversationsThatNeedReview();
-    setConversations(conversations);
+    reloadConversations();
   };
 
   const navigate = useNavigate();
@@ -176,6 +176,9 @@ function Conversation({
                   className={`${styles.chat} ${styles[chat.role]} ${
                     chat.enhanced ? styles.enhanced : ""
                   }`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
                 >
                   <p
                     className={styles.content}

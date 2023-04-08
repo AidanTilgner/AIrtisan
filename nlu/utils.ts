@@ -35,7 +35,9 @@ export const getGeneratedNameBasedOnContent = async (
 
     const generatedName = response.data.choices[0].message.content;
 
-    const filteredGeneratedName = generatedName.replace('"', "");
+    const filteredGeneratedName = generatedName
+      .replace('"', "")
+      .replace('"', "");
 
     return filteredGeneratedName;
   } catch (err) {
