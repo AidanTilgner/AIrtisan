@@ -1,6 +1,12 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { checkIsSuperAdmin, checkAuth, getMe } from "../helpers/fetching";
+import {
+  checkIsSuperAdmin,
+  checkAuth,
+  getMe,
+  refreshAccessToken,
+} from "../helpers/fetching";
 import { Admin } from "../../documentation/main";
+import { logout } from "../helpers/state";
 
 interface UserContextType {
   user: Admin | null;
@@ -13,10 +19,13 @@ interface UserContextType {
 
 const initialVal: UserContextType = {
   user: null,
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   setUser: () => {},
   isLoggedIn: false,
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   setIsLoggedIn: () => {},
   isSuperAdmin: false,
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   setIsSuperAdmin: () => {},
 };
 
@@ -27,6 +36,19 @@ const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(true);
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
 
+  const tryRefresh = async () => {
+    try {
+      const refreshed = await refreshAccessToken();
+      if (refreshed) {
+        return true;
+      }
+      return false;
+    } catch (err) {
+      console.error(err);
+      return false;
+    }
+  };
+
   useEffect(() => {
     (async () => {
       const authed = await checkAuth();
@@ -34,8 +56,12 @@ const UserProvider = ({ children }: { children: React.ReactNode }) => {
         setIsLoggedIn(true);
       } else {
         setIsLoggedIn(false);
-        const currentUrl = window.location.href;
-        window.location.href = "/login?redirectUrl=" + currentUrl;
+        const refreshed = await tryRefresh();
+        if (refreshed) {
+          setIsLoggedIn(true);
+          return;
+        }
+        logout();
       }
       const user = await getMe();
       setUser(user);

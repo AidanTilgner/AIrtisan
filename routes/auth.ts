@@ -21,7 +21,6 @@ import {
 import {
   createApiKey,
   deleteApiKey,
-  getApiKey,
   getAllApiKeys,
 } from "../database/functions/apiKey";
 
@@ -94,7 +93,7 @@ router.post("/refresh", async (req, res) => {
       res.status(401).send({ message: "Invalid refresh token provided." });
       return;
     }
-    const verified = verifyRefreshToken(refresh_token);
+    const verified = await verifyRefreshToken(refresh_token);
     if (!verified) {
       res.status(401).send({ message: "Invalid refresh token provided." });
       return;
@@ -156,7 +155,7 @@ router.post("/check", async (req, res) => {
   try {
     const { access_token } = req.body;
 
-    const verified = verifyAccessToken(access_token);
+    const verified = await verifyAccessToken(access_token);
 
     if (!verified) {
       res.status(401).send({
@@ -200,6 +199,7 @@ router.get("/me", checkIsAdmin, async (req, res) => {
   try {
     const admin = req["admin"];
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...adminWithoutPassword } = admin;
 
     res.status(200).send({

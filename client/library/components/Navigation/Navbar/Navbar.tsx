@@ -1,9 +1,10 @@
 import React from "react";
 import styles from "./Navbar.module.scss";
-import { Button, Burger } from "@mantine/core";
+import { Button, Burger, Menu } from "@mantine/core";
 import { retrainModel } from "../../../helpers/fetching";
 import { Link, useLocation } from "react-router-dom";
 import { useUser } from "../../../contexts/User";
+import { SignOut } from "phosphor-react";
 
 function Navbar() {
   const isMobile = window.innerWidth < 768;
@@ -16,44 +17,96 @@ function Navbar() {
 
   const routes = (
     <>
-      <li className={currentPath === "/" ? styles.active : styles.inactive}>
-        <Link to="/">Welcome</Link>
+      <li>
+        <Link
+          to="/"
+          className={currentPath === "/" ? styles.active : styles.inactive}
+        >
+          Welcome
+        </Link>
       </li>
-      <li
-        className={
-          currentPath === "/interactive" ? styles.active : styles.inactive
-        }
-      >
-        <Link to="/interactive">Interactive</Link>
+      <li>
+        <Link
+          to="/interactive"
+          className={
+            currentPath === "/interactive" ? styles.active : styles.inactive
+          }
+        >
+          Interactive
+        </Link>
       </li>
-      <li
-        className={currentPath === "/preview" ? styles.active : styles.inactive}
-      >
-        <Link to="/preview">Preview</Link>
+      <li>
+        <Link
+          to="/preview"
+          className={
+            currentPath === "/preview" ? styles.active : styles.inactive
+          }
+        >
+          Preview
+        </Link>
       </li>
-      <li
-        className={
-          currentPath === "/review/conversations"
-            ? styles.active
-            : styles.inactive
-        }
-      >
-        <Link to="/review/conversations">Review Conversations</Link>
+      <li>
+        <Link
+          to="/review/conversations"
+          className={
+            currentPath === "/review/conversations"
+              ? styles.active
+              : styles.inactive
+          }
+        >
+          Review Conversations
+        </Link>
       </li>
     </>
   );
 
   const superAdminRoutes = isSuperAdmin ? (
     <>
-      <li
-        className={
-          currentPath === "/admin/auth" ? styles.active : styles.inactive
-        }
-      >
-        <Link to="/admin/auth">Auth</Link>
+      <li>
+        <Link
+          to="/admin/auth"
+          className={
+            currentPath === "/admin/auth" ? styles.active : styles.inactive
+          }
+        >
+          Auth
+        </Link>
       </li>
     </>
   ) : null;
+
+  const signOut = () => {
+    sessionStorage.setItem("session_id", "");
+    localStorage.setItem("accessToken", "");
+    localStorage.setItem("refreshToken", "");
+    window.location.reload();
+  };
+
+  const settingsOptions = (
+    <div className={styles.settingsOptions}>
+      <Button
+        onClick={() => {
+          retrainModel();
+        }}
+        variant="outline"
+      >
+        Refresh Model
+      </Button>
+      <Menu shadow="md" width={200} position="top">
+        <Menu.Target>
+          <Button>Other</Button>
+        </Menu.Target>
+
+        <Menu.Dropdown>
+          <Menu.Label>Options</Menu.Label>
+          {/* <Menu.Item icon={<Gear size={14} />}>Settings</Menu.Item> */}
+          <Menu.Item icon={<SignOut size={14} />} onClick={signOut}>
+            Sign Out
+          </Menu.Item>
+        </Menu.Dropdown>
+      </Menu>
+    </div>
+  );
 
   return (
     <div className={styles.navbar}>
@@ -67,41 +120,27 @@ function Navbar() {
         />
       )}
       {opened && (
-        <ul
-          className={styles.mobile_items}
-          onClick={() => {
-            setOpened(false);
-          }}
-        >
-          {routes}
-          {superAdminRoutes}
-          <li>
-            <Button
-              onClick={() => {
-                retrainModel();
-              }}
-              variant="outline"
-            >
-              Refresh Model
-            </Button>
-          </li>
-        </ul>
+        <>
+          <ul
+            className={styles.mobile_items}
+            onClick={() => {
+              setOpened(false);
+            }}
+          >
+            {routes}
+            {superAdminRoutes}
+            {settingsOptions}
+          </ul>
+        </>
       )}
       {!isMobile && (
-        <ul className={styles.items}>
-          {routes}
-          {superAdminRoutes}
-          <li>
-            <Button
-              onClick={() => {
-                retrainModel();
-              }}
-              variant="outline"
-            >
-              Refresh Model
-            </Button>
-          </li>
-        </ul>
+        <>
+          <ul className={styles.items}>
+            {routes}
+            {superAdminRoutes}
+          </ul>
+          {settingsOptions}
+        </>
       )}
     </div>
   );

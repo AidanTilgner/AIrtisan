@@ -16,26 +16,44 @@ export const comparePassword = (password: string, hash: string) => {
 const { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } = process.env;
 
 export const generateAccessToken = (id: number) => {
-  return jwt.sign({ id }, ACCESS_TOKEN_SECRET!, { expiresIn: "1d" });
+  if (!ACCESS_TOKEN_SECRET)
+    throw new Error("ACCESS_TOKEN_SECRET not set in .env file.");
+  return jwt.sign({ id }, ACCESS_TOKEN_SECRET, { expiresIn: "1d" });
 };
 
 export const generateRefreshToken = (id: number) => {
-  return jwt.sign({ id }, REFRESH_TOKEN_SECRET!, { expiresIn: "7d" });
+  if (!REFRESH_TOKEN_SECRET)
+    throw new Error("REFRESH_TOKEN_SECRET not set in .env file.");
+  return jwt.sign({ id }, REFRESH_TOKEN_SECRET, { expiresIn: "30d" });
 };
 
-export const verifyAccessToken = (token: string) => {
-  return jwt.verify(token, ACCESS_TOKEN_SECRET!);
+export const verifyAccessToken = async (token: string) => {
+  try {
+    if (!ACCESS_TOKEN_SECRET)
+      throw new Error("ACCESS_TOKEN_SECRET not set in .env file.");
+    return jwt.verify(token, ACCESS_TOKEN_SECRET);
+  } catch (err) {
+    console.error(err);
+    return false;
+  }
 };
 
-export const verifyRefreshToken = (token: string) => {
-  return jwt.verify(token, REFRESH_TOKEN_SECRET!);
+export const verifyRefreshToken = async (token: string) => {
+  try {
+    if (!REFRESH_TOKEN_SECRET)
+      throw new Error("REFRESH_TOKEN_SECRET not set in .env file.");
+    return jwt.verify(token, REFRESH_TOKEN_SECRET);
+  } catch (err) {
+    console.error(err);
+    return false;
+  }
 };
 
-export const generateRandomPassword = (length: number = 8) => {
+export const generateRandomPassword = (length = 8) => {
   return randomBytes(length).toString("hex");
 };
 
-export const generateRandomApiKey = (length: number = 32) => {
+export const generateRandomApiKey = (length = 32) => {
   const key = randomBytes(length).toString("hex");
   const formatted = `sk-${key}`;
   return formatted;

@@ -21,5 +21,11 @@ module.exports = {
     "@typescript-eslint/no-var-requires": "warn",
     // console logs are not allowed
     "no-console": ["warn", { allow: ["warn", "error", "info"] }],
+    // "@typescript-eslint/explicit-module-boundary-types": [
+    //   {
+    //     allowTypedFunctionExpressions: true,
+    //   },
+    //   "warn",
+    // ],
   },
 };

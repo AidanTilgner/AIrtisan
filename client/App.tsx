@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import Navbar from "./library/components/Navigation/Navbar/Navbar";
 import styles from "./App.module.scss";
 import { Routes, Route } from "react-router-dom";
@@ -44,21 +44,26 @@ function App() {
       >
         <NotificationsProvider position="bottom-right">
           <Navbar />
-          <Routes>
-            <Route path="/">
-              <Route index element={<Welcome />} />
-              <Route path="interactive" element={<Interactive />} />
-              <Route path="preview" element={<Preview />} />
-              <Route path="review">
-                <Route path="conversations" element={<ReviewConversations />} />
-              </Route>
-              {isSuperAdmin && (
-                <Route path="admin">
-                  <Route path="auth" element={<Auth />} />
+          <div className={styles.main_container}>
+            <Routes>
+              <Route path="/">
+                <Route index element={<Welcome />} />
+                <Route path="interactive" element={<Interactive />} />
+                <Route path="preview" element={<Preview />} />
+                <Route path="review">
+                  <Route
+                    path="conversations"
+                    element={<ReviewConversations />}
+                  />
                 </Route>
-              )}
-            </Route>
-          </Routes>
+                {isSuperAdmin && (
+                  <Route path="admin">
+                    <Route path="auth" element={<Auth />} />
+                  </Route>
+                )}
+              </Route>
+            </Routes>
+          </div>
         </NotificationsProvider>
       </MantineProvider>
     </div>

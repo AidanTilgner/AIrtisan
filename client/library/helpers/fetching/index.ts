@@ -1,5 +1,6 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { showNotification } from "@mantine/notifications";
+import { logout } from "../state";
 
 export const api = axios.create({
   baseURL: "/",
@@ -13,18 +14,31 @@ api.interceptors.response.use(
   (response) => {
     return response;
   },
-  async (error) => {
-    if (error.response.status === 401) {
-      // first try refreshing the token
-      const refreshed = await refreshAccessToken();
-      // then retry the request
-      if (refreshed) {
-        return api.request(error.config);
-      } else {
-        const currentUrl = window.location.href;
-        window.location.href = "/login?redirectUrl=" + currentUrl;
+  async (error: AxiosError) => {
+    // Check for 401 Unauthorized error
+    if (error.response?.status === 401) {
+      try {
+        // Attempt to refresh the access token
+        const newAccessToken = await refreshAccessToken();
+        if (newAccessToken) {
+          // Retry the original request with the new access token
+          showNotification({
+            title: "Error handled",
+            message: "An error occurred, but it was handled",
+          });
+          error.config.headers["x-access-token"] = newAccessToken;
+          return axios.request(error.config);
+        } else {
+          // Clear the user's session and redirect to the login page
+          logout();
+        }
+      } catch (refreshError) {
+        // Refresh token failed, clear the user's session and redirect to the login page
+        console.error(refreshError);
+        logout();
       }
     }
+    // Pass the error along to the caller
     return Promise.reject(error);
   }
 );
@@ -428,7 +442,7 @@ export const refreshAccessToken = async () => {
       })
       .then((res) => {
         localStorage.setItem("accessToken", res.data.data.access_token);
-        return res.data.data;
+        return res.data.data.access_token;
       })
       .catch((err) => {
         console.error(err);
@@ -436,7 +450,7 @@ export const refreshAccessToken = async () => {
           title: "Error",
           message: "Something went wrong",
         });
-        return err;
+        return false;
       });
   }
   return false;

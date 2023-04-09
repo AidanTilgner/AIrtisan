@@ -7,9 +7,14 @@
   padding-inline: 24px;
 
   @media (min-width: 768px) {
-    height: calc(100vh - 116px);
+    height: 100vh;
     padding-inline: 56px;
   }
+}
+
+.header {
+  margin-bottom: 56px;
+  width: 100%;
 }
 
 .chatboxContainer {
@@ -17,6 +22,6 @@
   width: 100%;
 
   @media (min-width: 768px) {
-    width: 50%;
+    width: 80%;
   }
 }

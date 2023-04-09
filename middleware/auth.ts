@@ -4,7 +4,7 @@ import { Logger } from "../utils/logger";
 import { sendWarningEmail } from "../utils/email";
 import { getRequesterInfo } from "../utils/analysis";
 import { getAdmin } from "../database/functions/admin";
-import { verifyAccessToken, verifyRefreshToken } from "../utils/crypto";
+import { verifyAccessToken } from "../utils/crypto";
 import { getApiKey } from "../database/functions/apiKey";
 
 config();
@@ -13,8 +13,6 @@ const logger = new Logger({
   log_type: "warning",
   name: "authentication",
 });
-
-const isDev = process.env.NODE_ENV === "development";
 
 export const checkAPIKey = async (
   req: Request,
@@ -93,7 +91,16 @@ export const checkIsAdmin = async (
       return;
     }
 
-    const { id } = verifyAccessToken(access_token) as { id: number };
+    const verified = (await verifyAccessToken(access_token)) as
+      | { id: number }
+      | false;
+
+    if (!verified) {
+      res.status(401).send({ message: "Invalid access token provided." });
+      return;
+    }
+
+    const { id } = verified;
 
     const admin = await getAdmin(id);
 
@@ -127,7 +134,16 @@ export const checkIsSuperAdmin = async (
       return;
     }
 
-    const { id } = verifyAccessToken(access_token) as { id: number };
+    const verified = (await verifyAccessToken(access_token)) as
+      | { id: number }
+      | false;
+
+    if (!verified) {
+      res.status(401).send({ message: "Invalid access token provided." });
+      return;
+    }
+
+    const { id } = verified;
 
     const admin = await getAdmin(id);
 
@@ -166,7 +182,16 @@ export const checkIsAdminAndShowLoginIfNot = async (
       return;
     }
 
-    const { id } = verifyAccessToken(access_token) as { id: number };
+    const verified = (await verifyAccessToken(access_token)) as
+      | { id: number }
+      | false;
+
+    if (!verified) {
+      res.redirect("/login");
+      return;
+    }
+
+    const { id } = verified;
 
     const admin = await getAdmin(id);
 
