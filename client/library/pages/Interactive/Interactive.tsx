@@ -384,11 +384,6 @@ function Interactive() {
                   placeholder={`Update intent for "${data?.initial_text}"`}
                   value={newIntent}
                   onChange={(v) => setNewIntent(v)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      submitNewUtteranceForIntent();
-                    }
-                  }}
                   size="sm"
                   sx={() => ({ width: "100%" })}
                   data={allIntents}
