@@ -31,13 +31,13 @@ router.post("/", checkAPIKey, async (req, res) => {
     const response = await getNLUResponse(message);
     const { intent, answer, confidence, initial_text } = response;
     detectAndActivateTriggers(intent, session_id);
-    const { chat: userChat } = await addChatToConversationAndCreateIfNotExists(
-      session_id,
+    const { chat: userChat } = await addChatToConversationAndCreateIfNotExists({
+      sessionId: session_id,
       message,
       intent,
-      "user",
-      false
-    );
+      role: "user",
+      enhanced: false,
+    });
 
     const { answer: botAnswer, enhanced } = await enhanceChatIfNecessary({
       message: initial_text,
@@ -47,14 +47,14 @@ router.post("/", checkAPIKey, async (req, res) => {
       session_id,
     });
 
-    const { chat: botChat } = await addChatToConversationAndCreateIfNotExists(
-      session_id,
-      botAnswer,
+    const { chat: botChat } = await addChatToConversationAndCreateIfNotExists({
+      sessionId: session_id,
+      message: botAnswer,
       intent,
-      "assistant",
+      role: "assistant",
       enhanced,
-      confidence
-    );
+      confidence,
+    });
 
     const chats = await getChatsFromSessionId(session_id);
 
@@ -113,13 +113,13 @@ router.post("/as_admin", checkIsAdmin, async (req, res) => {
     const response = await getNLUResponse(message);
     const { intent, answer, confidence, initial_text } = response;
     detectAndActivateTriggers(intent, session_id);
-    const { chat: userChat } = await addChatToConversationAndCreateIfNotExists(
-      session_id,
+    const { chat: userChat } = await addChatToConversationAndCreateIfNotExists({
+      sessionId: session_id,
       message,
       intent,
-      "user",
-      false
-    );
+      role: "user",
+      enhanced: false,
+    });
 
     const { answer: botAnswer, enhanced } = await enhanceChatIfNecessary({
       message: initial_text,
@@ -129,14 +129,14 @@ router.post("/as_admin", checkIsAdmin, async (req, res) => {
       session_id,
     });
 
-    const { chat: botChat } = await addChatToConversationAndCreateIfNotExists(
-      session_id,
-      botAnswer,
+    const { chat: botChat } = await addChatToConversationAndCreateIfNotExists({
+      sessionId: session_id,
+      message: botAnswer,
       intent,
-      "assistant",
+      role: "assistant",
       enhanced,
-      confidence
-    );
+      confidence,
+    });
 
     const chats = await getChatsFromSessionId(session_id);
 

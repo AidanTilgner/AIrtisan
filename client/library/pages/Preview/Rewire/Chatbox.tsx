@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { postChat, markChatAsShouldReview } from "../../helpers/fetching";
+import { postChat, markChatAsShouldReview } from "../../../helpers/fetching";
 import { Warning } from "phosphor-react";
 import chatStyles from "./Chat.module.scss";
 
@@ -25,13 +25,34 @@ function ChatBox() {
     },
   ]);
 
+  const disclaimers: JSX.Element[] = [
+    <p className={chatStyles.disclaimer} key="disclaimer1">
+      Responses don{"'"}t necessarily represent the views of VVibrant Web
+      Solutions.
+    </p>,
+    <p className={chatStyles.disclaimer} key="disclaimer2">
+      If you see any weird responses, please hit the <Warning weight="bold" />{" "}
+      icon to report it.
+    </p>,
+  ];
+
   const [botMessageLoading, setBotMessageLoading] = React.useState(false);
 
   useEffect(() => {
     const sessionId =
       sessionStorage.getItem("session_id") || generateRandomSessionId();
     sessionStorage.setItem("session_id", sessionId);
+
+    const savedMessages = localStorage.getItem("messages");
+    if (savedMessages) {
+      const parsedMessages = JSON.parse(savedMessages);
+      setMessages(parsedMessages);
+    }
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem("messages", JSON.stringify(messages));
+  }, [messages]);
 
   const handleSubmitMessage = (message: string) => {
     if (!message) return;
@@ -93,7 +114,12 @@ function ChatBox() {
 
   return (
     <div className={chatStyles.chatBox}>
+      <div className={chatStyles.header}>
+        <div className={chatStyles.tag}>Beta</div>
+        <h3>Onyx Chat</h3>
+      </div>
       <div className={chatStyles.chatBoxMessages}>
+        <div className={chatStyles.disclaimers}>{disclaimers}</div>
         {messages.map((message, index) => (
           <Chat
             loading={false}
@@ -123,7 +149,7 @@ function ChatBox() {
             setIsFocused(false);
           }}
           type="text"
-          placeholder="It’s like you’re talking to a person"
+          placeholder="Say anything..."
           onKeyDown={async (e) => {
             if (e.key === "Enter") {
               const message = e.currentTarget.value;

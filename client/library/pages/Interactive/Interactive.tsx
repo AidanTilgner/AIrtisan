@@ -115,8 +115,9 @@ function Interactive() {
     });
   }, [data.intent]);
 
-  const submitText = async () => {
-    getTrainingAnswer(text).then((answer) => {
+  const submitText = async (txt?: string) => {
+    const textToUse = txt || text;
+    getTrainingAnswer(textToUse).then((answer) => {
       setData(answer);
       showNotification({
         title: "Message Received",
@@ -132,9 +133,9 @@ function Interactive() {
   useEffect(() => {
     if (urlSearchParams.get("run")) {
       setText(urlSearchParams.get("run") || "");
-      submitText();
+      submitText(urlSearchParams.get("run") || "");
     }
-  }, []);
+  }, [urlSearchParams]);
 
   const submitNewAnswer = async () => {
     addAnswerToIntent({
@@ -319,7 +320,13 @@ function Interactive() {
                   }}
                   sx={() => ({ width: "100%" })}
                 />
-                <Button onClick={submitText}>Say it</Button>
+                <Button
+                  onClick={() => {
+                    submitText();
+                  }}
+                >
+                  Say it
+                </Button>
               </Flex>
             </Flex>
           </Card>

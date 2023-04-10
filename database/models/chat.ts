@@ -16,6 +16,9 @@ export class Chat {
   id!: number;
 
   @Column()
+  order!: number;
+
+  @Column()
   session_id!: string;
 
   @Column()

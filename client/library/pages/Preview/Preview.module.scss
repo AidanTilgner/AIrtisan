@@ -2,26 +2,35 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
   // background-color: black;
   padding-inline: 24px;
 
   @media (min-width: 768px) {
-    height: 100vh;
     padding-inline: 56px;
+  }
+
+  h2 {
+    font-weight: 500;
+    margin: 0;
+    text-align: left;
+    width: 100%;
+    margin-bottom: 24px;
   }
 }
 
 .header {
-  margin-bottom: 56px;
+  margin-bottom: 0;
   width: 100%;
 }
 
 .chatboxContainer {
   background-color: black;
   width: 100%;
+  height: 70vh;
 
   @media (min-width: 768px) {
     width: 80%;
+    height: 50vh;
   }
 }

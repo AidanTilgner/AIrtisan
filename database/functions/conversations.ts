@@ -35,20 +35,29 @@ export const getConversationFromSessionId = async (sessionId: string) => {
   }
 };
 
-export const createChatFromSessionId = async (
-  sessionId: string,
-  message: string,
-  intent: string,
-  role: ChatRole,
-  enhanced: boolean,
-  confidence?: number
-) => {
+export const createChatFromSessionId = async ({
+  sessionId,
+  message,
+  intent,
+  role,
+  enhanced,
+  confidence,
+}: {
+  sessionId: string;
+  message: string;
+  intent: string;
+  role: ChatRole;
+  enhanced: boolean;
+  confidence?: number;
+}) => {
   try {
     const conversation = await getConversationFromSessionId(sessionId);
 
     if (!conversation) {
       return null;
     }
+
+    const chatLength = conversation.chats.length;
 
     const chat = new entities.Chat();
     chat.session_id = sessionId;
@@ -57,6 +66,7 @@ export const createChatFromSessionId = async (
     chat.role = role;
     chat.enhanced = enhanced;
     chat.conversation = conversation;
+    chat.order = chatLength + 1;
     if (confidence) {
       chat.confidence = confidence;
     }
@@ -131,24 +141,31 @@ export const createConversationIfNotExists = async (sessionId: string) => {
   }
 };
 
-export const addChatToConversationAndCreateIfNotExists = async (
-  sessionId: string,
-  message: string,
-  intent: string,
-  role: ChatRole,
-  enhanced: boolean,
-  confidence?: number
-) => {
+export const addChatToConversationAndCreateIfNotExists = async ({
+  sessionId,
+  message,
+  intent,
+  role,
+  enhanced,
+  confidence,
+}: {
+  sessionId: string;
+  message: string;
+  intent: string;
+  role: ChatRole;
+  enhanced: boolean;
+  confidence?: number;
+}) => {
   try {
     await createConversationIfNotExists(sessionId);
-    const newChat = await createChatFromSessionId(
+    const newChat = await createChatFromSessionId({
       sessionId,
       message,
       intent,
       role,
       enhanced,
-      confidence
-    );
+      confidence,
+    });
     const newConversation = await getConversationFromSessionId(sessionId);
     return {
       conversation: newConversation,

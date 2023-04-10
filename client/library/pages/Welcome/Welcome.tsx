@@ -15,7 +15,7 @@ function Welcome() {
           <Link to="/interactive">Interative Training</Link>
         </li>
         <li>
-          <Link to="/preview">Preview Production Bot</Link>
+          <Link to="/preview">Preview Production Bots</Link>
         </li>
         <li>
           <Link to="/review/conversations">Review wonky conversations</Link>

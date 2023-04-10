@@ -44,7 +44,7 @@ function Navbar() {
             currentPath === "/preview" ? styles.active : styles.inactive
           }
         >
-          Preview
+          Previews
         </Link>
       </li>
       <li>
@@ -56,7 +56,7 @@ function Navbar() {
               : styles.inactive
           }
         >
-          Review Conversations
+          Conversations
         </Link>
       </li>
     </>

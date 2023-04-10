@@ -91,7 +91,11 @@ function ReviewConversations() {
               />
             ))
           ) : (
-            <p>No chats to review.</p>
+            <p>
+              {viewAllConversations
+                ? "No conversations yet."
+                : "No conversations marked for review"}
+            </p>
           )}
         </div>
       </div>
@@ -134,7 +138,7 @@ function Conversation({
 
   const getFormattedTitle = (conversation: ConversationType) => {
     const generatedName = conversation.generated_name || "Unnamed Conversation";
-    return getShortenedText(generatedName, 18);
+    return getShortenedText(generatedName, 36);
   };
 
   const getShortenedText = (text: string, maxLength = 36) => {
@@ -191,7 +195,9 @@ function Conversation({
         }}
       >
         <h3 className={styles.title}>{getFormattedTitle(conversation)}</h3>
-        <p className={styles.bottomtext}>{conversation.chats[0].message}</p>
+        <p className={styles.bottomtext}>
+          {getShortenedText(conversation.chats[0].message, 48)}
+        </p>
         {conversation.chats.some((c) => !!c.enhanced) && (
           <div className={styles.tag}>enhanced</div>
         )}

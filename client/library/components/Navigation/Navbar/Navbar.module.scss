@@ -127,7 +127,7 @@
 
 @keyframes itemsIn {
   0% {
-    opacity: 0;
+    opacity: 0.5;
     transform: translateY(-15vh);
     height: 0;
   }
@@ -152,8 +152,8 @@
   gap: 24px;
   position: absolute;
   top: 100%;
-  left: 24px;
-  right: 24px;
+  left: 14px;
+  right: 14px;
   background-color: white;
   border: 1px solid #eaeaea;
   padding: 24px;
