@@ -107,11 +107,11 @@ function Auth() {
 
   const addNewApiKey = () => {
     if (!newApiKey.name) return;
-    addApiKey(newApiKey).then(({ apiKey }) => {
+    addApiKey(newApiKey).then(({ api_key }) => {
       setNewApiKey({ name: "" });
       setAddedApiKey({
-        name: apiKey.for,
-        key: apiKey.key,
+        name: api_key.for,
+        key: api_key.key,
       });
       getAllApiKeys().then(({ api_keys }) => {
         setApiKeys(api_keys);

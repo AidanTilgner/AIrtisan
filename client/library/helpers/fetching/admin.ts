@@ -96,7 +96,7 @@ export const addApiKey = async ({ name }) => {
         message: "API Key added",
       });
       return {
-        api_key: res.data.data as ApiKey & { key: string },
+        api_key: res.data.data.apiKey as ApiKey & { key: string },
       };
     })
     .catch((err) => {
@@ -132,7 +132,7 @@ export const getAllApiKeys = async () => {
     .get("/auth/api-keys")
     .then((res) => {
       return {
-        api_keys: res.data.data.api_keys as unknown as ApiKey[],
+        api_keys: res.data.data.apiKeys as unknown as ApiKey[],
       };
     })
     .catch((err) => {

@@ -302,16 +302,21 @@ router.delete("/api-key/:id", checkIsAdmin, async (req, res) => {
     if (!result) {
       res
         .status(500)
-        .send({ message: "Internal server error.", success: true });
+        .send({ message: "Internal server error.", data: { success: false } });
       return;
     }
 
     res
       .status(200)
-      .send({ message: "API key deleted successfully.", success: true });
+      .send({
+        message: "API key deleted successfully.",
+        data: { success: true },
+      });
   } catch (err) {
     console.error(err);
-    res.status(500).send({ message: "Internal server error.", success: true });
+    res
+      .status(500)
+      .send({ message: "Internal server error.", data: { success: false } });
   }
 });
 
