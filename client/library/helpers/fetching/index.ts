@@ -1,6 +1,6 @@
 import axios, { AxiosError } from "axios";
 import { showNotification } from "@mantine/notifications";
-import { logout } from "../state";
+import { logout } from "../auth";
 
 export const api = axios.create({
   baseURL: "/",

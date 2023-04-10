@@ -1,7 +1,6 @@
 import { api } from ".";
 import { showNotification } from "@mantine/notifications";
 import { Admin, ApiKey } from "../../../documentation/main";
-import { FetchRequest } from "../../../documentation/server";
 
 export const getAdmins = async () => {
   return await api
@@ -134,6 +133,24 @@ export const getAllApiKeys = async () => {
     .then((res) => {
       return {
         api_keys: res.data.data.api_keys as unknown as ApiKey[],
+      };
+    })
+    .catch((err) => {
+      console.error(err);
+      showNotification({
+        title: "Error",
+        message: "Something went wrong",
+      });
+      return err;
+    });
+};
+
+export const logoutAdmin = async ({ id }: { id: number }) => {
+  return await api
+    .post(`/auth/admin/${id}/logout`)
+    .then((res) => {
+      return {
+        logged_out: !!res.data.data.success,
       };
     })
     .catch((err) => {

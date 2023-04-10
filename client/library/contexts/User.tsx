@@ -6,7 +6,7 @@ import {
   refreshAccessToken,
 } from "../helpers/fetching";
 import { Admin } from "../../documentation/main";
-import { logout } from "../helpers/state";
+import { logout } from "../helpers/auth";
 
 interface UserContextType {
   user: Admin | null;

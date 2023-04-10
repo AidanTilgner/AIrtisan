@@ -15,3 +15,18 @@ export const getRefreshToken = async (token: string) => {
   });
   return tokenEntity;
 };
+
+export const deleteRefreshToken = async (token: string) => {
+  const result = await dataSource.manager.delete(entities.Token, {
+    token,
+  });
+  return result;
+};
+
+export const deleteAllRefreshTokensForAdmin = async (id: number) => {
+  const result = await dataSource.manager.delete(entities.Token, {
+    admin_id: id,
+  });
+
+  return result;
+};

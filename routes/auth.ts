@@ -16,6 +16,7 @@ import {
 } from "../utils/crypto";
 import {
   createRefreshToken,
+  deleteAllRefreshTokensForAdmin,
   getRefreshToken,
 } from "../database/functions/token";
 import {
@@ -325,6 +326,38 @@ router.get("/api-keys", checkIsAdmin, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).send({ message: "Internal server error." });
+  }
+});
+
+router.post("/admin/:admin_id/logout", async (req, res) => {
+  try {
+    const { admin_id } = req.params;
+
+    if (!admin_id) {
+      res
+        .status(400)
+        .send({ message: "Bad request.", data: { success: false } });
+      return;
+    }
+
+    const deleted = await deleteAllRefreshTokensForAdmin(parseInt(admin_id));
+
+    if (!deleted) {
+      res
+        .status(500)
+        .send({ message: "Internal server error.", data: { success: false } });
+      return;
+    }
+
+    res.status(200).send({
+      message: "Admin logged out successfully.",
+      data: { success: true },
+    });
+  } catch (err) {
+    console.error(err);
+    res
+      .status(500)
+      .send({ message: "Internal server error.", data: { success: false } });
   }
 });
 

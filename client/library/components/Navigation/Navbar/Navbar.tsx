@@ -5,6 +5,8 @@ import { retrainModel } from "../../../helpers/fetching";
 import { Link, useLocation } from "react-router-dom";
 import { useUser } from "../../../contexts/User";
 import { SignOut } from "phosphor-react";
+import { logout } from "../../../helpers/auth";
+import SVG from "../../Utils/SVG";
 
 function Navbar() {
   const isMobile = window.innerWidth < 768;
@@ -75,42 +77,56 @@ function Navbar() {
     </>
   ) : null;
 
-  const signOut = () => {
-    sessionStorage.setItem("session_id", "");
-    localStorage.setItem("accessToken", "");
-    localStorage.setItem("refreshToken", "");
-    window.location.reload();
-  };
-
   const settingsOptions = (
     <div className={styles.settingsOptions}>
-      <Button
-        onClick={() => {
-          retrainModel();
-        }}
-        variant="outline"
-      >
-        Refresh Model
-      </Button>
-      <Menu shadow="md" width={200} position="top">
-        <Menu.Target>
-          <Button>Other</Button>
-        </Menu.Target>
+      <div className={styles.option}>
+        <Button
+          onClick={() => {
+            retrainModel();
+          }}
+          variant="outline"
+          style={{
+            width: "100%",
+          }}
+        >
+          Refresh Model
+        </Button>
+      </div>
+      <div className={styles.option}>
+        <Menu shadow="md" width={200} position="top">
+          <Menu.Target>
+            <Button
+              style={{
+                width: "100%",
+              }}
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+            >
+              Other
+            </Button>
+          </Menu.Target>
 
-        <Menu.Dropdown>
-          <Menu.Label>Options</Menu.Label>
-          {/* <Menu.Item icon={<Gear size={14} />}>Settings</Menu.Item> */}
-          <Menu.Item icon={<SignOut size={14} />} onClick={signOut}>
-            Sign Out
-          </Menu.Item>
-        </Menu.Dropdown>
-      </Menu>
+          <Menu.Dropdown>
+            <Menu.Label>Options</Menu.Label>
+            {/* <Menu.Item icon={<Gear size={14} />}>Settings</Menu.Item> */}
+            <Menu.Item icon={<SignOut size={14} />} onClick={logout}>
+              Sign Out
+            </Menu.Item>
+          </Menu.Dropdown>
+        </Menu>
+      </div>
     </div>
   );
 
   return (
     <div className={styles.navbar}>
-      <h2 className={styles.title}>Onyx Chat</h2>
+      <div className={styles.header}>
+        <div className={styles.logo}>
+          <SVG.OnyxLogo width="100%" height="100%" />
+        </div>
+        <h2 className={styles.title}>Onyx Chat</h2>
+      </div>
       {isMobile && (
         <Burger
           opened={opened}

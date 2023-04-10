@@ -5,7 +5,7 @@ import {
   markChatAsReviewed,
   getConversations,
 } from "../../helpers/fetching/chats";
-import { Button } from "@mantine/core";
+import { Button, SegmentedControl } from "@mantine/core";
 import { useUser } from "../../contexts/User";
 import { MagicWand, WarningCircle, ArrowsClockwise } from "phosphor-react";
 import { useNavigate } from "react-router-dom";
@@ -39,9 +39,11 @@ function ReviewConversations() {
   const reloadConversations = async () => {
     const conversations = await getConversationsThatNeedReview();
     setConversations(conversations);
+    const allConversations = await getConversations();
+    setAllConversations(allConversations);
   };
 
-  const [viewAllConversations, setViewAllConversations] = React.useState(false);
+  const [viewAllConversations, setViewAllConversations] = React.useState(true);
 
   const conversationsToView = viewAllConversations
     ? allConversations
@@ -50,15 +52,31 @@ function ReviewConversations() {
   return (
     <div className={styles.ReviewConversations}>
       <div className={styles.header}>
-        <h1>Review Conversations</h1>
-        <Button
-          variant="outline"
-          onClick={() => {
-            setViewAllConversations(!viewAllConversations);
+        <h1>Conversations</h1>
+        <SegmentedControl
+          data={[
+            {
+              label: "All Conversations",
+              value: "all",
+            },
+            {
+              label: "Marked for Review",
+              value: "to_review",
+            },
+          ]}
+          onChange={(v) => {
+            switch (v) {
+              case "to_review":
+                setViewAllConversations(false);
+                break;
+              case "all":
+                setViewAllConversations(true);
+                break;
+            }
           }}
         >
           {viewAllConversations ? "View To Review" : "View All"}
-        </Button>
+        </SegmentedControl>
       </div>
       <div className={styles.interface_container}>
         <div className={styles.conversations}>
