@@ -87,7 +87,7 @@
       "answers": ["test complete"]
     },
     {
-      "intent": "Inquiry.onyx_chat_inner_workings",
+      "intent": "inquiry.onyx_chat_inner_workings",
       "utterances": [
         "that's pretty cool, how do you work?",
         "how do you work? ",
