@@ -25,6 +25,10 @@
     box-shadow: 0.2px 0.2px 56px 0 rgba($color: #000000, $alpha: 0.1);
     padding: 36px 0;
   }
+
+  @media (min-width: 1024px) {
+    width: 15%;
+  }
 }
 
 .header {
