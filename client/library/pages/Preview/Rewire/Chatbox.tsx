@@ -97,11 +97,13 @@ function ChatBox() {
       });
   };
 
-  const endRef = React.useRef<HTMLDivElement>(null);
+  const scrollRef = React.useRef<HTMLDivElement>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
-    if (endRef.current) endRef.current.scrollIntoView({ behavior: "smooth" });
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
   }, [messages]);
 
   const [isFocused, setIsFocused] = React.useState(false);
@@ -118,7 +120,7 @@ function ChatBox() {
         <div className={chatStyles.tag}>Beta</div>
         <h3>Onyx Chat</h3>
       </div>
-      <div className={chatStyles.chatBoxMessages}>
+      <div className={chatStyles.chatBoxMessages} ref={scrollRef}>
         <div className={chatStyles.disclaimers}>{disclaimers}</div>
         {messages.map((message, index) => (
           <Chat
@@ -132,7 +134,6 @@ function ChatBox() {
         {botMessageLoading && (
           <Chat content="..." side="bot" loading={true} id={null} />
         )}
-        <div ref={endRef} />
       </div>
       <div className={chatStyles.chatBoxInput}>
         {isFocused && (
