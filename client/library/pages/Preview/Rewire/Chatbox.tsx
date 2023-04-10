@@ -43,7 +43,7 @@ function ChatBox() {
       sessionStorage.getItem("session_id") || generateRandomSessionId();
     sessionStorage.setItem("session_id", sessionId);
 
-    const savedMessages = localStorage.getItem("messages");
+    const savedMessages = sessionStorage.getItem("messages");
     if (savedMessages) {
       const parsedMessages = JSON.parse(savedMessages);
       setMessages(parsedMessages);
@@ -51,7 +51,7 @@ function ChatBox() {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("messages", JSON.stringify(messages));
+    sessionStorage.setItem("messages", JSON.stringify(messages));
   }, [messages]);
 
   const handleSubmitMessage = (message: string) => {
