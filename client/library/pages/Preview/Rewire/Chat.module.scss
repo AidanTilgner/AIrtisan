@@ -124,7 +124,7 @@
     background: linear-gradient(
       90deg,
       #1614db -0.29%,
-      rgba(135, 9, 232, 0.35) 100%
+      rgba(135, 9, 232, 0.5) 100%
     );
     box-shadow: -2px 0px 15px rgba(0, 0, 0, 0.15);
     color: white;
@@ -139,11 +139,11 @@
 
     &:hover {
       opacity: 1;
-      border-radius: 5px 0 0 5px;
+      transform: scale(1.01);
     }
 
     &:active {
-      transform: translateY(2px);
+      transform: translateY(1px) scale(0.99);
     }
   }
 }
