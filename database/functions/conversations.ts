@@ -28,10 +28,14 @@ export const getConversation = async (conversationId: number) => {
   }
 };
 
-export const createConversationFromSessionId = async (sessionId: string) => {
+export const createConversationFromSessionId = async (
+  sessionId: string,
+  training_copy: boolean
+) => {
   try {
     const conversation = new entities.Conversation();
     conversation.session_id = sessionId;
+    conversation.training_copy = training_copy;
     await dataSource.manager.save(conversation);
     return conversation;
   } catch (err) {
@@ -40,12 +44,16 @@ export const createConversationFromSessionId = async (sessionId: string) => {
   }
 };
 
-export const getConversationFromSessionId = async (sessionId: string) => {
+export const getConversationFromSessionId = async (
+  sessionId: string,
+  training_copy: boolean
+) => {
   try {
     const conversation = await dataSource.manager.findOne(
       entities.Conversation,
       {
-        where: { session_id: sessionId },
+        where: { session_id: sessionId, training_copy },
+        relations: ["chats"],
       }
     );
     return conversation;
@@ -62,6 +70,7 @@ export const createChatFromSessionId = async ({
   role,
   enhanced,
   confidence,
+  training_copy,
 }: {
   sessionId: string;
   message: string;
@@ -69,9 +78,13 @@ export const createChatFromSessionId = async ({
   role: ChatRole;
   enhanced: boolean;
   confidence?: number;
+  training_copy?: boolean;
 }) => {
   try {
-    const conversation = await getConversationFromSessionId(sessionId);
+    const conversation = await getConversationFromSessionId(
+      sessionId,
+      training_copy
+    );
 
     if (!conversation) {
       return null;
@@ -131,12 +144,18 @@ export const getConversationChatsFromSessionId = async (sessionId: string) => {
   }
 };
 
-export const createConversationIfNotExists = async (sessionId: string) => {
+export const createConversationIfNotExists = async (
+  sessionId: string,
+  training_copy: boolean
+) => {
   try {
-    const conversation = await getConversationFromSessionId(sessionId);
+    const conversation = await getConversationFromSessionId(
+      sessionId,
+      training_copy
+    );
 
     if (!conversation) {
-      await createConversationFromSessionId(sessionId);
+      await createConversationFromSessionId(sessionId, training_copy);
     }
 
     const lengthMapper = {
@@ -168,6 +187,7 @@ export const addChatToConversationAndCreateIfNotExists = async ({
   role,
   enhanced,
   confidence,
+  training_copy,
 }: {
   sessionId: string;
   message: string;
@@ -175,9 +195,10 @@ export const addChatToConversationAndCreateIfNotExists = async ({
   role: ChatRole;
   enhanced: boolean;
   confidence?: number;
+  training_copy?: boolean;
 }) => {
   try {
-    await createConversationIfNotExists(sessionId);
+    await createConversationIfNotExists(sessionId, training_copy);
     const newChat = await createChatFromSessionId({
       sessionId,
       message,
@@ -186,7 +207,10 @@ export const addChatToConversationAndCreateIfNotExists = async ({
       enhanced,
       confidence,
     });
-    const newConversation = await getConversationFromSessionId(sessionId);
+    const newConversation = await getConversationFromSessionId(
+      sessionId,
+      training_copy
+    );
     return {
       conversation: newConversation,
       chat: newChat,

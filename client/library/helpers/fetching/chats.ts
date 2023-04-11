@@ -146,3 +146,33 @@ export const getConversation = async (conversation_id: string | number) => {
     };
   }
 };
+
+export const postTrainingChat = async (chat: {
+  message: string;
+  session_id: string;
+}) => {
+  try {
+    const res = await api.post("/chat/as_admin/training", {
+      message: chat.message,
+      session_id: chat.session_id,
+    });
+    return {
+      ...(res.data.data as Record<string, unknown>),
+      success: true,
+      conversation: res.data.data.conversation as Conversation,
+      conversation_id: res.data.data.conversation_id as number,
+    };
+  } catch (err) {
+    console.error(err);
+    showNotification({
+      title: "Error",
+      message: "There was an error posting the training chat.",
+      color: "red",
+    });
+    return {
+      success: false,
+      conversation: null,
+      conversation_id: null,
+    };
+  }
+};

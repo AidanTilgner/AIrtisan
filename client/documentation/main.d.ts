@@ -37,6 +37,7 @@ export interface Chat {
   review_text: string | null;
   reviewer: string | null;
   conversation: Conversation;
+  order: number;
   created_at: Date;
   updated_at: Date;
 }

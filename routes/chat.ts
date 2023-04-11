@@ -31,14 +31,13 @@ router.post("/", checkAPIKey, async (req, res) => {
     const response = await getNLUResponse(message);
     const { intent, answer, confidence, initial_text } = response;
     detectAndActivateTriggers(intent, session_id);
-    const { chat: userChat, conversation } =
-      await addChatToConversationAndCreateIfNotExists({
-        sessionId: session_id,
-        message,
-        intent,
-        role: "user",
-        enhanced: false,
-      });
+    const { chat: userChat } = await addChatToConversationAndCreateIfNotExists({
+      sessionId: session_id,
+      message,
+      intent,
+      role: "user",
+      enhanced: false,
+    });
 
     const { answer: botAnswer, enhanced } = await enhanceChatIfNecessary({
       message: initial_text,
@@ -48,14 +47,15 @@ router.post("/", checkAPIKey, async (req, res) => {
       session_id,
     });
 
-    const { chat: botChat } = await addChatToConversationAndCreateIfNotExists({
-      sessionId: session_id,
-      message: botAnswer,
-      intent,
-      role: "assistant",
-      enhanced,
-      confidence,
-    });
+    const { chat: botChat, conversation } =
+      await addChatToConversationAndCreateIfNotExists({
+        sessionId: session_id,
+        message: botAnswer,
+        intent,
+        role: "assistant",
+        enhanced,
+        confidence,
+      });
 
     const chats = await getChatsFromSessionId(session_id);
 
@@ -132,14 +132,15 @@ router.post("/as_admin", checkIsAdmin, async (req, res) => {
       session_id,
     });
 
-    const { chat: botChat } = await addChatToConversationAndCreateIfNotExists({
-      sessionId: session_id,
-      message: botAnswer,
-      intent,
-      role: "assistant",
-      enhanced,
-      confidence,
-    });
+    const { chat: botChat, conversation } =
+      await addChatToConversationAndCreateIfNotExists({
+        sessionId: session_id,
+        message: botAnswer,
+        intent,
+        role: "assistant",
+        enhanced,
+        confidence,
+      });
 
     const chats = await getChatsFromSessionId(session_id);
 
@@ -153,6 +154,8 @@ router.post("/as_admin", checkIsAdmin, async (req, res) => {
         enhanced: enhanced || false,
         botChat: botChat.id,
         userChat: userChat.id,
+        conversation: conversation,
+        conversation_id: conversation.id,
       },
     };
 
@@ -189,5 +192,73 @@ router.post(
     }
   }
 );
+
+router.post("/as_admin/training", checkIsAdmin, async (req, res) => {
+  try {
+    const message = req.body.message || req.query.message;
+    if (!message) {
+      res.status(402).send({ message: "No message provided" });
+      return;
+    }
+    const session_id = getRequesterSessionId(req) || createSession().id;
+
+    const response = await getNLUResponse(message);
+    const { intent, answer, confidence, initial_text } = response;
+    detectAndActivateTriggers(intent, session_id);
+    const { chat: userChat } = await addChatToConversationAndCreateIfNotExists({
+      sessionId: session_id,
+      message,
+      intent,
+      role: "user",
+      enhanced: false,
+      training_copy: true,
+    });
+
+    const { answer: botAnswer, enhanced } = await enhanceChatIfNecessary({
+      message: initial_text,
+      answer,
+      intent,
+      confidence,
+      session_id,
+    });
+
+    const { chat: botChat, conversation } =
+      await addChatToConversationAndCreateIfNotExists({
+        sessionId: session_id,
+        message: botAnswer,
+        intent,
+        role: "assistant",
+        enhanced,
+        confidence,
+        training_copy: true,
+      });
+
+    const chats = await getChatsFromSessionId(session_id);
+
+    const toSend = {
+      message,
+      data: {
+        session_id,
+        ...response,
+        answer: botAnswer,
+        chats,
+        enhanced: enhanced || false,
+        botChat: botChat.id,
+        userChat: userChat.id,
+        conversation: conversation,
+        conversation_id: conversation.id,
+      },
+    };
+
+    res.send(toSend);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({
+      message: "Error getting response",
+      answer:
+        "Sorry, I've encountered an error. It has been reported. Please try again later.",
+    });
+  }
+});
 
 export default router;
