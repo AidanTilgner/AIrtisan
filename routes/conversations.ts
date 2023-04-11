@@ -4,6 +4,7 @@ import {
   deleteConversation,
   getConversationsThatNeedReview,
   getConversations,
+  getConversation,
 } from "../database/functions/conversations";
 
 const router = Router();
@@ -41,6 +42,37 @@ router.get("/all", async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).send({ message: "Error getting conversations" });
+  }
+});
+
+router.get("/:conversation_id", async (req, res) => {
+  try {
+    const { conversation_id } = req.params;
+
+    const formattedConversationId = Number(conversation_id);
+
+    if (!formattedConversationId) {
+      res.status(402).send({ message: "No conversation id provided" });
+      return;
+    }
+
+    const conversation = await getConversation(formattedConversationId);
+
+    if (!conversation) {
+      res.status(404).send({ message: "Conversation not found" });
+      return;
+    }
+
+    res.send({
+      message: "Conversation retrieved",
+      success: true,
+      data: {
+        conversation,
+      },
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ message: "Error getting conversation" });
   }
 });
 

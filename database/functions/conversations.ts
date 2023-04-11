@@ -4,8 +4,28 @@ import { ChatRole } from "../models/chat";
 import { Conversation } from "../models/conversation";
 
 export const getConversations = async () => {
-  const conversations = await dataSource.manager.find(entities.Conversation);
-  return conversations;
+  try {
+    const conversations = await dataSource.manager.find(entities.Conversation);
+    return conversations;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};
+
+export const getConversation = async (conversationId: number) => {
+  try {
+    const conversation = await dataSource.manager.findOne(
+      entities.Conversation,
+      {
+        where: { id: conversationId },
+      }
+    );
+    return conversation;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
 };
 
 export const createConversationFromSessionId = async (sessionId: string) => {
@@ -282,7 +302,9 @@ export const createTrainingCopyOfConversation = async (
 
     const newConversation = new entities.Conversation();
     newConversation.session_id = conversation.session_id;
-    newConversation.generated_name = `Copy of: ${conversation.generated_name}`;
+    newConversation.generated_name = `Copy of: ${
+      conversation.generated_name || "Unnamed Conversation"
+    }`;
     newConversation.training_copy = true;
     await dataSource.manager.save(newConversation);
 

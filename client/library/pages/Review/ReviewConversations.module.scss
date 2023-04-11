@@ -125,6 +125,8 @@
     border-radius: 5px;
     margin: 0;
     box-sizing: border-box;
+    z-index: 10;
+    background-color: rgba($color: #fff, $alpha: 1);
 
     &_enhanced {
       color: #2256f2;

@@ -31,13 +31,14 @@ router.post("/", checkAPIKey, async (req, res) => {
     const response = await getNLUResponse(message);
     const { intent, answer, confidence, initial_text } = response;
     detectAndActivateTriggers(intent, session_id);
-    const { chat: userChat } = await addChatToConversationAndCreateIfNotExists({
-      sessionId: session_id,
-      message,
-      intent,
-      role: "user",
-      enhanced: false,
-    });
+    const { chat: userChat, conversation } =
+      await addChatToConversationAndCreateIfNotExists({
+        sessionId: session_id,
+        message,
+        intent,
+        role: "user",
+        enhanced: false,
+      });
 
     const { answer: botAnswer, enhanced } = await enhanceChatIfNecessary({
       message: initial_text,
@@ -68,6 +69,8 @@ router.post("/", checkAPIKey, async (req, res) => {
         enhanced: enhanced || false,
         botChat: botChat.id,
         userChat: userChat.id,
+        conversation: conversation,
+        conversation_id: conversation.id,
       },
     };
 

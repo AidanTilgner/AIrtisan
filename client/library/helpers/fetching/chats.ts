@@ -125,3 +125,24 @@ export const deleteConversation = async (conversation_id: string | number) => {
     };
   }
 };
+
+export const getConversation = async (conversation_id: string | number) => {
+  try {
+    const res = await api.get(`/conversations/${conversation_id}`);
+    return {
+      success: true,
+      conversation: res.data.data.conversation as Conversation,
+    };
+  } catch (err) {
+    console.error(err);
+    showNotification({
+      title: "Error",
+      message: "There was an error getting the conversation.",
+      color: "red",
+    });
+    return {
+      success: false,
+      conversation: null,
+    };
+  }
+};
