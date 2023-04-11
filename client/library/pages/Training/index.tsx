@@ -40,7 +40,7 @@ function index() {
       <div className={styles.training}>
         <div className={styles.header}>
           <h2>Training</h2>
-          <div className={styles.training_type}>
+          <div className={styles.trainingTypeInput}>
             <SegmentedControl
               value={trainingType}
               onChange={(value) =>

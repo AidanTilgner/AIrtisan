@@ -296,7 +296,7 @@ function Interactive() {
             py={14}
             px={24}
             sx={() => ({
-              width: isMobile ? "100%" : "40%",
+              width: isMobile ? "100%" : "50%",
             })}
           >
             <Flex
