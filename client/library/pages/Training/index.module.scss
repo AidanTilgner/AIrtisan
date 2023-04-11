@@ -1,0 +1,15 @@
+.training {
+}
+
+.header {
+  padding-inline: 24px;
+  text-align: center;
+
+  @media (min-width: 768px) {
+    padding-inline: 56px;
+  }
+
+  h2 {
+    font-weight: 500;
+  }
+}

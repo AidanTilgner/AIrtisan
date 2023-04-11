@@ -26,11 +26,11 @@ import {
   removeButtonFromIntent,
   updateButtonsOnIntent,
   getAllButtons,
-} from "../../helpers/fetching";
+} from "../../../helpers/fetching";
 import { showNotification } from "@mantine/notifications";
 import { TrashSimple, Copy, Check, Lightning } from "phosphor-react";
-import { copyToClipboard } from "../../helpers/utilities";
-import { getShortenedMessage } from "../../helpers/formating";
+import { copyToClipboard } from "../../../helpers/utilities";
+import { getShortenedMessage } from "../../../helpers/formating";
 import { useMediaQuery } from "@mantine/hooks";
 import { useSearchParams } from "react-router-dom";
 

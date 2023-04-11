@@ -29,12 +29,10 @@ function Navbar() {
       </li>
       <li>
         <Link
-          to="/interactive"
-          className={
-            currentPath === "/interactive" ? styles.active : styles.inactive
-          }
+          to="/train"
+          className={currentPath === "/train" ? styles.active : styles.inactive}
         >
-          Interactive
+          Training
         </Link>
       </li>
       <li>

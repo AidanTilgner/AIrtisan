@@ -2,13 +2,13 @@ import React from "react";
 import Navbar from "./library/components/Navigation/Navbar/Navbar";
 import styles from "./App.module.scss";
 import { Routes, Route } from "react-router-dom";
-import Interactive from "./library/pages/Interactive/Interactive";
 import { MantineProvider } from "@mantine/core";
 import { NotificationsProvider } from "@mantine/notifications";
 import Preview from "./library/pages/Preview/Preview";
 import Welcome from "./library/pages/Welcome/Welcome";
 import Auth from "./library/pages/Auth/Auth";
 import ReviewConversations from "./library/pages/Review/ReviewConversations";
+import Training from "./library/pages/Training/";
 import { useUser } from "./library/contexts/User";
 
 function App() {
@@ -48,13 +48,15 @@ function App() {
             <Routes>
               <Route path="/">
                 <Route index element={<Welcome />} />
-                <Route path="interactive" element={<Interactive />} />
                 <Route path="preview" element={<Preview />} />
                 <Route path="review">
                   <Route
                     path="conversations"
                     element={<ReviewConversations />}
                   />
+                </Route>
+                <Route path="train">
+                  <Route index element={<Training />} />
                 </Route>
                 {isSuperAdmin && (
                   <Route path="admin">
