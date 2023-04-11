@@ -34,6 +34,17 @@
   margin-bottom: 36px;
 }
 
+.searchContainer {
+  width: 100%;
+  margin: 36px 0;
+  box-sizing: border-box;
+
+  @media (min-width: 768px) {
+    width: 50%;
+    margin: 56px 0;
+  }
+}
+
 .conversations {
   width: 100%;
 }

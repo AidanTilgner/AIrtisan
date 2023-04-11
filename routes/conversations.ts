@@ -1,10 +1,48 @@
 import { Router } from "express";
 import { checkIsAdmin } from "../middleware/auth";
-import { deleteConversation } from "../database/functions/conversations";
+import {
+  deleteConversation,
+  getConversationsThatNeedReview,
+  getConversations,
+} from "../database/functions/conversations";
 
 const router = Router();
 
 router.use(checkIsAdmin);
+
+router.get("/need_review", async (req, res) => {
+  try {
+    const conversations = await getConversationsThatNeedReview();
+
+    res.send({
+      message: "Conversations retrieved",
+      success: true,
+      data: {
+        conversations,
+      },
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ message: "Error getting conversations" });
+  }
+});
+
+router.get("/all", async (req, res) => {
+  try {
+    const conversations = await getConversations();
+
+    res.send({
+      message: "Conversations retrieved",
+      success: true,
+      data: {
+        conversations,
+      },
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ message: "Error getting conversations" });
+  }
+});
 
 router.delete("/:conversation_id", async (req, res) => {
   try {

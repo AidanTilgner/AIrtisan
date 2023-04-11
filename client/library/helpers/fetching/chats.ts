@@ -1,4 +1,7 @@
-import { Conversation } from "../../../documentation/main";
+import {
+  Conversation,
+  ConversationToReview,
+} from "../../../documentation/main";
 import { api } from "./index";
 import { showNotification } from "@mantine/notifications";
 
@@ -18,8 +21,11 @@ export const getChatsThatNeedReview = async () => {
 
 export const getConversationsThatNeedReview = async () => {
   try {
-    const res = await api.get("/training/conversations/need_review");
-    return res.data.data;
+    const res = await api.get("/conversations/need_review");
+    return {
+      success: true,
+      conversations: res.data.data.conversations as ConversationToReview[],
+    };
   } catch (err) {
     console.error(err);
     showNotification({
@@ -27,6 +33,10 @@ export const getConversationsThatNeedReview = async () => {
       message: "There was an error getting conversations that need review.",
       color: "red",
     });
+    return {
+      success: false,
+      conversations: [],
+    };
   }
 };
 
@@ -48,8 +58,11 @@ export const markChatAsReviewed = async (chatId: number, username: string) => {
 
 export const getConversations = async () => {
   try {
-    const res = await api.get("/training/conversations/all");
-    return res.data.data;
+    const res = await api.get("/conversations/all");
+    return {
+      success: true,
+      conversations: res.data.data.conversations as Conversation[],
+    };
   } catch (err) {
     console.error(err);
     showNotification({
@@ -57,6 +70,10 @@ export const getConversations = async () => {
       message: "There was an error getting conversations.",
       color: "red",
     });
+    return {
+      success: false,
+      conversations: [],
+    };
   }
 };
 

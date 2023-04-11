@@ -24,8 +24,12 @@ import {
   ConversationToReview,
 } from "../../../documentation/main";
 import { showNotification } from "@mantine/notifications";
+import Search from "../../components/Search/Search";
+import { useSearch } from "../../contexts/Search";
 
 function ReviewConversations() {
+  const { query } = useSearch();
+
   const [conversations, setConversations] = React.useState<
     ConversationToReview[]
   >([]);
@@ -35,10 +39,10 @@ function ReviewConversations() {
 
   React.useEffect(() => {
     (async () => {
-      const conversations = await getConversationsThatNeedReview();
+      const { conversations } = await getConversationsThatNeedReview();
       setConversations(conversations);
 
-      const allConversations = await getConversations();
+      const { conversations: allConversations } = await getConversations();
       setAllConversations(allConversations);
     })();
   }, []);
@@ -47,17 +51,47 @@ function ReviewConversations() {
     React.useState<ConversationToReview | null>(null);
 
   const reloadConversations = async () => {
-    const conversations = await getConversationsThatNeedReview();
+    const { conversations } = await getConversationsThatNeedReview();
     setConversations(conversations);
-    const allConversations = await getConversations();
+    const { conversations: allConversations } = await getConversations();
     setAllConversations(allConversations);
   };
 
   const [viewAllConversations, setViewAllConversations] = React.useState(true);
 
+  const filterConversations = (convs: ConversationType[]) => {
+    if (query === "") {
+      return convs;
+    }
+
+    return convs.filter((conv) => {
+      const passes =
+        conv.chats.some((chat) => chat.message.toLowerCase().includes(query)) ||
+        conv.chats.some((chat) =>
+          String(chat.id).toLowerCase().includes(query)
+        ) ||
+        conv.chats.some((chat) =>
+          chat.reviewer?.toLowerCase().includes(query)
+        ) ||
+        conv.chats.some((chat) =>
+          chat.review_text?.toLowerCase().includes(query)
+        ) ||
+        (conv.chats.some((chat) => chat.enhanced) &&
+          query.includes("enhanced")) ||
+        (conv.generated_name
+          ? conv.generated_name?.toLowerCase().includes(query)
+          : "Unnamed Conversation".toLowerCase().includes(query)) ||
+        String(conv.id).toLowerCase().includes(query) ||
+        conv.session_id.toLowerCase().includes(query) ||
+        (conv.training_copy && ["training", "copy"].includes(query));
+
+      return passes;
+    });
+  };
+
   const conversationsToView = viewAllConversations
-    ? allConversations
-    : conversations;
+    ? filterConversations(allConversations)
+    : filterConversations(conversations);
 
   return (
     <div className={styles.ReviewConversations}>
@@ -87,6 +121,9 @@ function ReviewConversations() {
         >
           {viewAllConversations ? "View To Review" : "View All"}
         </SegmentedControl>
+      </div>
+      <div className={styles.searchContainer}>
+        <Search />
       </div>
       <div className={styles.interface_container}>
         <div className={styles.conversations}>

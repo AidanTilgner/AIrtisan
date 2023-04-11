@@ -30,12 +30,12 @@ export interface Chat {
   session_id: string;
   message: string;
   intent: string;
-  confidence: number;
+  confidence: number | null;
   role: "user" | "assistant";
   enhanced: boolean;
   needs_review: boolean;
-  review_text: string;
-  reviewer: string;
+  review_text: string | null;
+  reviewer: string | null;
   conversation: Conversation;
   created_at: Date;
   updated_at: Date;

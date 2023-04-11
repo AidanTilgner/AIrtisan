@@ -8,8 +8,6 @@ import { useSearchParams } from "react-router-dom";
 function index() {
   const [urlSearchParams, setUrlSearchParams] = useSearchParams();
 
-  console.log("URlSearchParams: ", urlSearchParams);
-
   const [trainingType, setTrainingType] = React.useState<
     "interactive" | "converse"
   >((urlSearchParams.get("tab") as "converse" | "interactive") || "converse");
