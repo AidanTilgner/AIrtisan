@@ -4,13 +4,9 @@ import NLURouter from "./routes/nlu";
 import ChatRouter from "./routes/chat";
 import TrainingRouter from "./routes/training";
 import AuthRouter from "./routes/auth";
+import ConversationsRouter from "./routes/conversations";
 import { train } from "./nlu/index";
 import { logIP } from "./middleware/analysis";
-import {
-  checkAPIKey,
-  checkIsAdmin,
-  checkIsAdminAndShowLoginIfNot,
-} from "./middleware/auth";
 import path from "path";
 import "reflect-metadata";
 import { initializeDatabase } from "./database";
@@ -32,6 +28,7 @@ app.use("/nlu", NLURouter);
 app.use("/chat", ChatRouter);
 app.use("/training", TrainingRouter);
 app.use("/auth", AuthRouter);
+app.use("/conversations", ConversationsRouter);
 
 app.get("/login", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "auth", "login.html"));

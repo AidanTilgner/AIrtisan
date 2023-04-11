@@ -1,44 +1,66 @@
-import React from "react";
+import React, { useEffect, useMemo } from "react";
 import Interactive from "./Interactive/Interactive";
-import Chat from "./Chat/Chat";
+import Converse from "./Converse/Converse";
 import styles from "./index.module.scss";
 import { SegmentedControl } from "@mantine/core";
+import { useSearchParams } from "react-router-dom";
 
 function index() {
+  const [urlSearchParams, setUrlSearchParams] = useSearchParams();
+
+  console.log("URlSearchParams: ", urlSearchParams);
+
   const [trainingType, setTrainingType] = React.useState<
-    "interactive" | "chat"
-  >("chat");
+    "interactive" | "converse"
+  >((urlSearchParams.get("tab") as "converse" | "interactive") || "converse");
+
+  useEffect(() => {
+    if (urlSearchParams.get("tab") !== trainingType) {
+      setUrlSearchParams((prev) => {
+        prev.set("tab", trainingType);
+        return prev;
+      });
+    }
+  }, []);
+
+  const prevTrainingType = React.useRef(trainingType);
 
   const TrainingComponent = () => {
+    if (prevTrainingType.current !== trainingType) {
+      prevTrainingType.current = trainingType;
+    }
     switch (trainingType) {
       case "interactive":
         return <Interactive />;
-      case "chat":
-        return <Chat />;
+      case "converse":
+        return <Converse />;
     }
   };
 
-  return (
-    <div className={styles.training}>
-      <div className={styles.header}>
-        <h2>Training</h2>
+  return useMemo(
+    () => (
+      <div className={styles.training}>
+        <div className={styles.header}>
+          <h2>Training</h2>
+          <div className={styles.training_type}>
+            <SegmentedControl
+              value={trainingType}
+              onChange={(value) =>
+                setTrainingType(value as "interactive" | "converse")
+              }
+              data={[
+                { label: "Converse", value: "converse" },
+                { label: "Interactive", value: "interactive" },
+              ]}
+            />
+          </div>
+        </div>
         <div className={styles.training_type}>
-          <SegmentedControl
-            value={trainingType}
-            onChange={(value) =>
-              setTrainingType(value as "interactive" | "chat")
-            }
-            data={[
-              { label: "Chat", value: "chat" },
-              { label: "Interactive", value: "interactive" },
-            ]}
-          />
+          <TrainingComponent />
         </div>
       </div>
-      <div className={styles.training_type}>
-        <TrainingComponent />
-      </div>
-    </div>
+    ),
+    [trainingType]
   );
 }
 

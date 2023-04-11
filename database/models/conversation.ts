@@ -21,6 +21,11 @@ export class Conversation {
   @Column()
   session_id!: string;
 
+  @Column({
+    nullable: true,
+  })
+  training_copy: boolean;
+
   @OneToMany(() => Chat, (chat) => chat.conversation, { eager: true })
   chats!: Chat[];
 

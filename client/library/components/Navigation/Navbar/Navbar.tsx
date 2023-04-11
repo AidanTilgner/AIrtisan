@@ -37,16 +37,6 @@ function Navbar() {
       </li>
       <li>
         <Link
-          to="/preview"
-          className={
-            currentPath === "/preview" ? styles.active : styles.inactive
-          }
-        >
-          Previews
-        </Link>
-      </li>
-      <li>
-        <Link
           to="/review/conversations"
           className={
             currentPath === "/review/conversations"
@@ -55,6 +45,16 @@ function Navbar() {
           }
         >
           Conversations
+        </Link>
+      </li>
+      <li>
+        <Link
+          to="/preview"
+          className={
+            currentPath === "/preview" ? styles.active : styles.inactive
+          }
+        >
+          Previews
         </Link>
       </li>
     </>

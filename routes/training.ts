@@ -17,6 +17,7 @@ import {
   getConversationsThatNeedReview,
   markChatAsReviewed,
   getConversations,
+  createTrainingCopyOfConversation,
 } from "../database/functions/conversations";
 import { checkIsAdmin } from "../middleware/auth";
 
@@ -318,5 +319,43 @@ router.get("/conversations/all", async (req, res) => {
 
   res.send(toSend);
 });
+
+router.post(
+  "/conversation/:conversation_id/training_copy/",
+  async (req, res) => {
+    try {
+      const { conversation_id } = req.params;
+
+      const formattedID = Number(conversation_id);
+
+      const data = await createTrainingCopyOfConversation(formattedID);
+
+      if (!data) {
+        res.send({
+          message: "Conversation not found",
+          success: false,
+        });
+        return;
+      }
+
+      const toSend = {
+        message: "Training copy created",
+        success: true,
+        data: {
+          conversation: data,
+          new_conversation_id: data.id,
+        },
+      };
+
+      res.send(toSend);
+    } catch (err) {
+      console.error(err);
+      res.send({
+        message: "Error getting training copy",
+        success: false,
+      });
+    }
+  }
+);
 
 export default router;

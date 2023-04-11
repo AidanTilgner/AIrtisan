@@ -97,17 +97,33 @@
     font-size: 14px;
   }
 
-  .tag {
+  .tags {
     position: absolute;
     bottom: 14px;
     right: 24px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .tag {
     font-size: 9px;
     padding: 4px 8px;
-    color: #2256f2;
-    border: 1px solid #2256f2;
     border-radius: 5px;
     margin: 0;
     box-sizing: border-box;
+
+    &_enhanced {
+      color: #2256f2;
+      border: 1px solid #2256f2;
+    }
+
+    &_training_copy {
+      color: #102973;
+      border: 1px solid #102973;
+    }
   }
 }
 
@@ -169,10 +185,51 @@
     margin-bottom: 14px;
   }
 
-  .subtitle {
-    opacity: 0.7;
-    font-size: 14px;
-    margin: 0;
+  .metadata {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+
+    .subtitle {
+      opacity: 0.7;
+      font-size: 14px;
+      margin: 0;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 14px;
+
+      .option {
+        opacity: 0.5;
+        transition: all 0.2s ease-in-out;
+        border: none;
+        background-color: transparent;
+        cursor: pointer;
+        font-size: 14px;
+
+        &:hover {
+          opacity: 1;
+        }
+      }
+
+      .copy {
+        color: #2256f2;
+      }
+
+      .delete {
+        color: #ff0000;
+      }
+
+      .is_copy {
+        color: #102973;
+      }
+    }
   }
 
   .buttons {
@@ -234,13 +291,12 @@
         top: calc(50% - 8px);
         left: -28px;
         font-size: 16px;
-        color: #2256f2;
+        color: #07b319;
         opacity: 0.5;
         cursor: pointer;
         transition: all 0.2s ease-in-out;
 
         &:hover {
-          color: #2256f2;
           opacity: 1;
         }
       }

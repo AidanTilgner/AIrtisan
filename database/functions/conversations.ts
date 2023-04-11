@@ -263,3 +263,69 @@ export const markChatAsReviewed = async (chatId: number, username: string) => {
     return null;
   }
 };
+
+export const createTrainingCopyOfConversation = async (
+  conversationId: number
+) => {
+  try {
+    const conversation = await dataSource.manager.findOne(
+      entities.Conversation,
+      {
+        where: { id: conversationId },
+        relations: ["chats"],
+      }
+    );
+
+    if (!conversation) {
+      return null;
+    }
+
+    const newConversation = new entities.Conversation();
+    newConversation.session_id = conversation.session_id;
+    newConversation.generated_name = `Copy of: ${conversation.generated_name}`;
+    newConversation.training_copy = true;
+    await dataSource.manager.save(newConversation);
+
+    for (const chat of conversation.chats) {
+      const newChat = new entities.Chat();
+      newChat.session_id = chat.session_id;
+      newChat.message = chat.message;
+      newChat.intent = chat.intent;
+      newChat.role = chat.role;
+      newChat.enhanced = chat.enhanced;
+      newChat.conversation = newConversation;
+      newChat.order = chat.order;
+      newChat.confidence = chat.confidence;
+      await dataSource.manager.save(newChat);
+    }
+    return newConversation;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};
+
+export const deleteConversation = async (conversationId: number) => {
+  try {
+    const conversation = await dataSource.manager.findOne(
+      entities.Conversation,
+      {
+        where: { id: conversationId },
+        relations: ["chats"],
+      }
+    );
+
+    if (!conversation) {
+      return null;
+    }
+
+    for (const chat of conversation.chats) {
+      await dataSource.manager.remove(chat);
+    }
+    await dataSource.manager.remove(conversation);
+    return conversation;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};

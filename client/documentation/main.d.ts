@@ -20,6 +20,7 @@ export interface Conversation {
   generated_name: string;
   session_id: string;
   chats: Chat[];
+  training_copy: boolean;
   created_at: Date;
   updated_at: Date;
 }

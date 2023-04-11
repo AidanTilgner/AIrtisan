@@ -1,3 +1,4 @@
+import { Conversation } from "../../../documentation/main";
 import { api } from "./index";
 import { showNotification } from "@mantine/notifications";
 
@@ -56,5 +57,54 @@ export const getConversations = async () => {
       message: "There was an error getting conversations.",
       color: "red",
     });
+  }
+};
+
+export const createTrainingCopyOfConversation = async (
+  conversation_id: string | number
+) => {
+  try {
+    const res = await api.post(
+      `/training/conversation/${conversation_id}/training_copy`
+    );
+    return {
+      success: true,
+      conversation: res.data.data.conversation as Conversation,
+      new_conversation_id: res.data.data.new_conversation_id as number,
+    };
+  } catch (err) {
+    console.error(err);
+    showNotification({
+      title: "Error",
+      message:
+        "There was an error creating a training copy of the conversation.",
+      color: "red",
+    });
+    return {
+      success: false,
+      conversation: null,
+      new_conversation_id: null,
+    };
+  }
+};
+
+export const deleteConversation = async (conversation_id: string | number) => {
+  try {
+    const res = await api.delete(`/conversations/${conversation_id}`);
+    return {
+      success: true,
+      conversation: res.data.data.conversation as Conversation,
+    };
+  } catch (err) {
+    console.error(err);
+    showNotification({
+      title: "Error",
+      message: "There was an error deleting the conversation.",
+      color: "red",
+    });
+    return {
+      success: false,
+      conversation: null,
+    };
   }
 };

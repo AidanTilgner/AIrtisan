@@ -4,16 +4,26 @@ import {
   getConversationsThatNeedReview,
   markChatAsReviewed,
   getConversations,
+  createTrainingCopyOfConversation,
+  deleteConversation,
 } from "../../helpers/fetching/chats";
 import { Button, SegmentedControl } from "@mantine/core";
 import { useUser } from "../../contexts/User";
-import { MagicWand, WarningCircle, ArrowsClockwise } from "phosphor-react";
+import {
+  MagicWand,
+  WarningCircle,
+  ArrowsClockwise,
+  TrashSimple,
+  Lightning,
+  ArrowRight,
+} from "phosphor-react";
 import { useNavigate } from "react-router-dom";
 import {
   Chat,
   Conversation as ConversationType,
   ConversationToReview,
 } from "../../../documentation/main";
+import { showNotification } from "@mantine/notifications";
 
 function ReviewConversations() {
   const [conversations, setConversations] = React.useState<
@@ -120,6 +130,8 @@ function Conversation({
   const [chats, setChats] = React.useState<Chat[]>([]);
   const { user } = useUser();
 
+  const navigate = useNavigate();
+
   const getConversationChats = seeFullConversation
     ? conversation.chats
     : conversation.chats?.filter((c, i, chats) => {
@@ -155,13 +167,73 @@ function Conversation({
     reloadConversations();
   };
 
-  const navigate = useNavigate();
+  const handleCreateTrainingCopy = async (chatId: number) => {
+    if (!user) return;
+    const { success, new_conversation_id } =
+      await createTrainingCopyOfConversation(chatId);
+    if (!success || !new_conversation_id) {
+      console.error("Failed to create training copy of conversation");
+      showNotification({
+        title: "Error",
+        message: "Failed to create training copy of conversation",
+        color: "red",
+      });
+      return;
+    }
+
+    showNotification({
+      title: "Success",
+      message: "Created training copy of conversation",
+    });
+
+    const newParams = new URLSearchParams({
+      load_conversation: new_conversation_id.toString(),
+      tab: "converse",
+    }).toString();
+
+    reloadConversations();
+
+    navigate(`/train?${newParams}`);
+  };
+
+  const handleDeleteConversation = async (chatId: number) => {
+    if (!user) return;
+    const res = await deleteConversation(chatId);
+
+    if (!res.success) {
+      console.error("Failed to delete conversation");
+      showNotification({
+        title: "Error",
+        message: "Failed to delete conversation",
+      });
+      reloadConversations();
+      return;
+    }
+
+    showNotification({
+      title: "Success",
+      message: "Deleted conversation",
+      color: "red",
+    });
+
+    setOpenedConversation(null);
+    reloadConversations();
+  };
 
   const handleRetryChat = async (chatContent: string) => {
     const urlSearchParams = new URLSearchParams({
       run: chatContent,
+      tab: "interactive",
     }).toString();
-    navigate(`/interactive?${urlSearchParams}`);
+    navigate(`/train?${urlSearchParams}`);
+  };
+
+  const handleOpenInTraining = async (chatId: number) => {
+    const urlSearchParams = new URLSearchParams({
+      load_conversation: chatId.toString(),
+      tab: "converse",
+    }).toString();
+    navigate(`/train?${urlSearchParams}`);
   };
 
   return (
@@ -198,9 +270,19 @@ function Conversation({
         <p className={styles.bottomtext}>
           {getShortenedText(conversation.chats[0].message, 48)}
         </p>
-        {conversation.chats.some((c) => !!c.enhanced) && (
-          <div className={styles.tag}>enhanced</div>
-        )}
+        <div className={styles.tags}>
+          {conversation.chats.some((c) => !!c.enhanced) ||
+            (true && (
+              <div className={`${styles.tag} ${styles.tag_enhanced}`}>
+                enhanced
+              </div>
+            ))}
+          {conversation.training_copy && (
+            <div className={`${styles.tag} ${styles.tag_training_copy}`}>
+              training copy
+            </div>
+          )}
+        </div>
       </div>
       {openedConversation && openedConversation.id === conversation.id && (
         <div className={styles.opened_conversation}>
@@ -208,7 +290,38 @@ function Conversation({
             <h2 className={styles.title}>
               {openedConversation.generated_name || "No Generated Name"}
             </h2>
-            <p className={styles.subtitle}>{openedConversation.session_id}</p>
+            <div className={styles.metadata}>
+              <p className={styles.subtitle}>{openedConversation.session_id}</p>
+              <div className={styles.options}>
+                <button
+                  className={`${styles.option} ${styles.delete}`}
+                  title="Delete this conversation"
+                  onClick={() => handleDeleteConversation(conversation.id)}
+                >
+                  <TrashSimple />
+                </button>
+                {!conversation.training_copy && (
+                  <button
+                    className={`${styles.option} ${styles.copy}`}
+                    title="Retry a copy of this conversation"
+                    onClick={() => handleCreateTrainingCopy(conversation.id)}
+                  >
+                    <ArrowsClockwise />
+                  </button>
+                )}
+                {conversation.training_copy && (
+                  <button
+                    className={`${styles.option} ${styles.is_copy}`}
+                    title="Open in training"
+                    onClick={() => {
+                      handleOpenInTraining(conversation.id);
+                    }}
+                  >
+                    <ArrowRight />
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
           <div className={styles.chats}>
             {chats.map((chat) => (
@@ -285,7 +398,7 @@ function Conversation({
                         handleRetryChat(chat.message);
                       }}
                     >
-                      <ArrowsClockwise />
+                      <Lightning />
                     </div>
                   )}
                 </div>
