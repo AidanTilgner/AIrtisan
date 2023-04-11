@@ -375,3 +375,16 @@ export const deleteConversation = async (conversationId: number) => {
     return null;
   }
 };
+
+export const getChat = async (chatId: number) => {
+  try {
+    const chat = await dataSource.manager.findOne(entities.Chat, {
+      where: { id: chatId },
+      relations: ["conversation"],
+    });
+    return chat;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};
