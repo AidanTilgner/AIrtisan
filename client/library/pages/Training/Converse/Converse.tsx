@@ -7,7 +7,7 @@ import {
   postTrainingChat,
 } from "../../../helpers/fetching/chats";
 import { showNotification } from "@mantine/notifications";
-import { PaperPlaneTilt } from "phosphor-react";
+import { PaperPlaneTilt, Plus } from "phosphor-react";
 import { Button } from "@mantine/core";
 
 function Converse() {
@@ -93,8 +93,9 @@ function Converse() {
             setConversation(undefined);
             setInitialLoad(true);
           }}
+          variant="outline"
         >
-          New Conversation
+          <Plus weight="bold" />
         </Button>
       </div>
       <div className={styles.content}>

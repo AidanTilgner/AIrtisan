@@ -5,6 +5,7 @@
   overflow: hidden;
   align-items: center;
   padding-inline: 24px;
+  padding-bottom: 56px;
 
   @media (min-width: 768px) {
     padding-inline: 56px;
@@ -36,13 +37,32 @@
 
 .searchContainer {
   width: 100%;
-  margin: 36px 0;
+  margin: 24px 0 0 0;
   box-sizing: border-box;
 
   @media (min-width: 768px) {
     width: 50%;
-    margin: 56px 0;
+    margin: 36px 0 0 0;
   }
+}
+
+.filtersContainer {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  margin: 24px 0 36px 0;
+  width: 100%;
+  gap: 8px;
+
+  @media (min-width: 768px) {
+    width: 50%;
+    margin: 36px 0 36px 0;
+  }
+}
+
+.disclaimer {
+  text-align: center;
 }
 
 .conversations {
@@ -71,7 +91,19 @@
   }
 }
 
+@keyframes conversationIn {
+  0% {
+    transform: translateX(-50%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
 .conversation {
+  opacity: 0;
   width: 100%;
   border: 1px solid #eaeaea;
   box-sizing: border-box;
@@ -80,6 +112,8 @@
   transition: all 0.2s ease-in-out;
   position: relative;
   overflow: hidden;
+  margin-bottom: 14px;
+  animation: conversationIn 0.5s ease-in-out forwards;
 
   &:hover {
     background-color: #f5f5f5;

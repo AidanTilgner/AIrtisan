@@ -54,14 +54,13 @@
     {
       "intent": "confirmation.no",
       "utterances": ["No"],
-      "answers": [],
+      "answers": ["Alright!"],
       "enhance": true
     },
-    { "intent": "confi", "utterances": [], "answers": [] },
     {
       "intent": "confirmation.yes",
       "utterances": ["Yes"],
-      "answers": [],
+      "answers": ["Perfect!"],
       "enhance": true
     },
     { "intent": "ooga.booga", "utterances": ["ooga.booga"], "answers": [] },
