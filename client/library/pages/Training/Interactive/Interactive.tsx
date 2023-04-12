@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./Interactive.module.scss";
 import {
   Autocomplete,
@@ -223,7 +223,7 @@ function Interactive() {
     });
   };
 
-  const deleteButton = (button) => {
+  const deleteButton = (button: { type: string }) => {
     removeButtonFromIntent({
       intent: data.intent,
       button,

@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "cross-env NODE_ENV=production ts-node index.ts",
-    "dev": "cross-env NODE_ENV=development ts-node-dev index.ts",
+    "start": "cross-env NODE_ENV=production tsx index.ts",
+    "dev": "cross-env NODE_ENV=development tsx watch index.ts",
     "build:client": "node esbuild.config.mjs",
     "dev:client": "node esbuild.dev.config.mjs"
   },
@@ -35,8 +35,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.6.2",
+    "reflect-metadata": "^0.1.13",
     "sqlite3": "^5.1.6",
-    "ts-node-dev": "^2.0.0",
     "typeorm": "^0.3.12",
     "uuid": "^9.0.0"
   },
@@ -64,7 +64,7 @@
     "postcss": "^8.4.21",
     "postcss-modules": "^6.0.0",
     "prettier": "2.8.0",
-    "ts-node": "^10.9.1",
+    "tsx": "^3.12.6",
     "typescript": "^4.9.4"
   }
 }

@@ -1,5 +1,8 @@
 import { getNLUResponse } from ".";
-import { addChatToConversationAndCreateIfNotExists } from "../database/functions/conversations";
+import {
+  addChatToConversationAndCreateIfNotExists,
+  getChat,
+} from "../database/functions/conversations";
 import { enhanceChatIfNecessary } from "./enhancement";
 import { detectAndActivateTriggers } from "./triggers";
 
@@ -63,8 +66,9 @@ export const handleNewChat = async ({
   }
 };
 
-export const handleRetryChat = async ({}: {}) => {
+export const handleRetryChat = async ({ chat_id }: { chat_id: number }) => {
   try {
+    const chat = await getChat(chat_id);
   } catch (err) {
     console.error(err);
     return null;

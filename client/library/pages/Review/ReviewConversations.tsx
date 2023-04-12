@@ -364,7 +364,10 @@ function Conversation({
                 <button
                   className={`${styles.option} ${styles.delete}`}
                   title="Delete this conversation"
-                  onClick={() => handleDeleteConversation(conversation.id)}
+                  onClick={() => {
+                    if (!conversation.id) return;
+                    handleDeleteConversation(conversation.id);
+                  }}
                 >
                   <TrashSimple />
                 </button>
@@ -372,7 +375,10 @@ function Conversation({
                   <button
                     className={`${styles.option} ${styles.copy}`}
                     title="Retry a copy of this conversation"
-                    onClick={() => handleCreateTrainingCopy(conversation.id)}
+                    onClick={() => {
+                      if (!conversation.id) return;
+                      handleCreateTrainingCopy(conversation.id);
+                    }}
                   >
                     <ArrowsClockwise />
                   </button>
@@ -382,6 +388,7 @@ function Conversation({
                     className={`${styles.option} ${styles.is_copy}`}
                     title="Open in training"
                     onClick={() => {
+                      if (!conversation.id) return;
                       handleOpenInTraining(conversation.id);
                     }}
                   >

@@ -23,6 +23,13 @@ function Converse() {
 
     getConversation(urlSearchParams.get("load_conversation") as string)
       .then(({ conversation }) => {
+        if (!conversation) {
+          showNotification({
+            title: "Error",
+            message: "Failed to load conversation",
+          });
+          return;
+        }
         setConversation(conversation);
       })
       .catch((err) => {
@@ -151,7 +158,7 @@ const Chat = ({
       <p
         className={styles.chat__message}
         dangerouslySetInnerHTML={
-          role === "assistant" ? { __html: message } : null
+          role === "assistant" ? { __html: message } : { __html: "" }
         }
       >
         {role === "user" ? message : null}

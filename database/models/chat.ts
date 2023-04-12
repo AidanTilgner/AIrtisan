@@ -15,24 +15,24 @@ export class Chat {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column()
+  @Column("int")
   order!: number;
 
-  @Column()
+  @Column("text")
   session_id!: string;
 
-  @Column()
+  @Column("text")
   message!: string;
 
-  @Column()
+  @Column("text")
   intent!: string;
 
-  @Column({
+  @Column("int", {
     nullable: true,
   })
   confidence!: number;
 
-  @Column()
+  @Column("text")
   role!: ChatRole;
 
   @Column({ type: "boolean" })
@@ -41,15 +41,15 @@ export class Chat {
   @Column({ type: "boolean" })
   needs_review = false;
 
-  @Column({
+  @Column("text", {
     nullable: true,
   })
   review_text!: string;
 
-  @Column({
+  @Column("text", {
     nullable: true,
   })
-  reviewer: string;
+  reviewer!: string;
 
   @ManyToOne(() => Conversation, (conversation) => conversation.chats)
   conversation!: Conversation;
