@@ -1,6 +1,6 @@
 import { getGeneratedNameBasedOnContent } from "../../nlu/utils";
 import { entities, dataSource } from "../index";
-import { ChatRole } from "../models/chat";
+import { Chat, ChatRole } from "../models/chat";
 import { Conversation } from "../models/conversation";
 
 export const getConversations = async () => {
@@ -93,7 +93,7 @@ export const createChatInConversation = async ({
       return null;
     }
 
-    const chatLength = conversation.chats.length;
+    const chatLength = conversation?.chats?.length;
 
     const chat = new entities.Chat();
     chat.session_id = sessionId;
@@ -101,7 +101,7 @@ export const createChatInConversation = async ({
     chat.intent = intent;
     chat.role = role;
     chat.enhanced = enhanced;
-    chat.order = chatLength + 1;
+    chat.order = chatLength + 1 || 1;
 
     if (confidence) {
       chat.confidence = confidence;
@@ -109,7 +109,7 @@ export const createChatInConversation = async ({
 
     await dataSource.manager.save(chat);
 
-    conversation.chats = [...conversation.chats, chat];
+    conversation.chats = [...(conversation.chats || []), chat];
     await dataSource.manager.save(conversation);
     return {
       chat,
@@ -374,6 +374,7 @@ export const createTrainingCopyOfConversation = async (
       newChat.conversation = newConversation;
       newChat.order = chat.order;
       newChat.confidence = chat.confidence;
+      newChat.needs_review = chat.needs_review;
       await dataSource.manager.save(newChat);
     }
     return newConversation;
@@ -438,6 +439,30 @@ export const getChatByOrder = async (conversationId: number, order: number) => {
     const chat = conversation.chats.find((chat) => chat.order === order);
 
     return chat;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};
+
+export const updateChat = async (chatId: number, data: Partial<Chat>) => {
+  try {
+    const chat = await dataSource.manager.findOne(entities.Chat, {
+      where: { id: chatId },
+      relations: ["conversation"],
+    });
+
+    if (!chat) {
+      return null;
+    }
+
+    Object.assign(chat, data);
+    await dataSource.manager.save(chat);
+    await dataSource.manager.save(chat.conversation);
+    return {
+      chat: chat,
+      conversation: chat.conversation,
+    };
   } catch (err) {
     console.error(err);
     return null;

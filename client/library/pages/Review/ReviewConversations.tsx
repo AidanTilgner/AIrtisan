@@ -136,6 +136,7 @@ function ReviewConversations() {
             },
           ]}
           onChange={(v) => {
+            setOpenedConversation(null);
             switch (v) {
               case "to_review":
                 setViewAllConversations(false);
@@ -361,7 +362,10 @@ function Conversation({
       >
         <h3 className={styles.title}>{getFormattedTitle(conversation)}</h3>
         <p className={styles.bottomtext}>
-          {getShortenedText(conversation.chats[0].message, 48)}
+          {getShortenedText(
+            conversation.chats[0]?.message || "No messages",
+            48
+          )}
         </p>
         <div className={styles.tags}>
           {chatWasEnhanced && (

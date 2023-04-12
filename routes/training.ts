@@ -20,6 +20,7 @@ import {
   createTrainingCopyOfConversation,
 } from "../database/functions/conversations";
 import { checkIsAdmin } from "../middleware/auth";
+import { handleRetryChat } from "../nlu/chats";
 
 const router = Router();
 
@@ -357,5 +358,39 @@ router.post(
     }
   }
 );
+
+router.post("/chats/retry/:chat_id", checkIsAdmin, async (req, res) => {
+  try {
+    const { chat_id } = req.params;
+
+    const newChatInfo = await handleRetryChat({
+      chat_id: Number(chat_id),
+    });
+
+    if (!newChatInfo) {
+      res.status(500).send({
+        message: "Error getting response",
+        answer:
+          "Sorry, I've encountered an error. It has been reported. Please try again later.",
+      });
+      return;
+    }
+
+    const toSend = {
+      data: {
+        ...newChatInfo,
+      },
+    };
+
+    res.send(toSend);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({
+      message: "Error getting response",
+      answer:
+        "Sorry, I've encountered an error. It has been reported. Please try again later.",
+    });
+  }
+});
 
 export default router;

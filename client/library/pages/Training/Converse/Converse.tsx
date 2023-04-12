@@ -5,6 +5,8 @@ import { Chat as ChatType, Conversation } from "../../../../documentation/main";
 import {
   getConversation,
   postTrainingChat,
+  retryChat,
+  markChatAsReviewed,
 } from "../../../helpers/fetching/chats";
 import { showNotification } from "@mantine/notifications";
 import {
@@ -14,9 +16,19 @@ import {
   PaperPlaneTilt,
   PencilSimple,
   Plus,
+  Warning,
+  WarningCircle,
   X,
+  Check,
 } from "phosphor-react";
 import { Button } from "@mantine/core";
+import Loaders from "../../../components/Utils/Loaders";
+import { useUser } from "../../../contexts/User";
+
+type ChatPairType = {
+  user: ChatType;
+  assistant: ChatType;
+};
 
 function Converse() {
   const [urlSearchParams] = useSearchParams();
@@ -56,10 +68,44 @@ function Converse() {
     loadConversation();
   }, []);
 
+  const reloadConversation = () => {
+    if (!conversation || !conversation.id) return;
+    setLoading(true);
+
+    getConversation(conversation.id)
+      .then(({ conversation }) => {
+        if (!conversation) {
+          showNotification({
+            title: "Error",
+            message: "Failed to load conversation",
+          });
+          return;
+        }
+        setConversation(conversation);
+      })
+      .catch((err) => {
+        console.error(err);
+        showNotification({
+          title: "Error",
+          message: "Failed to load conversation",
+        });
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
   const endRef = React.useRef<HTMLDivElement>(null);
 
+  const previousChatLength = React.useRef<number>(
+    conversation?.chats.length || 0
+  );
+
   React.useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (conversation?.chats.length !== previousChatLength.current) {
+      endRef.current?.scrollIntoView({ behavior: "smooth" });
+      previousChatLength.current = conversation?.chats.length || 0;
+    }
   }, [conversation, loading]);
 
   const getRandomSessionId = () => {
@@ -95,6 +141,20 @@ function Converse() {
     }, 1000);
   };
 
+  // chats can be grouped into pairs, where every two chats is a user, assistant interaction
+  const groupedChats: ChatPairType[] | undefined = conversation?.chats.reduce(
+    (acc, chat, index) => {
+      if (index % 2 === 0 && chat.role === "user") {
+        acc.push({
+          user: chat,
+          assistant: conversation.chats[index + 1],
+        });
+      }
+      return acc;
+    },
+    [] as ChatPairType[]
+  );
+
   return (
     <div className={styles.converse}>
       <div className={styles.header}>
@@ -114,9 +174,16 @@ function Converse() {
         </Button>
       </div>
       <div className={styles.content}>
-        {conversation?.chats.length ? (
-          conversation.chats.map((chat) => (
-            <Chat key={chat.id} chat={chat} initial_load={initialLoad} />
+        {groupedChats?.length ? (
+          groupedChats.map(({ user, assistant }) => (
+            <div key={`${user.id}-${assistant.id}`}>
+              <ChatPair
+                user={user}
+                assistant={assistant}
+                initialLoad={initialLoad}
+                reloadConversation={reloadConversation}
+              />
+            </div>
           ))
         ) : (
           <p className={styles.disclaimer}>
@@ -125,12 +192,7 @@ function Converse() {
         )}
         {loading && (
           <div className={styles.loading}>
-            <div className={styles["lds-ring"]}>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-            </div>
+            <Loaders.Spinner />
           </div>
         )}
         <div ref={endRef} />
@@ -144,48 +206,168 @@ function Converse() {
 
 export default Converse;
 
-const Chat = ({
-  chat: { id, message, role, ...chat },
-  initial_load,
+const ChatPair = ({
+  user,
+  assistant,
+  initialLoad,
+  reloadConversation,
 }: {
-  chat: ChatType;
-  initial_load: boolean;
+  user: ChatType;
+  assistant: ChatType;
+  initialLoad: boolean;
+  reloadConversation: () => void;
 }) => {
-  const calculateChatDelay = () => {
-    // should be a logorithmic function so that the delay decreases as the number of chats increases
-    return Math.log(chat.order) * 0.25;
+  const chatPairContainsError = () => {
+    const hasNoneIntent = user.intent === "None" || assistant.intent === "None";
+    const hasEmptyMessage = user.message === "" || assistant.message === "";
+    return hasNoneIntent || hasEmptyMessage;
   };
+
+  const { user: userContext } = useUser();
+
+  const extractChatPairError = () => {
+    if (user.intent === "None") {
+      return "Intent classified as None";
+    }
+    if (assistant.intent === "None") {
+      return "Intent classified as None";
+    }
+    if (user.message === "") {
+      return "User message was empty";
+    }
+    if (assistant.message === "") {
+      return "Assistant message was empty";
+    }
+    return "Unknown error";
+  };
+
+  const chatPairContainsWarning = () => {
+    const chatReportedWarning = assistant.needs_review;
+
+    const intentMismatch = user.intent !== assistant.intent;
+
+    return chatReportedWarning || intentMismatch;
+  };
+
+  const extractChatPairWarning = () => {
+    if (assistant.needs_review) {
+      return `Chat reported${
+        assistant.review_text ? ` with message: ${assistant.review_text}` : ""
+      }`;
+    }
+
+    if (user.intent !== assistant.intent) {
+      return "Intent mismatch";
+    }
+
+    return "Unknown warning";
+  };
+
+  const getChatPairDelay = () => {
+    return `${Math.log(user.order) * 0.25}s`;
+  };
+
+  const chatRef = React.useRef<HTMLDivElement>(null);
 
   const [openMetadata, setOpenMetadata] = React.useState(false);
 
+  const [assistantLoading, setAssistantLoading] = React.useState(false);
+
+  const handleRetryChat = async () => {
+    if (!assistant.id) return;
+
+    setAssistantLoading(true);
+
+    const res = await retryChat(assistant.id);
+
+    if (res.success && res.answer) {
+      showNotification({
+        title: "Success",
+        message: "Chat successfully retried",
+      });
+    } else {
+      showNotification({
+        title: "Error",
+        message: "Failed to retry chat",
+      });
+    }
+    reloadConversation();
+    setAssistantLoading(false);
+  };
+
+  const handleMarkReviewed = async () => {
+    if (!assistant.id || !userContext?.username) return;
+
+    setAssistantLoading(true);
+
+    const res = await markChatAsReviewed(assistant.id, userContext.username);
+
+    if (res.success && res.answer) {
+      showNotification({
+        title: "Success",
+        message: "Chat successfully marked as reviewed",
+      });
+    } else {
+      showNotification({
+        title: "Error",
+        message: "Failed to mark chat as reviewed",
+      });
+    }
+    reloadConversation();
+    setAssistantLoading(false);
+  };
+
   return (
     <div
-      className={styles.chatContainer}
+      className={`${styles.chatPair}`}
       style={{
-        animationDelay: initial_load ? `${calculateChatDelay()}s` : "0s",
+        animationDelay: `${getChatPairDelay()}`,
       }}
+      ref={chatRef}
     >
-      {role === "assistant" && (
+      <div className={styles.importantText}>
+        {chatPairContainsWarning() && (
+          <div className={styles.chatPairWarningText}>
+            <Warning weight="regular" />
+            <span>{extractChatPairWarning()}</span>
+          </div>
+        )}
+        {chatPairContainsError() && (
+          <div className={styles.chatPairErrorText}>
+            <WarningCircle weight="regular" />
+            <span>{extractChatPairError()}</span>
+          </div>
+        )}
+      </div>
+      <div
+        className={`${styles.chatPairChats} ${
+          openMetadata ? styles.openMetadata : ""
+        } ${chatPairContainsWarning() ? styles.warningChatPair : ""} ${
+          chatPairContainsError() ? styles.errorChatPair : ""
+        }`}
+      >
+        <Chat chat={user} initial_load={initialLoad} loading={false} />
         <div className={styles.metadataContainer}>
           {openMetadata ? (
             <>
               <div className={styles.metadata}>
                 <p className={styles.intent_summary}>
-                  intent classified as{" "}
+                  Intent classified as{" "}
                   <strong>
                     <span
                       style={{
-                        color: chat.intent === "None" ? "#ff0000" : "#000000",
+                        color:
+                          assistant.intent === "None" ? "#ff0000" : "#000000",
                       }}
                     >
-                      {chat.intent}
+                      {assistant.intent}
                     </span>
                   </strong>{" "}
-                  with <strong>{chat.confidence}%</strong> confidence.
+                  with <strong>{assistant.confidence}%</strong> confidence.
                 </p>
-                {chat.enhanced && (
-                  <p className={styles.enhanced}>
-                    <MagicWand /> <span>chat was enhanced with ChatGPT</span>
+                {assistant.enhanced && (
+                  <p className={styles.enhanced_summary}>
+                    <MagicWand /> <span>Chat was enhanced with ChatGPT.</span>
                   </p>
                 )}
               </div>
@@ -209,12 +391,23 @@ const Chat = ({
                 <button
                   className={`${styles.retry_button} ${styles.metadataOption}`}
                   onClick={() => {
-                    console.log("retry");
+                    handleRetryChat();
                   }}
                   title="Rerun this chat response"
                 >
                   <ArrowCounterClockwise weight="regular" />
                 </button>
+                {assistant.needs_review && (
+                  <button
+                    className={`${styles.unreport_button} ${styles.metadataOption}`}
+                    onClick={() => {
+                      handleMarkReviewed();
+                    }}
+                    title="Mark this chat as reviewed"
+                  >
+                    <Check weight="regular" />
+                  </button>
+                )}
               </div>
             </>
           ) : (
@@ -229,16 +422,54 @@ const Chat = ({
             </div>
           )}
         </div>
-      )}
+        <Chat
+          chat={assistant}
+          initial_load={initialLoad}
+          loading={assistantLoading}
+        />
+      </div>
+    </div>
+  );
+};
+
+const Chat = ({
+  chat: { message, role, ...chat },
+  initial_load,
+  loading,
+}: {
+  chat: ChatType;
+  initial_load: boolean;
+  loading: boolean;
+}) => {
+  const calculateChatDelay = () => {
+    // should be a logorithmic function so that the delay decreases as the number of chats increases
+    return Math.log(chat.order) * 0.25;
+  };
+
+  return (
+    <div
+      className={`${styles.chatContainer} ${
+        chat.intent === "None" ? styles.errorChat : ""
+      }`}
+      style={{
+        animationDelay: initial_load ? `${calculateChatDelay()}s` : "0s",
+      }}
+    >
       <div className={`${styles.chat} ${styles[role]}`}>
-        <p
-          className={styles.chat__message}
-          dangerouslySetInnerHTML={
-            role === "assistant" ? { __html: message } : undefined
-          }
-        >
-          {role === "user" ? message : null}
-        </p>
+        {loading ? (
+          <div className={styles.loading}>
+            <Loaders.Spinner />
+          </div>
+        ) : (
+          <p
+            className={styles.chat__message}
+            dangerouslySetInnerHTML={
+              role === "assistant" ? { __html: message } : undefined
+            }
+          >
+            {role === "user" ? message : null}
+          </p>
+        )}
         <div className={styles.chatTags}>
           {chat.enhanced && (
             <div

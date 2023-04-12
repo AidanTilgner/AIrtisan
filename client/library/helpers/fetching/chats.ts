@@ -1,4 +1,5 @@
 import {
+  Chat,
   Conversation,
   ConversationToReview,
 } from "../../../documentation/main";
@@ -173,6 +174,31 @@ export const postTrainingChat = async (chat: {
       success: false,
       conversation: null,
       conversation_id: null,
+    };
+  }
+};
+
+export const retryChat = async (chatId: number) => {
+  try {
+    const res = await api.post(`/training/chats/retry/${chatId}`);
+    return {
+      success: true,
+      chat: res.data.data.chat as Chat,
+      answer: res.data.data.answer as string,
+      conversation: res.data.data.conversation as Conversation,
+    };
+  } catch (err) {
+    console.error(err);
+    showNotification({
+      title: "Error",
+      message: "There was an error retrying the chat.",
+      color: "red",
+    });
+    return {
+      success: false,
+      chat: null,
+      answer: null,
+      conversation: null,
     };
   }
 };

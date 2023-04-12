@@ -1,16 +1,9 @@
 import { Router } from "express";
-import { getNLUResponse } from "../nlu";
 import { addIPToSession, logSession } from "../middleware/analysis";
-import { detectAndActivateTriggers } from "../nlu/triggers";
 import { config } from "dotenv";
 import { createSession } from "../sessions";
 import { getRequesterSessionId } from "../utils/analysis";
-import {
-  addChatToConversationAndCreateIfNotExists,
-  getChatsFromSessionId,
-  markChatForReview,
-} from "../database/functions/conversations";
-import { enhanceChatIfNecessary } from "../nlu/enhancement";
+import { markChatForReview } from "../database/functions/conversations";
 import { checkAPIKey, checkIsAdmin } from "../middleware/auth";
 import { handleNewChat } from "../nlu/chats";
 
@@ -32,6 +25,7 @@ router.post("/", checkAPIKey, async (req, res) => {
     const newChatInfo = await handleNewChat({
       message,
       session_id,
+      allowTriggers: true,
     });
 
     if (!newChatInfo) {
@@ -83,6 +77,8 @@ router.post("/:chat_id/should_review", checkAPIKey, async (req, res) => {
 router.post("/as_admin", checkIsAdmin, async (req, res) => {
   try {
     const message = req.body.message || req.query.message;
+    const allowTriggers =
+      !!req.body.allow_triggers || !!req.query.allow_triggers;
     if (!message) {
       res.status(402).send({ message: "No message provided" });
       return;
@@ -92,6 +88,7 @@ router.post("/as_admin", checkIsAdmin, async (req, res) => {
     const newChatInfo = await handleNewChat({
       message,
       session_id,
+      allowTriggers,
     });
 
     if (!newChatInfo) {
