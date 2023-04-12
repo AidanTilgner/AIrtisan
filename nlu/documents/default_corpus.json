@@ -53,11 +53,7 @@
     },
     {
       "intent": "confirmation.no",
-      "utterances": [
-        "No",
-        "Nah",
-        "You can't",
-      ],
+      "utterances": ["No", "Nah", "You can't"],
       "answers": ["Alright!"],
       "enhance": true
     },
