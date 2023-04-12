@@ -171,8 +171,17 @@ const Chat = ({
             <>
               <div className={styles.metadata}>
                 <p className={styles.intent_summary}>
-                  intent classified as <strong>{chat.intent}</strong> with{" "}
-                  <strong>{chat.confidence}%</strong> confidence.
+                  intent classified as{" "}
+                  <strong>
+                    <span
+                      style={{
+                        color: chat.intent === "None" ? "#ff0000" : "#000000",
+                      }}
+                    >
+                      {chat.intent}
+                    </span>
+                  </strong>{" "}
+                  with <strong>{chat.confidence}%</strong> confidence.
                 </p>
                 {chat.enhanced && (
                   <p className={styles.enhanced}>
