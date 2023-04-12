@@ -4,8 +4,8 @@ import { extractAttachments, filterAttachments } from "./attachments";
 
 export let manager = null;
 
-export const getManger = () => {
-  return manager;
+export const getManager = () => {
+  return manager as any | null;
 };
 
 export const train = async () => {
@@ -43,7 +43,7 @@ export const retrain = async () => {
 };
 
 export const getRawResponse = async (text: string) => {
-  const response = await getManger().process("en", text);
+  const response = await getManager()?.process("en", text);
   return response;
 };
 

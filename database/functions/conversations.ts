@@ -56,6 +56,11 @@ export const getConversationFromSessionId = async (
         relations: ["chats"],
       }
     );
+
+    if (!conversation) {
+      return null;
+    }
+
     return conversation;
   } catch (err) {
     console.error(err);
@@ -63,30 +68,28 @@ export const getConversationFromSessionId = async (
   }
 };
 
-export const createChatFromSessionId = async ({
+export const createChatInConversation = async ({
   sessionId,
   message,
   intent,
   role,
   enhanced,
   confidence,
-  training_copy,
+  conversation,
 }: {
   sessionId: string;
   message: string;
   intent: string;
   role: ChatRole;
   enhanced: boolean;
+  conversation: Conversation;
   confidence?: number;
-  training_copy?: boolean;
 }) => {
   try {
-    const conversation = await getConversationFromSessionId(
-      sessionId,
-      training_copy
-    );
-
     if (!conversation) {
+      console.error(
+        "Could not create chat because conversation was not provided"
+      );
       return null;
     }
 
@@ -98,13 +101,20 @@ export const createChatFromSessionId = async ({
     chat.intent = intent;
     chat.role = role;
     chat.enhanced = enhanced;
-    chat.conversation = conversation;
     chat.order = chatLength + 1;
+
     if (confidence) {
       chat.confidence = confidence;
     }
+
     await dataSource.manager.save(chat);
-    return chat;
+
+    conversation.chats = [...conversation.chats, chat];
+    await dataSource.manager.save(conversation);
+    return {
+      chat,
+      conversation,
+    };
   } catch (err) {
     console.error(err);
     return null;
@@ -155,25 +165,32 @@ export const createConversationIfNotExists = async (
     );
 
     if (!conversation) {
-      await createConversationFromSessionId(sessionId, training_copy);
+      return await createConversationFromSessionId(sessionId, training_copy);
     }
 
-    const lengthMapper = {
+    const lengthMapper: {
+      [key: number]: boolean;
+    } = {
       2: true,
       6: true,
       10: true,
     };
 
-    if (lengthMapper[conversation?.chats.length]) {
-      const newName = await getGeneratedNameBasedOnContent(
-        conversation.chats.map((chat) => ({
-          message: chat.message,
-          role: chat.role,
-        }))
-      );
+    if (conversation?.chats.length && lengthMapper[conversation.chats.length]) {
+      const newName =
+        (
+          await getGeneratedNameBasedOnContent(
+            conversation.chats.map((chat) => ({
+              message: chat.message,
+              role: chat.role,
+            }))
+          )
+        )?.trim() || "Unnamed Conversation";
       conversation.generated_name = newName;
       await dataSource.manager.save(conversation);
     }
+
+    return conversation;
   } catch (err) {
     console.error(err);
     return null;
@@ -198,19 +215,31 @@ export const addChatToConversationAndCreateIfNotExists = async ({
   training_copy?: boolean;
 }) => {
   try {
-    await createConversationIfNotExists(sessionId, training_copy);
-    const newChat = await createChatFromSessionId({
+    const conversation = await createConversationIfNotExists(
+      sessionId,
+      !!training_copy
+    );
+
+    if (!conversation) {
+      return null;
+    }
+
+    const newChatData = await createChatInConversation({
       sessionId,
       message,
       intent,
       role,
       enhanced,
       confidence,
+      conversation,
     });
-    const newConversation = await getConversationFromSessionId(
-      sessionId,
-      training_copy
-    );
+
+    if (!newChatData) {
+      return null;
+    }
+
+    const { conversation: newConversation, chat: newChat } = newChatData;
+
     return {
       conversation: newConversation,
       chat: newChat,
@@ -257,6 +286,9 @@ export const getChatsThatNeedReview = async () => {
 export const getConversationsThatNeedReview = async () => {
   try {
     const chats = await getChatsThatNeedReview();
+    if (!chats) {
+      return null;
+    }
     const ids = chats.map((chat) => chat.conversation.id);
     const filteredIds = ids.filter((id, index) => {
       return ids.indexOf(id) === index;
@@ -370,6 +402,42 @@ export const deleteConversation = async (conversationId: number) => {
     }
     await dataSource.manager.remove(conversation);
     return conversation;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};
+
+export const getChat = async (chatId: number) => {
+  try {
+    const chat = await dataSource.manager.findOne(entities.Chat, {
+      where: { id: chatId },
+      relations: ["conversation"],
+    });
+    return chat;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};
+
+export const getChatByOrder = async (conversationId: number, order: number) => {
+  try {
+    const conversation = await dataSource.manager.findOne(
+      entities.Conversation,
+      {
+        where: { id: conversationId },
+        relations: ["chats"],
+      }
+    );
+
+    if (!conversation) {
+      return null;
+    }
+
+    const chat = conversation.chats.find((chat) => chat.order === order);
+
+    return chat;
   } catch (err) {
     console.error(err);
     return null;

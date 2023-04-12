@@ -127,7 +127,7 @@ function Auth() {
     });
   };
 
-  const handleDeleteApiKey = (id) => {
+  const handleDeleteApiKey = (id: number) => {
     deleteApiKey({ id }).then(() => {
       showNotification({
         title: "Success",
@@ -243,6 +243,7 @@ function Auth() {
                   <button
                     className={styles.delete_button}
                     onClick={() => {
+                      if (!apiKey?.id) return;
                       handleDeleteApiKey(apiKey.id);
                     }}
                     title="Delete"

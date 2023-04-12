@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./Interactive.module.scss";
 import {
   Autocomplete,
@@ -109,18 +109,9 @@ function Interactive() {
     });
   }, [data.intent]);
 
-  const previousText = useRef(text);
-
   const submitText = async (txt?: string) => {
     // check previous text to see if it's the same as the current text
     const textToUse = txt || text;
-
-    if (previousText.current === textToUse) {
-      return;
-    }
-
-    previousText.current = textToUse;
-
     getTrainingAnswer(textToUse).then((answer) => {
       setData(answer);
       showNotification({
@@ -232,7 +223,7 @@ function Interactive() {
     });
   };
 
-  const deleteButton = (button) => {
+  const deleteButton = (button: { type: string }) => {
     removeButtonFromIntent({
       intent: data.intent,
       button,
@@ -296,7 +287,7 @@ function Interactive() {
             py={14}
             px={24}
             sx={() => ({
-              width: isMobile ? "100%" : "40%",
+              width: isMobile ? "100%" : "50%",
             })}
           >
             <Flex

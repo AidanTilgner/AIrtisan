@@ -12,6 +12,7 @@ import {
 } from "../database/functions/conversations";
 import { enhanceChatIfNecessary } from "../nlu/enhancement";
 import { checkAPIKey, checkIsAdmin } from "../middleware/auth";
+import { handleNewChat } from "../nlu/chats";
 
 config();
 const router = Router();
@@ -28,49 +29,24 @@ router.post("/", checkAPIKey, async (req, res) => {
     }
     const session_id = getRequesterSessionId(req) || createSession().id;
 
-    const response = await getNLUResponse(message);
-    const { intent, answer, confidence, initial_text } = response;
-    detectAndActivateTriggers(intent, session_id);
-    const { chat: userChat } = await addChatToConversationAndCreateIfNotExists({
-      sessionId: session_id,
+    const newChatInfo = await handleNewChat({
       message,
-      intent,
-      role: "user",
-      enhanced: false,
-    });
-
-    const { answer: botAnswer, enhanced } = await enhanceChatIfNecessary({
-      message: initial_text,
-      answer,
-      intent,
-      confidence,
       session_id,
     });
 
-    const { chat: botChat, conversation } =
-      await addChatToConversationAndCreateIfNotExists({
-        sessionId: session_id,
-        message: botAnswer,
-        intent,
-        role: "assistant",
-        enhanced,
-        confidence,
+    if (!newChatInfo) {
+      res.status(500).send({
+        message: "Error getting response",
+        answer:
+          "Sorry, I've encountered an error. It has been reported. Please try again later.",
       });
-
-    const chats = await getChatsFromSessionId(session_id);
+      return;
+    }
 
     const toSend = {
       message,
       data: {
-        session_id,
-        ...response,
-        answer: botAnswer,
-        chats,
-        enhanced: enhanced || false,
-        botChat: botChat.id,
-        userChat: userChat.id,
-        conversation: conversation,
-        conversation_id: conversation.id,
+        ...newChatInfo,
       },
     };
 
@@ -113,49 +89,24 @@ router.post("/as_admin", checkIsAdmin, async (req, res) => {
     }
     const session_id = getRequesterSessionId(req) || createSession().id;
 
-    const response = await getNLUResponse(message);
-    const { intent, answer, confidence, initial_text } = response;
-    detectAndActivateTriggers(intent, session_id);
-    const { chat: userChat } = await addChatToConversationAndCreateIfNotExists({
-      sessionId: session_id,
+    const newChatInfo = await handleNewChat({
       message,
-      intent,
-      role: "user",
-      enhanced: false,
-    });
-
-    const { answer: botAnswer, enhanced } = await enhanceChatIfNecessary({
-      message: initial_text,
-      answer,
-      intent,
-      confidence,
       session_id,
     });
 
-    const { chat: botChat, conversation } =
-      await addChatToConversationAndCreateIfNotExists({
-        sessionId: session_id,
-        message: botAnswer,
-        intent,
-        role: "assistant",
-        enhanced,
-        confidence,
+    if (!newChatInfo) {
+      res.status(500).send({
+        message: "Error getting response",
+        answer:
+          "Sorry, I've encountered an error. It has been reported. Please try again later.",
       });
-
-    const chats = await getChatsFromSessionId(session_id);
+      return;
+    }
 
     const toSend = {
       message,
       data: {
-        session_id,
-        ...response,
-        answer: botAnswer,
-        chats,
-        enhanced: enhanced || false,
-        botChat: botChat.id,
-        userChat: userChat.id,
-        conversation: conversation,
-        conversation_id: conversation.id,
+        ...newChatInfo,
       },
     };
 
@@ -202,51 +153,27 @@ router.post("/as_admin/training", checkIsAdmin, async (req, res) => {
     }
     const session_id = getRequesterSessionId(req) || createSession().id;
 
-    const response = await getNLUResponse(message);
-    const { intent, answer, confidence, initial_text } = response;
-    detectAndActivateTriggers(intent, session_id);
-    const { chat: userChat } = await addChatToConversationAndCreateIfNotExists({
-      sessionId: session_id,
+    const newChatInfo = await handleNewChat({
       message,
-      intent,
-      role: "user",
-      enhanced: false,
-      training_copy: true,
-    });
-
-    const { answer: botAnswer, enhanced } = await enhanceChatIfNecessary({
-      message: initial_text,
-      answer,
-      intent,
-      confidence,
       session_id,
+      isTraining: true,
     });
 
-    const { chat: botChat, conversation } =
-      await addChatToConversationAndCreateIfNotExists({
-        sessionId: session_id,
-        message: botAnswer,
-        intent,
-        role: "assistant",
-        enhanced,
-        confidence,
-        training_copy: true,
+    if (!newChatInfo) {
+      res.status(500).send({
+        message: "Error getting response",
+        data: {
+          answer:
+            "Sorry, I've encountered an error. It has been reported. Please try again later.",
+        },
       });
-
-    const chats = await getChatsFromSessionId(session_id);
+      return;
+    }
 
     const toSend = {
       message,
       data: {
-        session_id,
-        ...response,
-        answer: botAnswer,
-        chats,
-        enhanced: enhanced || false,
-        botChat: botChat.id,
-        userChat: userChat.id,
-        conversation: conversation,
-        conversation_id: conversation.id,
+        ...newChatInfo,
       },
     };
 

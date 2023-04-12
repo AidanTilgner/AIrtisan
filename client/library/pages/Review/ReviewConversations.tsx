@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useLayoutEffect } from "react";
 import styles from "./ReviewConversations.module.scss";
 import {
   getConversationsThatNeedReview,
@@ -7,7 +7,7 @@ import {
   createTrainingCopyOfConversation,
   deleteConversation,
 } from "../../helpers/fetching/chats";
-import { Button, SegmentedControl } from "@mantine/core";
+import { Button, Chip, SegmentedControl } from "@mantine/core";
 import { useUser } from "../../contexts/User";
 import {
   MagicWand,
@@ -59,13 +59,12 @@ function ReviewConversations() {
 
   const [viewAllConversations, setViewAllConversations] = React.useState(true);
 
-  const filterConversations = (convs: ConversationType[]) => {
-    if (query === "") {
-      return convs;
-    }
+  const [allowEnhanced, setAllowEnhanced] = React.useState(true);
+  const [allowTrainingCopy, setAllowTrainingCopy] = React.useState(false);
 
+  const filterConversations = (convs: ConversationType[]) => {
     return convs.filter((conv) => {
-      const passes =
+      const passesQuery =
         conv.chats.some((chat) => chat.message.toLowerCase().includes(query)) ||
         conv.chats.some((chat) =>
           String(chat.id).toLowerCase().includes(query)
@@ -85,13 +84,31 @@ function ReviewConversations() {
         conv.session_id.toLowerCase().includes(query) ||
         (conv.training_copy && ["training", "copy"].includes(query));
 
-      return passes;
+      const isEnhanced = conv.chats.find((chat) => !!chat.enhanced);
+      const passesEnhanced = allowEnhanced ? true : !isEnhanced;
+      const passesTrainingCopy = allowTrainingCopy ? true : !conv.training_copy;
+
+      return passesQuery && passesEnhanced && passesTrainingCopy;
     });
   };
 
   const conversationsToView = viewAllConversations
     ? filterConversations(allConversations)
     : filterConversations(conversations);
+
+  // useEffect(() => {
+  //   console.log("Using conversations: ", useConversations);
+  //   setConversationsToView(filterConversations(useConversations));
+  // }, [allowEnhanced, allowTrainingCopy, useConversations]);
+
+  // add a animation delay to each conversation
+  useLayoutEffect(() => {
+    (
+      [...document.getElementsByClassName(styles.conversation)] as HTMLElement[]
+    ).forEach((c, i) => {
+      c.style.animationDelay = `${i * 0.1}s`;
+    });
+  }, [conversationsToView]);
 
   return (
     <div className={styles.ReviewConversations}>
@@ -125,6 +142,21 @@ function ReviewConversations() {
       <div className={styles.searchContainer}>
         <Search />
       </div>
+      <div className={styles.filtersContainer}>
+        <div className={styles.filter}>
+          <Chip checked={allowEnhanced} onChange={(v) => setAllowEnhanced(v)}>
+            Enhanced
+          </Chip>
+        </div>
+        <div className={styles.filter}>
+          <Chip
+            checked={allowTrainingCopy}
+            onChange={(v) => setAllowTrainingCopy(v)}
+          >
+            Training Copies
+          </Chip>
+        </div>
+      </div>
       <div className={styles.interface_container}>
         <div className={styles.conversations}>
           {conversationsToView.length ? (
@@ -138,7 +170,7 @@ function ReviewConversations() {
               />
             ))
           ) : (
-            <p>
+            <p className={styles.disclaimer}>
               {viewAllConversations
                 ? "No conversations yet."
                 : "No conversations marked for review"}
@@ -308,12 +340,11 @@ function Conversation({
           {getShortenedText(conversation.chats[0].message, 48)}
         </p>
         <div className={styles.tags}>
-          {conversation.chats.some((c) => !!c.enhanced) ||
-            (true && (
-              <div className={`${styles.tag} ${styles.tag_enhanced}`}>
-                enhanced
-              </div>
-            ))}
+          {conversation.chats.find((c) => c.enhanced === true) && true && (
+            <div className={`${styles.tag} ${styles.tag_enhanced}`}>
+              enhanced
+            </div>
+          )}
           {conversation.training_copy && (
             <div className={`${styles.tag} ${styles.tag_training_copy}`}>
               training copy
@@ -333,7 +364,10 @@ function Conversation({
                 <button
                   className={`${styles.option} ${styles.delete}`}
                   title="Delete this conversation"
-                  onClick={() => handleDeleteConversation(conversation.id)}
+                  onClick={() => {
+                    if (!conversation.id) return;
+                    handleDeleteConversation(conversation.id);
+                  }}
                 >
                   <TrashSimple />
                 </button>
@@ -341,7 +375,10 @@ function Conversation({
                   <button
                     className={`${styles.option} ${styles.copy}`}
                     title="Retry a copy of this conversation"
-                    onClick={() => handleCreateTrainingCopy(conversation.id)}
+                    onClick={() => {
+                      if (!conversation.id) return;
+                      handleCreateTrainingCopy(conversation.id);
+                    }}
                   >
                     <ArrowsClockwise />
                   </button>
@@ -351,6 +388,7 @@ function Conversation({
                     className={`${styles.option} ${styles.is_copy}`}
                     title="Open in training"
                     onClick={() => {
+                      if (!conversation.id) return;
                       handleOpenInTraining(conversation.id);
                     }}
                   >

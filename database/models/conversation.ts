@@ -13,18 +13,18 @@ export class Conversation {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column({
+  @Column("text", {
     nullable: true,
   })
-  generated_name: string;
+  generated_name!: string;
 
-  @Column()
+  @Column("text")
   session_id!: string;
 
-  @Column({
+  @Column("text", {
     nullable: true,
   })
-  training_copy: boolean;
+  training_copy!: boolean;
 
   @OneToMany(() => Chat, (chat) => chat.conversation, { eager: true })
   chats!: Chat[];

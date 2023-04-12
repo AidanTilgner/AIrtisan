@@ -1,4 +1,5 @@
 import { DataSource } from "typeorm";
+import "reflect-metadata";
 import { Conversation } from "./models/conversation";
 import { Chat } from "./models/chat";
 import { Admin } from "./models/admin";

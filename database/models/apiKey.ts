@@ -12,10 +12,10 @@ export class ApiKey {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column()
+  @Column("text")
   key!: string;
 
-  @Column()
+  @Column("text")
   for!: string;
 
   @CreateDateColumn()

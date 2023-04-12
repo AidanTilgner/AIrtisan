@@ -11,10 +11,10 @@ export class Token {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column()
+  @Column("text")
   token!: string;
 
-  @Column()
+  @Column("int")
   admin_id!: number;
 
   @CreateDateColumn()

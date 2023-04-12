@@ -13,13 +13,13 @@ export class Admin {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column()
+  @Column("text")
   username!: string;
 
-  @Column()
+  @Column("text")
   password!: string;
 
-  @Column()
+  @Column("text")
   role: "admin" | "superadmin" = "admin";
 
   @CreateDateColumn()

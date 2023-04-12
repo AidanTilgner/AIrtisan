@@ -7,7 +7,7 @@ import {
   postTrainingChat,
 } from "../../../helpers/fetching/chats";
 import { showNotification } from "@mantine/notifications";
-import { PaperPlaneTilt } from "phosphor-react";
+import { DotsThree, PaperPlaneTilt, Plus, X } from "phosphor-react";
 import { Button } from "@mantine/core";
 
 function Converse() {
@@ -23,6 +23,13 @@ function Converse() {
 
     getConversation(urlSearchParams.get("load_conversation") as string)
       .then(({ conversation }) => {
+        if (!conversation) {
+          showNotification({
+            title: "Error",
+            message: "Failed to load conversation",
+          });
+          return;
+        }
         setConversation(conversation);
       })
       .catch((err) => {
@@ -93,8 +100,9 @@ function Converse() {
             setConversation(undefined);
             setInitialLoad(true);
           }}
+          variant="outline"
         >
-          New Conversation
+          <Plus weight="bold" />
         </Button>
       </div>
       <div className={styles.content}>
@@ -137,24 +145,60 @@ const Chat = ({
 }) => {
   const calculateChatDelay = () => {
     // should be a logorithmic function so that the delay decreases as the number of chats increases
-    return Math.log(chat.order) * 0.5;
+    return Math.log(chat.order) * 0.25;
   };
+
+  const [openMetadata, setOpenMetadata] = React.useState(false);
 
   return (
     <div
-      className={`${styles.chat} ${styles[role]}`}
+      className={styles.chatContainer}
       style={{
         animationDelay: initial_load ? `${calculateChatDelay()}s` : "0s",
       }}
     >
-      <p
-        className={styles.chat__message}
-        dangerouslySetInnerHTML={
-          role === "assistant" ? { __html: message } : null
-        }
-      >
-        {role === "user" ? message : null}
-      </p>
+      {role === "assistant" && (
+        <div className={styles.metadataContainer}>
+          {openMetadata ? (
+            <>
+              <div className={styles.metadata}>
+                <p className={styles.intent_summary}>
+                  intent classified as <strong>{chat.intent}</strong> with{" "}
+                  <strong>{chat.confidence}%</strong> confidence.
+                </p>
+                {chat.enhanced && (
+                  <p className={styles.enhanced}>Chat was enhanced with</p>
+                )}
+              </div>
+              <button
+                className={styles.close_button}
+                onClick={() => setOpenMetadata(false)}
+                title="See less information"
+              >
+                <X weight="regular" />
+              </button>
+            </>
+          ) : (
+            <button
+              className={styles.open_button}
+              onClick={() => setOpenMetadata(true)}
+              title="See more information"
+            >
+              <DotsThree weight="regular" />
+            </button>
+          )}
+        </div>
+      )}
+      <div className={`${styles.chat} ${styles[role]}`}>
+        <p
+          className={styles.chat__message}
+          dangerouslySetInnerHTML={
+            role === "assistant" ? { __html: message } : undefined
+          }
+        >
+          {role === "user" ? message : null}
+        </p>
+      </div>
     </div>
   );
 };
