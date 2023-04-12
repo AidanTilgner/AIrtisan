@@ -53,7 +53,14 @@
     },
     {
       "intent": "confirmation.no",
-      "utterances": ["No"],
+      "utterances": [
+        "No",
+        "You can't",
+        "Nah",
+        "You can't",
+        "You can't ",
+        "You can't "
+      ],
       "answers": [],
       "enhance": true
     },
@@ -87,7 +94,7 @@
       "answers": ["test complete"]
     },
     {
-      "intent": "inquiry.onyx_chat_inner_workings",
+      "intent": "Inquiry.onyx_chat_inner_workings",
       "utterances": [
         "that's pretty cool, how do you work?",
         "how do you work? ",
@@ -101,6 +108,68 @@
       "intent": "common_sayings.anything",
       "utterances": ["Anything"],
       "answers": ["Yes, you can say anything and I will do my best to respond!"]
+    },
+    {
+      "intent": "expression.negatory",
+      "utterances": ["You can't ", "Nah"],
+      "answers": [
+        "Alright! I'm happy to help with any questions you might have."
+      ]
+    },
+    { "intent": "con", "utterances": [], "answers": [] },
+    { "intent": "conf", "utterances": [], "answers": [] },
+    {
+      "intent": "inquiry.onyx_chat_capabilities",
+      "utterances": [
+        "Hi there, I'm curious what you're capable of?",
+        "What are your capabilities?",
+        "What can you do?"
+      ],
+      "answers": [
+        "I am a chatbot, and I'm specifically designed to respond to user inquiries about VVibrant Web Solutions, as well as to guide them towards the correct resources if need be. Therefore, I'm capable of responding to user inquiries in a natural, conversational tone. That being said, I may not always get it right, and feel free to report any weird responses!"
+      ],
+      "enhance": true
+    },
+    {
+      "intent": "request.connect_directly",
+      "utterances": [
+        "Please connect me with an expert",
+        "connect directly",
+        "I'd like to speak to a human",
+        "I'd like to talk to a human"
+      ],
+      "answers": [
+        "I'd be happy to direct you towards our <a href=\"https://vvibrant.dev/contact\">contact page</a>, where you can get in touch with one of our representatives."
+      ],
+      "buttons": [{ "type": "contact_directly" }],
+      "enhance": true
+    },
+    {
+      "intent": "inquiry.specific_service",
+      "utterances": [
+        "What about ux design?",
+        "How can you help generate more leads?"
+      ],
+      "answers": [
+        "We provide a multitude of services to rewire your online web presence. From web design to chatbot creation, we're here to help."
+      ],
+      "enhance": true
+    },
+    {
+      "intent": "inquiry.how_we_can_help",
+      "utterances": ["How can I improve my online presence?"],
+      "answers": [
+        "Our expert services are tailored towards helping your business succeed. These services include website design and development, as well as analytics-based performance review and optimizations. On top of that, we provide blogging services, which means creating, hosting, and maintaining a blog for you, which will include your own personal content, as well as tailor made professional articles to boost SEO and the share-ability of your site."
+      ],
+      "enhance": true
+    },
+    {
+      "intent": "describe_state.good.with.inquiry.state",
+      "utterances": ["I'm good, you?"],
+      "answers": [
+        "That's great to hear! I'm doing well myself, thanks for asking."
+      ],
+      "enhance": true
     }
   ]
 }
