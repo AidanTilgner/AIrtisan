@@ -140,18 +140,93 @@
   }
 }
 
-.chat {
+.chatContainer {
   opacity: 0;
+  width: 100%;
+  box-sizing: border-box;
+  animation-name: chatIn;
+  animation-duration: 0.25s;
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: forwards;
+}
+
+.metadataContainer {
+  .open_button {
+    font-size: 16px;
+    border: none;
+    margin: 8px 0;
+    background-color: transparent;
+    display: flex;
+    place-content: center;
+    cursor: pointer;
+    box-sizing: border-box;
+    border: 1px solid #fff;
+    padding: 5px;
+    transition: all 0.2s ease-in-out;
+
+    &:hover {
+      background-color: #f4f4f4;
+      border: 1px solid #eaeaea;
+    }
+  }
+
+  .close_button {
+    font-size: 16px;
+    border: none;
+    margin: 8px 0;
+    background-color: transparent;
+    display: flex;
+    place-content: center;
+    cursor: pointer;
+    box-sizing: border-box;
+    border: 1px solid #fff;
+    padding: 5px;
+    transition: all 0.2s ease-in-out;
+
+    &:hover {
+      background-color: #f4f4f4;
+      border: 1px solid #eaeaea;
+    }
+  }
+}
+
+@keyframes metaIn {
+  0% {
+    padding-left: 8px;
+    opacity: 0;
+  }
+  100% {
+    padding-left: 14px;
+    opacity: 1;
+  }
+}
+
+.metadata {
+  opacity: 0;
+  border-left: 1px solid #eaeaea;
+  padding-left: 14px;
+  margin: 14px 0;
+  animation-name: metaIn;
+  animation-duration: 0.25s;
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: forwards;
+
+  .intent_summary {
+    font-size: 14px;
+
+    strong {
+      font-weight: 500;
+    }
+  }
+}
+
+.chat {
   width: 80%;
   padding: 14px 18px;
   margin-bottom: 24px;
   border-radius: 5px;
   font-weight: 500;
   word-wrap: break-word;
-  animation-name: chatIn;
-  animation-duration: 0.5s;
-  animation-timing-function: ease-in-out;
-  animation-fill-mode: forwards;
 
   p {
     margin: 0;
