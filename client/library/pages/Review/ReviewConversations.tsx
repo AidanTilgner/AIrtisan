@@ -441,11 +441,19 @@ function Conversation({
             {getFormattedTitle(conversation)}
           </Highlight>
         </h3>
-        <Highlight highlight={query} className={styles.bottomtext}>
+        <Highlight
+          highlight={query.toLocaleLowerCase()}
+          className={styles.bottomtext}
+        >
           {getShortenedText(
-            conversation.chats.find((c) => c.message.includes(query))
-              ?.message ||
-              conversation.chats[0]?.message ||
+            conversation.chats
+              .find((c) =>
+                c.message
+                  .toLocaleLowerCase()
+                  .includes(query.toLocaleLowerCase())
+              )
+              ?.message.toLocaleLowerCase() ||
+              conversation.chats[0]?.message.toLocaleLowerCase() ||
               "No messages",
             48
           )}
