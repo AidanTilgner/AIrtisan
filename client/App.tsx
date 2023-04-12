@@ -9,6 +9,7 @@ import Welcome from "./library/pages/Welcome/Welcome";
 import Auth from "./library/pages/Auth/Auth";
 import ReviewConversations from "./library/pages/Review/ReviewConversations";
 import Training from "./library/pages/Training/";
+import Corpus from "./library/pages/Corpus/Corpus";
 import { useUser } from "./library/contexts/User";
 
 function App() {
@@ -57,6 +58,9 @@ function App() {
                 </Route>
                 <Route path="train">
                   <Route index element={<Training />} />
+                </Route>
+                <Route path="corpus">
+                  <Route index element={<Corpus />} />
                 </Route>
                 {isSuperAdmin && (
                   <Route path="admin">

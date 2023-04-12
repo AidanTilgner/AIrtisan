@@ -57,6 +57,16 @@ function Navbar() {
           Previews
         </Link>
       </li>
+      <li>
+        <Link
+          to="/corpus"
+          className={
+            currentPath === "/corpus" ? styles.active : styles.inactive
+          }
+        >
+          Corpus
+        </Link>
+      </li>
     </>
   );
 

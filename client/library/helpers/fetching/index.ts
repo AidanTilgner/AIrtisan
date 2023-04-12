@@ -26,8 +26,11 @@ api.interceptors.response.use(
             title: "Error handled",
             message: "An error occurred, but it was handled",
           });
-          error.config.headers["x-access-token"] = newAccessToken;
-          return axios.request(error.config);
+          if (error.config?.headers) {
+            error.config.headers["x-access-token"] = newAccessToken;
+            return axios.request(error.config);
+          }
+          return Promise.reject(error);
         } else {
           // Clear the user's session and redirect to the login page
           logout();
@@ -63,7 +66,7 @@ export const retrainModel = async () => {
     });
 };
 
-export const getAnswer = async (text) => {
+export const getAnswer = async (text: string) => {
   return await api
     .post("/nlu/say", {
       text,
@@ -79,7 +82,7 @@ export const getAnswer = async (text) => {
     });
 };
 
-export const refreshAndAnswer = async (text) => {
+export const refreshAndAnswer = async (text: string) => {
   return await api
     .post("/testing/say", {
       text,
@@ -102,7 +105,7 @@ export const refreshAndAnswer = async (text) => {
     });
 };
 
-export const getTrainingAnswer = async (text) => {
+export const getTrainingAnswer = async (text: string) => {
   return await api
     .post("/training/say", {
       text,
@@ -118,7 +121,15 @@ export const getTrainingAnswer = async (text) => {
     });
 };
 
-export const addDataPoint = async ({ intent, utterances, answers }) => {
+export const addDataPoint = async ({
+  intent,
+  utterances,
+  answers,
+}: {
+  intent: string;
+  utterances: string[];
+  answers: string[];
+}) => {
   return await api
     .post("/training/datapoint", {
       intent,
@@ -143,7 +154,13 @@ export const addDataPoint = async ({ intent, utterances, answers }) => {
     });
 };
 
-export const removeAnswerFromIntent = async ({ intent, answer }) => {
+export const removeAnswerFromIntent = async ({
+  intent,
+  answer,
+}: {
+  intent: string;
+  answer: string;
+}) => {
   return await api
     .delete("/training/response", {
       data: {
@@ -169,7 +186,13 @@ export const removeAnswerFromIntent = async ({ intent, answer }) => {
     });
 };
 
-export const addAnswerToIntent = async ({ intent, answer }) => {
+export const addAnswerToIntent = async ({
+  intent,
+  answer,
+}: {
+  intent: string;
+  answer: string;
+}) => {
   return await api
     .put("/training/response", {
       intent,
@@ -197,6 +220,10 @@ export const addOrUpdateUtteranceOnIntent = async ({
   old_intent,
   new_intent,
   utterance,
+}: {
+  old_intent: string;
+  new_intent: string;
+  utterance: string;
 }) => {
   return await api
     .put("/training/intent", {
@@ -236,7 +263,13 @@ export const getAllIntents = async () => {
     });
 };
 
-export const addUtteranceToIntent = async ({ intent, utterance }) => {
+export const addUtteranceToIntent = async ({
+  intent,
+  utterance,
+}: {
+  intent: string;
+  utterance: string;
+}) => {
   return await api
     .put("/training/utterance", {
       intent,
@@ -260,7 +293,13 @@ export const addUtteranceToIntent = async ({ intent, utterance }) => {
     });
 };
 
-export const removeUtteranceFromIntent = async ({ intent, utterance }) => {
+export const removeUtteranceFromIntent = async ({
+  intent,
+  utterance,
+}: {
+  intent: string;
+  utterance: string;
+}) => {
   return await api
     .delete("/training/utterance", {
       data: {
@@ -286,7 +325,13 @@ export const removeUtteranceFromIntent = async ({ intent, utterance }) => {
     });
 };
 
-export const updateEnhaceForIntent = async ({ intent, enhance }) => {
+export const updateEnhaceForIntent = async ({
+  intent,
+  enhance,
+}: {
+  intent: string;
+  enhance: boolean;
+}) => {
   return await api
     .put(`/training/intent/${intent}/enhance`, {
       enhance,
@@ -311,7 +356,13 @@ export const updateEnhaceForIntent = async ({ intent, enhance }) => {
     });
 };
 
-export const updateButtonsOnIntent = async ({ intent, buttons }) => {
+export const updateButtonsOnIntent = async ({
+  intent,
+  buttons,
+}: {
+  intent: string;
+  buttons: string[];
+}) => {
   return await api
     .put(`/training/intent/${intent}/buttons`, {
       buttons,
@@ -334,7 +385,13 @@ export const updateButtonsOnIntent = async ({ intent, buttons }) => {
     });
 };
 
-export const removeButtonFromIntent = async ({ intent, button }) => {
+export const removeButtonFromIntent = async ({
+  intent,
+  button,
+}: {
+  intent: string;
+  button: string;
+}) => {
   return await api
     .delete(`/training/intent/${intent}/button`, {
       data: {
@@ -373,7 +430,13 @@ export const getAllButtons = async () => {
     });
 };
 
-export const postChat = async ({ message, session_id }) => {
+export const postChat = async ({
+  message,
+  session_id,
+}: {
+  message: string;
+  session_id: string;
+}) => {
   return await api
     .post("/chat/as_admin", {
       message,
@@ -389,7 +452,13 @@ export const postChat = async ({ message, session_id }) => {
     });
 };
 
-export const markChatAsShouldReview = async ({ chat_id, reason }) => {
+export const markChatAsShouldReview = async ({
+  chat_id,
+  reason,
+}: {
+  chat_id: string;
+  reason: string;
+}) => {
   return await api
     .post(`/chat/as_admin/${chat_id}/should_review`, {
       review_message: reason,

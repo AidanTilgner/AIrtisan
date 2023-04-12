@@ -55,7 +55,8 @@ function ChatBox() {
   }, [messages]);
 
   const handleSubmitMessage = (message: string) => {
-    if (!message) return;
+    const session_id = sessionStorage.getItem("session_id");
+    if (!message || !session_id) return;
     const newMessage = {
       content: message,
       side: "user" as "user" | "bot",
@@ -66,7 +67,7 @@ function ChatBox() {
     setBotMessageLoading(true);
     postChat({
       message,
-      session_id: sessionStorage.getItem("session_id") || "test",
+      session_id,
     })
       .then(({ answer, botChat }) => {
         setTimeout(() => {
@@ -76,7 +77,7 @@ function ChatBox() {
             {
               content: answer,
               side: "bot",
-              chat_id: botChat,
+              chat_id: String(botChat),
             },
           ]);
         }, 1000);
@@ -101,15 +102,16 @@ function ChatBox() {
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
-    if (scrollRef.current) {
+    if (scrollRef.current && messages.length > 1) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages]);
 
   const [isFocused, setIsFocused] = React.useState(false);
+  const hasFocused = React.useRef(false);
 
   useEffect(() => {
-    if (!botMessageLoading && inputRef.current) {
+    if (!botMessageLoading && inputRef.current && hasFocused.current) {
       inputRef.current.focus();
     }
   }, [botMessageLoading]);
@@ -145,6 +147,9 @@ function ChatBox() {
           ref={inputRef}
           onFocus={() => {
             setIsFocused(true);
+            if (!hasFocused.current) {
+              hasFocused.current = true;
+            }
           }}
           onBlur={() => {
             setIsFocused(false);
@@ -187,6 +192,8 @@ function Chat({
 
     // if user cancels, return
     if (!reason) return;
+
+    if (!id) return console.error("Chat id is null");
 
     // if user submits, send request to server
     markChatAsShouldReview({
