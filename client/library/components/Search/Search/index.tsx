@@ -1,13 +1,20 @@
 import React from "react";
 import styles from "./index.module.scss";
 import { useSearch } from "../../../contexts/Search";
+import { X } from "phosphor-react";
 
 function Search({ typingDelay }: { typingDelay?: number }) {
-  const { setQuery } = useSearch();
+  const { setQuery, query: contextQuery } = useSearch();
   const [timeout, setTimeoutState] = React.useState<NodeJS.Timeout | null>(
     null
   );
-  const [query, setQueryState] = React.useState<string>("");
+  const [query, setQueryState] = React.useState<string>(contextQuery);
+
+  React.useEffect(() => {
+    if (query !== contextQuery) {
+      setQueryState(contextQuery);
+    }
+  }, [contextQuery]);
 
   React.useEffect(() => {
     if (timeout) {
@@ -26,7 +33,17 @@ function Search({ typingDelay }: { typingDelay?: number }) {
         type="text"
         onChange={(e) => setQueryState(e.target.value)}
         placeholder="Search..."
+        value={query}
       />
+      <button
+        className={styles.clearSearch}
+        onClick={() => {
+          setQueryState("");
+          setQuery("");
+        }}
+      >
+        <X />
+      </button>
     </div>
   );
 }

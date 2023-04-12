@@ -321,9 +321,14 @@
       }
     }
 
+    .chatContainer {
+      padding-bottom: 24px;
+      margin-bottom: 18px;
+      position: relative;
+    }
+
     .chat {
       font-size: 13px;
-      margin-bottom: 18px;
       width: 80%;
       padding: 8px 14px;
       box-sizing: border-box;
@@ -336,8 +341,26 @@
       }
     }
 
+    .timestamps {
+      position: absolute;
+      margin: 0;
+      bottom: -18px;
+      font-size: 10px;
+      opacity: 0.5;
+      transition: all 0.2s ease-in-out;
+      cursor: pointer;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+
     .user {
       margin-left: auto;
+
+      .timestamps {
+        right: 0;
+      }
 
       .test_tag {
         position: absolute;
@@ -358,6 +381,10 @@
     .assistant {
       margin-right: auto;
       background-color: #f4f4f4;
+
+      .timestamps {
+        left: 0;
+      }
 
       .enhanced_tag {
         position: absolute;

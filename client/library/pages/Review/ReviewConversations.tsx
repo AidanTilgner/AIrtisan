@@ -7,7 +7,7 @@ import {
   createTrainingCopyOfConversation,
   deleteConversation,
 } from "../../helpers/fetching/chats";
-import { Button, Chip, SegmentedControl } from "@mantine/core";
+import { Button, Chip, Highlight, SegmentedControl } from "@mantine/core";
 import { useUser } from "../../contexts/User";
 import {
   MagicWand,
@@ -70,24 +70,61 @@ function ReviewConversations() {
   };
 
   const filterConversations = (convs: ConversationType[]) => {
+    const lowercaseQuery = query.toLowerCase();
     return convs.filter((conv) => {
-      const passesQuery =
-        conv.chats.some((chat) => chat.message.toLowerCase().includes(query)) ||
-        conv.chats.some((chat) =>
-          String(chat.id).toLowerCase().includes(query)
-        ) ||
-        conv.chats.some((chat) =>
-          chat.reviewer?.toLowerCase().includes(query)
-        ) ||
-        conv.chats.some((chat) =>
-          chat.review_text?.toLowerCase().includes(query)
-        ) ||
-        (conv.generated_name
-          ? conv.generated_name?.toLowerCase().includes(query)
-          : "Unnamed Conversation".toLowerCase().includes(query)) ||
-        String(conv.id).toLowerCase().includes(query) ||
-        conv.session_id.toLowerCase().includes(query) ||
-        (conv.training_copy && ["training", "copy"].includes(query));
+      const generated_name_contains_query = conv.generated_name
+        ? conv.generated_name?.toLowerCase().includes(lowercaseQuery)
+        : "Unnamed Conversation".toLowerCase().includes(lowercaseQuery);
+
+      const conversation_id_contains_query = String(conv.id)
+        .toLowerCase()
+        .includes(lowercaseQuery);
+
+      const session_id_contains_query = conv.session_id
+        .toLowerCase()
+        .includes(lowercaseQuery);
+
+      const conversation_is_training_copy = conv.training_copy
+        ? ["training", "copy"].includes(lowercaseQuery)
+        : false;
+
+      const someChatPassesQuery = conv.chats.some((chat) => {
+        const message_contains_query = chat.message
+          .toLowerCase()
+          .includes(lowercaseQuery);
+
+        const chat_id_contains_query = String(chat.id)
+          .toLowerCase()
+          .includes(lowercaseQuery);
+
+        const reviewer_contains_query = chat.reviewer
+          ?.toLowerCase()
+          .includes(lowercaseQuery);
+
+        const review_text_contains_query = chat.review_text
+          ?.toLowerCase()
+          .includes(lowercaseQuery);
+
+        const chat_time_contains_query =
+          String(chat.created_at).includes(lowercaseQuery) ||
+          String(chat.updated_at).includes(lowercaseQuery);
+
+        return (
+          message_contains_query ||
+          chat_id_contains_query ||
+          reviewer_contains_query ||
+          review_text_contains_query ||
+          chat_time_contains_query
+        );
+      });
+
+      const passesQuery = [
+        generated_name_contains_query,
+        conversation_id_contains_query,
+        session_id_contains_query,
+        conversation_is_training_copy,
+        someChatPassesQuery,
+      ].some((p) => p);
 
       const isEnhanced = conv.chats.find((chat) => !!chat.enhanced);
       const passesEnhanced = allowEnhanced ? true : !isEnhanced;
@@ -217,6 +254,7 @@ function Conversation({
   const [seeFullConversation, setSeeFullConversation] = React.useState(true);
   const [chats, setChats] = React.useState<Chat[]>([]);
   const { user } = useUser();
+  const { setQuery, query } = useSearch();
 
   const navigate = useNavigate();
 
@@ -330,6 +368,25 @@ function Conversation({
     (c) => c.intent.toLocaleLowerCase() === "none"
   );
 
+  const getFormattedTimeStamp = (timestamp: string) => {
+    const date = new Date(timestamp);
+
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const hoursWithLeadingZero = hours < 10 ? `0${hours}` : hours;
+    const minutesWithLeadingZero = minutes < 10 ? `0${minutes}` : minutes;
+    const dayOfTheWeek = date.toLocaleDateString("en-US", {
+      weekday: "short",
+    });
+    const month = date.toLocaleDateString("en-US", {
+      month: "short",
+    });
+    const day = date.getDate();
+    const year = date.getFullYear();
+
+    return `${hoursWithLeadingZero}:${minutesWithLeadingZero} ${dayOfTheWeek} ${month} ${day}, ${year}`;
+  };
+
   return (
     <div
       key={conversation.id}
@@ -359,14 +416,40 @@ function Conversation({
             });
           }
         }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            if (
+              openedConversation &&
+              openedConversation?.id === conversation.id
+            ) {
+              setOpenedConversation(null);
+            } else {
+              setOpenedConversation({
+                ...conversation,
+                chats_to_review:
+                  "chats_to_review" in conversation
+                    ? conversation.chats_to_review
+                    : [],
+              });
+            }
+          }
+        }}
+        tabIndex={0}
       >
-        <h3 className={styles.title}>{getFormattedTitle(conversation)}</h3>
-        <p className={styles.bottomtext}>
+        <h3 className={styles.title}>
+          <Highlight highlight={query}>
+            {getFormattedTitle(conversation)}
+          </Highlight>
+        </h3>
+        <Highlight highlight={query} className={styles.bottomtext}>
           {getShortenedText(
-            conversation.chats[0]?.message || "No messages",
+            conversation.chats.find((c) => c.message.includes(query))
+              ?.message ||
+              conversation.chats[0]?.message ||
+              "No messages",
             48
           )}
-        </p>
+        </Highlight>
         <div className={styles.tags}>
           {chatWasEnhanced && (
             <div
@@ -398,10 +481,14 @@ function Conversation({
         <div className={styles.opened_conversation}>
           <div className={styles.header}>
             <h2 className={styles.title}>
-              {openedConversation.generated_name || "No Generated Name"}
+              <Highlight highlight={query}>
+                {openedConversation.generated_name || "No Generated Name"}
+              </Highlight>
             </h2>
             <div className={styles.metadata}>
-              <p className={styles.subtitle}>{openedConversation.session_id}</p>
+              <Highlight highlight={query} className={styles.subtitle}>
+                {openedConversation.session_id}
+              </Highlight>
               <div className={styles.options}>
                 <button
                   className={`${styles.option} ${styles.delete}`}
@@ -442,7 +529,7 @@ function Conversation({
           </div>
           <div className={styles.chats}>
             {chats.map((chat) => (
-              <div key={chat.id}>
+              <div key={chat.id} className={styles.chatContainer}>
                 {chat.needs_review && (
                   <div className={styles.review_info}>
                     <p>
@@ -468,12 +555,21 @@ function Conversation({
                     e.stopPropagation();
                   }}
                 >
-                  <p
-                    className={styles.content}
-                    dangerouslySetInnerHTML={{
-                      __html: chat.message,
-                    }}
-                  />
+                  <Highlight highlight={query} className={styles.content}>
+                    {chat.message}
+                  </Highlight>
+                  {chat.created_at && (
+                    <p
+                      className={styles.timestamps}
+                      onClick={() => {
+                        setQuery(chat.created_at);
+                      }}
+                    >
+                      <span className={styles.timestamp}>
+                        {getFormattedTimeStamp(chat.created_at)}
+                      </span>
+                    </p>
+                  )}
                   {chat.enhanced && (
                     <div
                       className={styles.enhanced_tag}
