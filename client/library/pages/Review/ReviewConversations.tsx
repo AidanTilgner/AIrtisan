@@ -60,7 +60,14 @@ function ReviewConversations() {
   const [viewAllConversations, setViewAllConversations] = React.useState(true);
 
   const [allowEnhanced, setAllowEnhanced] = React.useState(true);
+  const [allowNoneIntent, setAllowNoneIntent] = React.useState(true);
   const [allowTrainingCopy, setAllowTrainingCopy] = React.useState(false);
+
+  const conversationContainsNoneIntent = (conversation: ConversationType) => {
+    return conversation.chats.find(
+      (chat) => chat.intent.toLowerCase() === "none"
+    );
+  };
 
   const filterConversations = (convs: ConversationType[]) => {
     return convs.filter((conv) => {
@@ -75,8 +82,6 @@ function ReviewConversations() {
         conv.chats.some((chat) =>
           chat.review_text?.toLowerCase().includes(query)
         ) ||
-        (conv.chats.some((chat) => chat.enhanced) &&
-          query.includes("enhanced")) ||
         (conv.generated_name
           ? conv.generated_name?.toLowerCase().includes(query)
           : "Unnamed Conversation".toLowerCase().includes(query)) ||
@@ -87,8 +92,13 @@ function ReviewConversations() {
       const isEnhanced = conv.chats.find((chat) => !!chat.enhanced);
       const passesEnhanced = allowEnhanced ? true : !isEnhanced;
       const passesTrainingCopy = allowTrainingCopy ? true : !conv.training_copy;
+      const passesNoneIntent = allowNoneIntent
+        ? true
+        : !conversationContainsNoneIntent(conv);
 
-      return passesQuery && passesEnhanced && passesTrainingCopy;
+      return (
+        passesQuery && passesEnhanced && passesTrainingCopy && passesNoneIntent
+      );
     });
   };
 
@@ -146,6 +156,14 @@ function ReviewConversations() {
         <div className={styles.filter}>
           <Chip checked={allowEnhanced} onChange={(v) => setAllowEnhanced(v)}>
             Enhanced
+          </Chip>
+        </div>
+        <div className={styles.filter}>
+          <Chip
+            checked={allowNoneIntent}
+            onChange={(v) => setAllowNoneIntent(v)}
+          >
+            None Intent
           </Chip>
         </div>
         <div className={styles.filter}>
@@ -305,6 +323,12 @@ function Conversation({
     navigate(`/train?${urlSearchParams}`);
   };
 
+  const chatWasEnhanced = !!conversation.chats.find((c) => c.enhanced === true);
+
+  const chatHasNoneIntent = !!conversation.chats.find(
+    (c) => c.intent.toLocaleLowerCase() === "none"
+  );
+
   return (
     <div
       key={conversation.id}
@@ -340,14 +364,28 @@ function Conversation({
           {getShortenedText(conversation.chats[0].message, 48)}
         </p>
         <div className={styles.tags}>
-          {conversation.chats.find((c) => c.enhanced === true) && true && (
-            <div className={`${styles.tag} ${styles.tag_enhanced}`}>
+          {chatWasEnhanced && (
+            <div
+              className={`${styles.tag} ${styles.tag_enhanced}`}
+              title="This conversation has an enhanced chat."
+            >
               enhanced
             </div>
           )}
           {conversation.training_copy && (
-            <div className={`${styles.tag} ${styles.tag_training_copy}`}>
+            <div
+              className={`${styles.tag} ${styles.tag_training_copy}`}
+              title="This conversation is a training copy."
+            >
               training copy
+            </div>
+          )}
+          {chatHasNoneIntent && (
+            <div
+              className={`${styles.tag} ${styles.tag_none_intent}`}
+              title="This conversation has a chat with the 'None' intent."
+            >
+              none intent
             </div>
           )}
         </div>

@@ -7,7 +7,15 @@ import {
   postTrainingChat,
 } from "../../../helpers/fetching/chats";
 import { showNotification } from "@mantine/notifications";
-import { DotsThree, PaperPlaneTilt, Plus, X } from "phosphor-react";
+import {
+  ArrowCounterClockwise,
+  DotsThree,
+  MagicWand,
+  PaperPlaneTilt,
+  PencilSimple,
+  Plus,
+  X,
+} from "phosphor-react";
 import { Button } from "@mantine/core";
 
 function Converse() {
@@ -167,25 +175,49 @@ const Chat = ({
                   <strong>{chat.confidence}%</strong> confidence.
                 </p>
                 {chat.enhanced && (
-                  <p className={styles.enhanced}>Chat was enhanced with</p>
+                  <p className={styles.enhanced}>
+                    <MagicWand /> <span>chat was enhanced with ChatGPT</span>
+                  </p>
                 )}
               </div>
-              <button
-                className={styles.close_button}
-                onClick={() => setOpenMetadata(false)}
-                title="See less information"
-              >
-                <X weight="regular" />
-              </button>
+              <div className={styles.metadataOptions}>
+                <button
+                  className={`${styles.close_button} ${styles.metadataOption}`}
+                  onClick={() => setOpenMetadata(false)}
+                  title="See less information"
+                >
+                  <X weight="regular" />
+                </button>
+                <button
+                  className={`${styles.edit_button} ${styles.metadataOption}`}
+                  onClick={() => {
+                    console.log("edit");
+                  }}
+                  title="Modify this chat"
+                >
+                  <PencilSimple weight="regular" />
+                </button>
+                <button
+                  className={`${styles.retry_button} ${styles.metadataOption}`}
+                  onClick={() => {
+                    console.log("retry");
+                  }}
+                  title="Rerun this chat response"
+                >
+                  <ArrowCounterClockwise weight="regular" />
+                </button>
+              </div>
             </>
           ) : (
-            <button
-              className={styles.open_button}
-              onClick={() => setOpenMetadata(true)}
-              title="See more information"
-            >
-              <DotsThree weight="regular" />
-            </button>
+            <div className={styles.metadataOptions}>
+              <button
+                className={`${styles.open_button} ${styles.metadataOption}`}
+                onClick={() => setOpenMetadata(true)}
+                title="See more information"
+              >
+                <DotsThree weight="regular" />
+              </button>
+            </div>
           )}
         </div>
       )}
@@ -198,6 +230,16 @@ const Chat = ({
         >
           {role === "user" ? message : null}
         </p>
+        <div className={styles.chatTags}>
+          {chat.enhanced && (
+            <div
+              className={`${styles.chatTag} ${styles.enhancedTag}`}
+              title="Chat was enhanced"
+            >
+              <MagicWand />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

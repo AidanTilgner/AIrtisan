@@ -161,6 +161,7 @@
     box-sizing: border-box;
     z-index: 10;
     background-color: rgba($color: #fff, $alpha: 1);
+    font-weight: 600;
 
     &_enhanced {
       color: #2256f2;
@@ -170,6 +171,11 @@
     &_training_copy {
       color: #102973;
       border: 1px solid #102973;
+    }
+
+    &_none_intent {
+      color: #d65713;
+      border: 1px solid #d65713;
     }
   }
 }

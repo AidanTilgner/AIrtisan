@@ -148,44 +148,47 @@
   animation-duration: 0.25s;
   animation-timing-function: ease-in-out;
   animation-fill-mode: forwards;
+  position: relative;
 }
 
 .metadataContainer {
-  .open_button {
-    font-size: 16px;
-    border: none;
-    margin: 8px 0;
-    background-color: transparent;
-    display: flex;
-    place-content: center;
-    cursor: pointer;
-    box-sizing: border-box;
-    border: 1px solid #fff;
-    padding: 5px;
-    transition: all 0.2s ease-in-out;
+  margin: 14px 0 8px 0;
 
-    &:hover {
-      background-color: #f4f4f4;
-      border: 1px solid #eaeaea;
+  .metadataOptions {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+
+    .metadataOption {
+      font-size: 16px;
+      border: none;
+      margin: 8px 0;
+      background-color: transparent;
+      display: flex;
+      place-content: center;
+      cursor: pointer;
+      box-sizing: border-box;
+      border: 1px solid #fff;
+      padding: 5px;
+      transition: all 0.2s ease-in-out;
+
+      &:hover {
+        background-color: #f4f4f4;
+        border: 1px solid #eaeaea;
+      }
+
+      &:active {
+        // transform: rotate(15deg);
+        border-radius: 50%;
+        border: 1px solid #fff;
+      }
     }
-  }
 
-  .close_button {
-    font-size: 16px;
-    border: none;
-    margin: 8px 0;
-    background-color: transparent;
-    display: flex;
-    place-content: center;
-    cursor: pointer;
-    box-sizing: border-box;
-    border: 1px solid #fff;
-    padding: 5px;
-    transition: all 0.2s ease-in-out;
+    .open_button {
+    }
 
-    &:hover {
-      background-color: #f4f4f4;
-      border: 1px solid #eaeaea;
+    .close_button {
     }
   }
 }
@@ -205,17 +208,33 @@
   opacity: 0;
   border-left: 1px solid #eaeaea;
   padding-left: 14px;
-  margin: 14px 0;
+  margin: 0;
   animation-name: metaIn;
   animation-duration: 0.25s;
   animation-timing-function: ease-in-out;
   animation-fill-mode: forwards;
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  p {
+    margin: 0;
+  }
 
   .intent_summary {
-    font-size: 14px;
-
     strong {
       font-weight: 500;
+    }
+  }
+
+  .enhanced {
+    svg {
+      margin-right: 5px;
+      vertical-align: middle;
+      position: relative;
+      bottom: 2px;
+      color: #2256f2;
     }
   }
 }
@@ -227,6 +246,7 @@
   border-radius: 5px;
   font-weight: 500;
   word-wrap: break-word;
+  position: relative;
 
   p {
     margin: 0;
@@ -247,6 +267,23 @@
     color: #2256f2;
     text-decoration: underline;
     font-weight: 600;
+  }
+}
+
+.chatTags {
+  position: absolute;
+  top: 0;
+  right: -24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  .chatTag {
+    font-size: 16px;
+  }
+
+  .enhancedTag {
+    color: #2256f2;
   }
 }
 
