@@ -1,5 +1,5 @@
-import default_corpus from "./documents/default_corpus.json";
-import { writeFileSync } from "fs";
+// import default_corpus from "./documents/default_corpus.json";
+import { readFileSync, writeFileSync } from "fs";
 import { prettify_json } from "../utils/prettier";
 
 type corpusDataPoint = {
@@ -10,12 +10,22 @@ type corpusDataPoint = {
   enhance?: boolean;
 };
 
+const getDefaultCorpus = () => {
+  const buff = readFileSync("nlu/documents/default_corpus.json");
+  const json = JSON.parse(buff.toString());
+  return json as unknown as {
+    name: string;
+    locale: string;
+    data: corpusDataPoint[];
+  };
+};
+
 export const addData = async (data: {
   intent: string;
   utterances: string[];
   answers: string[];
 }) => {
-  const corpusData = default_corpus.data as corpusDataPoint[];
+  const corpusData = getDefaultCorpus().data as corpusDataPoint[];
 
   const existingIntent = corpusData.find(
     (intent) => intent.intent === data.intent
@@ -27,8 +37,18 @@ export const addData = async (data: {
     corpusData.push(data);
   }
 
+  writeFileSync(
+    "./nlu/documents/default_corpus.json",
+    prettify_json(
+      JSON.stringify({
+        ...getDefaultCorpus(),
+        data: corpusData,
+      })
+    )
+  );
+
   const newCorpus = {
-    ...default_corpus,
+    ...getDefaultCorpus(),
     data: corpusData,
   };
 
@@ -40,7 +60,7 @@ export const addData = async (data: {
 };
 
 export const addResponseToIntent = async (intent: string, response: string) => {
-  const corpusData = default_corpus.data as corpusDataPoint[];
+  const corpusData = getDefaultCorpus().data as corpusDataPoint[];
 
   const existingIntent = corpusData.find((item) => item.intent === intent);
   if (existingIntent) {
@@ -55,8 +75,18 @@ export const addResponseToIntent = async (intent: string, response: string) => {
     });
   }
 
+  writeFileSync(
+    "./nlu/documents/default_corpus.json",
+    prettify_json(
+      JSON.stringify({
+        ...getDefaultCorpus(),
+        data: corpusData,
+      })
+    )
+  );
+
   const newCorpus = {
-    ...default_corpus,
+    ...getDefaultCorpus(),
     data: corpusData,
   };
 
@@ -72,7 +102,7 @@ export const removeResponseFromIntent = async (
   intent: string,
   response: string
 ) => {
-  const corpusData = default_corpus.data as corpusDataPoint[];
+  const corpusData = getDefaultCorpus().data as corpusDataPoint[];
 
   const existingIntent = corpusData.find((item) => item.intent === intent);
   if (existingIntent) {
@@ -81,8 +111,18 @@ export const removeResponseFromIntent = async (
     );
   }
 
+  writeFileSync(
+    "./nlu/documents/default_corpus.json",
+    prettify_json(
+      JSON.stringify({
+        ...getDefaultCorpus(),
+        data: corpusData,
+      })
+    )
+  );
+
   const newCorpus = {
-    ...default_corpus,
+    ...getDefaultCorpus(),
     data: corpusData,
   };
 
@@ -100,7 +140,7 @@ export const addOrUpdateUtteranceOnIntent = async (
   utterance: string
 ) => {
   // check the old intent for this utterance, if it exists, remove it
-  const corpusData = default_corpus.data as corpusDataPoint[];
+  const corpusData = getDefaultCorpus().data as corpusDataPoint[];
   const oldIntent = corpusData.find((item) => item.intent === old_intent);
   if (oldIntent) {
     oldIntent.utterances = oldIntent.utterances.filter(
@@ -122,14 +162,20 @@ export const addOrUpdateUtteranceOnIntent = async (
     });
   }
 
+  writeFileSync(
+    "./nlu/documents/default_corpus.json",
+    prettify_json(
+      JSON.stringify({
+        ...getDefaultCorpus(),
+        data: corpusData,
+      })
+    )
+  );
+
   const newCorpus = {
-    ...default_corpus,
+    ...getDefaultCorpus(),
     data: corpusData,
   };
-
-  const formatted = prettify_json(JSON.stringify(newCorpus));
-
-  writeFileSync("./nlu/documents/default_corpus.json", formatted);
 
   const newDataPoint = newCorpus.data.find(
     (item) => item.intent === new_intent
@@ -141,7 +187,7 @@ export const removeUtteranceFromIntent = async (
   intent: string,
   utterance: string
 ) => {
-  const corpusData = default_corpus.data as corpusDataPoint[];
+  const corpusData = getDefaultCorpus().data as corpusDataPoint[];
 
   const existingIntent = corpusData.find((item) => item.intent === intent);
   if (existingIntent) {
@@ -150,8 +196,18 @@ export const removeUtteranceFromIntent = async (
     );
   }
 
+  writeFileSync(
+    "./nlu/documents/default_corpus.json",
+    prettify_json(
+      JSON.stringify({
+        ...getDefaultCorpus(),
+        data: corpusData,
+      })
+    )
+  );
+
   const newCorpus = {
-    ...default_corpus,
+    ...getDefaultCorpus(),
     data: corpusData,
   };
 
@@ -167,7 +223,7 @@ export const addUtteranceToIntent = async (
   intent: string,
   utterance: string
 ) => {
-  const corpusData = default_corpus.data as corpusDataPoint[];
+  const corpusData = getDefaultCorpus().data as corpusDataPoint[];
 
   const existingIntent = corpusData.find((item) => item.intent === intent);
   if (existingIntent) {
@@ -182,8 +238,18 @@ export const addUtteranceToIntent = async (
     });
   }
 
+  writeFileSync(
+    "./nlu/documents/default_corpus.json",
+    prettify_json(
+      JSON.stringify({
+        ...getDefaultCorpus(),
+        data: corpusData,
+      })
+    )
+  );
+
   const newCorpus = {
-    ...default_corpus,
+    ...getDefaultCorpus(),
     data: corpusData,
   };
 
@@ -196,21 +262,27 @@ export const addUtteranceToIntent = async (
 };
 
 export const enhanceIntent = (intent: string, shouldEnhance: boolean) => {
-  const corpusData = default_corpus.data as corpusDataPoint[];
+  const corpusData = getDefaultCorpus().data as corpusDataPoint[];
 
   const existingIntent = corpusData.find((item) => item.intent === intent);
   if (existingIntent) {
     existingIntent.enhance = shouldEnhance;
   }
 
+  writeFileSync(
+    "./nlu/documents/default_corpus.json",
+    prettify_json(
+      JSON.stringify({
+        ...getDefaultCorpus(),
+        data: corpusData,
+      })
+    )
+  );
+
   const newCorpus = {
-    ...default_corpus,
+    ...getDefaultCorpus(),
     data: corpusData,
   };
-
-  const formatted = prettify_json(JSON.stringify(newCorpus));
-
-  writeFileSync("./nlu/documents/default_corpus.json", formatted);
 
   const newDataPoint = newCorpus.data.find((item) => item.intent === intent);
   return newDataPoint;
@@ -220,15 +292,57 @@ export const updateButtonsOnIntent = async (
   intent: string,
   buttons: { type: string }[]
 ) => {
-  const corpusData = default_corpus.data;
+  const corpusData = getDefaultCorpus().data;
 
   const existingIntent = corpusData.find((item) => item.intent === intent);
   if (existingIntent) {
     existingIntent.buttons = buttons;
   }
 
+  writeFileSync(
+    "./nlu/documents/default_corpus.json",
+    prettify_json(
+      JSON.stringify({
+        ...getDefaultCorpus(),
+        data: corpusData,
+      })
+    )
+  );
+
   const newCorpus = {
-    ...default_corpus,
+    ...getDefaultCorpus(),
+    data: corpusData,
+  };
+
+  const newDataPoint = newCorpus.data.find((item) => item.intent === intent);
+  return newDataPoint;
+};
+
+export const removeButtonFromIntentByType = async (
+  intent: string,
+  type: string
+) => {
+  const corpusData = getDefaultCorpus().data;
+
+  const existingIntent = corpusData.find((item) => item.intent === intent);
+  if (existingIntent) {
+    existingIntent.buttons = existingIntent.buttons?.filter(
+      (item) => item.type !== type
+    );
+  }
+
+  writeFileSync(
+    "./nlu/documents/default_corpus.json",
+    prettify_json(
+      JSON.stringify({
+        ...getDefaultCorpus(),
+        data: corpusData,
+      })
+    )
+  );
+
+  const newCorpus = {
+    ...getDefaultCorpus(),
     data: corpusData,
   };
 
@@ -240,21 +354,53 @@ export const updateButtonsOnIntent = async (
   return newDataPoint;
 };
 
-export const removeButtonFromIntentByType = async (
-  intent: string,
-  type: string
-) => {
-  const corpusData = default_corpus.data;
+export const deleteDataPoint = async (intent: string) => {
+  const corpusData = getDefaultCorpus().data;
 
-  const existingIntent = corpusData.find((item) => item.intent === intent);
-  if (existingIntent) {
-    existingIntent.buttons = existingIntent.buttons?.filter(
-      (item) => item.type !== type
-    );
-  }
+  const newData = corpusData.filter((item) => item.intent !== intent);
+
+  writeFileSync(
+    "./nlu/documents/default_corpus.json",
+    prettify_json(
+      JSON.stringify({
+        ...getDefaultCorpus(),
+        data: newData,
+      })
+    )
+  );
 
   const newCorpus = {
-    ...default_corpus,
+    ...getDefaultCorpus(),
+    data: newData,
+  };
+
+  const formatted = prettify_json(JSON.stringify(newCorpus));
+
+  writeFileSync("./nlu/documents/default_corpus.json", formatted);
+
+  return newCorpus;
+};
+
+export const renameIntent = async (old_intent: string, new_intent: string) => {
+  const corpusData = getDefaultCorpus().data;
+
+  const existingIntent = corpusData.find((item) => item.intent === old_intent);
+  if (existingIntent) {
+    existingIntent.intent = new_intent;
+  }
+
+  writeFileSync(
+    "./nlu/documents/default_corpus.json",
+    prettify_json(
+      JSON.stringify({
+        ...getDefaultCorpus(),
+        data: corpusData,
+      })
+    )
+  );
+
+  const newCorpus = {
+    ...getDefaultCorpus(),
     data: corpusData,
   };
 
@@ -262,6 +408,8 @@ export const removeButtonFromIntentByType = async (
 
   writeFileSync("./nlu/documents/default_corpus.json", formatted);
 
-  const newDataPoint = newCorpus.data.find((item) => item.intent === intent);
+  const newDataPoint = newCorpus.data.find(
+    (item) => item.intent === new_intent
+  );
   return newDataPoint;
 };

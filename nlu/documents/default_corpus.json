@@ -4,24 +4,17 @@
   "data": [
     {
       "intent": "greeting.hello",
-      "utterances": [
-        "hello",
-        "hey",
-        "hey there",
-        "hi",
-        "hi there",
-        "hola",
-        "ciao"
-      ],
+      "utterances": ["hey", "hey there", "hi there", "ciao", "hello"],
       "answers": [
         "Hi! How can I help you?",
         "Hello, how can I help you?",
         "Hey there, how can I help you?",
-        "Hi, how are you?",
         "Hey, how are you?",
-        "Hello, how are you?"
+        "Hello, how are you?",
+        "Hey! How can I help you?"
       ],
-      "buttons": [{ "type": "play_greeting" }]
+      "buttons": [{ "type": "play_greeting" }, { "type": "see_services" }],
+      "enhance": false
     },
     {
       "intent": "inquiry.identity",
@@ -63,7 +56,6 @@
       "answers": ["Perfect!"],
       "enhance": true
     },
-    { "intent": "ooga.booga", "utterances": ["ooga.booga"], "answers": [] },
     {
       "intent": "express.interest",
       "utterances": ["That's pretty neat", "That's interesting"],
@@ -108,8 +100,6 @@
         "Alright! I'm happy to help with any questions you might have."
       ]
     },
-    { "intent": "con", "utterances": [], "answers": [] },
-    { "intent": "conf", "utterances": [], "answers": [] },
     {
       "intent": "inquiry.onyx_chat_capabilities",
       "utterances": [

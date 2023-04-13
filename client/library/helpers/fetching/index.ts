@@ -1,7 +1,7 @@
 import axios, { AxiosError } from "axios";
 import { showNotification } from "@mantine/notifications";
 import { logout } from "../auth";
-import { Corpus } from "../../../documentation/main";
+import { Corpus, CorpusDataPoint } from "../../../documentation/main";
 
 export const api = axios.create({
   baseURL: "/",
@@ -155,6 +155,70 @@ export const addDataPoint = async ({
     });
 };
 
+export const renameIntent = async ({
+  oldIntent,
+  newIntent,
+}: {
+  oldIntent: string;
+  newIntent: string;
+}) => {
+  return await api
+    .put("/training/intent/rename", {
+      old_intent: oldIntent,
+      new_intent: newIntent,
+      retrain: true,
+    })
+    .then((res) => {
+      showNotification({
+        title: "Success",
+        message: "Intent renamed, model will be refreshed soon",
+      });
+      return res.data.data;
+    })
+    .catch((err) => {
+      console.error(err);
+      showNotification({
+        title: "Error",
+        message: "Something went wrong",
+      });
+    });
+};
+
+export const deleteDataPoint = async (intent: string) => {
+  return await api
+    .delete("/training/datapoint", {
+      data: {
+        intent,
+        retrain: true,
+      },
+    })
+    .then((res) => {
+      showNotification({
+        title: "Success",
+        message: "Data point deleted, model will be refreshed soon",
+      });
+      return res.data as {
+        data: CorpusDataPoint;
+        message: string;
+        retrained: boolean;
+        success: boolean;
+      };
+    })
+    .catch((err) => {
+      console.error(err);
+      showNotification({
+        title: "Error",
+        message: "Something went wrong",
+      });
+      return {
+        data: null,
+        message: "Something went wrong",
+        retrained: false,
+        success: false,
+      };
+    });
+};
+
 export const removeAnswerFromIntent = async ({
   intent,
   answer,
@@ -175,7 +239,12 @@ export const removeAnswerFromIntent = async ({
         title: "Success",
         message: "Answer removed from intent",
       });
-      return res.data.data;
+      return res.data as {
+        data: CorpusDataPoint;
+        message: string;
+        retrained: boolean;
+        success: boolean;
+      };
     })
     .catch((err) => {
       console.error(err);
@@ -183,7 +252,12 @@ export const removeAnswerFromIntent = async ({
         title: "Error",
         message: "Something went wrong",
       });
-      return err;
+      return {
+        data: null,
+        message: "Something went wrong",
+        retrained: false,
+        success: false,
+      };
     });
 };
 
@@ -205,7 +279,12 @@ export const addAnswerToIntent = async ({
         title: "Success",
         message: "Answer added to intent",
       });
-      return res.data.data;
+      return res.data as {
+        data: CorpusDataPoint;
+        message: string;
+        retrained: boolean;
+        success: boolean;
+      };
     })
     .catch((err) => {
       console.error(err);
@@ -213,7 +292,12 @@ export const addAnswerToIntent = async ({
         title: "Error",
         message: "Something went wrong",
       });
-      return err;
+      return {
+        data: null,
+        message: "Something went wrong",
+        retrained: false,
+        success: false,
+      };
     });
 };
 
@@ -238,7 +322,12 @@ export const addOrUpdateUtteranceOnIntent = async ({
         title: "Success",
         message: "Utterance added to intent",
       });
-      return res.data.data;
+      return res.data.data as {
+        message: string;
+        success: boolean;
+        retrained: boolean;
+        data: CorpusDataPoint | undefined;
+      };
     })
     .catch((err) => {
       console.error(err);
@@ -246,7 +335,12 @@ export const addOrUpdateUtteranceOnIntent = async ({
         title: "Error",
         message: "Something went wrong",
       });
-      return err;
+      return {
+        message: "Something went wrong",
+        success: false,
+        retrained: false,
+        data: undefined,
+      };
     });
 };
 
@@ -319,7 +413,12 @@ export const addUtteranceToIntent = async ({
         title: "Success",
         message: "Utterance added to intent",
       });
-      return res.data.data;
+      return res.data as {
+        message: string;
+        success: boolean;
+        data: CorpusDataPoint | undefined;
+        retrained: boolean;
+      };
     })
     .catch((err) => {
       console.error(err);
@@ -327,7 +426,12 @@ export const addUtteranceToIntent = async ({
         title: "Error",
         message: "Something went wrong",
       });
-      return err;
+      return {
+        message: "Something went wrong",
+        success: false,
+        data: undefined,
+        retrained: false,
+      };
     });
 };
 
@@ -347,11 +451,12 @@ export const removeUtteranceFromIntent = async ({
       },
     })
     .then((res) => {
-      showNotification({
-        title: "Success",
-        message: "Utterance removed from intent",
-      });
-      return res.data.data;
+      return res.data as {
+        message: string;
+        success: boolean;
+        data: CorpusDataPoint | undefined;
+        retrained: boolean;
+      };
     })
     .catch((err) => {
       console.error(err);
@@ -359,7 +464,12 @@ export const removeUtteranceFromIntent = async ({
         title: "Error",
         message: "Something went wrong",
       });
-      return err;
+      return {
+        message: "Something went wrong",
+        success: false,
+        data: undefined,
+        retrained: false,
+      };
     });
 };
 
@@ -382,7 +492,12 @@ export const updateEnhaceForIntent = async ({
           ? "Intent will be enhanced"
           : "Intent will not be enhanced",
       });
-      return res.data.data;
+      return res.data as {
+        message: string;
+        success: boolean;
+        data: CorpusDataPoint | undefined;
+        retrained: boolean;
+      };
     })
     .catch((err) => {
       console.error(err);
@@ -390,7 +505,12 @@ export const updateEnhaceForIntent = async ({
         title: "Error",
         message: "Something went wrong",
       });
-      return err;
+      return {
+        message: "Something went wrong",
+        success: false,
+        data: undefined,
+        retrained: false,
+      };
     });
 };
 
@@ -399,7 +519,7 @@ export const updateButtonsOnIntent = async ({
   buttons,
 }: {
   intent: string;
-  buttons: string[];
+  buttons: { type: string }[];
 }) => {
   return await api
     .put(`/training/intent/${intent}/buttons`, {
@@ -411,7 +531,12 @@ export const updateButtonsOnIntent = async ({
         title: "Success",
         message: "Buttons updated",
       });
-      return res.data.data;
+      return res.data as {
+        message: string;
+        success: boolean;
+        data: CorpusDataPoint | undefined;
+        retrained: boolean;
+      };
     })
     .catch((err) => {
       console.error(err);
@@ -419,7 +544,12 @@ export const updateButtonsOnIntent = async ({
         title: "Error",
         message: "Something went wrong",
       });
-      return err;
+      return {
+        message: "Something went wrong",
+        success: false,
+        data: undefined,
+        retrained: false,
+      };
     });
 };
 
@@ -428,7 +558,7 @@ export const removeButtonFromIntent = async ({
   button,
 }: {
   intent: string;
-  button: string;
+  button: { type: string };
 }) => {
   return await api
     .delete(`/training/intent/${intent}/button`, {
@@ -442,7 +572,12 @@ export const removeButtonFromIntent = async ({
         title: "Success",
         message: "Button removed",
       });
-      return res.data.data;
+      return res.data as {
+        message: string;
+        success: boolean;
+        data: CorpusDataPoint | undefined;
+        retrained: boolean;
+      };
     })
     .catch((err) => {
       console.error(err);
@@ -450,21 +585,37 @@ export const removeButtonFromIntent = async ({
         title: "Error",
         message: "Something went wrong",
       });
-      return err;
+      return {
+        message: "Something went wrong",
+        success: false,
+        data: undefined,
+        retrained: false,
+      };
     });
 };
 
 export const getAllButtons = async () => {
   return await api
     .get("/training/buttons")
-    .then((res) => res.data.data)
+    .then(
+      (res) =>
+        res.data as {
+          message: string;
+          success: boolean;
+          data: { type: string }[];
+        }
+    )
     .catch((err) => {
       console.error(err);
       showNotification({
         title: "Error",
         message: "Something went wrong",
       });
-      return err;
+      return {
+        message: "Something went wrong",
+        success: false,
+        data: [],
+      };
     });
 };
 

@@ -57,7 +57,7 @@ export interface CorpusDataPoint {
   }[];
   buttons?: {
     type: string;
-    metadata?: string;
+    metadata?: Record<string, any>;
   }[];
   enhance: boolean;
 }

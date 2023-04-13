@@ -3,10 +3,12 @@ import {
   addOrUpdateUtteranceOnIntent,
   addResponseToIntent,
   addUtteranceToIntent,
+  deleteDataPoint,
   enhanceIntent,
   removeButtonFromIntentByType,
   removeResponseFromIntent,
   removeUtteranceFromIntent,
+  renameIntent,
   updateButtonsOnIntent,
 } from "../nlu/training";
 import { Router } from "express";
@@ -82,6 +84,27 @@ router.post("/datapoint", async (req, res) => {
   }
 });
 
+router.delete("/datapoint", async (req, res) => {
+  try {
+    const { intent } = req.body;
+
+    const { data: newData } = await deleteDataPoint(intent);
+    const shouldRetrain = req.body.retrain || req.query.retrain;
+    const retrained = shouldRetrain ? await retrain() : false;
+
+    const toSend = {
+      message: "Data removed",
+      data: newData,
+      retrained,
+      success: true,
+    };
+    res.send(toSend);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ message: "Error removing data" });
+  }
+});
+
 router.post("/retrain", async (req, res) => {
   try {
     const result = await retrain();
@@ -127,6 +150,29 @@ router.put("/intent", async (req, res) => {
   };
 
   res.send(toSend);
+});
+
+router.put("/intent/rename", async (req, res) => {
+  try {
+    const { old_intent, new_intent } = req.body;
+
+    const data = await renameIntent(old_intent, new_intent);
+
+    const shouldRetrain = req.body.retrain || req.query.retrain;
+    const retrained = shouldRetrain ? await retrain() : false;
+
+    const toSend = {
+      message: "Intent updated",
+      success: true,
+      data,
+      retrained,
+    };
+
+    res.send(toSend);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ message: "Error renaming intent" });
+  }
 });
 
 router.get("/intents", async (req, res) => {
@@ -279,15 +325,20 @@ router.delete("/intent/:intent/button", async (req, res) => {
 });
 
 router.get("/buttons", async (req, res) => {
-  const buttons = getAllButtons();
+  try {
+    const buttons = getAllButtons();
 
-  const toSend = {
-    message: "Got buttons",
-    success: true,
-    data: buttons,
-  };
+    const toSend = {
+      message: "Got buttons",
+      success: true,
+      data: buttons,
+    };
 
-  res.send(toSend);
+    res.send(toSend);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ message: "Error getting buttons" });
+  }
 });
 
 router.get("/chats/need_review", async (req, res) => {

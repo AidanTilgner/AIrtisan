@@ -12,20 +12,6 @@
   }
 }
 
-.interface_container {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  min-height: 75vh;
-  position: relative;
-
-  @media (min-width: 768px) {
-    flex-direction: row;
-    align-items: flex-start;
-    justify-content: flex-start;
-  }
-}
-
 .header {
   display: flex;
   flex-direction: column;
@@ -63,6 +49,20 @@
 
 .disclaimer {
   text-align: center;
+}
+
+.interface_container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 75vh;
+  position: relative;
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
 }
 
 .conversations {
