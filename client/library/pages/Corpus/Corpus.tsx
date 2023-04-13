@@ -598,7 +598,7 @@ export const ButtonItem = ({
 }: {
   button: {
     type: string;
-    metadata?: Record<string, any>;
+    metadata?: Record<string, unknown>;
   };
   reloadData: () => void;
   intent: string;

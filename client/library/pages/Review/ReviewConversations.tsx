@@ -14,7 +14,6 @@ import {
   WarningCircle,
   ArrowsClockwise,
   TrashSimple,
-  Lightning,
   ArrowRight,
 } from "phosphor-react";
 import { useNavigate } from "react-router-dom";
