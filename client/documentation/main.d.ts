@@ -45,3 +45,27 @@ export interface Chat {
 export interface ConversationToReview extends Conversation {
   chats_to_review: Chat[];
 }
+
+export interface CorpusDataPoint {
+  intent: string;
+  utterances: string[];
+  answers: string[];
+  triggers?: {
+    type: string;
+    args: Record<string, any>;
+    attachments: string[];
+  }[];
+  buttons?: {
+    type: string;
+    metadata?: string;
+  }[];
+  enhance: boolean;
+}
+
+export type CorpusData = CorpusDataPoint[];
+
+export interface Corpus {
+  name: string;
+  locale: string;
+  data: CorpusData;
+}

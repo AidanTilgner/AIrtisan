@@ -19,6 +19,11 @@ export const getIntents = (): string[] => {
   return intents as string[];
 };
 
+export const getIntentsFull = () => {
+  const intents = getDefaultCorpus().data;
+  return intents;
+};
+
 export const getDataForIntent = (intent: string) => {
   const data = getDefaultCorpus().data.find(
     (item: any) => item.intent === intent

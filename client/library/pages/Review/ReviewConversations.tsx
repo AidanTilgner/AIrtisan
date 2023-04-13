@@ -157,6 +157,20 @@ function ReviewConversations() {
     });
   }, [conversationsToView]);
 
+  const conversationNoLongerExists = (id: number) => {
+    return !conversationsToView.find((c) => c.id === id);
+  };
+
+  useEffect(() => {
+    if (
+      openedConversation &&
+      openedConversation.id &&
+      conversationNoLongerExists(openedConversation.id)
+    ) {
+      setOpenedConversation(null);
+    }
+  }, [conversationsToView]);
+
   return (
     <div className={styles.ReviewConversations}>
       <div className={styles.header}>
@@ -173,7 +187,6 @@ function ReviewConversations() {
             },
           ]}
           onChange={(v) => {
-            setOpenedConversation(null);
             switch (v) {
               case "to_review":
                 setViewAllConversations(false);
@@ -209,7 +222,7 @@ function ReviewConversations() {
             checked={allowTrainingCopy}
             onChange={(v) => setAllowTrainingCopy(v)}
           >
-            Training Copies
+            For Training
           </Chip>
         </div>
       </div>
@@ -470,9 +483,9 @@ function Conversation({
           {conversation.training_copy && (
             <div
               className={`${styles.tag} ${styles.tag_training_copy}`}
-              title="This conversation is a training copy."
+              title="This conversation is a for training."
             >
-              training copy
+              for training
             </div>
           )}
           {chatHasNoneIntent && (

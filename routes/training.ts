@@ -11,7 +11,13 @@ import {
 } from "../nlu/training";
 import { Router } from "express";
 import { retrain, getNLUResponse } from "../nlu";
-import { getDataForIntent, getIntents, getAllButtons } from "../nlu/metadata";
+import {
+  getDataForIntent,
+  getIntents,
+  getAllButtons,
+  getIntentsFull,
+  getDefaultCorpus,
+} from "../nlu/metadata";
 import {
   getChatsThatNeedReview,
   getConversationsThatNeedReview,
@@ -41,6 +47,21 @@ router.post("/say", async (req, res) => {
   };
 
   res.json(toSend);
+});
+
+router.get("/corpus/default", async (req, res) => {
+  try {
+    const corpus = getDefaultCorpus();
+    const toSend = {
+      message: "Got default corpus",
+      success: true,
+      data: corpus,
+    };
+    res.json(toSend);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ message: "Error getting default corpus" });
+  }
 });
 
 router.post("/datapoint", async (req, res) => {
@@ -116,6 +137,21 @@ router.get("/intents", async (req, res) => {
     data: intents,
   };
   res.send(toSend);
+});
+
+router.get("/intents/full", async (req, res) => {
+  try {
+    const intents = getIntentsFull();
+    const toSend = {
+      message: "Got intents",
+      success: true,
+      data: intents,
+    };
+    res.send(toSend);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ message: "Error getting intents" });
+  }
 });
 
 router.delete("/response", async (req, res) => {

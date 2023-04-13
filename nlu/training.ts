@@ -248,7 +248,7 @@ export const removeButtonFromIntentByType = async (
 
   const existingIntent = corpusData.find((item) => item.intent === intent);
   if (existingIntent) {
-    existingIntent.buttons = existingIntent.buttons.filter(
+    existingIntent.buttons = existingIntent.buttons?.filter(
       (item) => item.type !== type
     );
   }

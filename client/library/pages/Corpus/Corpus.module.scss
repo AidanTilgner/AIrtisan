@@ -1,0 +1,120 @@
+.Corpus {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 100vh;
+  padding: 56px 24px;
+  text-align: center;
+
+  @media screen and (min-width: 768px) {
+    padding: 56px 56px;
+  }
+}
+
+header {
+  border-bottom: 1px solid #eaeaea;
+  padding-bottom: 24px;
+  margin-bottom: 36px;
+
+  h1 {
+    margin: 0;
+    font-family: "Lato", sans-serif;
+
+    span {
+      font-size: 16px;
+      font-weight: 500;
+      opacity: 0.6;
+      margin-left: 14px;
+      vertical-align: text-bottom;
+    }
+  }
+}
+
+.searchArea {
+  margin-bottom: 36px;
+}
+
+.data {
+}
+
+@keyframes intentIn {
+  0% {
+    transform: translateX(-50%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.intentContainer {
+  width: 100%;
+  box-sizing: border-box;
+  animation: intentIn 0.5s ease-in-out forwards;
+  opacity: 0;
+}
+
+.intent {
+  width: 100%;
+  border: 1px solid #eaeaea;
+  box-sizing: border-box;
+  padding: 14px 24px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 14px;
+  text-align: left;
+
+  &:hover {
+    background-color: #f5f5f5;
+    transform: scale(1.01);
+  }
+
+  &:active {
+    transform: translateY(2px) scale(0.99);
+  }
+
+  @media (min-width: 768px) {
+    width: 50%;
+  }
+
+  .toptext {
+    margin: 0;
+    padding: 0;
+    font-size: 20px;
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+
+  .bottomtext {
+    margin: 0;
+    padding: 0;
+    font-size: 14px;
+  }
+
+  .tags {
+    position: absolute;
+    bottom: 14px;
+    right: 24px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .tag {
+    font-size: 9px;
+    padding: 4px 8px;
+    border-radius: 5px;
+    margin: 0;
+    box-sizing: border-box;
+    z-index: 10;
+    background-color: rgba($color: #fff, $alpha: 1);
+    font-weight: 600;
+  }
+}
+
+.intentOpen {
+}

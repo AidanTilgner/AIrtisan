@@ -1,6 +1,7 @@
 import axios, { AxiosError } from "axios";
 import { showNotification } from "@mantine/notifications";
 import { logout } from "../auth";
+import { Corpus } from "../../../documentation/main";
 
 export const api = axios.create({
   baseURL: "/",
@@ -260,6 +261,43 @@ export const getAllIntents = async () => {
         message: "Something went wrong",
       });
       return err;
+    });
+};
+
+export const getAllIntentsFull = async () => {
+  return await api
+    .get("/training/intents/full")
+    .then((res) => res.data.data)
+    .catch((err) => {
+      console.error(err);
+      showNotification({
+        title: "Error",
+        message: "Something went wrong",
+      });
+    });
+};
+
+export const getDefaultCorpus = async () => {
+  return await api
+    .get("/training/corpus/default")
+    .then(
+      (res) =>
+        res.data as {
+          success: boolean;
+          data: Corpus;
+          message: string;
+        }
+    )
+    .catch((err) => {
+      console.error(err);
+      showNotification({
+        title: "Error",
+        message: "Something went wrong",
+      });
+      return {
+        success: false,
+        data: null,
+      };
     });
 };
 
