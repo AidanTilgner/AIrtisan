@@ -11,6 +11,8 @@ import ReviewConversations from "./library/pages/Review/ReviewConversations";
 import Training from "./library/pages/Training/";
 import Corpus from "./library/pages/Corpus/Corpus";
 import { useUser } from "./library/contexts/User";
+import { ModalProvider } from "./library/contexts/Modals";
+import GlobalModal from "./library/components/Utils/Modal";
 
 function App() {
   const { isSuperAdmin } = useUser();
@@ -43,34 +45,37 @@ function App() {
           fontFamily: "Quicksand",
         }}
       >
-        <NotificationsProvider position="bottom-right">
-          <Navbar />
-          <div className={styles.main_container}>
-            <Routes>
-              <Route path="/">
-                <Route index element={<Welcome />} />
-                <Route path="preview" element={<Preview />} />
-                <Route path="review">
-                  <Route
-                    path="conversations"
-                    element={<ReviewConversations />}
-                  />
-                </Route>
-                <Route path="train">
-                  <Route index element={<Training />} />
-                </Route>
-                <Route path="corpus">
-                  <Route index element={<Corpus />} />
-                </Route>
-                {isSuperAdmin && (
-                  <Route path="admin">
-                    <Route path="auth" element={<Auth />} />
+        <ModalProvider>
+          <NotificationsProvider position="bottom-right">
+            <Navbar />
+            <GlobalModal />
+            <div className={styles.main_container}>
+              <Routes>
+                <Route path="/">
+                  <Route index element={<Welcome />} />
+                  <Route path="preview" element={<Preview />} />
+                  <Route path="review">
+                    <Route
+                      path="conversations"
+                      element={<ReviewConversations />}
+                    />
                   </Route>
-                )}
-              </Route>
-            </Routes>
-          </div>
-        </NotificationsProvider>
+                  <Route path="train">
+                    <Route index element={<Training />} />
+                  </Route>
+                  <Route path="corpus">
+                    <Route index element={<Corpus />} />
+                  </Route>
+                  {isSuperAdmin && (
+                    <Route path="admin">
+                      <Route path="auth" element={<Auth />} />
+                    </Route>
+                  )}
+                </Route>
+              </Routes>
+            </div>
+          </NotificationsProvider>
+        </ModalProvider>
       </MantineProvider>
     </div>
   );

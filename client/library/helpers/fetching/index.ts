@@ -126,16 +126,22 @@ export const addDataPoint = async ({
   intent,
   utterances,
   answers,
+  buttons,
+  enhance,
 }: {
   intent: string;
   utterances: string[];
   answers: string[];
+  buttons?: string[];
+  enhance?: boolean;
 }) => {
   return await api
     .post("/training/datapoint", {
       intent,
       utterances,
       answers,
+      buttons,
+      enhance,
       retrain: true,
     })
     .then((res) => {
@@ -143,7 +149,12 @@ export const addDataPoint = async ({
         title: "Success",
         message: "Data point added, model will be refreshed soon",
       });
-      return res.data.data;
+      return res.data as {
+        message: string;
+        retrained: boolean;
+        success: boolean;
+        data: CorpusDataPoint;
+      };
     })
     .catch((err) => {
       console.error(err);
@@ -151,7 +162,12 @@ export const addDataPoint = async ({
         title: "Error",
         message: "Something went wrong",
       });
-      return err;
+      return {
+        message: "Something went wrong",
+        retrained: false,
+        success: false,
+        data: null,
+      };
     });
 };
 

@@ -26,6 +26,7 @@ import {
 import { showNotification } from "@mantine/notifications";
 import Search from "../../components/Search/Search";
 import { useSearch } from "../../contexts/Search";
+import { useModal } from "../../contexts/Modals";
 
 function ReviewConversations() {
   const { query } = useSearch();
@@ -335,37 +336,59 @@ function Conversation({
     navigate(`/train?${newParams}`);
   };
 
+  const { setModal, closeModal } = useModal();
+
   const handleDeleteConversation = async (chatId: number) => {
     if (!user) return;
-    const res = await deleteConversation(chatId);
+    setModal({
+      title: "Delete Conversation",
+      content: "Are you sure you want to delete this conversation?",
+      buttons: [
+        {
+          text: "Cancel",
+          onClick: () => closeModal(),
+          variant: "default",
+        },
+        {
+          text: "Delete",
+          onClick: async () => {
+            const res = await deleteConversation(chatId);
 
-    if (!res.success) {
-      console.error("Failed to delete conversation");
-      showNotification({
-        title: "Error",
-        message: "Failed to delete conversation",
-      });
-      reloadConversations();
-      return;
-    }
+            if (!res.success) {
+              console.error("Failed to delete conversation");
+              showNotification({
+                title: "Error",
+                message: "Failed to delete conversation",
+              });
+              reloadConversations();
+              return;
+            }
 
-    showNotification({
-      title: "Success",
-      message: "Deleted conversation",
-      color: "red",
+            showNotification({
+              title: "Success",
+              message: "Deleted conversation",
+              color: "red",
+            });
+
+            setOpenedConversation(null);
+            reloadConversations();
+          },
+          variant: "filled",
+          color: "red",
+        },
+      ],
+      type: "confirmation",
+      onClose: () => closeModal(),
     });
-
-    setOpenedConversation(null);
-    reloadConversations();
   };
 
-  const handleRetryChat = async (chatContent: string) => {
-    const urlSearchParams = new URLSearchParams({
-      run: chatContent,
-      tab: "interactive",
-    }).toString();
-    navigate(`/train?${urlSearchParams}`);
-  };
+  // const handleRetryChat = async (chatContent: string) => {
+  //   const urlSearchParams = new URLSearchParams({
+  //     run: chatContent,
+  //     tab: "interactive",
+  //   }).toString();
+  //   navigate(`/train?${urlSearchParams}`);
+  // };
 
   const handleOpenInTraining = async (chatId: number) => {
     const urlSearchParams = new URLSearchParams({
@@ -622,7 +645,7 @@ function Conversation({
                       </div>
                     </>
                   )}
-                  {chat.role === "user" && (
+                  {/* {chat.role === "user" && (
                     <div
                       className={styles.test_tag}
                       title="Retry this chat."
@@ -634,7 +657,7 @@ function Conversation({
                     >
                       <Lightning />
                     </div>
-                  )}
+                  )} */}
                 </div>
               </div>
             ))}

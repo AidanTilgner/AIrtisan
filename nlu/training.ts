@@ -24,6 +24,8 @@ export const addData = async (data: {
   intent: string;
   utterances: string[];
   answers: string[];
+  enhance?: boolean;
+  buttons?: { type: string }[];
 }) => {
   const corpusData = getDefaultCorpus().data as corpusDataPoint[];
 
@@ -33,6 +35,11 @@ export const addData = async (data: {
   if (existingIntent) {
     existingIntent.utterances.push(...(data.utterances || []));
     existingIntent.answers.push(...(data.answers || []));
+    existingIntent.buttons = [
+      ...(existingIntent.buttons || []),
+      ...(data.buttons || []),
+    ];
+    existingIntent.enhance = data.enhance || existingIntent.enhance;
   } else {
     corpusData.push(data);
   }
@@ -51,10 +58,6 @@ export const addData = async (data: {
     ...getDefaultCorpus(),
     data: corpusData,
   };
-
-  const formatted = prettify_json(JSON.stringify(newCorpus));
-
-  writeFileSync("./nlu/documents/default_corpus.json", formatted);
 
   return newCorpus;
 };

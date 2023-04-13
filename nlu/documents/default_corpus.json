@@ -73,11 +73,6 @@
       "enhance": true
     },
     {
-      "intent": "test",
-      "utterances": ["testtest"],
-      "answers": ["test complete"]
-    },
-    {
       "intent": "Inquiry.onyx_chat_inner_workings",
       "utterances": [
         "that's pretty cool, how do you work?",

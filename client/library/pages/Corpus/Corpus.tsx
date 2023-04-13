@@ -23,6 +23,7 @@ import { useSearch } from "../../contexts/Search";
 import { Autocomplete, Button, Checkbox, Highlight } from "@mantine/core";
 import { Check, PencilSimple, Plus, TrashSimple, X } from "phosphor-react";
 import { useMediaQuery } from "@mantine/hooks";
+import { useModal } from "../../contexts/Modals";
 
 function Corpus() {
   const { query } = useSearch();
@@ -98,6 +99,21 @@ function Corpus() {
 
   const [openIntent, setOpenIntent] = React.useState<string | null>(null);
 
+  const [allButtons, setAllButtons] = useState<{ type: string }[]>([]);
+
+  useEffect(() => {
+    getAllButtons().then(({ data, success }) => {
+      if (success) {
+        setAllButtons(data);
+      } else {
+        showNotification({
+          title: "Error",
+          message: "Error while fetching buttons",
+        });
+      }
+    });
+  }, []);
+
   return (
     <div className={styles.Corpus}>
       <header>
@@ -125,6 +141,7 @@ function Corpus() {
                 openIntent={openIntent}
                 key={dataPoint.intent + dataPoint.utterances.join("")}
                 reloadData={reloadData}
+                allButtons={allButtons}
               />
             ))
           ) : (
@@ -142,6 +159,7 @@ interface IntentProps extends CorpusDataPoint {
   setOpenIntent: (intent: string | null) => void;
   openIntent: string | null;
   reloadData: () => void;
+  allButtons: { type: string }[];
 }
 
 export const Intent = ({
@@ -153,6 +171,7 @@ export const Intent = ({
   setOpenIntent,
   openIntent,
   reloadData,
+  allButtons,
 }: IntentProps) => {
   const { query } = useSearch();
 
@@ -171,6 +190,8 @@ export const Intent = ({
       shortedUtteranceString + (utteranceString.length > 36 ? "..." : "");
     return shortedUtteranceStringWithEllipsis;
   };
+
+  const { setModal, closeModal } = useModal();
 
   const isSelected = openIntent === intent;
 
@@ -204,13 +225,34 @@ export const Intent = ({
   };
 
   const handleDeleteIntent = async () => {
-    const { success } = await deleteDataPoint(intent);
+    setModal({
+      title: "Delete intent",
+      content: "Are you sure you want to delete this intent?",
+      buttons: [
+        {
+          text: "Cancel",
+          onClick: () => closeModal(),
+          variant: "default",
+        },
+        {
+          text: "Delete",
+          onClick: async () => {
+            const { success } = await deleteDataPoint(intent);
 
-    if (success) {
-      reloadData();
-    }
+            if (success) {
+              reloadData();
+            }
 
-    setOpenIntent(null);
+            setOpenIntent(null);
+            closeModal();
+          },
+          variant: "filled",
+          color: "red",
+        },
+      ],
+      type: "confirmation",
+      onClose: () => closeModal(),
+    });
   };
 
   const intentRef = React.useRef<HTMLDivElement>(null);
@@ -263,21 +305,6 @@ export const Intent = ({
       reloadData();
     }
   };
-
-  const [allButtons, setAllButtons] = useState<{ type: string }[]>([]);
-
-  useEffect(() => {
-    getAllButtons().then(({ data, success }) => {
-      if (success) {
-        setAllButtons(data);
-      } else {
-        showNotification({
-          title: "Error",
-          message: "Error while fetching buttons",
-        });
-      }
-    });
-  }, []);
 
   const handleSetEnhanced = async (value: boolean) => {
     const { success } = await updateEnhaceForIntent({
