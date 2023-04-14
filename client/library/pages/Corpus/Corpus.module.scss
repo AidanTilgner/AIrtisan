@@ -24,13 +24,14 @@
   @media screen and (min-width: 768px) {
     padding-bottom: 36px;
     margin-bottom: 36px;
-    width: 50%;
+    padding-inline: 56px;
+    width: 100%;
     flex-direction: row;
     position: sticky;
     top: 0;
     background-color: rgba($color: #fff, $alpha: 0.75);
     backdrop-filter: blur(10px);
-    z-index: 10;
+    z-index: 50;
   }
 
   h1 {

@@ -117,7 +117,7 @@ function Corpus() {
     if (!fullCorpus) return;
     if (getFilteredData()?.find((data) => data.intent === openIntent)) return;
     setOpenIntent(null);
-  }, [getFilteredData()]);
+  }, [getFilteredData(), query]);
 
   const [addingIntent, setAddingIntent] = useState(false);
 
@@ -311,7 +311,7 @@ export const Intent = ({
         // inline: "center"
       });
     }
-  }, [isSelected]);
+  }, [isSelected, query]);
 
   const [isRenaming, setIsRenaming] = React.useState<boolean>(false);
   const [newName, setNewName] = React.useState<string>(intent);
