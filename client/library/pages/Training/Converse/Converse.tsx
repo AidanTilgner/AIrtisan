@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./Converse.module.scss";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { Chat as ChatType, Conversation } from "../../../../documentation/main";
 import {
   getConversation,
@@ -187,7 +187,9 @@ function Converse() {
           ))
         ) : (
           <p className={styles.disclaimer}>
-            No chats yet. Start a conversation by typing a message below.
+            No chats yet. Start a conversation by typing a message below, or
+            select an old one from the{" "}
+            <Link to="/review/conversations">conversations page</Link>.
           </p>
         )}
         {loading && (
