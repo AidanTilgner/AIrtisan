@@ -87,6 +87,11 @@
   @media screen and (min-width: 768px) {
     width: 50%;
     margin-inline: auto;
+    position: sticky;
+    top: 72px;
+    background-color: rgba($color: #fff, $alpha: 0.75);
+    backdrop-filter: blur(10px);
+    z-index: 50;
   }
 }
 
