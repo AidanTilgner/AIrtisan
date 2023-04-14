@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./Converse.module.scss";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Chat as ChatType, Conversation } from "../../../../documentation/main";
 import {
   getConversation,
@@ -20,10 +20,12 @@ import {
   WarningCircle,
   X,
   Check,
+  File,
 } from "phosphor-react";
 import { Button } from "@mantine/core";
 import Loaders from "../../../components/Utils/Loaders";
 import { useUser } from "../../../contexts/User";
+import { useSearch } from "../../../contexts/Search";
 
 type ChatPairType = {
   user: ChatType;
@@ -219,6 +221,8 @@ const ChatPair = ({
   initialLoad: boolean;
   reloadConversation: () => void;
 }) => {
+  const { setQuery } = useSearch();
+
   const chatPairContainsError = () => {
     const hasNoneIntent = user.intent === "None" || assistant.intent === "None";
     const hasEmptyMessage = user.message === "" || assistant.message === "";
@@ -274,6 +278,8 @@ const ChatPair = ({
   const [openMetadata, setOpenMetadata] = React.useState(false);
 
   const [assistantLoading, setAssistantLoading] = React.useState(false);
+
+  const navigate = useNavigate();
 
   const handleRetryChat = async () => {
     if (!assistant.id) return;
@@ -384,11 +390,12 @@ const ChatPair = ({
                 <button
                   className={`${styles.edit_button} ${styles.metadataOption}`}
                   onClick={() => {
-                    console.log("edit");
+                    setQuery(user.message);
+                    navigate("/corpus");
                   }}
-                  title="Modify this chat"
+                  title="Modify the corpus"
                 >
-                  <PencilSimple weight="regular" />
+                  <File weight="regular" />
                 </button>
                 <button
                   className={`${styles.retry_button} ${styles.metadataOption}`}
