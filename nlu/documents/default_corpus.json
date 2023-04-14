@@ -147,6 +147,13 @@
         "That's great to hear! I'm doing well myself, thanks for asking."
       ],
       "enhance": true
+    },
+    {
+      "intent": "test",
+      "utterances": ["test"],
+      "answers": [],
+      "enhance": false,
+      "retrain": true
     }
   ]
 }

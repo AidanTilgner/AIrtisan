@@ -56,7 +56,7 @@ export const addData = async (data: {
 
   const newCorpus = {
     ...getDefaultCorpus(),
-    data: corpusData,
+    data: existingIntent || data,
   };
 
   return newCorpus;

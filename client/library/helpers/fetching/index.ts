@@ -147,7 +147,7 @@ export const addDataPoint = async ({
     .then((res) => {
       showNotification({
         title: "Success",
-        message: "Data point added, model will be refreshed soon",
+        message: "Data point added.",
       });
       return res.data as {
         message: string;
@@ -187,7 +187,7 @@ export const renameIntent = async ({
     .then((res) => {
       showNotification({
         title: "Success",
-        message: "Intent renamed, model will be refreshed soon",
+        message: "Intent renamed. ",
       });
       return res.data.data;
     })

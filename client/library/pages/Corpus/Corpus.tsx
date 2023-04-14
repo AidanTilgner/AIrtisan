@@ -24,14 +24,15 @@ import { Autocomplete, Button, Checkbox, Highlight } from "@mantine/core";
 import { Check, PencilSimple, Plus, TrashSimple, X } from "phosphor-react";
 import { useMediaQuery } from "@mantine/hooks";
 import { useModal } from "../../contexts/Modals";
+import IntentForm from "../../components/Forms/Intent/Intent";
 
 function Corpus() {
-  const { query } = useSearch();
+  const { query, setQuery } = useSearch();
 
   const [fullCorpus, setFullCorpus] = React.useState<CorpusType>();
 
-  const getData = () => {
-    getDefaultCorpus()
+  const getData = async () => {
+    await getDefaultCorpus()
       .then(({ success, data }) => {
         if (!success || !data) {
           console.error("Error fetching corpus");
@@ -56,9 +57,9 @@ function Corpus() {
     getData();
   }, []);
 
-  const reloadData = () => {
+  const reloadData = async () => {
     setFullCorpus(undefined);
-    getData();
+    await getData();
   };
 
   const getFilteredData = () => {
@@ -89,9 +90,7 @@ function Corpus() {
 
   useLayoutEffect(() => {
     (
-      [
-        ...document.getElementsByClassName(styles.intentContainer),
-      ] as HTMLElement[]
+      [...document.getElementsByClassName(styles.intent)] as HTMLElement[]
     ).forEach((c, i) => {
       c.style.animationDelay = `${Math.log(i) * 0.25}s`;
     });
@@ -114,14 +113,57 @@ function Corpus() {
     });
   }, []);
 
+  useEffect(() => {
+    if (!fullCorpus) return;
+    if (getFilteredData()?.find((data) => data.intent === openIntent)) return;
+    setOpenIntent(null);
+  }, [getFilteredData()]);
+
+  const [addingIntent, setAddingIntent] = useState(false);
+
   return (
     <div className={styles.Corpus}>
-      <header>
+      <div className={styles.header}>
         <h1>
           {fullCorpus?.name || "Corpus"}
           <span>{fullCorpus?.locale}</span>
         </h1>
-      </header>
+        <div className={styles.addIntentButton}>
+          {addingIntent ? (
+            <Button
+              variant="subtle"
+              title="Stop adding intent"
+              onClick={() => setAddingIntent(false)}
+            >
+              <X weight="bold" />
+            </Button>
+          ) : (
+            <Button
+              variant="subtle"
+              title="Add intent"
+              onClick={() => setAddingIntent(true)}
+            >
+              <Plus weight="bold" />
+            </Button>
+          )}
+        </div>
+      </div>
+      {addingIntent && (
+        <div className={styles.addIntentContainer}>
+          <IntentForm
+            afterSubmit={(data) => {
+              reloadData().then(() => {
+                setAddingIntent(false);
+                setQuery(data.intent);
+              });
+            }}
+            type="add"
+            onClose={() => {
+              setAddingIntent(false);
+            }}
+          />
+        </div>
+      )}
       <div className={styles.searchArea}>
         <div className={styles.searchContainer}>
           <Search />
@@ -145,7 +187,9 @@ function Corpus() {
               />
             ))
           ) : (
-            <p className={styles.disclaimer}>No data yet.</p>
+            <p className={styles.disclaimer}>
+              {query ? "No results found." : "No data yet."}
+            </p>
           )}
         </div>
       </div>
@@ -348,7 +392,7 @@ export const Intent = ({
       </div>
       {isSelected && (
         <div className={styles.intentOpen}>
-          <div className={styles.header}>
+          <div className={styles.intentHeader}>
             {isRenaming ? (
               <div className={styles.rename}>
                 <input

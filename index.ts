@@ -36,6 +36,11 @@ app.get("/login", (req, res) => {
 
 if (process.env.ALLOW_TRAINING_UI === "true") {
   console.info("Training mode enabled");
+  app.use(
+    "/documentation",
+    Express.static(path.join(__dirname, "public", "documentation"))
+  );
+
   app.get("/build/bundle.js", (req, res) => {
     res.sendFile(
       path.join(__dirname, "public", "training", "build", "bundle.js")

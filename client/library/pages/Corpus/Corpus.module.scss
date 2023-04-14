@@ -10,10 +10,28 @@
   }
 }
 
-header {
+.header {
   border-bottom: 1px solid #eaeaea;
   padding-bottom: 24px;
   margin-bottom: 36px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-inline: auto;
+  flex-direction: column;
+
+  @media screen and (min-width: 768px) {
+    padding-bottom: 36px;
+    margin-bottom: 36px;
+    width: 50%;
+    flex-direction: row;
+    position: sticky;
+    top: 0;
+    background-color: rgba($color: #fff, $alpha: 0.75);
+    backdrop-filter: blur(10px);
+    z-index: 10;
+  }
 
   h1 {
     margin: 0;
@@ -26,6 +44,37 @@ header {
       margin-left: 14px;
       vertical-align: text-bottom;
     }
+  }
+
+  .addIntentButton {
+    button {
+      font-size: 18px;
+    }
+  }
+}
+
+@keyframes addIntentIn {
+  0% {
+    height: 0;
+  }
+  100% {
+    height: 70vh;
+  }
+}
+
+.addIntentContainer {
+  height: 70vh;
+  margin: 36px 0;
+  width: 100%;
+  box-sizing: border-box;
+  position: relative;
+  animation: addIntentIn 0.5s ease-in-out forwards;
+  background-color: white;
+  overflow: hidden;
+
+  @media screen and (min-width: 768px) {
+    width: 50%;
+    margin-inline: auto;
   }
 }
 
@@ -203,10 +252,11 @@ header {
     padding: 36px 36px;
   }
 
-  .header {
+  .intentHeader {
     padding-bottom: 14px;
     border-bottom: 1px solid #eaeaea;
     margin-bottom: 24px;
+    width: 100%;
   }
 
   .title {
@@ -638,5 +688,5 @@ header {
   }
 }
 
-.buttonItem {
-}
+// .buttonItem {
+// }
