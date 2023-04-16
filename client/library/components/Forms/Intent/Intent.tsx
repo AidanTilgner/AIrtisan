@@ -1,8 +1,17 @@
-import React from "react";
-import { addDataPoint } from "../../../helpers/fetching";
+import React, { useEffect } from "react";
+import { addDataPoint, getAllIntentsFull } from "../../../helpers/fetching";
 import styles from "./Intent.module.scss";
 import { CorpusDataPoint } from "../../../../documentation/main";
-import { Button, Checkbox, Flex, Grid, Group, TextInput } from "@mantine/core";
+import {
+  Button,
+  Checkbox,
+  Flex,
+  Grid,
+  Group,
+  SegmentedControl,
+  Select,
+  TextInput,
+} from "@mantine/core";
 import { Plus } from "phosphor-react";
 import { showNotification } from "@mantine/notifications";
 
@@ -10,10 +19,16 @@ function Intent({
   afterSubmit,
   type,
   onClose,
+  loadedUtterances,
+  loadedIntent,
+  preSelectedForEither,
 }: {
   afterSubmit: (data: CorpusDataPoint) => void;
-  type: "add" | "update" | "both";
+  type: "add" | "update" | "either";
   onClose?: () => void;
+  loadedUtterances?: string[];
+  loadedIntent?: string;
+  preSelectedForEither?: "new" | "existing";
 }) {
   const handleSubmit = (data: CorpusDataPoint) => {
     afterSubmit(data);
@@ -22,15 +37,29 @@ function Intent({
   const formToShow = () => {
     switch (type) {
       case "add":
-        return <AddIntent onClose={onClose} afterSubmit={handleSubmit} />;
-      case "update":
-        return <UpdateIntent afterSubmit={handleSubmit} />;
-      case "both":
         return (
-          <>
-            <AddIntent afterSubmit={handleSubmit} onClose={onClose} />
-            <UpdateIntent afterSubmit={handleSubmit} />
-          </>
+          <AddIntent
+            onClose={onClose}
+            afterSubmit={handleSubmit}
+            loadedUtterances={loadedUtterances}
+          />
+        );
+      case "update":
+        return (
+          <UpdateIntent
+            afterSubmit={handleSubmit}
+            loadedUtterances={loadedUtterances}
+            loadedIntent={loadedIntent}
+          />
+        );
+      case "either":
+        return (
+          <EitherForm
+            afterSubmit={handleSubmit}
+            loadedUtterances={loadedUtterances}
+            loadedIntent={loadedIntent}
+            preSelectForEither={preSelectedForEither}
+          />
         );
     }
   };
@@ -48,14 +77,76 @@ function Intent({
 
 export default Intent;
 
+function EitherForm({
+  afterSubmit,
+  loadedUtterances,
+  loadedIntent,
+  preSelectForEither,
+}: {
+  afterSubmit: (data: CorpusDataPoint) => void;
+  loadedUtterances?: string[];
+  loadedIntent?: string;
+  preSelectForEither?: "new" | "existing";
+}) {
+  const [formType, setFormType] = React.useState<"new" | "existing">(
+    preSelectForEither || "new"
+  );
+
+  const formToShow = () => {
+    switch (formType) {
+      case "new":
+        return (
+          <AddIntent
+            afterSubmit={afterSubmit}
+            loadedUtterances={loadedUtterances}
+          />
+        );
+      case "existing":
+        return (
+          <UpdateIntent
+            afterSubmit={afterSubmit}
+            loadedUtterances={loadedUtterances}
+            loadedIntent={loadedIntent}
+          />
+        );
+    }
+  };
+
+  return (
+    <div className={styles.eitherForm}>
+      <div className={styles.eitherFormHeader}>
+        <SegmentedControl
+          title="New or Existing"
+          data={[
+            { label: "New Intent", value: "new" },
+            { label: "Update Existing", value: "existing" },
+          ]}
+          value={formType}
+          onChange={(value) => setFormType(value as "new" | "existing")}
+        />
+      </div>
+      <div>{formToShow()}</div>
+    </div>
+  );
+}
+
 function AddIntent({
   afterSubmit,
   onClose,
+  loadedUtterances,
 }: {
   afterSubmit: (data: CorpusDataPoint) => void;
   onClose?: () => void;
+  loadedUtterances?: string[];
 }) {
   const [formData, setFormData] = React.useState<Partial<CorpusDataPoint>>();
+
+  useEffect(() => {
+    setFormData({
+      ...formData,
+      utterances: loadedUtterances || [],
+    });
+  }, [loadedUtterances]);
 
   const [newUtterance, setNewUtterance] = React.useState<string>("");
   const [newAnswer, setNewAnswer] = React.useState<string>("");
@@ -72,6 +163,7 @@ function AddIntent({
         title: "Validation Error",
         message: "Please fill out all fields.",
       });
+      return;
     }
 
     const { success, data } = await addDataPoint({
@@ -288,10 +380,304 @@ function AddIntent({
 
 function UpdateIntent({
   afterSubmit,
+  loadedUtterances,
+  onClose,
+  loadedIntent,
 }: {
   afterSubmit: (data: CorpusDataPoint) => void;
+  loadedUtterances?: string[];
+  onClose?: () => void;
+  loadedIntent?: string;
 }) {
   const [formData, setFormData] = React.useState<Partial<CorpusDataPoint>>();
 
-  return <div className={styles.intentUpdate}>intent updates</div>;
+  const [allIntents, setAllIntents] = React.useState<CorpusDataPoint[]>([]);
+
+  useEffect(() => {
+    if (loadedIntent) {
+      handleOnIntentSelect(loadedIntent);
+    } else {
+      setFormData({
+        ...formData,
+        utterances: loadedUtterances || [],
+        intent: loadedIntent || "",
+      });
+    }
+  }, [loadedUtterances, loadedIntent, allIntents]);
+
+  const [newUtterance, setNewUtterance] = React.useState<string>();
+  const [newAnswer, setNewAnswer] = React.useState<string>();
+
+  const handleSubmit = async () => {
+    const formIsFilled =
+      formData?.intent &&
+      formData?.utterances?.length &&
+      formData?.answers?.length;
+
+    if (!formIsFilled || !formData) {
+      showNotification({
+        title: "Validation Error",
+        message: "Please fill out all fields.",
+      });
+      return;
+    }
+
+    const { success, data } = await addDataPoint({
+      intent: formData?.intent || "",
+      utterances: formData?.utterances || [],
+      answers: formData?.answers || [],
+      enhance: !!formData?.enhance,
+    });
+
+    if (!success || !data) {
+      console.error("Error adding new intent", data);
+      showNotification({
+        title: "Error adding new intent",
+        message: "There was an error adding the new intent. Please try again.",
+      });
+      return;
+    }
+
+    afterSubmit(data);
+  };
+
+  useEffect(() => {
+    const fetchIntents = async () => {
+      const { success, data } = await getAllIntentsFull();
+      if (!success || !data) {
+        console.error("Error fetching intents", data);
+        showNotification({
+          title: "Error fetching intents",
+          message: "There was an error fetching the intents. Please try again.",
+        });
+        return;
+      }
+      setAllIntents(data);
+    };
+    fetchIntents();
+
+    return () => {
+      setAllIntents([]);
+    };
+  }, []);
+
+  const handleOnIntentSelect = (int: string) => {
+    const selectedIntent = allIntents.find((i) => i.intent === int);
+    if (!selectedIntent) return;
+    const newUtterances = [
+      ...(loadedUtterances || []),
+      ...(selectedIntent.utterances || []),
+    ];
+    const newAnswers = [
+      ...(formData?.answers || []),
+      ...(selectedIntent.answers || []),
+    ];
+    setFormData({
+      ...formData,
+      intent: int,
+      utterances: newUtterances,
+      answers: newAnswers,
+    });
+  };
+
+  console.log("Formdata: ", formData);
+
+  return (
+    <div className={styles.intentUpdate}>
+      <Grid>
+        <Grid.Col sm={12}>
+          <h2>Update Existing</h2>
+        </Grid.Col>
+        <Grid.Col span={12}>
+          <h3>The intent should be...</h3>
+        </Grid.Col>
+        <Grid.Col sm={12} md={12}>
+          <Select
+            label="Intent Name..."
+            type="text"
+            name="intent"
+            id="intent"
+            onChange={(e) => {
+              if (!e) return;
+              handleOnIntentSelect(e);
+            }}
+            value={formData?.intent || ""}
+            placeholder="Search for the intent..."
+            data={allIntents.map((i) => ({
+              label: i.intent,
+              value: i.intent,
+            }))}
+            searchable
+          />
+        </Grid.Col>
+        <Grid.Col sm={12}>
+          <h3>When the user says...</h3>
+        </Grid.Col>
+        <Grid.Col sm={12} md={12}>
+          <ul className={styles.list}>
+            {formData?.utterances?.length ? (
+              formData.utterances.map((utterance, index) => {
+                return (
+                  <li
+                    key={index}
+                    onClick={() => {
+                      setFormData({
+                        ...formData,
+                        utterances: formData?.utterances?.filter(
+                          (u) => u !== utterance
+                        ),
+                      });
+                    }}
+                    title="Click to remove"
+                  >
+                    {utterance}
+                  </li>
+                );
+              })
+            ) : (
+              <li className={styles.placeholder}>No utterances added yet.</li>
+            )}
+          </ul>
+          <Flex align="end" justify="space-between" gap="sm">
+            <TextInput
+              label="New Utterance"
+              type="text"
+              name="utterance"
+              id="utterance"
+              onChange={(e) => {
+                setNewUtterance(e.target.value);
+              }}
+              placeholder="Add an utterance..."
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  if (!newUtterance) return;
+                  setFormData({
+                    ...formData,
+                    utterances: [...(formData?.utterances || []), newUtterance],
+                  });
+                  setNewUtterance("");
+                }
+              }}
+              value={newUtterance || ""}
+              style={{ width: "100%" }}
+            />
+            <Button
+              variant="outline"
+              onClick={() => {
+                if (!newUtterance) return;
+                setFormData({
+                  ...formData,
+                  utterances: [...(formData?.utterances || []), newUtterance],
+                });
+                setNewUtterance("");
+              }}
+              title="Add this utterance"
+            >
+              <Plus size={18} />
+            </Button>
+          </Flex>
+        </Grid.Col>
+        <Grid.Col sm={12}>
+          <h3>And the bot should respond with...</h3>
+        </Grid.Col>
+        <Grid.Col sm={12} md={12}>
+          <ul className={styles.list}>
+            {formData?.answers?.length ? (
+              formData.answers.map((answer, index) => {
+                return (
+                  <li
+                    key={index}
+                    onClick={() => {
+                      setFormData({
+                        ...formData,
+                        answers: formData?.answers?.filter((a) => a !== answer),
+                      });
+                    }}
+                    title="Click to remove"
+                  >
+                    {answer}
+                  </li>
+                );
+              })
+            ) : (
+              <li className={styles.placeholder}>No answers added yet.</li>
+            )}
+          </ul>
+          <Flex align="end" justify="space-between" gap="sm">
+            <TextInput
+              label="New Response..."
+              type="text"
+              name="answer"
+              id="answer"
+              onChange={(e) => {
+                setNewAnswer(e.target.value);
+              }}
+              placeholder="Add an answer..."
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  if (!newAnswer) return;
+                  setFormData({
+                    ...formData,
+                    answers: [...(formData?.answers || []), newAnswer],
+                  });
+                  setNewAnswer("");
+                }
+              }}
+              value={newAnswer || ""}
+              style={{ width: "100%" }}
+            />
+            <Button
+              variant="outline"
+              onClick={() => {
+                if (!newAnswer) return;
+                setFormData({
+                  ...formData,
+                  answers: [...(formData?.answers || []), newAnswer],
+                });
+                setNewAnswer("");
+              }}
+              title="Add this answer"
+            >
+              <Plus size={18} />
+            </Button>
+          </Flex>
+        </Grid.Col>
+        <Grid.Col span={12}>
+          <Checkbox
+            label="Should these responses be enhanced?"
+            name="enhanced"
+            id="enhanced"
+            onChange={(e) => {
+              setFormData({ ...formData, enhance: e.target.checked });
+            }}
+            checked={!!formData?.enhance}
+          />
+        </Grid.Col>
+        <Grid.Col sm={12} />
+        <Grid.Col sm={12}>
+          <Group position="right">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setFormData(undefined);
+                if (onClose) {
+                  onClose();
+                }
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="filled"
+              onClick={() => {
+                handleSubmit();
+              }}
+            >
+              Save
+            </Button>
+          </Group>
+        </Grid.Col>
+      </Grid>
+    </div>
+  );
 }

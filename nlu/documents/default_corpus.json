@@ -4,7 +4,14 @@
   "data": [
     {
       "intent": "greeting.hello",
-      "utterances": ["hey", "hey there", "hi there", "ciao", "hello"],
+      "utterances": [
+        "Ooga booga",
+        "hey",
+        "hey there",
+        "hi there",
+        "ciao",
+        "hello"
+      ],
       "answers": [
         "Hi! How can I help you?",
         "Hello, how can I help you?",

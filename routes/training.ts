@@ -68,7 +68,14 @@ router.get("/corpus/default", async (req, res) => {
 
 router.post("/datapoint", async (req, res) => {
   try {
-    const { data: newData } = await addData(req.body);
+    const data = await addData(req.body);
+    if (!data) {
+      res.status(500).send({ message: "Error adding data" });
+      return;
+    }
+
+    const newData = data.data;
+
     const shouldRetrain = req.body.retrain || req.query.retrain;
     const retrained = shouldRetrain ? await retrain() : false;
     const toSend = {
@@ -176,13 +183,18 @@ router.put("/intent/rename", async (req, res) => {
 });
 
 router.get("/intents", async (req, res) => {
-  const intents = getIntents();
-  const toSend = {
-    message: "Got intents",
-    success: true,
-    data: intents,
-  };
-  res.send(toSend);
+  try {
+    const intents = getIntents();
+    const toSend = {
+      message: "Got intents",
+      success: true,
+      data: intents,
+    };
+    res.send(toSend);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ message: "Error getting intents" });
+  }
 });
 
 router.get("/intents/full", async (req, res) => {

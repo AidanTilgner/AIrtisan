@@ -363,27 +363,50 @@ export const addOrUpdateUtteranceOnIntent = async ({
 export const getAllIntents = async () => {
   return await api
     .get("/training/intents")
-    .then((res) => res.data.data)
+    .then(
+      (res) =>
+        res.data as {
+          success: boolean;
+          data: string[];
+          message: string;
+        }
+    )
     .catch((err) => {
       console.error(err);
       showNotification({
         title: "Error",
         message: "Something went wrong",
       });
-      return err;
+      return {
+        success: false,
+        data: null,
+        message: "Something went wrong",
+      };
     });
 };
 
 export const getAllIntentsFull = async () => {
   return await api
     .get("/training/intents/full")
-    .then((res) => res.data.data)
+    .then(
+      (res) =>
+        res.data as {
+          success: boolean;
+          data: CorpusDataPoint[];
+          message: string;
+        }
+    )
     .catch((err) => {
       console.error(err);
       showNotification({
         title: "Error",
         message: "Something went wrong",
       });
+      return {
+        success: false,
+        data: null,
+        message: "Something went wrong",
+      };
     });
 };
 

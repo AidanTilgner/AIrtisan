@@ -39,7 +39,7 @@ function Interactive() {
 
   const [data, setData] = useState<{
     intent: string;
-    entities: any;
+    entities: unknown;
     answer: string;
     attachments:
       | {
@@ -95,8 +95,10 @@ function Interactive() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    getAllIntents().then((res) => {
-      setAllIntents(res);
+    getAllIntents().then(({ success, data }) => {
+      if (success && data) {
+        setAllIntents(data);
+      }
     });
     if (data.intent && data.intent !== newIntent) {
       setNewIntent(data.intent);
@@ -104,8 +106,10 @@ function Interactive() {
   }, [data.intent]);
 
   useEffect(() => {
-    getAllButtons().then((res) => {
-      setAllButtons(res);
+    getAllButtons().then(({ success, data }) => {
+      if (success && data) {
+        setAllButtons(data);
+      }
     });
   }, [data.intent]);
 
@@ -212,12 +216,16 @@ function Interactive() {
     updateEnhaceForIntent({
       intent: data.intent,
       enhance: !data.intent_data?.enhance,
-    }).then((res) => {
+    }).then(({ success, data: resData }) => {
+      if (!success || !resData) {
+        return;
+      }
+
       setData({
         ...data,
         intent_data: {
           ...data.intent_data,
-          enhance: res.enhance,
+          enhance: resData.enhance,
         },
       });
     });

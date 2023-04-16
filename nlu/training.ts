@@ -1,6 +1,10 @@
 // import default_corpus from "./documents/default_corpus.json";
 import { readFileSync, writeFileSync } from "fs";
 import { prettify_json } from "../utils/prettier";
+import {
+  removeDuplicatesFromObjects,
+  removeDuplicatesFromStrings,
+} from "../utils/methods";
 
 type corpusDataPoint = {
   intent: string;
@@ -27,18 +31,34 @@ export const addData = async (data: {
   enhance?: boolean;
   buttons?: { type: string }[];
 }) => {
+  if (!data.intent) {
+    console.error("Intent is required");
+    return null;
+  }
+
   const corpusData = getDefaultCorpus().data as corpusDataPoint[];
 
   const existingIntent = corpusData.find(
     (intent) => intent.intent === data.intent
   );
   if (existingIntent) {
-    existingIntent.utterances.push(...(data.utterances || []));
-    existingIntent.answers.push(...(data.answers || []));
-    existingIntent.buttons = [
-      ...(existingIntent.buttons || []),
-      ...(data.buttons || []),
-    ];
+    const cleanedUtterances = removeDuplicatesFromStrings([
+      ...data.utterances,
+      ...existingIntent.utterances,
+    ]);
+    existingIntent.utterances = cleanedUtterances;
+
+    const cleanedAnswers = removeDuplicatesFromStrings([
+      ...data.answers,
+      ...existingIntent.answers,
+    ]);
+    existingIntent.answers = cleanedAnswers;
+
+    const cleanedButtons = removeDuplicatesFromObjects(
+      [...(data.buttons || []), ...(existingIntent.buttons || [])],
+      "type"
+    );
+    existingIntent.buttons = cleanedButtons;
     existingIntent.enhance = data.enhance || existingIntent.enhance;
   } else {
     corpusData.push(data);

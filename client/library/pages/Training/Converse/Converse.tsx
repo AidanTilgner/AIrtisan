@@ -26,6 +26,8 @@ import { Button } from "@mantine/core";
 import Loaders from "../../../components/Utils/Loaders";
 import { useUser } from "../../../contexts/User";
 import { useSearch } from "../../../contexts/Search";
+import { useModal } from "../../../contexts/Modals";
+import Intent from "../../../components/Forms/Intent/Intent";
 
 type ChatPairType = {
   user: ChatType;
@@ -325,6 +327,33 @@ const ChatPair = ({
     setAssistantLoading(false);
   };
 
+  const { setModal, closeModal } = useModal();
+
+  const handleEditIntent = async () => {
+    setModal({
+      title: "Edit Intent",
+      type: "form",
+      onClose: closeModal,
+      buttons: [],
+      content: (
+        <div className={styles.intentFormContainer}>
+          <Intent
+            type="either"
+            afterSubmit={() => {
+              closeModal();
+              handleRetryChat();
+            }}
+            loadedUtterances={[user.message]}
+            loadedIntent={assistant.intent}
+            preSelectedForEither={
+              assistant.intent === "None" ? "new" : "existing"
+            }
+          />
+        </div>
+      ),
+    });
+  };
+
   return (
     <div
       className={`${styles.chatPair}`}
@@ -396,6 +425,15 @@ const ChatPair = ({
                   title="Modify the corpus"
                 >
                   <File weight="regular" />
+                </button>
+                <button
+                  className={`${styles.intent_button} ${styles.metadataOption}`}
+                  onClick={() => {
+                    handleEditIntent();
+                  }}
+                  title="Edit the intent in place"
+                >
+                  <PencilSimple weight="regular" />
                 </button>
                 <button
                   className={`${styles.retry_button} ${styles.metadataOption}`}

@@ -4,7 +4,7 @@ import { ButtonVariant, MantineColor } from "@mantine/core";
 interface Modal {
   open: boolean;
   title: string;
-  type: "confirmation";
+  type: "confirmation" | "form";
   buttons: {
     text: string;
     onClick: () => void;
