@@ -31,7 +31,7 @@ export const handleNewChat = async ({
       intent,
       role: "user",
       enhanced: false,
-      training_copy: isTraining,
+      training_copy: !!isTraining,
     });
 
     if (!userChatResponse) {
@@ -55,7 +55,7 @@ export const handleNewChat = async ({
       role: "assistant",
       enhanced,
       confidence,
-      training_copy: isTraining,
+      training_copy: !!isTraining,
     });
 
     if (!botChatResponse) {

@@ -35,7 +35,7 @@ export const createConversationFromSessionId = async (
   try {
     const conversation = new entities.Conversation();
     conversation.session_id = sessionId;
-    conversation.training_copy = training_copy;
+    conversation.training_copy = training_copy ? true : false;
     await dataSource.manager.save(conversation);
     return conversation;
   } catch (err) {

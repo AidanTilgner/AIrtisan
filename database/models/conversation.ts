@@ -21,7 +21,7 @@ export class Conversation {
   @Column("text")
   session_id!: string;
 
-  @Column("text", {
+  @Column("boolean", {
     nullable: true,
   })
   training_copy!: boolean;
