@@ -378,6 +378,7 @@ function Conversation({
       ],
       type: "confirmation",
       onClose: () => closeModal(),
+      size: "sm",
     });
   };
 

@@ -12,6 +12,9 @@ function Welcome() {
       <br />
       <ul>
         <li>
+          Read the <a href="/documentation">documentation</a>
+        </li>
+        <li>
           <Link to="/interactive">Interative Training</Link>
         </li>
         <li>

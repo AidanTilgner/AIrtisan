@@ -348,9 +348,11 @@ const ChatPair = ({
             preSelectedForEither={
               assistant.intent === "None" ? "new" : "existing"
             }
+            onClose={closeModal}
           />
         </div>
       ),
+      size: "lg",
     });
   };
 

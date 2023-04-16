@@ -3,28 +3,43 @@
   "locale": "en-US",
   "data": [
     {
-      "intent": "greeting.hello",
-      "utterances": [
-        "Ooga booga",
-        "hey",
-        "hey there",
-        "hi there",
-        "ciao",
-        "hello"
-      ],
-      "answers": [
-        "Hi! How can I help you?",
-        "Hello, how can I help you?",
-        "Hey there, how can I help you?",
-        "Hey, how are you?",
-        "Hello, how are you?",
-        "Hey! How can I help you?"
-      ],
-      "buttons": [{ "type": "play_greeting" }, { "type": "see_services" }],
-      "enhance": false
+      "intent": "be clever",
+      "utterances": ["Anything"],
+      "answers": ["Yes, you can say anything and I will do my best to respond!"]
     },
     {
-      "intent": "inquiry.identity",
+      "intent": "express positive response",
+      "utterances": ["Yes"],
+      "answers": ["Perfect!"],
+      "enhance": true
+    },
+    {
+      "intent": "describe their state as good and inquire about the bot's state",
+      "utterances": ["I'm good, you?"],
+      "answers": [
+        "That's great to hear! I'm doing well myself, thanks for asking."
+      ],
+      "enhance": true
+    },
+    {
+      "intent": "describe their state as well and inquire about the bot's state",
+      "utterances": ["I'm well, you?"],
+      "answers": ["I'm glad to hear it! I'm great myself."],
+      "enhance": true
+    },
+    {
+      "intent": "express negative response",
+      "utterances": ["No", "Nah", "You can't"],
+      "answers": ["Alright!"],
+      "enhance": true
+    },
+    {
+      "intent": "express interest",
+      "utterances": ["That's pretty neat", "That's interesting"],
+      "answers": ["I'm glad you think so!"]
+    },
+    {
+      "intent": "inquire about the bot's identity",
       "utterances": ["Who are you?", "What are you?"],
       "answers": [
         "I am Onyx, I'm a digital assistant at VVibrant Web Solutions"
@@ -32,12 +47,7 @@
       "enhance": true
     },
     {
-      "intent": "greeting.goodbye",
-      "utterances": ["Goodbye", "See ya!", "Adios"],
-      "answers": ["Goodbye!"]
-    },
-    {
-      "intent": "inquiry.services",
+      "intent": "inquire about the company's services",
       "utterances": ["What services do you provide?", "What does VVibrant do?"],
       "answers": [
         "We provide a large number of services, from design to development, content moderation, and even chatbot development. See more about our services on <a href=\"https://vvibrant.dev/services\">our services page</a>"
@@ -46,64 +56,15 @@
       "enhance": true
     },
     {
-      "intent": "describe_state.well.with.inquiry.state",
-      "utterances": ["I'm well, you?"],
-      "answers": ["I'm glad to hear it! I'm great myself."],
-      "enhance": true
-    },
-    {
-      "intent": "confirmation.no",
-      "utterances": ["No", "Nah", "You can't"],
-      "answers": ["Alright!"],
-      "enhance": true
-    },
-    {
-      "intent": "confirmation.yes",
-      "utterances": ["Yes"],
-      "answers": ["Perfect!"],
-      "enhance": true
-    },
-    {
-      "intent": "express.interest",
-      "utterances": ["That's pretty neat", "That's interesting"],
-      "answers": ["I'm glad you think so!"]
-    },
-    {
-      "intent": "inquiry.value_proposition",
-      "utterances": [
-        "Why should I hire you?",
-        "That's cool, what about ux design?"
-      ],
+      "intent": "inquire about how the company can help them",
+      "utterances": ["How can I improve my online presence?"],
       "answers": [
-        "There are a multitude of reasons why our services could bring value to your business. From increasing conversions with an optimized landing page, to partial sales automation with a custom chatbot, our services are here to help your business succeed."
+        "Our expert services are tailored towards helping your business succeed. These services include website design and development, as well as analytics-based performance review and optimizations. On top of that, we provide blogging services, which means creating, hosting, and maintaining a blog for you, which will include your own personal content, as well as tailor made professional articles to boost SEO and the share-ability of your site."
       ],
       "enhance": true
     },
     {
-      "intent": "Inquiry.onyx_chat_inner_workings",
-      "utterances": [
-        "that's pretty cool, how do you work?",
-        "how do you work? ",
-        "how does Onyx chat work?"
-      ],
-      "answers": [
-        "Onyx Chat works through a combination of VVibrant's proprietary AI technology, and enhancements using ChatGPT. We classify the intent of what you have to say, and provide ChatGPT with an example response. Then on certain messages, ChatGPT enhances the response using a custom method. That way we can have natural sounding responses, without compromising the safety of predetermined responses. If you would like to learn more, feel free to reach out!"
-      ]
-    },
-    {
-      "intent": "common_sayings.anything",
-      "utterances": ["Anything"],
-      "answers": ["Yes, you can say anything and I will do my best to respond!"]
-    },
-    {
-      "intent": "expression.negatory",
-      "utterances": ["You can't ", "Nah"],
-      "answers": [
-        "Alright! I'm happy to help with any questions you might have."
-      ]
-    },
-    {
-      "intent": "inquiry.onyx_chat_capabilities",
+      "intent": "inquire about the bot's capabilities",
       "utterances": [
         "Hi there, I'm curious what you're capable of?",
         "What are your capabilities?",
@@ -115,7 +76,40 @@
       "enhance": true
     },
     {
-      "intent": "request.connect_directly",
+      "intent": "inquire about the bot's inner workings",
+      "utterances": [
+        "that's pretty cool, how do you work?",
+        "how do you work? ",
+        "how does Onyx chat work?"
+      ],
+      "answers": [
+        "Onyx Chat works through a combination of VVibrant's proprietary AI technology, and enhancements using ChatGPT. We classify the intent of what you have to say, and provide ChatGPT with an example response. Then on certain messages, ChatGPT enhances the response using a custom method. That way we can have natural sounding responses, without compromising the safety of predetermined responses. If you would like to learn more, feel free to reach out!"
+      ]
+    },
+    {
+      "intent": "inquire about a specific service",
+      "utterances": [
+        "What about @service?",
+        "How can you help generate more leads?"
+      ],
+      "answers": [
+        "We provide a multitude of services to rewire your online web presence. From web design to chatbot creation, we're here to help."
+      ],
+      "enhance": true
+    },
+    {
+      "intent": "inquire about the company's value proposition",
+      "utterances": [
+        "Why should I hire you?",
+        "That's cool, what about ux design?"
+      ],
+      "answers": [
+        "There are a multitude of reasons why our services could bring value to your business. From increasing conversions with an optimized landing page, to partial sales automation with a custom chatbot, our services are here to help your business succeed."
+      ],
+      "enhance": true
+    },
+    {
+      "intent": "request to connect with a human",
       "utterances": [
         "Please connect me with an expert",
         "connect directly",
@@ -129,31 +123,23 @@
       "enhance": true
     },
     {
-      "intent": "inquiry.specific_service",
-      "utterances": [
-        "What about ux design?",
-        "How can you help generate more leads?"
-      ],
-      "answers": [
-        "We provide a multitude of services to rewire your online web presence. From web design to chatbot creation, we're here to help."
-      ],
-      "enhance": true
+      "intent": "say goodbye",
+      "utterances": ["Goodbye", "See ya!", "Adios"],
+      "answers": ["Goodbye!"]
     },
     {
-      "intent": "inquiry.how_we_can_help",
-      "utterances": ["How can I improve my online presence?"],
+      "intent": "say hello",
+      "utterances": ["hey", "hey there", "hi there", "ciao", "hello"],
       "answers": [
-        "Our expert services are tailored towards helping your business succeed. These services include website design and development, as well as analytics-based performance review and optimizations. On top of that, we provide blogging services, which means creating, hosting, and maintaining a blog for you, which will include your own personal content, as well as tailor made professional articles to boost SEO and the share-ability of your site."
+        "Hi! How can I help you?",
+        "Hello, how can I help you?",
+        "Hey there, how can I help you?",
+        "Hey, how are you?",
+        "Hello, how are you?",
+        "Hey! How can I help you?"
       ],
-      "enhance": true
-    },
-    {
-      "intent": "describe_state.good.with.inquiry.state",
-      "utterances": ["I'm good, you?"],
-      "answers": [
-        "That's great to hear! I'm doing well myself, thanks for asking."
-      ],
-      "enhance": true
+      "buttons": [{ "type": "play_greeting" }, { "type": "see_services" }],
+      "enhance": false
     },
     {
       "intent": "test",

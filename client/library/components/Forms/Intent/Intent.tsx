@@ -14,6 +14,7 @@ import {
 } from "@mantine/core";
 import { Plus } from "phosphor-react";
 import { showNotification } from "@mantine/notifications";
+import { filterDuplicatesForStrings } from "../../../helpers/methods";
 
 function Intent({
   afterSubmit,
@@ -50,6 +51,7 @@ function Intent({
             afterSubmit={handleSubmit}
             loadedUtterances={loadedUtterances}
             loadedIntent={loadedIntent}
+            onClose={onClose}
           />
         );
       case "either":
@@ -59,6 +61,7 @@ function Intent({
             loadedUtterances={loadedUtterances}
             loadedIntent={loadedIntent}
             preSelectForEither={preSelectedForEither}
+            onClose={onClose}
           />
         );
     }
@@ -82,11 +85,13 @@ function EitherForm({
   loadedUtterances,
   loadedIntent,
   preSelectForEither,
+  onClose,
 }: {
   afterSubmit: (data: CorpusDataPoint) => void;
   loadedUtterances?: string[];
   loadedIntent?: string;
   preSelectForEither?: "new" | "existing";
+  onClose?: () => void;
 }) {
   const [formType, setFormType] = React.useState<"new" | "existing">(
     preSelectForEither || "new"
@@ -99,6 +104,7 @@ function EitherForm({
           <AddIntent
             afterSubmit={afterSubmit}
             loadedUtterances={loadedUtterances}
+            onClose={onClose}
           />
         );
       case "existing":
@@ -107,6 +113,7 @@ function EitherForm({
             afterSubmit={afterSubmit}
             loadedUtterances={loadedUtterances}
             loadedIntent={loadedIntent}
+            onClose={onClose}
           />
         );
     }
@@ -464,10 +471,10 @@ function UpdateIntent({
   const handleOnIntentSelect = (int: string) => {
     const selectedIntent = allIntents.find((i) => i.intent === int);
     if (!selectedIntent) return;
-    const newUtterances = [
+    const newUtterances = filterDuplicatesForStrings([
       ...(loadedUtterances || []),
       ...(selectedIntent.utterances || []),
-    ];
+    ]);
     const newAnswers = [
       ...(formData?.answers || []),
       ...(selectedIntent.answers || []),
@@ -479,8 +486,6 @@ function UpdateIntent({
       answers: newAnswers,
     });
   };
-
-  console.log("Formdata: ", formData);
 
   return (
     <div className={styles.intentUpdate}>

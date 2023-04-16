@@ -296,6 +296,7 @@ export const Intent = ({
       ],
       type: "confirmation",
       onClose: () => closeModal(),
+      size: "sm",
     });
   };
 
@@ -378,16 +379,21 @@ export const Intent = ({
             setOpenIntent(intent);
           }
         }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            if (openIntent === intent) {
+              setOpenIntent(null);
+            } else {
+              setOpenIntent(intent);
+            }
+          }
+        }}
       >
         <h3 className={styles.toptext}>
-          <Highlight highlight={query.toLocaleLowerCase()}>
-            {getTopText().toLocaleLowerCase()}
-          </Highlight>
+          <Highlight highlight={query}>{getTopText()}</Highlight>
         </h3>
         <div className={styles.bottomtext}>
-          <Highlight highlight={query.toLocaleLowerCase()}>
-            {getBottomText().toLocaleLowerCase()}
-          </Highlight>
+          <Highlight highlight={query}>{getBottomText()}</Highlight>
         </div>
       </div>
       {isSelected && (
@@ -399,13 +405,19 @@ export const Intent = ({
                   type="text"
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
+                  placeholder="The user's goal is to..."
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleRename();
+                      setIsRenaming(false);
+                    }
+                  }}
                 />
               </div>
             ) : (
               <h2 className={styles.title}>
-                <Highlight highlight={query.toLocaleLowerCase()}>
-                  {intent.toLocaleLowerCase()}
-                </Highlight>
+                <Highlight highlight={query}>{intent}</Highlight>
               </h2>
             )}
             <div className={styles.metadata}>
@@ -575,9 +587,7 @@ export const Utterance = ({
 
   return (
     <div className={styles.utterance}>
-      <Highlight highlight={query.toLocaleLowerCase()}>
-        {utterance.toLocaleLowerCase()}
-      </Highlight>
+      <Highlight highlight={query}>{utterance}</Highlight>
       <div className={styles.buttons}>
         <button
           className={`${styles.button} ${styles.cancel}`}
@@ -617,9 +627,7 @@ export const Answer = ({
 
   return (
     <div className={styles.answer}>
-      <Highlight highlight={query.toLocaleLowerCase()}>
-        {answer.toLocaleLowerCase()}
-      </Highlight>
+      <Highlight highlight={query}>{answer}</Highlight>
       <div className={styles.buttons}>
         <button
           className={`${styles.button} ${styles.cancel}`}
@@ -663,9 +671,7 @@ export const ButtonItem = ({
   return (
     <div className={styles.buttonItem}>
       <Button variant="filled">
-        <Highlight highlight={query.toLocaleLowerCase()}>
-          {button.type.toLocaleLowerCase()}
-        </Highlight>
+        <Highlight highlight={query}>{button.type}</Highlight>
       </Button>
       <div className={styles.buttons}>
         <button

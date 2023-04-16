@@ -2,6 +2,7 @@
 import { readFileSync, writeFileSync } from "fs";
 import { prettify_json } from "../utils/prettier";
 import {
+  getObjectsAlphabetically,
   removeDuplicatesFromObjects,
   removeDuplicatesFromStrings,
 } from "../utils/methods";
@@ -61,15 +62,20 @@ export const addData = async (data: {
     existingIntent.buttons = cleanedButtons;
     existingIntent.enhance = data.enhance || existingIntent.enhance;
   } else {
-    corpusData.push(data);
+    corpusData.push({
+      ...data,
+      intent: data.intent.toLocaleLowerCase(),
+    });
   }
+
+  const sortedCorpusData = getObjectsAlphabetically(corpusData, "intent");
 
   writeFileSync(
     "./nlu/documents/default_corpus.json",
     prettify_json(
       JSON.stringify({
         ...getDefaultCorpus(),
-        data: corpusData,
+        data: sortedCorpusData,
       })
     )
   );
@@ -98,12 +104,14 @@ export const addResponseToIntent = async (intent: string, response: string) => {
     });
   }
 
+  const sortedCorpusData = getObjectsAlphabetically(corpusData, "intent");
+
   writeFileSync(
     "./nlu/documents/default_corpus.json",
     prettify_json(
       JSON.stringify({
         ...getDefaultCorpus(),
-        data: corpusData,
+        data: sortedCorpusData,
       })
     )
   );
@@ -134,12 +142,14 @@ export const removeResponseFromIntent = async (
     );
   }
 
+  const sortedCorpusData = getObjectsAlphabetically(corpusData, "intent");
+
   writeFileSync(
     "./nlu/documents/default_corpus.json",
     prettify_json(
       JSON.stringify({
         ...getDefaultCorpus(),
-        data: corpusData,
+        data: sortedCorpusData,
       })
     )
   );
@@ -185,12 +195,14 @@ export const addOrUpdateUtteranceOnIntent = async (
     });
   }
 
+  const sortedCorpusData = getObjectsAlphabetically(corpusData, "intent");
+
   writeFileSync(
     "./nlu/documents/default_corpus.json",
     prettify_json(
       JSON.stringify({
         ...getDefaultCorpus(),
-        data: corpusData,
+        data: sortedCorpusData,
       })
     )
   );
@@ -219,12 +231,14 @@ export const removeUtteranceFromIntent = async (
     );
   }
 
+  const sortedCorpusData = getObjectsAlphabetically(corpusData, "intent");
+
   writeFileSync(
     "./nlu/documents/default_corpus.json",
     prettify_json(
       JSON.stringify({
         ...getDefaultCorpus(),
-        data: corpusData,
+        data: sortedCorpusData,
       })
     )
   );
@@ -261,12 +275,14 @@ export const addUtteranceToIntent = async (
     });
   }
 
+  const sortedCorpusData = getObjectsAlphabetically(corpusData, "intent");
+
   writeFileSync(
     "./nlu/documents/default_corpus.json",
     prettify_json(
       JSON.stringify({
         ...getDefaultCorpus(),
-        data: corpusData,
+        data: sortedCorpusData,
       })
     )
   );
@@ -292,12 +308,14 @@ export const enhanceIntent = (intent: string, shouldEnhance: boolean) => {
     existingIntent.enhance = shouldEnhance;
   }
 
+  const sortedCorpusData = getObjectsAlphabetically(corpusData, "intent");
+
   writeFileSync(
     "./nlu/documents/default_corpus.json",
     prettify_json(
       JSON.stringify({
         ...getDefaultCorpus(),
-        data: corpusData,
+        data: sortedCorpusData,
       })
     )
   );
@@ -322,12 +340,14 @@ export const updateButtonsOnIntent = async (
     existingIntent.buttons = buttons;
   }
 
+  const sortedCorpusData = getObjectsAlphabetically(corpusData, "intent");
+
   writeFileSync(
     "./nlu/documents/default_corpus.json",
     prettify_json(
       JSON.stringify({
         ...getDefaultCorpus(),
-        data: corpusData,
+        data: sortedCorpusData,
       })
     )
   );
@@ -354,12 +374,14 @@ export const removeButtonFromIntentByType = async (
     );
   }
 
+  const sortedCorpusData = getObjectsAlphabetically(corpusData, "intent");
+
   writeFileSync(
     "./nlu/documents/default_corpus.json",
     prettify_json(
       JSON.stringify({
         ...getDefaultCorpus(),
-        data: corpusData,
+        data: sortedCorpusData,
       })
     )
   );
@@ -382,12 +404,14 @@ export const deleteDataPoint = async (intent: string) => {
 
   const newData = corpusData.filter((item) => item.intent !== intent);
 
+  const sortedCorpusData = getObjectsAlphabetically(newData, "intent");
+
   writeFileSync(
     "./nlu/documents/default_corpus.json",
     prettify_json(
       JSON.stringify({
         ...getDefaultCorpus(),
-        data: newData,
+        data: sortedCorpusData,
       })
     )
   );
@@ -409,15 +433,17 @@ export const renameIntent = async (old_intent: string, new_intent: string) => {
 
   const existingIntent = corpusData.find((item) => item.intent === old_intent);
   if (existingIntent) {
-    existingIntent.intent = new_intent;
+    existingIntent.intent = new_intent.toLocaleLowerCase();
   }
+
+  const sortedCorpusData = getObjectsAlphabetically(corpusData, "intent");
 
   writeFileSync(
     "./nlu/documents/default_corpus.json",
     prettify_json(
       JSON.stringify({
         ...getDefaultCorpus(),
-        data: corpusData,
+        data: sortedCorpusData,
       })
     )
   );

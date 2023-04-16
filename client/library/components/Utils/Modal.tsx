@@ -13,6 +13,7 @@ function GlobalModal() {
         resetModal();
         modal.onClose();
       }}
+      size={modal.size}
     >
       <Box>{modal.content}</Box>
       <br />

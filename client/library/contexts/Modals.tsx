@@ -1,5 +1,5 @@
 import React, { createContext } from "react";
-import { ButtonVariant, MantineColor } from "@mantine/core";
+import { ButtonVariant, MantineColor, MantineSize } from "@mantine/core";
 
 interface Modal {
   open: boolean;
@@ -13,6 +13,7 @@ interface Modal {
   }[];
   onClose: () => void;
   content: React.ReactNode | string;
+  size: MantineSize;
 }
 
 interface ModalContextType {
@@ -30,6 +31,7 @@ const initialModal: Modal = {
   buttons: [],
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   onClose: () => {},
+  size: "md",
 };
 
 const intitialModalContext: ModalContextType = {

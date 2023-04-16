@@ -189,7 +189,12 @@ export const renameIntent = async ({
         title: "Success",
         message: "Intent renamed. ",
       });
-      return res.data.data;
+      return res.data as {
+        message: string;
+        retrained: boolean;
+        success: boolean;
+        data: CorpusDataPoint;
+      };
     })
     .catch((err) => {
       console.error(err);
@@ -197,6 +202,12 @@ export const renameIntent = async ({
         title: "Error",
         message: "Something went wrong",
       });
+      return {
+        message: "Something went wrong",
+        retrained: false,
+        success: false,
+        data: null,
+      };
     });
 };
 
