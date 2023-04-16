@@ -4,7 +4,7 @@ type logTypes = "info" | "error" | "warning" | "debug" | "analytics";
 
 export class Logger {
   private log_type: logTypes = "info";
-  private log_file_path: string = "storage/logs/logs.txt";
+  private log_file_path = "storage/logs/logs.txt";
   public name: string;
 
   constructor({

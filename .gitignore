@@ -10,3 +10,4 @@ storage/analytics/*
 storage/metadata/*
 storage/logs/*
 .secrets*
+public/widgets/chatboxes/*

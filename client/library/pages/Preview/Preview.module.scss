@@ -9,19 +9,24 @@
   @media (min-width: 768px) {
     padding-inline: 56px;
   }
-
-  h2 {
-    font-weight: 500;
-    margin: 0;
-    text-align: left;
-    width: 100%;
-    margin-bottom: 24px;
-  }
 }
 
 .header {
   margin-bottom: 0;
   width: 100%;
+}
+
+.preview {
+  text-align: center;
+  width: 100%;
+
+  h2 {
+    font-weight: 500;
+    margin: 0;
+    text-align: center;
+    width: 100%;
+    margin-bottom: 24px;
+  }
 }
 
 .chatboxContainer {

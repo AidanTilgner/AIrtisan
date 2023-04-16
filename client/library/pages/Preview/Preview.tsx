@@ -1,9 +1,24 @@
-import React from "react";
+import React, { useLayoutEffect } from "react";
 import styles from "./Preview.module.scss";
-import Chatbox from "./Rewire/Chatbox";
 import { Button, Flex } from "@mantine/core";
+import {
+  addResourceFilesToDocument,
+  loadResourcesForPreview,
+  previews,
+} from "./previews";
 
 function Preview() {
+  useLayoutEffect(() => {
+    const promises = previews.map(async (p) => {
+      const resources = await loadResourcesForPreview(p.name);
+      if (!resources || !resources.widgetJs || !resources.widgetCss) {
+        return;
+      }
+      addResourceFilesToDocument(resources?.widgetJs, resources?.widgetCss);
+    });
+    Promise.all(promises);
+  }, []);
+
   return (
     <div className={styles.preview}>
       <div className={styles.header}>
@@ -26,12 +41,15 @@ function Preview() {
           </Button>
         </Flex>
       </div>
-
       <br />
-      <h2>Rewire Site</h2>
-      <div className={styles.chatboxContainer}>
-        <Chatbox />
-      </div>
+      {previews.map((p) => {
+        return (
+          <div className={styles.preview} key={p.name + p.rootId}>
+            <h2>{p.name}</h2>
+            <div className={styles.chatboxContainer} id={p.rootId}></div>
+          </div>
+        );
+      })}
     </div>
   );
 }

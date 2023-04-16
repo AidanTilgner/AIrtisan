@@ -8,7 +8,8 @@
     "dev:server": "cross-env NODE_ENV=development tsx watch index.ts",
     "build:client": "node esbuild.config.mjs",
     "dev:client": "node esbuild.dev.config.mjs",
-    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\""
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "build:widgets": "node esbuild.widgets.config.mjs"
   },
   "keywords": [],
   "author": "",
