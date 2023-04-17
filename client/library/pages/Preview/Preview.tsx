@@ -7,6 +7,56 @@ import {
   previews,
 } from "./previews";
 
+interface ChatURL {
+  url: (...args: unknown[]) => string;
+  headers: {
+    "Content-Type": string;
+    "x-access-token": string;
+  };
+}
+
+(
+  window as unknown as {
+    chat_urls: {
+      [key: string]: ChatURL;
+    };
+  }
+).chat_urls = {};
+
+const useChatURL: ChatURL = {
+  url: () => "/chat/as_admin",
+  headers: {
+    "Content-Type": "application/json",
+    "x-access-token": localStorage.getItem("accessToken") || "",
+  },
+};
+
+(
+  window as unknown as {
+    chat_urls: {
+      [key: string]: ChatURL;
+    };
+  }
+).chat_urls.useChatEndpoint = useChatURL;
+
+const reviewChatURL: ChatURL = {
+  url: (chat_id) => {
+    return `/chat/as_admin/${chat_id}/should_review`;
+  },
+  headers: {
+    "Content-Type": "application/json",
+    "x-access-token": localStorage.getItem("accessToken") || "",
+  },
+};
+
+(
+  window as unknown as {
+    chat_urls: {
+      [key: string]: ChatURL;
+    };
+  }
+).chat_urls.reviewChatURL = reviewChatURL;
+
 function Preview() {
   useLayoutEffect(() => {
     const promises = previews.map(async (p) => {
@@ -18,7 +68,6 @@ function Preview() {
     });
     Promise.all(promises);
   }, []);
-
   return (
     <div className={styles.preview}>
       <div className={styles.header}>

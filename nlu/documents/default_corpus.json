@@ -8,12 +8,6 @@
       "answers": ["Yes, you can say anything and I will do my best to respond!"]
     },
     {
-      "intent": "express positive response",
-      "utterances": ["Yes"],
-      "answers": ["Perfect!"],
-      "enhance": true
-    },
-    {
       "intent": "describe their state as good and inquire about the bot's state",
       "utterances": ["I'm good, you?"],
       "answers": [
@@ -28,31 +22,31 @@
       "enhance": true
     },
     {
+      "intent": "express interest",
+      "utterances": ["That's pretty neat", "That's interesting"],
+      "answers": ["I'm glad you think so!"]
+    },
+    {
       "intent": "express negative response",
       "utterances": ["No", "Nah", "You can't"],
       "answers": ["Alright!"],
       "enhance": true
     },
     {
-      "intent": "express interest",
-      "utterances": ["That's pretty neat", "That's interesting"],
-      "answers": ["I'm glad you think so!"]
-    },
-    {
-      "intent": "inquire about the bot's identity",
-      "utterances": ["Who are you?", "What are you?"],
-      "answers": [
-        "I am Onyx, I'm a digital assistant at VVibrant Web Solutions"
-      ],
+      "intent": "express positive response",
+      "utterances": ["Yes"],
+      "answers": ["Perfect!"],
       "enhance": true
     },
     {
-      "intent": "inquire about the company's services",
-      "utterances": ["What services do you provide?", "What does VVibrant do?"],
-      "answers": [
-        "We provide a large number of services, from design to development, content moderation, and even chatbot development. See more about our services on <a href=\"https://vvibrant.dev/services\">our services page</a>"
+      "intent": "inquire about a specific service",
+      "utterances": [
+        "What about @service?",
+        "How can you help generate more leads?"
       ],
-      "buttons": [{ "type": "see_services" }],
+      "answers": [
+        "We provide a multitude of services to rewire your online web presence. From web design to chatbot creation, we're here to help."
+      ],
       "enhance": true
     },
     {
@@ -76,6 +70,14 @@
       "enhance": true
     },
     {
+      "intent": "inquire about the bot's identity",
+      "utterances": ["Who are you?", "What are you?"],
+      "answers": [
+        "I am Onyx, I'm a digital assistant at VVibrant Web Solutions"
+      ],
+      "enhance": true
+    },
+    {
       "intent": "inquire about the bot's inner workings",
       "utterances": [
         "that's pretty cool, how do you work?",
@@ -87,14 +89,12 @@
       ]
     },
     {
-      "intent": "inquire about a specific service",
-      "utterances": [
-        "What about @service?",
-        "How can you help generate more leads?"
-      ],
+      "intent": "inquire about the company's services",
+      "utterances": ["What services do you provide?", "What does VVibrant do?"],
       "answers": [
-        "We provide a multitude of services to rewire your online web presence. From web design to chatbot creation, we're here to help."
+        "We provide a large number of services, from design to development, content moderation, and even chatbot development. See more about our services on <a href=\"https://vvibrant.dev/services\">our services page</a>"
       ],
+      "buttons": [{ "type": "see_services" }],
       "enhance": true
     },
     {
@@ -138,15 +138,16 @@
         "Hello, how are you?",
         "Hey! How can I help you?"
       ],
-      "buttons": [{ "type": "play_greeting" }, { "type": "see_services" }],
+      "buttons": [{ "type": "see_services" }],
       "enhance": false
     },
     {
       "intent": "test",
-      "utterances": ["test"],
-      "answers": [],
+      "utterances": ["Test test test", "test"],
+      "answers": ["test test test"],
       "enhance": false,
-      "retrain": true
+      "retrain": true,
+      "buttons": []
     }
   ]
 }

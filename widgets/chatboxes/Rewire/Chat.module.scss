@@ -115,7 +115,7 @@
     }
   }
 
-  button {
+  .sendButton {
     height: 100%;
     font-family: "QuickSand", sans-serif;
     font-weight: 600;
@@ -146,6 +146,126 @@
       transform: translateY(1px) scale(0.99);
     }
   }
+
+  .buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    position: absolute;
+    right: 0;
+    bottom: calc(100% + 14px);
+    gap: 14px;
+  }
+
+  .button {
+    border: none;
+    backdrop-filter: blur(10px);
+    padding: 10px 18px;
+    font-size: 12px;
+    font-family: "QuickSand", sans-serif;
+    font-weight: 600;
+    color: white;
+    cursor: pointer;
+    box-shadow: 0.2px 0.2px 10px rgba(0, 0, 0, 0.25);
+    transition: all 0.3s ease-in-out;
+    border-radius: 2.5px;
+    box-sizing: border-box;
+
+    @media (min-width: 768px) {
+      display: 14px;
+    }
+  }
+
+  .primary {
+    background: linear-gradient(
+      90deg,
+      rgba(22, 20, 219, 0.8) 0%,
+      rgba(135, 9, 232, 0.35) 100%
+    );
+    transition: all 0.3s ease-in-out;
+    opacity: 0.9;
+
+    span {
+      position: relative;
+      z-index: 2;
+    }
+
+    &::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 0px;
+      opacity: 0;
+      background: black;
+      transition: all 0.3s ease-in-out;
+      z-index: 1;
+    }
+
+    &:hover {
+      opacity: 1;
+
+      &::before {
+        width: 100%;
+        opacity: 1;
+      }
+    }
+
+    &:active {
+      transform: translateY(2px) scale(0.99);
+    }
+  }
+
+  .secondary {
+    background-color: transparent;
+    border-width: 2px;
+    border-style: solid;
+    border-image: linear-gradient(
+        90deg,
+        rgba(22, 20, 219, 0.8) 0%,
+        rgba(135, 9, 232, 0.35) 100%
+      )
+      1;
+    position: relative;
+    transition: all 0.3s ease-in-out;
+    opacity: 0.9;
+
+    span {
+      position: relative;
+      z-index: 3;
+    }
+
+    &::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 0px;
+      opacity: 0;
+      background: linear-gradient(
+        90deg,
+        rgba(22, 20, 219, 0.8) 0%,
+        rgba(135, 9, 232, 0.35) 100%
+      );
+      transition: all 0.3s ease-in-out;
+      z-index: 1;
+    }
+
+    &:hover {
+      opacity: 1;
+
+      &::before {
+        width: 100%;
+        opacity: 1;
+      }
+    }
+
+    &:active {
+      transform: translateY(2px) scale(0.99);
+    }
+  }
 }
 
 .chatBoxMessages {
@@ -153,7 +273,7 @@
   height: 100%;
   overflow-y: scroll;
   padding: 24px;
-  padding-bottom: 82px;
+  padding-bottom: 124px;
   box-sizing: border-box;
   // make scrollbar transparent
   &::-webkit-scrollbar {
@@ -171,6 +291,7 @@
   margin-bottom: 24px;
   border-bottom: 1px solid rgba($color: #fff, $alpha: 0.25);
   padding-bottom: 8px;
+  text-align: left;
 }
 
 .disclaimer {
@@ -208,6 +329,7 @@
   margin: 0;
   font-weight: 500;
   font-size: 16px;
+  text-align: left;
 }
 
 @keyframes chatIn {
