@@ -144,13 +144,9 @@ function ChatBox() {
     }[]
   >([
     {
-      type: "see_services",
-      metadata: null,
-    },
-    {
-      type: "play_greeting",
+      type: "send_greeting",
       metadata: {
-        message_to_send: "Hello there!",
+        message_to_send: "Hello!",
       },
     },
   ]);
@@ -259,27 +255,33 @@ function ChatBox() {
       </div>
       <div className={chatStyles.chatBoxInput}>
         <div className={chatStyles.buttons}>
-          {showButtons.map((button, index) => {
-            const mappedButton = buttonMappings[button.type];
-            const setMessage = (message: string) => {
-              handleSubmitMessage(message);
-              setShowButtons([]);
-            };
-            return (
-              <button
-                key={index}
-                onClick={() => {
-                  mappedButton.action(setMessage, button.metadata);
-                  // setShowButtons([]);
-                }}
-                className={`${chatStyles.button} ${
-                  chatStyles[mappedButton.color]
-                }`}
-              >
-                <span>{mappedButton.label}</span>
-              </button>
-            );
-          })}
+          {showButtons
+            .filter((b) => {
+              return b.type in buttonMappings;
+            })
+            .map((button, index) => {
+              const mappedButton =
+                button.type in buttonMappings && buttonMappings[button.type];
+              if (!mappedButton) return null;
+              const setMessage = (message: string) => {
+                handleSubmitMessage(message);
+                setShowButtons([]);
+              };
+              return (
+                <button
+                  key={index}
+                  onClick={() => {
+                    mappedButton.action(setMessage, button.metadata);
+                    // setShowButtons([]);
+                  }}
+                  className={`${chatStyles.button} ${
+                    chatStyles[mappedButton.type]
+                  }`}
+                >
+                  <span>{mappedButton.label}</span>
+                </button>
+              );
+            })}
         </div>
         {isFocused && (
           <div className={chatStyles.tooltip}>

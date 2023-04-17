@@ -2,25 +2,31 @@ export const buttonMappings: {
   [key: string]: {
     action: (setMessage: (message: string) => void, metadata: unknown) => void;
     label: string;
-    color: string;
+    type: string;
   };
 } = {
-  play_greeting: {
-    label: "Play Greeting",
+  send_greeting: {
+    label: "Say Hello",
     action: (setMessage, metadata) => {
       if (getMessageToSendOrNull(metadata)) {
-        console.log("Sending message: ", getMessageToSendOrNull(metadata));
         setMessage(getMessageToSendOrNull(metadata) as string);
       }
     },
-    color: "secondary",
+    type: "message",
   },
   see_services: {
     label: "See Services",
     action: () => {
       window.location.href = "https://vvibrant.dev/services";
     },
-    color: "primary",
+    type: "action",
+  },
+  contact_directly: {
+    label: "Get in Touch",
+    action: () => {
+      window.location.href = "https://vvibrant.dev/contact";
+    },
+    type: "action",
   },
 };
 

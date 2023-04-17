@@ -52,7 +52,7 @@ export const getButtons = () => {
   const buttons: { [intent: string]: { type: string; metadata?: string }[] } =
     {};
   getDefaultCorpus().data.forEach((item: any) => {
-    if (item.buttons) {
+    if (item.buttons && item.buttons.length > 0) {
       buttons[item.intent] = item.buttons;
     }
   });
