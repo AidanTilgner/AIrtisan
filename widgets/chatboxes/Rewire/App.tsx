@@ -134,6 +134,9 @@ function ChatBox() {
       If you see any weird responses, please hit the <Warning weight="bold" />{" "}
       icon to report it.
     </p>,
+    <p className={chatStyles.disclaimer} key="disclaimer3">
+      Conversations may be recorded for quality assurance purposes.
+    </p>,
   ];
 
   const [botMessageLoading, setBotMessageLoading] = React.useState(false);
