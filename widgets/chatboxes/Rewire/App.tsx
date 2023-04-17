@@ -18,7 +18,7 @@ const useChatEndpoint =
         [key: string]: ChatURL;
       };
     }
-  ).chat_urls.useChatEndpoint || null;
+  ).chat_urls?.useChatEndpoint || null;
 
 const postChat = async (chat: {
   message: string;
@@ -70,7 +70,7 @@ const customChatReviewHook =
         [key: string]: ChatURL;
       };
     }
-  ).chat_urls.reviewChatURL || null;
+  ).chat_urls?.reviewChatURL || null;
 
 export const markChatAsShouldReview = async (chat: {
   chat_id: string | number;
