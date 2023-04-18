@@ -5,6 +5,8 @@ import { Chat } from "./models/chat";
 import { Admin } from "./models/admin";
 import { Token } from "./models/token";
 import { ApiKey } from "./models/apiKey";
+import { Bot } from "./models/bot";
+import { Organization } from "./models/organization";
 import { seedDatabase } from "./seeders";
 
 export const entities = {
@@ -13,6 +15,8 @@ export const entities = {
   Admin,
   Token,
   ApiKey,
+  Bot,
+  Organization,
 };
 
 export const dataSource = new DataSource({

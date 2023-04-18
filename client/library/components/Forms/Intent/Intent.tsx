@@ -494,7 +494,7 @@ function UpdateIntent({
           <h2>Update Existing</h2>
         </Grid.Col>
         <Grid.Col span={12}>
-          <h3>The intent should be...</h3>
+          <h3>The user{"'"}s goal is...</h3>
         </Grid.Col>
         <Grid.Col sm={12} md={12}>
           <Select

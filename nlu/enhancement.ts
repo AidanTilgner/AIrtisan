@@ -118,7 +118,7 @@ export const getSpicedUpAnswer = async (
     session_id: string;
     confidence: number;
   }
-) => {
+): Promise<string> => {
   try {
     const proompt = getFormattedPrompt(message, intent, response, confidence);
 
@@ -126,31 +126,42 @@ export const getSpicedUpAnswer = async (
       session_id
     );
 
-    const previousChats = conversationChats.map((chat) => {
-      return {
-        content: chat.message,
-        role: chat.role,
-      };
-    });
+    if (!conversationChats) {
+      return message;
+    }
+
+    const previousChats = conversationChats
+      .map((chat) => {
+        return {
+          content: chat.message,
+          role: chat.role,
+        };
+      })
+      .slice(0, 4);
 
     const messages = [
       {
         content: getInitialPrompt(),
-        role: "system" as "system",
+        role: "system" as const,
       },
       ...previousChats,
       {
         content: proompt,
-        role: "user" as "user",
+        role: "user" as const,
       },
     ];
 
     const { data } = await openai.createChatCompletion({
       model: chatGPTConfif.model || "gpt-3.5-turbo",
       messages,
+      presence_penalty: 0.5,
     });
 
-    const choice = data.choices[0].message.content;
+    const choice = data.choices[0]?.message?.content;
+
+    if (!choice) {
+      return message;
+    }
 
     return choice;
   } catch (err) {

@@ -5,8 +5,10 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
+  ManyToOne,
 } from "typeorm";
 import { Chat } from "./chat";
+import { Bot } from "./bot";
 
 @Entity()
 export class Conversation {
@@ -28,6 +30,9 @@ export class Conversation {
 
   @OneToMany(() => Chat, (chat) => chat.conversation, { eager: true })
   chats!: Chat[];
+
+  @ManyToOne(() => Bot, (bot) => bot.conversations)
+  bot!: Bot;
 
   @CreateDateColumn()
   created_at!: Date;

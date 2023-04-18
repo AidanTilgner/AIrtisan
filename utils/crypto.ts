@@ -2,6 +2,7 @@ import { hashSync, compareSync } from "bcrypt";
 import jwt from "jsonwebtoken";
 import { config } from "dotenv";
 import { randomBytes } from "crypto";
+import { v4 as uuid4 } from "uuid";
 
 config();
 
@@ -57,4 +58,8 @@ export const generateRandomApiKey = (length = 32) => {
   const key = randomBytes(length).toString("hex");
   const formatted = `sk-${key}`;
   return formatted;
+};
+
+export const getRandomID = () => {
+  return uuid4();
 };

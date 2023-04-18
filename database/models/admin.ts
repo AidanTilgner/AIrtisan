@@ -4,8 +4,9 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   Entity,
+  ManyToMany,
 } from "typeorm";
-
+import { Organization } from "./organization";
 import { comparePassword as compPass } from "../../utils/crypto";
 
 @Entity()
@@ -21,6 +22,9 @@ export class Admin {
 
   @Column("text")
   role: "admin" | "superadmin" = "admin";
+
+  @ManyToMany(() => Organization, (organization) => organization.admins)
+  organizations!: Organization[];
 
   @CreateDateColumn()
   created_at!: Date;
