@@ -5,7 +5,11 @@
     {
       "intent": "be clever",
       "utterances": ["Anything"],
-      "answers": ["Yes, you can say anything and I will do my best to respond!"]
+      "answers": [
+        "Yes, you can say anything and I will do my best to respond!"
+      ],
+      "buttons": [],
+      "enhance": true
     },
     {
       "intent": "describe their state as good and inquire about the bot's state",
