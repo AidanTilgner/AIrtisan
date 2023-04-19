@@ -31,41 +31,26 @@ import {
 import { useMediaQuery } from "@mantine/hooks";
 import { useModal } from "../../contexts/Modals";
 import IntentForm from "../../components/Forms/Intent/Intent";
+import useFetch from "../../hooks/useFetch";
 
 function Corpus() {
   const { query, setQuery } = useSearch();
 
   const [fullCorpus, setFullCorpus] = React.useState<CorpusType>();
 
-  const getData = async () => {
-    await getDefaultCorpus()
-      .then(({ success, data }) => {
-        if (!success || !data) {
-          console.error("Error fetching corpus");
-          showNotification({
-            title: "Error fetching corpus",
-            message: "Please try again later",
-          });
-          return;
-        }
-        setFullCorpus(data);
-      })
-      .catch((err) => {
-        console.error("Error fetching corpus", err);
-        showNotification({
-          title: "Error fetching corpus",
-          message: "Please try again later",
-        });
-      });
-  };
+  const { data, loading, reload } = useFetch({
+    url: "/training/corpus",
+  });
 
   React.useEffect(() => {
-    getData();
-  }, []);
+    if (data) {
+      setFullCorpus(data);
+    }
+  }, [data]);
 
   const reloadData = async () => {
     setFullCorpus(undefined);
-    await getData();
+    reload();
   };
 
   const getFilteredData = () => {

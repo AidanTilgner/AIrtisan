@@ -3,7 +3,7 @@ import {
   Conversation,
   ConversationToReview,
 } from "../../../documentation/main";
-import { api } from "./index";
+import { api } from "../axios";
 import { showNotification } from "@mantine/notifications";
 
 export const getChatsThatNeedReview = async () => {

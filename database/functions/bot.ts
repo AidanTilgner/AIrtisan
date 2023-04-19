@@ -3,6 +3,7 @@ import { dataSource, entities } from "..";
 import { generateBotFiles } from "../../utils/bot";
 import { readFileSync, writeFileSync } from "fs";
 import { format } from "prettier";
+import path from "path";
 
 export const createBot = async ({
   name,
@@ -118,9 +119,9 @@ export const getBotFileLocations = async (id: Bot["id"]) => {
     });
     if (!bot) return null;
     return {
-      context_file: bot.context_file,
-      corpus_file: bot.corpus_file,
-      model_file: bot.model_file,
+      context_file: path.join(storageLocation, bot.context_file),
+      corpus_file: path.join(storageLocation, bot.corpus_file),
+      model_file: path.join(storageLocation, bot.model_file),
     };
   } catch (error) {
     console.error(error);
@@ -128,13 +129,18 @@ export const getBotFileLocations = async (id: Bot["id"]) => {
   }
 };
 
+const storageLocation = "datastore/bots/documents";
+
 export const getBotCorpus = async (id: Bot["id"]) => {
   try {
     const bot = await dataSource.manager.findOne(entities.Bot, {
       where: { id },
     });
     if (!bot) return null;
-    const file = readFileSync(bot.corpus_file, "utf8").toString();
+    const file = readFileSync(
+      path.join(storageLocation, bot.corpus_file),
+      "utf8"
+    ).toString();
     const contents = JSON.parse(file);
     return contents;
   } catch (error) {
@@ -149,7 +155,10 @@ export const getBotContext = async (id: Bot["id"]) => {
       where: { id },
     });
     if (!bot) return null;
-    const file = readFileSync(bot.context_file, "utf8").toString();
+    const file = readFileSync(
+      path.join(storageLocation, bot.context_file),
+      "utf8"
+    ).toString();
     const contents = JSON.parse(file);
     return contents;
   } catch (error) {
@@ -164,7 +173,10 @@ export const getBotModel = async (id: Bot["id"]) => {
       where: { id },
     });
     if (!bot) return null;
-    const file = readFileSync(bot.model_file, "utf8").toString();
+    const file = readFileSync(
+      path.join(storageLocation, bot.model_file),
+      "utf8"
+    ).toString();
     const contents = JSON.parse(file);
     return contents;
   } catch (error) {
@@ -179,11 +191,14 @@ export const updateBotCorpus = async (id: Bot["id"], corpus: any) => {
       where: { id },
     });
     if (!bot) return null;
-    const file = readFileSync(bot.corpus_file, "utf8").toString();
+    const file = readFileSync(
+      path.join(storageLocation, bot.corpus_file),
+      "utf8"
+    ).toString();
     const contents = JSON.parse(file);
     const updatedContents = Object.assign(contents, corpus);
     writeFileSync(
-      bot.corpus_file,
+      path.join(storageLocation, bot.corpus_file),
       format(JSON.stringify(updatedContents), {
         parser: "json",
       })
@@ -201,11 +216,14 @@ export const updateBotContext = async (id: Bot["id"], context: any) => {
       where: { id },
     });
     if (!bot) return null;
-    const file = readFileSync(bot.context_file, "utf8").toString();
+    const file = readFileSync(
+      path.join(storageLocation, bot.context_file),
+      "utf8"
+    ).toString();
     const contents = JSON.parse(file);
     const updatedContents = Object.assign(contents, context);
     writeFileSync(
-      bot.context_file,
+      path.join(storageLocation, bot.context_file),
       format(JSON.stringify(updatedContents), {
         parser: "json",
       })
@@ -223,11 +241,14 @@ export const updateBotModel = async (id: Bot["id"], model: any) => {
       where: { id },
     });
     if (!bot) return null;
-    const file = readFileSync(bot.model_file, "utf8").toString();
+    const file = readFileSync(
+      path.join(storageLocation, bot.model_file),
+      "utf8"
+    ).toString();
     const contents = JSON.parse(file);
     const updatedContents = Object.assign(contents, model);
     writeFileSync(
-      bot.model_file,
+      path.join(storageLocation, bot.model_file),
       format(JSON.stringify(updatedContents), {
         parser: "json",
       })

@@ -1,4 +1,4 @@
-import { api } from ".";
+import { api } from "../axios";
 import { showNotification } from "@mantine/notifications";
 import { Admin, ApiKey } from "../../../documentation/main";
 
