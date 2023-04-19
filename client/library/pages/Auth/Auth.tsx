@@ -8,7 +8,7 @@ import {
   deleteApiKey,
   getAllApiKeys,
 } from "../../helpers/fetching/admin";
-import { TrashSimple, Copy } from "phosphor-react";
+import { TrashSimple, Copy } from "@phosphor-icons/react";
 import { showNotification } from "@mantine/notifications";
 import { Admin, ApiKey } from "../../../documentation/main";
 

@@ -12,7 +12,7 @@ import {
   Select,
   TextInput,
 } from "@mantine/core";
-import { Plus } from "phosphor-react";
+import { Plus } from "@phosphor-icons/react";
 import { showNotification } from "@mantine/notifications";
 import { filterDuplicatesForStrings } from "../../../helpers/methods";
 

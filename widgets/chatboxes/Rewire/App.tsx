@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Warning } from "phosphor-react";
+import { Warning } from "@phosphor-icons/react";
 import chatStyles from "./Chat.module.scss";
 import { buttonMappings } from "./buttons";
 

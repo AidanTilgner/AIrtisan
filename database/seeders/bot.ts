@@ -1,4 +1,4 @@
-import { createBot } from "../functions/bot";
+import { createBot, getBotByName } from "../functions/bot";
 import { config } from "dotenv";
 
 config();
@@ -9,6 +9,13 @@ const { DEFAULT_BOT_NAME, DEFAULT_BOT_DESCRIPTION = "A super cool chatbot." } =
 export const seedBots = async () => {
   if (!DEFAULT_BOT_NAME) {
     console.info("No bots to seed.");
+    return;
+  }
+
+  const existingBot = await getBotByName(DEFAULT_BOT_NAME);
+
+  if (existingBot) {
+    console.info(`Bot ${DEFAULT_BOT_NAME} already exists.`);
     return;
   }
 

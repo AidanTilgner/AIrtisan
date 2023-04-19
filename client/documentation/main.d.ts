@@ -69,3 +69,17 @@ export interface Corpus {
   locale: string;
   data: CorpusData;
 }
+
+export interface Bot {
+  id?: number | null;
+  name: string;
+  description: string;
+  bot_language: string;
+  context_file: string;
+  corpus_file: string;
+  model_file: string;
+  bot_version: string;
+  enhancement_model: string;
+  created_at: Date | string;
+  updated_at: Date | string;
+}

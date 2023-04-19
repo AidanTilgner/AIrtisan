@@ -21,7 +21,13 @@ import { showNotification } from "@mantine/notifications";
 import Search from "../../components/Search/Search";
 import { useSearch } from "../../contexts/Search";
 import { Autocomplete, Button, Checkbox, Highlight } from "@mantine/core";
-import { Check, PencilSimple, Plus, TrashSimple, X } from "phosphor-react";
+import {
+  Check,
+  PencilSimple,
+  Plus,
+  TrashSimple,
+  X,
+} from "@phosphor-icons/react";
 import { useMediaQuery } from "@mantine/hooks";
 import { useModal } from "../../contexts/Modals";
 import IntentForm from "../../components/Forms/Intent/Intent";

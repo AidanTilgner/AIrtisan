@@ -28,7 +28,7 @@ import {
   getAllButtons,
 } from "../../../helpers/fetching";
 import { showNotification } from "@mantine/notifications";
-import { TrashSimple, Copy, Check, Lightning } from "phosphor-react";
+import { TrashSimple, Copy, Check, Lightning } from "@phosphor-icons/react";
 import { copyToClipboard } from "../../../helpers/utilities";
 import { getShortenedMessage } from "../../../helpers/formating";
 import { useMediaQuery } from "@mantine/hooks";

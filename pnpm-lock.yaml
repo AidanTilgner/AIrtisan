@@ -19,6 +19,9 @@ dependencies:
   '@nlpjs/basic':
     specifier: ^4.23.5
     version: 4.26.1
+  '@phosphor-icons/react':
+    specifier: ^2.0.8
+    version: 2.0.8(react-dom@18.2.0)(react@18.2.0)
   '@types/react':
     specifier: ^18.0.33
     version: 18.0.33
@@ -58,9 +61,6 @@ dependencies:
   openai:
     specifier: ^3.2.1
     version: 3.2.1
-  phosphor-react:
-    specifier: ^1.4.1
-    version: 1.4.1(react@18.2.0)
   react:
     specifier: ^18.2.0
     version: 18.2.0
@@ -2473,6 +2473,17 @@ packages:
       rimraf: 3.0.2
     dev: false
     optional: true
+
+  /@phosphor-icons/react@2.0.8(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-VWACI+MkRGpol4htOcVtWKaDCosrcuCg8toJfPS0osgVjxM8i/KoSZSPxQvG5XYPCI8iyJoHKRpSfzOISAXFyg==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      react: '>= 16.8'
+      react-dom: '>= 16.8'
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+    dev: false
 
   /@radix-ui/number@1.0.0:
     resolution: {integrity: sha512-Ofwh/1HX69ZfJRiRBMTy7rgjAzHmwe4kW9C9Y99HTRUcYLUuVT0KESFj15rPjRgKJs20GPq8Bm5aEDJ8DuA3vA==}
@@ -5346,15 +5357,6 @@ packages:
   /path-type@4.0.0:
     resolution: {integrity: sha512-gDKb8aZMDeD/tZWs9P6+q0J9Mwkdl6xMV8TjnGP3qJVJ06bdMgkbBlLU8IdfOsIsFz2BW1rNVT3XuNEl8zPAvw==}
     engines: {node: '>=8'}
-
-  /phosphor-react@1.4.1(react@18.2.0):
-    resolution: {integrity: sha512-gO5j7U0xZrdglTAYDYPACU4xDOFBTJmptrrB/GeR+tHhCZF3nUMyGmV/0hnloKjuTrOmpSFlbfOY78H39rgjUQ==}
-    engines: {node: '>=10'}
-    peerDependencies:
-      react: '>=16'
-    dependencies:
-      react: 18.2.0
-    dev: false
 
   /picocolors@1.0.0:
     resolution: {integrity: sha512-1fygroTLlHu66zi26VoTDv8yRgm0Fccecssto+MhsZ0D/DGW2sm8E8AjW7NU5VVTRt5GxbeZ5qBuJr+HyLYkjQ==}

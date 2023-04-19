@@ -49,6 +49,7 @@ export const getBot = async (id: Bot["id"]) => {
   try {
     const bot = await dataSource.manager.findOne(entities.Bot, {
       where: { id },
+      relations: ["organization"],
     });
     return bot;
   } catch (error) {
@@ -232,6 +233,18 @@ export const updateBotModel = async (id: Bot["id"], model: any) => {
       })
     );
     return updatedContents;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+export const getBotByName = async (name: Bot["name"]) => {
+  try {
+    const bot = await dataSource.manager.findOne(entities.Bot, {
+      where: { name },
+    });
+    return bot;
   } catch (error) {
     console.error(error);
     return null;

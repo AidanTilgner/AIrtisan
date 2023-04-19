@@ -21,7 +21,7 @@ import {
   X,
   Check,
   File,
-} from "phosphor-react";
+} from "@phosphor-icons/react";
 import { Button } from "@mantine/core";
 import Loaders from "../../../components/Utils/Loaders";
 import { useUser } from "../../../contexts/User";

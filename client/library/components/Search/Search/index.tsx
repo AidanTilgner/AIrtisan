@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "./index.module.scss";
 import { useSearch } from "../../../contexts/Search";
-import { X } from "phosphor-react";
+import { X } from "@phosphor-icons/react";
 
 function Search({ typingDelay }: { typingDelay?: number }) {
   const { setQuery, query: contextQuery } = useSearch();

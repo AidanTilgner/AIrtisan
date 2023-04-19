@@ -15,7 +15,7 @@ import {
   ArrowsClockwise,
   TrashSimple,
   ArrowRight,
-} from "phosphor-react";
+} from "@phosphor-icons/react";
 import { useNavigate } from "react-router-dom";
 import {
   Chat,

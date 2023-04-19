@@ -1,17 +1,46 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styles from "./Navbar.module.scss";
 import { Button, Burger, Menu } from "@mantine/core";
 import { retrainModel } from "../../../helpers/fetching";
+import { getAllAdminBots } from "../../../helpers/fetching/bots";
 import { Link, useLocation } from "react-router-dom";
 import { useUser } from "../../../contexts/User";
-import { SignOut } from "phosphor-react";
+import { useBot } from "../../../contexts/Bot";
+import {
+  Chat,
+  Chats,
+  HandWaving,
+  SignOut,
+  MonitorPlay,
+  TextColumns,
+  Fingerprint,
+} from "@phosphor-icons/react";
 import { logout } from "../../../helpers/auth";
 import SVG from "../../Utils/SVG";
+import { Bot } from "../../../../documentation/main";
+import { showNotification } from "@mantine/notifications";
 
 function Navbar() {
   const isMobile = window.innerWidth < 768;
   const [opened, setOpened] = React.useState(false);
   const location = useLocation();
+  const [bots, setBots] = React.useState<Bot[]>([]);
+  const { bot, botSelected, setBot } = useBot();
+
+  useEffect(() => {
+    getAllAdminBots().then(({ success, data }) => {
+      if (!success || !data) {
+        setBots(data);
+        showNotification({
+          title: "Error",
+          message: "Could not fetch bots",
+        });
+        return;
+      }
+      console.log("Bot data: ", data);
+      setBots(data);
+    });
+  }, []);
 
   const { isSuperAdmin } = useUser();
 
@@ -24,6 +53,7 @@ function Navbar() {
           to="/"
           className={currentPath === "/" ? styles.active : styles.inactive}
         >
+          <HandWaving />
           Welcome
         </Link>
       </li>
@@ -32,6 +62,7 @@ function Navbar() {
           to="/train"
           className={currentPath === "/train" ? styles.active : styles.inactive}
         >
+          <Chat />
           Training
         </Link>
       </li>
@@ -44,6 +75,7 @@ function Navbar() {
               : styles.inactive
           }
         >
+          <Chats />
           Conversations
         </Link>
       </li>
@@ -54,6 +86,7 @@ function Navbar() {
             currentPath === "/preview" ? styles.active : styles.inactive
           }
         >
+          <MonitorPlay />
           Previews
         </Link>
       </li>
@@ -64,6 +97,7 @@ function Navbar() {
             currentPath === "/corpus" ? styles.active : styles.inactive
           }
         >
+          <TextColumns />
           Corpus
         </Link>
       </li>
@@ -79,14 +113,50 @@ function Navbar() {
             currentPath === "/admin/auth" ? styles.active : styles.inactive
           }
         >
+          <Fingerprint />
           Auth
         </Link>
       </li>
     </>
   ) : null;
 
+  const handleBotSelect = (bt: Bot) => {
+    setBot(bt);
+  };
+
   const settingsOptions = (
     <div className={styles.settingsOptions}>
+      <div className={`${styles.option} ${styles.botChoice}`}>
+        <Menu shadow="md" width={200} position="top">
+          <Menu.Target>
+            <Button
+              style={{
+                width: "100%",
+              }}
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+              variant="outline"
+            >
+              {botSelected && bot ? `Using: ${bot.name}` : "Select Bot"}
+            </Button>
+          </Menu.Target>
+
+          <Menu.Dropdown>
+            <Menu.Label>Bots</Menu.Label>
+            {bots.map((bot) => (
+              <Menu.Item
+                key={bot.id}
+                onClick={() => {
+                  handleBotSelect(bot);
+                }}
+              >
+                {bot.name}
+              </Menu.Item>
+            ))}
+          </Menu.Dropdown>
+        </Menu>
+      </div>
       <div className={styles.option}>
         <Button
           onClick={() => {
@@ -135,6 +205,7 @@ function Navbar() {
         </div>
         <h2 className={styles.title}>Onyx Chat</h2>
       </div>
+      <hr />
       {isMobile && (
         <Burger
           opened={opened}
