@@ -1,11 +1,15 @@
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from "react";
 import styles from "./Corpus.module.scss";
 import {
   addAnswerToIntent,
   addUtteranceToIntent,
   deleteDataPoint,
   getAllButtons,
-  getDefaultCorpus,
   removeAnswerFromIntent,
   removeButtonFromIntent,
   removeUtteranceFromIntent,
@@ -38,46 +42,44 @@ function Corpus() {
 
   const [fullCorpus, setFullCorpus] = React.useState<CorpusType>();
 
-  const { data, loading, reload } = useFetch({
-    url: "/training/corpus",
-  });
+  const onSuccess = useCallback((data: unknown) => {
+    if (!data) return;
+    if (data !== fullCorpus) setFullCorpus(data as unknown as CorpusType);
+  }, []);
 
-  React.useEffect(() => {
-    if (data) {
-      setFullCorpus(data);
-    }
-  }, [data]);
+  const { load } = useFetch({
+    url: "/training/corpus",
+    onSuccess,
+  });
 
   const reloadData = async () => {
     setFullCorpus(undefined);
-    reload();
+    load();
   };
 
-  const getFilteredData = () => {
-    return fullCorpus?.data?.filter((dataPoint) => {
-      const intentPassesQuery = dataPoint.intent.includes(query);
-      const utterancesPassQuery = dataPoint.utterances.some((utterance) =>
-        utterance.includes(query)
-      );
-      const answersPassQuery = dataPoint.answers.some((answer) =>
-        answer.includes(query)
-      );
-      const enhancePassQuery =
-        dataPoint.enhance && query.toLowerCase() === "enhance";
-      const buttonsPassQuery = dataPoint.buttons?.some((button) =>
-        button.type.includes(query)
-      );
+  const filteredData = fullCorpus?.data?.filter((dataPoint) => {
+    const intentPassesQuery = dataPoint.intent.includes(query);
+    const utterancesPassQuery = dataPoint.utterances.some((utterance) =>
+      utterance.includes(query)
+    );
+    const answersPassQuery = dataPoint.answers.some((answer) =>
+      answer.includes(query)
+    );
+    const enhancePassQuery =
+      dataPoint.enhance && query.toLowerCase() === "enhance";
+    const buttonsPassQuery = dataPoint.buttons?.some((button) =>
+      button.type.includes(query)
+    );
 
-      const passesQuery =
-        intentPassesQuery ||
-        utterancesPassQuery ||
-        answersPassQuery ||
-        buttonsPassQuery ||
-        enhancePassQuery;
+    const passesQuery =
+      intentPassesQuery ||
+      utterancesPassQuery ||
+      answersPassQuery ||
+      buttonsPassQuery ||
+      enhancePassQuery;
 
-      return passesQuery;
-    });
-  };
+    return passesQuery;
+  });
 
   useLayoutEffect(() => {
     (
@@ -85,9 +87,13 @@ function Corpus() {
     ).forEach((c, i) => {
       c.style.animationDelay = `${Math.log(i) * 0.25}s`;
     });
-  }, [getFilteredData()]);
+  }, [filteredData]);
 
-  const [openIntent, setOpenIntent] = React.useState<string | null>(null);
+  const [openIntent, setOpenIntentState] = React.useState<string | null>(null);
+
+  const setOpenIntent = (intent: string | null) => {
+    setOpenIntentState(intent);
+  };
 
   const [allButtons, setAllButtons] = useState<{ type: string }[]>([]);
 
@@ -106,9 +112,9 @@ function Corpus() {
 
   useEffect(() => {
     if (!fullCorpus) return;
-    if (getFilteredData()?.find((data) => data.intent === openIntent)) return;
+    if (filteredData?.find((data) => data.intent === openIntent)) return;
     setOpenIntent(null);
-  }, [getFilteredData(), query]);
+  }, [filteredData, query]);
 
   const [addingIntent, setAddingIntent] = useState(false);
 
@@ -162,8 +168,8 @@ function Corpus() {
       </div>
       <div className={styles.interface_container}>
         <div className={styles.data}>
-          {getFilteredData()?.length ? (
-            getFilteredData()?.map((dataPoint) => (
+          {filteredData?.length ? (
+            filteredData?.map((dataPoint) => (
               <Intent
                 intent={dataPoint.intent}
                 utterances={dataPoint.utterances}

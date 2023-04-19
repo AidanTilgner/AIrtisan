@@ -24,14 +24,13 @@ const initialBot: Bot = {
 
 const BotContext = createContext<BotContext>({
   bot: initialBot,
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   setBot: () => {},
   botSelected: false,
 });
 
 export const BotProvider = ({ children }: { children: React.ReactNode }) => {
   const [bot, setBot] = useState<Bot>(initialBot);
-
-  console.log("Selected bot: ", bot);
 
   const value = {
     bot,

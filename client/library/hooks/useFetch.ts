@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useBot } from "../contexts/Bot";
 import { api } from "../helpers/axios";
 
@@ -14,19 +14,21 @@ function useFetch({
 }: {
   url: string;
   method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
-  body?: any;
-  onSuccess?: (data: any) => void;
-  onError?: (err: any) => void;
-  headers?: Record<string, any> | undefined;
-  query?: Record<string, any> | undefined;
+  body?: unknown;
+  onSuccess?: (data: unknown) => void;
+  onError?: (err: unknown) => void;
+  headers?: Record<string, string> | undefined;
+  query?: Record<string, string> | undefined;
   bustCache?: boolean;
 }) {
   const { bot } = useBot();
 
-  const allQuery: Record<string, any> = {
+  const allQuery: Record<string, string> = {
     ...query,
-    bot_id: bot?.id || "",
+    bot_id: bot?.id?.toString() || "",
   };
+
+  const readyToRun = !!bot?.id;
 
   const queryStr = Object.keys(allQuery)
     .map((key) => (allQuery[key] ? `${key}=${allQuery[key]}` : ""))
@@ -35,31 +37,17 @@ function useFetch({
   const urlToUse = queryStr ? `${url}?${queryStr}` : url;
 
   const [loading, setLoading] = useState(true);
-  const [data, setData] = useState<any>();
+  const [data, setData] = useState<unknown>();
 
-  const instance = api(urlToUse, {
-    method,
-    data: body,
-    headers,
-    cache: bustCache ? false : undefined,
-  })
-    .then((res) => {
-      onSuccess && onSuccess(res.data.data);
-      setData(res.data.data);
-      return res.data.data;
-    })
-    .catch((err) => {
-      onError && onError(err);
-      setData(err);
-      return err;
-    })
-    .finally(() => {
-      setLoading(false);
-    });
-
-  const reload = () => {
+  const load = useCallback(() => {
+    if (!readyToRun) return;
     setLoading(true);
-    instance
+    api(urlToUse, {
+      method,
+      data: body,
+      headers,
+      cache: bustCache ? false : undefined,
+    })
       .then((res) => {
         onSuccess && onSuccess(res.data.data);
         setData(res.data.data);
@@ -73,13 +61,35 @@ function useFetch({
       .finally(() => {
         setLoading(false);
       });
-  };
+  }, [
+    urlToUse,
+    method,
+    body,
+    headers,
+    bustCache,
+    onSuccess,
+    onError,
+    readyToRun,
+  ]);
+
+  useEffect(() => {
+    if (!readyToRun) return;
+    load();
+  }, [
+    urlToUse,
+    method,
+    body,
+    headers,
+    bustCache,
+    onSuccess,
+    onError,
+    readyToRun,
+  ]);
 
   return {
     loading,
-    instance,
     data,
-    reload,
+    load,
   };
 }
 

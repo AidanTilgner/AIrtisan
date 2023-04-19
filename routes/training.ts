@@ -68,7 +68,6 @@ router.get("/corpus", async (req, res) => {
       return;
     }
     const corpus = await getDefaultCorpus(Number(botId));
-    console.log("Fetched default corpus", corpus);
     const toSend = {
       message: "Got default corpus",
       success: true,

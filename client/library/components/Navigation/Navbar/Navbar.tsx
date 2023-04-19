@@ -37,7 +37,6 @@ function Navbar() {
         });
         return;
       }
-      console.log("Bot data: ", data);
       setBots(data);
     });
   }, []);
