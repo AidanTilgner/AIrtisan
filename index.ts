@@ -6,7 +6,8 @@ import TrainingRouter from "./routes/training";
 import AuthRouter from "./routes/auth";
 import ConversationsRouter from "./routes/conversations";
 import WidgetsRouter from "./routes/widgets";
-import { train } from "./nlu/index";
+import OrganizationRouter from "./routes/organizations";
+import BotRouter from "./routes/bots";
 import { logIP } from "./middleware/analysis";
 import path from "path";
 import "reflect-metadata";
@@ -15,7 +16,6 @@ import { initGPT } from "./utils/gpt4all";
 import cors from "cors";
 
 config();
-train();
 initializeDatabase();
 initGPT(false);
 
@@ -43,12 +43,14 @@ app.use(Express.urlencoded({ extended: true }));
 
 app.use(logIP);
 
+app.use("/organizations", OrganizationRouter);
 app.use("/nlu", NLURouter);
 app.use("/chat", ChatRouter);
 app.use("/training", TrainingRouter);
 app.use("/auth", AuthRouter);
 app.use("/conversations", ConversationsRouter);
 app.use("/widgets", WidgetsRouter);
+app.use("/bots", BotRouter);
 
 app.get("/login", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "auth", "login.html"));

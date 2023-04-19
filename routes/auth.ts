@@ -306,12 +306,10 @@ router.delete("/api-key/:id", checkIsAdmin, async (req, res) => {
       return;
     }
 
-    res
-      .status(200)
-      .send({
-        message: "API key deleted successfully.",
-        data: { success: true },
-      });
+    res.status(200).send({
+      message: "API key deleted successfully.",
+      data: { success: true },
+    });
   } catch (err) {
     console.error(err);
     res

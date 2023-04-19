@@ -98,7 +98,8 @@
 
     /* Completeness */
     // "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
-    "skipLibCheck": true /* Skip type checking all .d.ts files. */
+    "skipLibCheck": true, /* Skip type checking all .d.ts files. */
+    "outDir": "./dist",
   },
   "include": [
     "**/*.ts",
@@ -106,5 +107,5 @@
     "client/**/*.tsx",
     "client/typings.d.ts"
   ],
-  "exclude": ["node_modules", "**/*.json"] // Make sure ts-node-dev also gets this array in package.json
+  "exclude": ["node_modules", "**/*.json"], // Make sure ts-node-dev also gets this array in package.json
 }

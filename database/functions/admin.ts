@@ -146,3 +146,55 @@ export const createAdminInOrganization = async ({
     return null;
   }
 };
+
+export const createAdminInOrganizationByName = async ({
+  username,
+  password,
+  role,
+  organization_name,
+}: {
+  username: string;
+  password: string;
+  role: "admin" | "superadmin";
+  organization_name: string;
+}) => {
+  try {
+    const createdAdmin = await createAdmin({
+      username,
+      password,
+      role,
+    });
+    if (!createdAdmin) return null;
+    const organization = await dataSource.manager.findOne(
+      entities.Organization,
+      {
+        where: { name: organization_name },
+      }
+    );
+    if (!organization) return null;
+    createdAdmin.organizations = [
+      ...(createdAdmin.organizations || []),
+      organization,
+    ];
+    const result = await dataSource.manager.save(createdAdmin);
+    return result;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};
+
+export const getAdminOrganizations = async (id: number) => {
+  try {
+    const admin = await dataSource.manager.findOne(entities.Admin, {
+      where: { id },
+      relations: ["organizations"],
+    });
+    if (!admin) return null;
+
+    return admin.organizations;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};

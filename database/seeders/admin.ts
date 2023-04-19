@@ -1,4 +1,7 @@
-import { createAdmin, getAdminByUsername } from "../functions/admin";
+import {
+  createAdminInOrganizationByName,
+  getAdminByUsername,
+} from "../functions/admin";
 import { config } from "dotenv";
 import { generateRandomPassword } from "../../utils/crypto";
 import { writeFileSync, readFileSync } from "fs";
@@ -20,7 +23,12 @@ export const seedAdmins = async () => {
   } = {};
 
   for (const admin of adminsArray) {
-    const username = admin;
+    const [orgName, username] = admin.split(":");
+    if (!orgName || !username) {
+      console.info(`Admin ${admin} is not valid. Skipping.`);
+      continue;
+    }
+
     const existingAdmin = await getAdminByUsername(username);
 
     if (existingAdmin) {
@@ -30,17 +38,18 @@ export const seedAdmins = async () => {
 
     const generatedPassword = generateRandomPassword();
 
-    const result = await createAdmin({
+    const result = await createAdminInOrganizationByName({
       username,
       password: generatedPassword,
       role: "superadmin",
+      organization_name: orgName,
     });
 
     if (result) {
-      console.log(`Admin ${username} created.`);
+      console.info(`Admin ${username} created.`);
       adminsCreated[username] = generatedPassword;
     } else {
-      console.log(`Admin ${username} could not be created.`);
+      console.info(`Admin ${username} could not be created.`);
     }
   }
 

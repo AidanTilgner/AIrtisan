@@ -1,9 +1,13 @@
-import { getButtons } from "./metadata";
+import { getButtons, getIntentButtons } from "./metadata";
 
-export const extractAttachments = async (text: string, intent: string) => {
+export const extractAttachments = async (
+  botId: number,
+  text: string,
+  intent: string
+) => {
   if (!text) return {};
   const linkData = extractLinks(text);
-  const buttons = extractButtons(intent);
+  const buttons = extractButtons(botId, intent);
   return {
     links: linkData,
     buttons,
@@ -22,16 +26,21 @@ export const extractLinks = (text: string) => {
   return linkData;
 };
 
-export const extractButtons = (intent: string) => {
-  // match << __button.<button_type> >> in text
-  const buttons = getButtons()[intent];
-  const buttonData = buttons?.map((button) => {
-    const metadata = button.metadata;
-    const type = button.type;
-    return { type, metadata };
-  });
+export const extractButtons = async (id: number, intent: string) => {
+  try {
+    // match << __button.<button_type> >> in text
+    const buttons = await getIntentButtons(id, intent);
+    const buttonData = buttons?.map((button) => {
+      const metadata = button.metadata;
+      const type = button.type;
+      return { type, metadata };
+    });
 
-  return buttonData ? buttonData.filter((button) => button.type) : [];
+    return buttonData ? buttonData.filter((button) => button.type) : [];
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
 };
 
 export const filterAttachments = (text: string) => {

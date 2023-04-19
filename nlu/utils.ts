@@ -18,6 +18,8 @@ export const getGeneratedNameBasedOnContent = async (
 
     const generatedName = response.data.choices[0].text;
 
+    if (!generatedName) return null;
+
     const filteredGeneratedName = generatedName
       .replace('"', "")
       .replace('"', "");

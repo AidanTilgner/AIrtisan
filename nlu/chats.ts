@@ -9,21 +9,26 @@ import { enhanceChatIfNecessary } from "./enhancement";
 import { detectAndActivateTriggers } from "./triggers";
 
 export const handleNewChat = async ({
+  botId,
   message,
   session_id,
   isTraining,
   allowTriggers,
 }: {
+  botId: number;
   message: string;
   session_id: string;
   isTraining?: boolean;
   allowTriggers?: boolean;
 }) => {
   try {
-    const response = await getNLUResponse(message);
+    const response = await getNLUResponse(botId, message);
+    if (!response) {
+      return null;
+    }
     const { intent, answer, confidence, initial_text } = response;
     if (allowTriggers) {
-      detectAndActivateTriggers(intent, session_id);
+      detectAndActivateTriggers(botId, intent, session_id);
     }
     const userChatResponse = await addChatToConversationAndCreateIfNotExists({
       sessionId: session_id,
@@ -41,6 +46,7 @@ export const handleNewChat = async ({
     const { chat: userChat } = userChatResponse;
 
     const { answer: botAnswer, enhanced } = await enhanceChatIfNecessary({
+      botId,
       message: initial_text,
       answer,
       intent,
@@ -83,7 +89,13 @@ export const handleNewChat = async ({
   }
 };
 
-export const handleRetryChat = async ({ chat_id }: { chat_id: number }) => {
+export const handleRetryChat = async ({
+  chat_id,
+  bot_id,
+}: {
+  chat_id: number;
+  bot_id: number;
+}) => {
   try {
     const chat = await getChat(chat_id);
 
@@ -106,10 +118,13 @@ export const handleRetryChat = async ({ chat_id }: { chat_id: number }) => {
       return null;
     }
 
-    const nluResponse = await getNLUResponse(textToRetry);
-
+    const nluResponse = await getNLUResponse(bot_id, textToRetry);
+    if (!nluResponse) {
+      return null;
+    }
     const { intent, answer, confidence, initial_text } = nluResponse;
     const { answer: botAnswer, enhanced } = await enhanceChatIfNecessary({
+      botId: bot_id,
       message: initial_text,
       answer,
       intent,

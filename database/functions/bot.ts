@@ -1,15 +1,19 @@
 import { Bot } from "../models/bot";
 import { dataSource, entities } from "..";
 import { generateBotFiles } from "../../utils/bot";
+import { readFileSync, writeFileSync } from "fs";
+import { format } from "prettier";
 
 export const createBot = async ({
   name,
+  description,
   bot_version,
   organization_id,
   enhancement_model,
   bot_language,
 }: {
   name: Bot["name"];
+  description: Bot["description"];
   bot_version: Bot["bot_version"];
   organization_id: Bot["organization"]["id"];
   enhancement_model: Bot["enhancement_model"];
@@ -18,6 +22,7 @@ export const createBot = async ({
   try {
     const bot = new entities.Bot();
     bot.name = name;
+    bot.description = description;
     bot.bot_version = bot_version;
     bot.enhancement_model = enhancement_model;
     bot.bot_language = bot_language;
@@ -116,6 +121,117 @@ export const getBotFileLocations = async (id: Bot["id"]) => {
       corpus_file: bot.corpus_file,
       model_file: bot.model_file,
     };
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+export const getBotCorpus = async (id: Bot["id"]) => {
+  try {
+    const bot = await dataSource.manager.findOne(entities.Bot, {
+      where: { id },
+    });
+    if (!bot) return null;
+    const file = readFileSync(bot.corpus_file, "utf8").toString();
+    const contents = JSON.parse(file);
+    return contents;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+export const getBotContext = async (id: Bot["id"]) => {
+  try {
+    const bot = await dataSource.manager.findOne(entities.Bot, {
+      where: { id },
+    });
+    if (!bot) return null;
+    const file = readFileSync(bot.context_file, "utf8").toString();
+    const contents = JSON.parse(file);
+    return contents;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+export const getBotModel = async (id: Bot["id"]) => {
+  try {
+    const bot = await dataSource.manager.findOne(entities.Bot, {
+      where: { id },
+    });
+    if (!bot) return null;
+    const file = readFileSync(bot.model_file, "utf8").toString();
+    const contents = JSON.parse(file);
+    return contents;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+export const updateBotCorpus = async (id: Bot["id"], corpus: any) => {
+  try {
+    const bot = await dataSource.manager.findOne(entities.Bot, {
+      where: { id },
+    });
+    if (!bot) return null;
+    const file = readFileSync(bot.corpus_file, "utf8").toString();
+    const contents = JSON.parse(file);
+    const updatedContents = Object.assign(contents, corpus);
+    writeFileSync(
+      bot.corpus_file,
+      format(JSON.stringify(updatedContents), {
+        parser: "json",
+      })
+    );
+    return updatedContents;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+export const updateBotContext = async (id: Bot["id"], context: any) => {
+  try {
+    const bot = await dataSource.manager.findOne(entities.Bot, {
+      where: { id },
+    });
+    if (!bot) return null;
+    const file = readFileSync(bot.context_file, "utf8").toString();
+    const contents = JSON.parse(file);
+    const updatedContents = Object.assign(contents, context);
+    writeFileSync(
+      bot.context_file,
+      format(JSON.stringify(updatedContents), {
+        parser: "json",
+      })
+    );
+    return updatedContents;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+export const updateBotModel = async (id: Bot["id"], model: any) => {
+  try {
+    const bot = await dataSource.manager.findOne(entities.Bot, {
+      where: { id },
+    });
+    if (!bot) return null;
+    const file = readFileSync(bot.model_file, "utf8").toString();
+    const contents = JSON.parse(file);
+    const updatedContents = Object.assign(contents, model);
+    writeFileSync(
+      bot.model_file,
+      format(JSON.stringify(updatedContents), {
+        parser: "json",
+      })
+    );
+    return updatedContents;
   } catch (error) {
     console.error(error);
     return null;

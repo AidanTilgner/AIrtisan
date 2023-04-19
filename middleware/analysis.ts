@@ -32,12 +32,18 @@ export const addIPToSession = (
 ) => {
   const session_id = getRequesterSessionId(req);
   const session = getSessionIfExists(session_id);
-  if (!session) {
+  if (!session || !session_id) {
     const newSession = createSession(session_id);
-    newSession.setIp(getRequesterIp(req));
+    const reqIp = getRequesterIp(req);
+    if (reqIp) {
+      newSession.setIp(reqIp);
+    }
     next();
     return;
   }
-  session.setIpIfNotSet(getRequesterIp(req));
+  const reqIp = getRequesterIp(req);
+  if (reqIp) {
+    session.setIpIfNotSet(reqIp);
+  }
   next();
 };

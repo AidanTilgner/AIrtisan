@@ -30,6 +30,7 @@ export const activateTrigger = async (
 };
 
 export const detectAndActivateTriggers = async (
+  id: number,
   intent: string,
   session_id: string
 ) => {
@@ -39,7 +40,7 @@ export const detectAndActivateTriggers = async (
         type: string;
         args: { [key: string]: any };
         attachments: string[];
-      }[] = getTriggers()[intent];
+      }[] = (await getTriggers(id))[intent];
 
   if (!triggers) {
     return;
@@ -88,7 +89,9 @@ export const triggerAttachmentMethods: {
   session_ip_address: async ({ session_id }: TriggerAttachmentArgs) => {
     const session = getSessionIfExists(session_id);
     if (!session) {
-      return;
+      return {
+        ip: "unknown",
+      };
     }
     return { ip: session.getIpIfSet() };
   },

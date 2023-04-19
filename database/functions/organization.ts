@@ -129,3 +129,71 @@ export const getOrganizationBots = async (id: number) => {
     return null;
   }
 };
+
+export const checkAdminIsInOrganization = async (
+  admin_id: number,
+  organization_id: number
+) => {
+  try {
+    const organization = await dataSource.manager.findOne(
+      entities.Organization,
+      {
+        where: { id: organization_id },
+        relations: ["admins"],
+      }
+    );
+    if (!organization) return null;
+    const admin = organization.admins.find((admin) => admin.id === admin_id);
+    return admin ? true : false;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};
+
+export const checkBotIsInOrganization = async (
+  bot_id: number,
+  organization_id: number
+) => {
+  try {
+    const organization = await dataSource.manager.findOne(
+      entities.Organization,
+      {
+        where: { id: organization_id },
+        relations: ["bots"],
+      }
+    );
+    if (!organization) return null;
+    const bot = organization.bots.find((bot) => bot.id === bot_id);
+    return bot ? true : false;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};
+
+export const addAdminToOrganization = async (
+  admin_id: number,
+  organization_id: number
+) => {
+  try {
+    const organization = await dataSource.manager.findOne(
+      entities.Organization,
+      {
+        where: { id: organization_id },
+        relations: ["admins"],
+      }
+    );
+    if (!organization) return null;
+    const admin = await dataSource.manager.findOne(entities.Admin, {
+      where: { id: admin_id },
+    });
+    if (!admin) return null;
+    organization.admins.push(admin);
+    await dataSource.manager.save(organization);
+    return organization;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};

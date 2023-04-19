@@ -85,7 +85,7 @@ export const getAdmin = async ({ id }: { id: number }) => {
     });
 };
 
-export const addApiKey = async ({ name }) => {
+export const addApiKey = async ({ name }: { name: string }) => {
   return await api
     .post("/auth/api-key/register", {
       name,

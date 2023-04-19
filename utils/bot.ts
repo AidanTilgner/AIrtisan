@@ -1,12 +1,13 @@
 import { writeFileSync } from "fs";
 import path from "path";
+import { getRandomString } from "./crypto";
+import { format } from "prettier";
 
 const outputLocation = "datastore/bots/documents";
 
 export const generateBotFiles = async (bot: {
   name: string;
   bot_version: string;
-  id: number;
   bot_language: string;
   enhancement_model: string;
 }): Promise<{
@@ -15,29 +16,24 @@ export const generateBotFiles = async (bot: {
   model_file: string;
 } | null> => {
   try {
+    const randomString = getRandomString(10);
     const contextFile = await getBotContextFileContents(bot);
     if (!contextFile) return null;
-    writeFileSync(
-      path.join(outputLocation, `$${bot.name}-${bot.id}-context.json`),
-      contextFile
-    );
+    const contextFileName = `${bot.name}-${bot.bot_language}-${randomString}-context.json`;
+    writeFileSync(path.join(outputLocation, contextFileName), contextFile);
     const corpusFile = await getBotCorpusFileContents(bot);
     if (!corpusFile) return null;
-    writeFileSync(
-      path.join(outputLocation, `$${bot.name}-${bot.id}-corpus.json`),
-      corpusFile
-    );
+    const corpusFileName = `${bot.name}-${bot.bot_language}-${randomString}-corpus.json`;
+    writeFileSync(path.join(outputLocation, corpusFileName), corpusFile);
     const modelFile = await getBotModelFileContents(bot);
     if (!modelFile) return null;
-    writeFileSync(
-      path.join(outputLocation, `$${bot.name}-${bot.id}-model.json`),
-      modelFile
-    );
+    const modelFileName = `${bot.name}-${bot.bot_language}-${randomString}-model.json`;
+    writeFileSync(path.join(outputLocation, modelFileName), modelFile);
 
     return {
-      context_file: `$${bot.name}-${bot.id}-context.json`,
-      corpus_file: `$${bot.name}-${bot.id}-corpus.json`,
-      model_file: `$${bot.name}-${bot.id}-model.json`,
+      context_file: contextFileName,
+      corpus_file: corpusFileName,
+      model_file: modelFileName,
     };
   } catch (error) {
     console.error(error);
@@ -48,13 +44,14 @@ export const generateBotFiles = async (bot: {
 export const getBotContextFileContents = async (bot: {
   name: string;
   bot_version: string;
-  id: number;
 }): Promise<string | null> => {
   try {
     const fileContentsObject = {
       name: bot.name,
     };
-    const fileContents = JSON.stringify(fileContentsObject);
+    const fileContents = format(JSON.stringify(fileContentsObject), {
+      parser: "json",
+    });
     return fileContents;
   } catch (error) {
     console.error(error);
@@ -65,7 +62,6 @@ export const getBotContextFileContents = async (bot: {
 export const getBotCorpusFileContents = async (bot: {
   name: string;
   bot_version: string;
-  id: number;
   bot_language: string;
 }): Promise<string | null> => {
   try {
@@ -89,7 +85,9 @@ export const getBotCorpusFileContents = async (bot: {
         },
       ],
     };
-    const fileContents = JSON.stringify(fileContentsObject);
+    const fileContents = format(JSON.stringify(fileContentsObject), {
+      parser: "json",
+    });
     return fileContents;
   } catch (error) {
     console.error(error);
@@ -100,14 +98,13 @@ export const getBotCorpusFileContents = async (bot: {
 export const getBotModelFileContents = async (bot: {
   name: string;
   bot_version: string;
-  id: number;
   enhancement_model: string;
 }): Promise<string | null> => {
   try {
     const fileContentsObject = {
       personality: {
         name: bot.name,
-        description: "Onyx is a digital assistant.",
+        description: bot.name + " is a digital assistant.",
       },
       works_for: {
         name: "Basic Company",
@@ -125,7 +122,7 @@ export const getBotModelFileContents = async (bot: {
               role: "Co-Founder, CEO",
               contact: {
                 email: "johndoe@gmail.com",
-                phone: "+1 pho-nen-umber",
+                phone: "+p hon-enu-umbe",
               },
             },
           ],
@@ -136,7 +133,9 @@ export const getBotModelFileContents = async (bot: {
         version: bot.bot_version,
       },
     };
-    const fileContents = JSON.stringify(fileContentsObject);
+    const fileContents = format(JSON.stringify(fileContentsObject), {
+      parser: "json",
+    });
     return fileContents;
   } catch (error) {
     console.error(error);

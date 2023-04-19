@@ -16,9 +16,9 @@ import { retrain, getNLUResponse } from "../nlu";
 import {
   getDataForIntent,
   getIntents,
-  getAllButtons,
   getIntentsFull,
   getDefaultCorpus,
+  getButtons,
 } from "../nlu/metadata";
 import {
   getChatsThatNeedReview,
@@ -36,10 +36,19 @@ router.use(checkIsAdmin);
 
 router.post("/say", async (req, res) => {
   const text = req.body.text || req.query.text;
-  const response = await getNLUResponse(text);
-  const intentData = getDataForIntent(response.intent);
+  const botId = req.body.bot_id || req.query.bot_id;
+  if (!text || !botId) {
+    res.status(400).send({ message: "Missing text or botId." });
+    return;
+  }
+  const response = await getNLUResponse(Number(botId), text);
+  if (!response) {
+    res.status(500).send({ message: "Error getting response" });
+    return;
+  }
+  const intentData = await getDataForIntent(Number(botId), response.intent);
   const shouldRetrain = req.body.retrain || req.query.retrain;
-  const retrained = shouldRetrain ? await retrain() : false;
+  const retrained = shouldRetrain ? await retrain(botId) : false;
 
   const toSend = {
     message: "Got response",
@@ -53,7 +62,12 @@ router.post("/say", async (req, res) => {
 
 router.get("/corpus/default", async (req, res) => {
   try {
-    const corpus = getDefaultCorpus();
+    const botId = req.query.bot_id;
+    if (!botId) {
+      res.status(400).send({ message: "Missing botId." });
+      return;
+    }
+    const corpus = await getDefaultCorpus(Number(botId));
     const toSend = {
       message: "Got default corpus",
       success: true,
@@ -68,7 +82,12 @@ router.get("/corpus/default", async (req, res) => {
 
 router.post("/datapoint", async (req, res) => {
   try {
-    const data = await addData(req.body);
+    const body = req.body;
+    const { bot_id, ...rest } = body;
+    const data = await addData({
+      id: Number(bot_id),
+      ...rest,
+    });
     if (!data) {
       res.status(500).send({ message: "Error adding data" });
       return;
@@ -77,7 +96,7 @@ router.post("/datapoint", async (req, res) => {
     const newData = data.data;
 
     const shouldRetrain = req.body.retrain || req.query.retrain;
-    const retrained = shouldRetrain ? await retrain() : false;
+    const retrained = shouldRetrain ? await retrain(Number(bot_id)) : false;
     const toSend = {
       message: "Data added",
       data: newData,
@@ -93,11 +112,16 @@ router.post("/datapoint", async (req, res) => {
 
 router.delete("/datapoint", async (req, res) => {
   try {
-    const { intent } = req.body;
+    const { intent, bot_id } = req.body;
 
-    const { data: newData } = await deleteDataPoint(intent);
+    if (!intent || !bot_id) {
+      res.status(400).send({ message: "Missing intent or bot_id." });
+      return;
+    }
+
+    const { data: newData } = await deleteDataPoint(Number(bot_id), intent);
     const shouldRetrain = req.body.retrain || req.query.retrain;
-    const retrained = shouldRetrain ? await retrain() : false;
+    const retrained = shouldRetrain ? await retrain(bot_id) : false;
 
     const toSend = {
       message: "Data removed",
@@ -114,7 +138,8 @@ router.delete("/datapoint", async (req, res) => {
 
 router.post("/retrain", async (req, res) => {
   try {
-    const result = await retrain();
+    const botId = req.body.bot_id || req.query.bot_id;
+    const result = await retrain(Number(botId));
     const toSend = {
       message: "Retrained",
       data: result,
@@ -128,45 +153,58 @@ router.post("/retrain", async (req, res) => {
 });
 
 router.get("/intent/:intent", async (req, res) => {
-  const data = getDataForIntent(req.params.intent);
-  const toSend = {
-    message: "Data for intent",
-    success: true,
-    data,
-  };
+  try {
+    const botId = req.query.bot_id;
+    const intent = req.params.intent;
+    const data = await getDataForIntent(Number(botId), intent);
+    const toSend = {
+      message: "Data for intent",
+      success: true,
+      data,
+    };
 
-  res.send(toSend);
+    res.send(toSend);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ message: "Error getting data for intent" });
+  }
 });
 
 router.put("/intent", async (req, res) => {
-  const { old_intent, new_intent, utterance } = req.body;
-  const data = await addOrUpdateUtteranceOnIntent(
-    old_intent,
-    new_intent,
-    utterance
-  );
+  try {
+    const { old_intent, new_intent, utterance, bot_id } = req.body;
+    const data = await addOrUpdateUtteranceOnIntent(
+      Number(bot_id),
+      old_intent,
+      new_intent,
+      utterance
+    );
 
-  const shouldRetrain = req.body.retrain || req.query.retrain;
-  const retrained = shouldRetrain ? await retrain() : false;
+    const shouldRetrain = req.body.retrain || req.query.retrain;
+    const retrained = shouldRetrain ? await retrain(Number(bot_id)) : false;
 
-  const toSend = {
-    message: "Intent updated",
-    success: true,
-    data,
-    retrained,
-  };
+    const toSend = {
+      message: "Intent updated",
+      success: true,
+      data,
+      retrained,
+    };
 
-  res.send(toSend);
+    res.send(toSend);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ message: "Error updating intent" });
+  }
 });
 
 router.put("/intent/rename", async (req, res) => {
   try {
-    const { old_intent, new_intent } = req.body;
+    const { bot_id, old_intent, new_intent } = req.body;
 
-    const data = await renameIntent(old_intent, new_intent);
+    const data = await renameIntent(Number(bot_id), old_intent, new_intent);
 
     const shouldRetrain = req.body.retrain || req.query.retrain;
-    const retrained = shouldRetrain ? await retrain() : false;
+    const retrained = shouldRetrain ? await retrain(Number(bot_id)) : false;
 
     const toSend = {
       message: "Intent updated",
@@ -184,7 +222,8 @@ router.put("/intent/rename", async (req, res) => {
 
 router.get("/intents", async (req, res) => {
   try {
-    const intents = getIntents();
+    const botId = req.query.bot_id;
+    const intents = getIntents(Number(botId));
     const toSend = {
       message: "Got intents",
       success: true,
@@ -199,7 +238,8 @@ router.get("/intents", async (req, res) => {
 
 router.get("/intents/full", async (req, res) => {
   try {
-    const intents = getIntentsFull();
+    const botId = req.query.bot_id;
+    const intents = getIntentsFull(Number(botId));
     const toSend = {
       message: "Got intents",
       success: true,
@@ -213,10 +253,10 @@ router.get("/intents/full", async (req, res) => {
 });
 
 router.delete("/response", async (req, res) => {
-  const { intent, answer } = req.body;
-  const data = await removeResponseFromIntent(intent, answer);
+  const { intent, answer, bot_id } = req.body;
+  const data = await removeResponseFromIntent(Number(bot_id), intent, answer);
   const shouldRetrain = req.body.retrain || req.query.retrain;
-  const retrained = shouldRetrain ? await retrain() : false;
+  const retrained = shouldRetrain ? await retrain(Number(bot_id)) : false;
   const toSend = {
     message: "Response removed",
     success: true,
@@ -228,10 +268,10 @@ router.delete("/response", async (req, res) => {
 });
 
 router.put("/response", async (req, res) => {
-  const { intent, answer } = req.body;
-  const data = await addResponseToIntent(intent, answer);
+  const { intent, answer, bot_id } = req.body;
+  const data = await addResponseToIntent(Number(bot_id), intent, answer);
   const shouldRetrain = req.body.retrain || req.query.retrain;
-  const retrained = shouldRetrain ? await retrain() : false;
+  const retrained = shouldRetrain ? await retrain(Number(bot_id)) : false;
   const toSend = {
     message: "Responses added",
     success: true,
@@ -243,10 +283,14 @@ router.put("/response", async (req, res) => {
 });
 
 router.delete("/utterance", async (req, res) => {
-  const { intent, utterance } = req.body;
-  const data = await removeUtteranceFromIntent(intent, utterance);
+  const { intent, utterance, bot_id } = req.body;
+  const data = await removeUtteranceFromIntent(
+    Number(bot_id),
+    intent,
+    utterance
+  );
   const shouldRetrain = req.body.retrain || req.query.retrain;
-  const retrained = shouldRetrain ? await retrain() : false;
+  const retrained = shouldRetrain ? await retrain(Number(bot_id)) : false;
   const toSend = {
     message: "Utterance removed",
     success: true,
@@ -257,10 +301,10 @@ router.delete("/utterance", async (req, res) => {
 });
 
 router.put("/utterance", async (req, res) => {
-  const { intent, utterance } = req.body;
-  const data = await addUtteranceToIntent(intent, utterance);
+  const { intent, utterance, bot_id } = req.body;
+  const data = await addUtteranceToIntent(Number(bot_id), intent, utterance);
   const shouldRetrain = req.body.retrain || req.query.retrain;
-  const retrained = shouldRetrain ? await retrain() : false;
+  const retrained = shouldRetrain ? await retrain(Number(bot_id)) : false;
   const toSend = {
     message: "Utterance added",
     success: true,
@@ -271,38 +315,45 @@ router.put("/utterance", async (req, res) => {
 });
 
 router.put("/intent/:intent/enhance", async (req, res) => {
-  const { intent } = req.params;
-  const { enhance } = req.body as {
-    enhance: boolean;
-  };
+  try {
+    const { intent } = req.params;
+    const { enhance, bot_id } = req.body as {
+      enhance: boolean;
+      bot_id: number;
+    };
 
-  const data = enhanceIntent(intent, enhance);
+    const data = enhanceIntent(Number(bot_id), intent, enhance);
 
-  const shouldRetrain = req.body.retrain || req.query.retrain;
+    const shouldRetrain = req.body.retrain || req.query.retrain;
 
-  const retrained = shouldRetrain ? await retrain() : false;
+    const retrained = shouldRetrain ? await retrain(Number(bot_id)) : false;
 
-  const toSend = {
-    message: "Intent enhanced",
-    success: true,
-    data,
-    retrained,
-  };
+    const toSend = {
+      message: "Intent enhanced",
+      success: true,
+      data,
+      retrained,
+    };
 
-  res.send(toSend);
+    res.send(toSend);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ message: "Error enhancing intent" });
+  }
 });
 
 router.put("/intent/:intent/buttons", async (req, res) => {
   const { intent } = req.params;
-  const { buttons } = req.body as {
+  const { buttons, bot_id } = req.body as {
     buttons: { type: string }[];
+    bot_id: number;
   };
 
-  const data = updateButtonsOnIntent(intent, buttons);
+  const data = updateButtonsOnIntent(Number(bot_id), intent, buttons);
 
   const shouldRetrain = req.body.retrain || req.query.retrain;
 
-  const retrained = shouldRetrain ? await retrain() : false;
+  const retrained = shouldRetrain ? await retrain(Number(bot_id)) : false;
 
   const toSend = {
     message: "Intent buttons updated",
@@ -316,15 +367,20 @@ router.put("/intent/:intent/buttons", async (req, res) => {
 
 router.delete("/intent/:intent/button", async (req, res) => {
   const { intent } = req.params;
-  const { button } = req.body as {
+  const { button, bot_id } = req.body as {
     button: { type: string };
+    bot_id: number;
   };
 
-  const data = removeButtonFromIntentByType(intent, button.type);
+  const data = removeButtonFromIntentByType(
+    Number(bot_id),
+    intent,
+    button.type
+  );
 
   const shouldRetrain = req.body.retrain || req.query.retrain;
 
-  const retrained = shouldRetrain ? await retrain() : false;
+  const retrained = shouldRetrain ? await retrain(Number(bot_id)) : false;
 
   const toSend = {
     message: `Button with type ${button.type} removed from intent ${intent}`,
@@ -338,7 +394,8 @@ router.delete("/intent/:intent/button", async (req, res) => {
 
 router.get("/buttons", async (req, res) => {
   try {
-    const buttons = getAllButtons();
+    const botId = req.query.bot_id;
+    const buttons = await getButtons(Number(botId));
 
     const toSend = {
       message: "Got buttons",
@@ -460,10 +517,11 @@ router.post(
 
 router.post("/chats/retry/:chat_id", checkIsAdmin, async (req, res) => {
   try {
-    const { chat_id } = req.params;
+    const { chat_id, bot_id } = req.params;
 
     const newChatInfo = await handleRetryChat({
       chat_id: Number(chat_id),
+      bot_id: Number(bot_id),
     });
 
     if (!newChatInfo) {

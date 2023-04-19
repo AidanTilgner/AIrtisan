@@ -13,3 +13,4 @@ storage/metadata/*
 storage/logs/*
 .secrets*
 public/widgets/chatboxes/*
+dist

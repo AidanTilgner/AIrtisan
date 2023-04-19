@@ -60,6 +60,10 @@ export const generateRandomApiKey = (length = 32) => {
   return formatted;
 };
 
+export const getRandomString = (length = 8) => {
+  return randomBytes(length).toString("hex");
+};
+
 export const getRandomID = () => {
   return uuid4();
 };

@@ -6,6 +6,15 @@ import { getRequesterInfo } from "../utils/analysis";
 import { getAdmin } from "../database/functions/admin";
 import { verifyAccessToken } from "../utils/crypto";
 import { getApiKey } from "../database/functions/apiKey";
+import {
+  checkAdminIsInOrganization,
+  checkBotIsInOrganization,
+  getOrganization,
+  getOrganizationAdmins,
+  getOrganizationBots,
+} from "../database/functions/organization";
+import { getAdminOrganizations } from "../database/functions/admin";
+import { getBot } from "../database/functions/bot";
 
 config();
 
@@ -162,7 +171,7 @@ export const checkIsSuperAdmin = async (
     next();
   } catch (err) {
     res.status(500).send({ message: "Internal server error." });
-    logger.log(err.message);
+    logger.log(String(err));
   }
 };
 
@@ -203,5 +212,148 @@ export const checkIsAdminAndShowLoginIfNot = async (
     next();
   } catch (err) {
     res.redirect("/login");
+  }
+};
+
+export const isInOrganization = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const access_token =
+      (req.headers["x-access-token"] as string) ||
+      (req.query["x-access-token"] as string) ||
+      req.headers["authorization"]?.split(" ")?.[1];
+
+    if (!access_token) {
+      res.status(401).send({ message: "No access token provided." });
+      return;
+    }
+
+    const verified = (await verifyAccessToken(access_token)) as
+      | { id: number }
+      | false;
+
+    if (!verified) {
+      res.status(401).send({ message: "Invalid access token provided." });
+      return;
+    }
+
+    const { id } = verified;
+
+    const admin = await getAdmin(id);
+
+    if (!admin) {
+      res.status(401).send({ message: "Invalid access token provided." });
+      return;
+    }
+
+    const { organization } = req.params;
+
+    if (!organization) {
+      res.status(400).send({ message: "No organization provided." });
+      return;
+    }
+
+    const org = await getOrganization(Number(organization));
+
+    if (!org) {
+      res.status(400).send({ message: "Invalid organization provided." });
+      return;
+    }
+
+    const isMember = await checkAdminIsInOrganization(admin.id, org.id);
+
+    if (!isMember) {
+      res.status(401).send({ message: "Unauthorized." });
+      return;
+    }
+
+    req["admin"] = admin;
+    req["organization"] = org;
+
+    next();
+  } catch (err) {
+    res.status(500).send({ message: "Internal server error." });
+    logger.log(String(err));
+  }
+};
+
+export const hasAccessToBot = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const access_token =
+      (req.headers["x-access-token"] as string) ||
+      (req.query["x-access-token"] as string) ||
+      req.headers["authorization"]?.split(" ")?.[1];
+
+    if (!access_token) {
+      res.status(401).send({ message: "No access token provided." });
+      return;
+    }
+
+    const verified = (await verifyAccessToken(access_token)) as
+      | { id: number }
+      | false;
+
+    if (!verified) {
+      res.status(401).send({ message: "Invalid access token provided." });
+      return;
+    }
+
+    const { id } = verified;
+
+    const admin = await getAdmin(id);
+
+    if (!admin) {
+      res.status(401).send({ message: "Invalid access token provided." });
+      return;
+    }
+
+    const { bot_id } = req.params;
+
+    if (!bot_id) {
+      res.status(400).send({ message: "No bot id provided." });
+      return;
+    }
+
+    const bot = await getBot(Number(bot_id));
+
+    if (!bot) {
+      res.status(400).send({ message: "Invalid bot id provided." });
+      return;
+    }
+
+    const isMember = await checkAdminIsInOrganization(
+      admin.id,
+      bot.organization.id
+    );
+
+    if (!isMember) {
+      res.status(401).send({ message: "Unauthorized." });
+      return;
+    }
+
+    const botIsInOrganization = await checkBotIsInOrganization(
+      bot.id,
+      bot.organization.id
+    );
+
+    if (!botIsInOrganization) {
+      res.status(401).send({ message: "Unauthorized." });
+      return;
+    }
+
+    req["admin"] = admin;
+    req["bot"] = bot;
+
+    next();
+  } catch (err) {
+    res.status(500).send({ message: "Internal server error." });
+    logger.log(String(err));
   }
 };

@@ -171,12 +171,14 @@ export const getSpicedUpAnswer = async (
 };
 
 export const enhanceChatIfNecessary = async ({
+  botId,
   message,
   answer,
   intent,
   confidence,
   session_id,
 }: {
+  botId: number;
   message: string;
   answer: string;
   intent: string;
@@ -187,7 +189,7 @@ export const enhanceChatIfNecessary = async ({
   enhanced: boolean;
 }> => {
   try {
-    const intentData = await getDataForIntent(intent);
+    const intentData = await getDataForIntent(botId, intent);
     if (!intentData || !intentData.enhance) {
       return {
         answer,
@@ -274,12 +276,14 @@ export const getSpicedUpAnswerWithGPT4All = async (
 };
 
 export const enhanceChatIfNecessaryWithGPT4All = async ({
+  botId,
   message,
   answer,
   intent,
   confidence,
   session_id,
 }: {
+  botId: number;
   message: string;
   answer: string;
   intent: string;
@@ -290,7 +294,7 @@ export const enhanceChatIfNecessaryWithGPT4All = async ({
   enhanced: boolean;
 }> => {
   try {
-    const intentData = await getDataForIntent(intent);
+    const intentData = await getDataForIntent(botId, intent);
     if (!intentData || !intentData.enhance) {
       return {
         answer,

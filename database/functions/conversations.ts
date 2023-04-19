@@ -13,6 +13,18 @@ export const getConversations = async () => {
   }
 };
 
+export const getBotConversations = async (botId: number) => {
+  try {
+    const conversations = await dataSource.manager.find(entities.Conversation, {
+      where: { bot: { id: botId } },
+    });
+    return conversations;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};
+
 export const getConversation = async (conversationId: number) => {
   try {
     const conversation = await dataSource.manager.findOne(
@@ -463,6 +475,28 @@ export const updateChat = async (chatId: number, data: Partial<Chat>) => {
       chat: chat,
       conversation: chat.conversation,
     };
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};
+
+export const getBotForChat = async (chatId: number) => {
+  try {
+    const chat = await dataSource.manager.findOne(entities.Chat, {
+      where: { id: chatId },
+      relations: ["conversation"],
+    });
+
+    if (!chat) {
+      return null;
+    }
+
+    const bot = await dataSource.manager.findOne(entities.Bot, {
+      where: { id: chat.conversation.bot.id },
+    });
+
+    return bot;
   } catch (err) {
     console.error(err);
     return null;

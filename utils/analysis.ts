@@ -22,8 +22,11 @@ export const getRequesterSessionId = (req: Request): string | null => {
   return session_id || null;
 };
 
-export const getRequesterIp = (req: Request): string | null => {
-  const ip: string | null =
+export const getRequesterIp = (req: Request | null | undefined) => {
+  if (!req || !req.headers) {
+    return null;
+  }
+  const ip: string | null | undefined =
     (req.headers["x-forwarded-for"] as string) || req.socket.remoteAddress;
 
   return ip;
