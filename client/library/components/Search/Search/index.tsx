@@ -33,7 +33,7 @@ function Search({ typingDelay }: { typingDelay?: number }) {
         type="text"
         onChange={(e) => setQueryState(e.target.value)}
         placeholder="Search..."
-        value={query}
+        value={query || ""}
       />
       <button
         className={styles.clearSearch}

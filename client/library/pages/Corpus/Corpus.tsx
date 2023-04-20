@@ -6,18 +6,7 @@ import React, {
 } from "react";
 import styles from "./Corpus.module.scss";
 import {
-  addAnswerToIntent,
-  addUtteranceToIntent,
-  deleteDataPoint,
-  getAllButtons,
-  removeAnswerFromIntent,
-  removeButtonFromIntent,
-  removeUtteranceFromIntent,
-  renameIntent,
-  updateButtonsOnIntent,
-  updateEnhaceForIntent,
-} from "../../helpers/fetching";
-import {
+  ButtonType,
   CorpusDataPoint,
   Corpus as CorpusType,
 } from "../../../documentation/main";
@@ -36,24 +25,36 @@ import { useMediaQuery } from "@mantine/hooks";
 import { useModal } from "../../contexts/Modals";
 import IntentForm from "../../components/Forms/Intent/Intent";
 import useFetch from "../../hooks/useFetch";
+import {
+  useAddAnswerToIntent,
+  useAddUtteranceToIntent,
+  useDeleteDataPoint,
+  useGetAllButtons,
+  useRemoveAnswerFromIntent,
+  useRemoveButtonFromIntent,
+  useRemoveUtteranceFromIntent,
+  useRenameIntent,
+  useUpdateButtonsOnIntent,
+  useUpdateEnhanceForIntent,
+} from "../../hooks/fetching/common";
 
 function Corpus() {
   const { query, setQuery } = useSearch();
 
   const [fullCorpus, setFullCorpus] = React.useState<CorpusType>();
 
-  const onSuccess = useCallback((data: unknown) => {
+  const onSuccess = useCallback((data: CorpusType) => {
     if (!data) return;
-    if (data !== fullCorpus) setFullCorpus(data as unknown as CorpusType);
+    if (data !== fullCorpus) setFullCorpus(data);
   }, []);
 
-  const { load } = useFetch({
+  const { load } = useFetch<undefined, CorpusType>({
     url: "/training/corpus",
     onSuccess,
+    runOnMount: true,
   });
 
   const reloadData = async () => {
-    setFullCorpus(undefined);
     load();
   };
 
@@ -95,20 +96,9 @@ function Corpus() {
     setOpenIntentState(intent);
   };
 
-  const [allButtons, setAllButtons] = useState<{ type: string }[]>([]);
-
-  useEffect(() => {
-    getAllButtons().then(({ data, success }) => {
-      if (success) {
-        setAllButtons(data);
-      } else {
-        showNotification({
-          title: "Error",
-          message: "Error while fetching buttons",
-        });
-      }
-    });
-  }, []);
+  const { data: allButtons } = useGetAllButtons([], {
+    runOnMount: true,
+  });
 
   useEffect(() => {
     if (!fullCorpus) return;
@@ -148,11 +138,10 @@ function Corpus() {
       {addingIntent && (
         <div className={styles.addIntentContainer}>
           <IntentForm
-            afterSubmit={(data) => {
-              reloadData().then(() => {
-                setAddingIntent(false);
-                setQuery(data.intent);
-              });
+            afterSubmit={(intent) => {
+              setAddingIntent(false);
+              setQuery(intent || "");
+              reloadData();
             }}
             type="add"
             onClose={() => {
@@ -200,7 +189,7 @@ interface IntentProps extends CorpusDataPoint {
   setOpenIntent: (intent: string | null) => void;
   openIntent: string | null;
   reloadData: () => void;
-  allButtons: { type: string }[];
+  allButtons: ButtonType[];
 }
 
 export const Intent = ({
@@ -239,12 +228,24 @@ export const Intent = ({
   const [newUtterance, setNewUtterance] = React.useState<string>("");
   const [newAnswer, setNewAnswer] = React.useState<string>("");
 
-  const handleAddUtterance = async () => {
-    const { success } = await addUtteranceToIntent({
-      intent,
-      utterance: newUtterance,
-    });
+  const { addUtteranceToIntent } = useAddUtteranceToIntent({
+    intent,
+    utterance: newUtterance,
+  });
 
+  const handleAddUtterance = async () => {
+    const response = await addUtteranceToIntent();
+
+    if (!response || !response.success || !response.data) {
+      showNotification({
+        title: "Error",
+        message: "Error while adding utterance",
+        color: "red",
+      });
+      return;
+    }
+
+    const { success } = response;
     if (success) {
       reloadData();
     }
@@ -252,11 +253,27 @@ export const Intent = ({
     setNewUtterance("");
   };
 
+  const { addAnswerToIntent } = useAddAnswerToIntent({
+    intent,
+    answer: newAnswer,
+  });
+
   const handleAddAnswer = async () => {
-    const { success } = await addAnswerToIntent({
-      intent,
-      answer: newAnswer,
-    });
+    const response = await addAnswerToIntent();
+    if (!response) {
+      return;
+    }
+
+    if (!response.success || !response.data) {
+      showNotification({
+        title: "Error",
+        message: "Error while adding answer",
+        color: "red",
+      });
+      return;
+    }
+
+    const { success } = response;
 
     if (success) {
       reloadData();
@@ -264,6 +281,10 @@ export const Intent = ({
 
     setNewAnswer("");
   };
+
+  const { deleteDataPoint } = useDeleteDataPoint({
+    intent,
+  });
 
   const handleDeleteIntent = async () => {
     setModal({
@@ -278,7 +299,18 @@ export const Intent = ({
         {
           text: "Delete",
           onClick: async () => {
-            const { success } = await deleteDataPoint(intent);
+            const response = await deleteDataPoint();
+
+            if (!response || !response.success || !response.data) {
+              showNotification({
+                title: "Error",
+                message: "Error while deleting intent",
+                color: "red",
+              });
+              return;
+            }
+
+            const { success } = response;
 
             if (success) {
               reloadData();
@@ -315,16 +347,29 @@ export const Intent = ({
   const [newName, setNewName] = React.useState<string>(intent);
   const [newButton, setNewButton] = React.useState<string>("");
 
+  const { renameIntent } = useRenameIntent({
+    intent,
+    newIntent: newName,
+  });
+
   const handleRename = async () => {
     if (newName === intent) {
       setIsRenaming(false);
       return;
     }
 
-    const { success } = await renameIntent({
-      oldIntent: intent,
-      newIntent: newName,
-    });
+    const response = await renameIntent();
+
+    if (!response || !response.success || !response.data) {
+      showNotification({
+        title: "Error",
+        message: "Error while renaming intent",
+        color: "red",
+      });
+      return;
+    }
+
+    const { success } = response;
 
     if (success) {
       reloadData();
@@ -333,26 +378,53 @@ export const Intent = ({
     setIsRenaming(false);
   };
 
+  const { updateButtonsOnIntent } = useUpdateButtonsOnIntent({
+    intent,
+    buttons: [
+      ...(buttons || []),
+      {
+        type: newButton,
+      },
+    ],
+  });
+
   const handleAddButton = async () => {
-    const existingButtons = buttons || [];
+    const response = await updateButtonsOnIntent();
 
-    const newButtons = [...existingButtons, { type: newButton }];
+    if (!response || !response.success || !response.data) {
+      showNotification({
+        title: "Error",
+        message: "Error while adding button",
+        color: "red",
+      });
+      return;
+    }
 
-    const { success } = await updateButtonsOnIntent({
-      intent,
-      buttons: newButtons,
-    });
+    const { success } = response;
 
     if (success) {
       reloadData();
     }
   };
 
-  const handleSetEnhanced = async (value: boolean) => {
-    const { success } = await updateEnhaceForIntent({
-      intent,
-      enhance: value,
-    });
+  const { updateEnhanceForIntent } = useUpdateEnhanceForIntent({
+    intent,
+    enhance: !enhance,
+  });
+
+  const handleSetEnhanced = async () => {
+    const response = await updateEnhanceForIntent();
+
+    if (!response || !response.success || !response.data) {
+      showNotification({
+        title: "Error",
+        message: "Error while updating enhance",
+        color: "red",
+      });
+      return;
+    }
+
+    const { success } = response;
 
     if (success) {
       reloadData();
@@ -446,8 +518,8 @@ export const Intent = ({
             <Checkbox
               label="Enable enhancement"
               checked={enhance}
-              onChange={(e) => {
-                handleSetEnhanced(e.target.checked);
+              onChange={() => {
+                handleSetEnhanced();
               }}
             />
           </div>
@@ -571,11 +643,24 @@ export const Utterance = ({
 }) => {
   const { query } = useSearch();
 
+  const { removeUtteranceFromIntent } = useRemoveUtteranceFromIntent({
+    intent,
+    utterance,
+  });
+
   const handleRemoveUtterance = async () => {
-    const { success } = await removeUtteranceFromIntent({
-      intent,
-      utterance,
-    });
+    const response = await removeUtteranceFromIntent();
+
+    if (!response || !response.success || !response.data) {
+      showNotification({
+        title: "Error",
+        message: "Failed to remove utterance",
+        color: "red",
+      });
+      return;
+    }
+
+    const { success } = response;
 
     if (success) {
       reloadData();
@@ -611,11 +696,24 @@ export const Answer = ({
 }) => {
   const { query } = useSearch();
 
+  const { removeAnswerFromIntent } = useRemoveAnswerFromIntent({
+    intent,
+    answer,
+  });
+
   const handleRemoveAnswer = async () => {
-    const { success } = await removeAnswerFromIntent({
-      intent,
-      answer,
-    });
+    const response = await removeAnswerFromIntent();
+
+    if (!response || !response.success || !response.data) {
+      showNotification({
+        title: "Error",
+        message: "Failed to remove answer",
+        color: "red",
+      });
+      return;
+    }
+
+    const { success } = response;
 
     if (success) {
       reloadData();
@@ -654,11 +752,24 @@ export const ButtonItem = ({
 }) => {
   const { query } = useSearch();
 
+  const { removeButtonFromIntent } = useRemoveButtonFromIntent({
+    intent,
+    button,
+  });
+
   const handleRemoveButton = async () => {
-    const { success } = await removeButtonFromIntent({
-      intent,
-      button,
-    });
+    const response = await removeButtonFromIntent();
+
+    if (!response || !response.success || !response.data) {
+      showNotification({
+        title: "Error",
+        message: "Failed to remove button",
+        color: "red",
+      });
+      return;
+    }
+
+    const { success } = response;
 
     if (success) {
       reloadData();

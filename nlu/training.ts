@@ -1,6 +1,4 @@
 // import default_corpus from "./documents/default_corpus.json";
-import { readFileSync, writeFileSync } from "fs";
-import { prettify_json } from "../utils/prettier";
 import {
   getObjectsAlphabetically,
   removeDuplicatesFromObjects,
@@ -81,7 +79,10 @@ export const addData = async (newData: {
       });
     }
 
-    const sortedCorpusData = getObjectsAlphabetically(corpusData, "intent");
+    const sortedCorpusData = getObjectsAlphabetically(
+      corpusData,
+      "intent"
+    ) as corpusDataPoint[];
 
     const newCorpus = await updateBotCorpus(id, {
       ...getDefaultCorpus(id),
@@ -128,6 +129,11 @@ export const addResponseToIntent = async (
       data: sortedCorpusData,
     });
 
+    if (!newCorpus) {
+      console.error("Corpus not found");
+      return null;
+    }
+
     const newDataPoint = newCorpus.data.find(
       (item: any) => item.intent === intent
     );
@@ -164,6 +170,11 @@ export const removeResponseFromIntent = async (
       ...getDefaultCorpus(id),
       data: sortedCorpusData,
     });
+
+    if (!newCorpus) {
+      console.error("Corpus not found");
+      return null;
+    }
 
     const newDataPoint = newCorpus.data.find(
       (item: any) => item.intent === intent
@@ -219,6 +230,11 @@ export const addOrUpdateUtteranceOnIntent = async (
       data: sortedCorpusData,
     });
 
+    if (!newCorpus) {
+      console.error("Corpus not found");
+      return null;
+    }
+
     const newDataPoint = newCorpus.data.find(
       (item: any) => item.intent === new_intent
     );
@@ -255,6 +271,11 @@ export const removeUtteranceFromIntent = async (
       ...getDefaultCorpus(id),
       data: sortedCorpusData,
     });
+
+    if (!newCorpus) {
+      console.error("Corpus not found");
+      return null;
+    }
 
     const newDataPoint = newCorpus.data.find(
       (item: any) => item.intent === intent
@@ -299,6 +320,11 @@ export const addUtteranceToIntent = async (
       data: sortedCorpusData,
     });
 
+    if (!newCorpus) {
+      console.error("Corpus not found");
+      return null;
+    }
+
     const newDataPoint = newCorpus.data.find(
       (item: any) => item.intent === intent
     );
@@ -334,6 +360,11 @@ export const enhanceIntent = async (
       data: sortedCorpusData,
     });
 
+    if (!newCorpus) {
+      console.error("Corpus not found");
+      return null;
+    }
+
     const newDataPoint = newCorpus.data.find(
       (item: any) => item.intent === intent
     );
@@ -368,6 +399,11 @@ export const updateButtonsOnIntent = async (
       ...getDefaultCorpus(id),
       data: sortedCorpusData,
     });
+
+    if (!newCorpus) {
+      console.error("Corpus not found");
+      return null;
+    }
 
     const newDataPoint = newCorpus.data.find(
       (item: any) => item.intent === intent
@@ -405,6 +441,11 @@ export const removeButtonFromIntentByType = async (
       ...getDefaultCorpus(id),
       data: sortedCorpusData,
     });
+
+    if (!newCorpus) {
+      console.error("Corpus not found");
+      return null;
+    }
 
     const newDataPoint = newCorpus.data.find(
       (item: any) => item.intent === intent
@@ -467,6 +508,11 @@ export const renameIntent = async (
       ...getDefaultCorpus(id),
       data: sortedCorpusData,
     });
+
+    if (!newCorpus) {
+      console.error("Corpus not found");
+      return null;
+    }
 
     const newDataPoint = newCorpus.data.find(
       (item: any) => item.intent === new_intent

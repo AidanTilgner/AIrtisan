@@ -93,7 +93,7 @@ router.post("/datapoint", async (req, res) => {
       return;
     }
 
-    const newData = data.data;
+    const newData = data;
 
     const shouldRetrain = req.body.retrain || req.query.retrain;
     const retrained = shouldRetrain ? await retrain(Number(bot_id)) : false;
@@ -119,7 +119,12 @@ router.delete("/datapoint", async (req, res) => {
       return;
     }
 
-    const { data: newData } = await deleteDataPoint(Number(bot_id), intent);
+    const corpus = await deleteDataPoint(Number(bot_id), intent);
+    if (!corpus) {
+      res.status(500).send({ message: "Error removing data" });
+      return;
+    }
+    const { data: newData } = corpus;
     const shouldRetrain = req.body.retrain || req.query.retrain;
     const retrained = shouldRetrain ? await retrain(bot_id) : false;
 

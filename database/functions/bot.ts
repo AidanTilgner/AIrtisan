@@ -3,6 +3,7 @@ import { dataSource, entities } from "..";
 import { generateBotFiles } from "../../utils/bot";
 import { readFileSync, writeFileSync } from "fs";
 import { format } from "prettier";
+import { Corpus } from "../../types/lib";
 import path from "path";
 
 export const createBot = async ({
@@ -185,7 +186,10 @@ export const getBotModel = async (id: Bot["id"]) => {
   }
 };
 
-export const updateBotCorpus = async (id: Bot["id"], corpus: any) => {
+export const updateBotCorpus = async (
+  id: Bot["id"],
+  corpus: Corpus
+): Promise<Corpus | null> => {
   try {
     const bot = await dataSource.manager.findOne(entities.Bot, {
       where: { id },
@@ -203,7 +207,7 @@ export const updateBotCorpus = async (id: Bot["id"], corpus: any) => {
         parser: "json",
       })
     );
-    return updatedContents;
+    return updatedContents as Corpus;
   } catch (error) {
     console.error(error);
     return null;

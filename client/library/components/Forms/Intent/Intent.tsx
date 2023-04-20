@@ -1,7 +1,7 @@
-import React, { useEffect } from "react";
-import { addDataPoint, getAllIntentsFull } from "../../../helpers/fetching";
+import React, { useCallback, useEffect } from "react";
+// import { addDataPoint, getAllIntentsFull } from "../../../helpers/fetching";
 import styles from "./Intent.module.scss";
-import { CorpusDataPoint } from "../../../../documentation/main";
+import { Corpus, CorpusDataPoint } from "../../../../documentation/main";
 import {
   Button,
   Checkbox,
@@ -15,6 +15,8 @@ import {
 import { Plus } from "@phosphor-icons/react";
 import { showNotification } from "@mantine/notifications";
 import { filterDuplicatesForStrings } from "../../../helpers/methods";
+import { useAddDataPoint } from "../../../hooks/fetching/common";
+import useFetch from "../../../hooks/useFetch";
 
 function Intent({
   afterSubmit,
@@ -24,15 +26,15 @@ function Intent({
   loadedIntent,
   preSelectedForEither,
 }: {
-  afterSubmit: (data: CorpusDataPoint) => void;
+  afterSubmit: (intent: string, data: Corpus) => void;
   type: "add" | "update" | "either";
   onClose?: () => void;
   loadedUtterances?: string[];
   loadedIntent?: string;
   preSelectedForEither?: "new" | "existing";
 }) {
-  const handleSubmit = (data: CorpusDataPoint) => {
-    afterSubmit(data);
+  const handleSubmit = (intent: string, data: Corpus) => {
+    afterSubmit(intent, data);
   };
 
   const formToShow = () => {
@@ -87,7 +89,7 @@ function EitherForm({
   preSelectForEither,
   onClose,
 }: {
-  afterSubmit: (data: CorpusDataPoint) => void;
+  afterSubmit: (intent: string, data: Corpus) => void;
   loadedUtterances?: string[];
   loadedIntent?: string;
   preSelectForEither?: "new" | "existing";
@@ -128,7 +130,7 @@ function EitherForm({
             { label: "New Intent", value: "new" },
             { label: "Update Existing", value: "existing" },
           ]}
-          value={formType}
+          value={formType || "new"}
           onChange={(value) => setFormType(value as "new" | "existing")}
         />
       </div>
@@ -142,7 +144,7 @@ function AddIntent({
   onClose,
   loadedUtterances,
 }: {
-  afterSubmit: (data: CorpusDataPoint) => void;
+  afterSubmit: (intent: string, data: Corpus) => void;
   onClose?: () => void;
   loadedUtterances?: string[];
 }) {
@@ -157,6 +159,13 @@ function AddIntent({
 
   const [newUtterance, setNewUtterance] = React.useState<string>("");
   const [newAnswer, setNewAnswer] = React.useState<string>("");
+
+  const { addDataPoint } = useAddDataPoint({
+    intent: formData?.intent || "",
+    utterances: formData?.utterances || [],
+    answers: formData?.answers || [],
+    enhance: !!formData?.enhance,
+  });
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   const handleSubmit = async () => {
@@ -173,12 +182,18 @@ function AddIntent({
       return;
     }
 
-    const { success, data } = await addDataPoint({
-      intent: formData?.intent || "",
-      utterances: formData?.utterances || [],
-      answers: formData?.answers || [],
-      enhance: !!formData?.enhance,
-    });
+    const response = await addDataPoint();
+
+    if (!response?.success || !response?.data) {
+      console.error("Error adding new intent", response?.error);
+      showNotification({
+        title: "Error adding new intent",
+        message: "There was an error adding the new intent. Please try again.",
+      });
+      return;
+    }
+
+    const { success, data } = response;
 
     if (!success || !data) {
       console.error("Error adding new intent", data);
@@ -189,7 +204,7 @@ function AddIntent({
       return;
     }
 
-    afterSubmit(data);
+    afterSubmit(formData.intent || "", data);
   };
 
   return (
@@ -391,7 +406,7 @@ function UpdateIntent({
   onClose,
   loadedIntent,
 }: {
-  afterSubmit: (data: CorpusDataPoint) => void;
+  afterSubmit: (intent: string, data: Corpus) => void;
   loadedUtterances?: string[];
   onClose?: () => void;
   loadedIntent?: string;
@@ -415,6 +430,13 @@ function UpdateIntent({
   const [newUtterance, setNewUtterance] = React.useState<string>();
   const [newAnswer, setNewAnswer] = React.useState<string>();
 
+  const { addDataPoint } = useAddDataPoint({
+    intent: formData?.intent || "",
+    utterances: formData?.utterances || [],
+    answers: formData?.answers || [],
+    enhance: !!formData?.enhance,
+  });
+
   const handleSubmit = async () => {
     const formIsFilled =
       formData?.intent &&
@@ -429,12 +451,18 @@ function UpdateIntent({
       return;
     }
 
-    const { success, data } = await addDataPoint({
-      intent: formData?.intent || "",
-      utterances: formData?.utterances || [],
-      answers: formData?.answers || [],
-      enhance: !!formData?.enhance,
-    });
+    const response = await addDataPoint();
+
+    if (!response) {
+      console.error("Error adding new intent", response);
+      showNotification({
+        title: "Error adding new intent",
+        message: "There was an error adding the new intent. Please try again.",
+      });
+      return;
+    }
+
+    const { success, data } = response;
 
     if (!success || !data) {
       console.error("Error adding new intent", data);
@@ -445,28 +473,19 @@ function UpdateIntent({
       return;
     }
 
-    afterSubmit(data);
+    afterSubmit(formData.intent || "", data);
   };
 
-  useEffect(() => {
-    const fetchIntents = async () => {
-      const { success, data } = await getAllIntentsFull();
-      if (!success || !data) {
-        console.error("Error fetching intents", data);
-        showNotification({
-          title: "Error fetching intents",
-          message: "There was an error fetching the intents. Please try again.",
-        });
-        return;
-      }
-      setAllIntents(data);
-    };
-    fetchIntents();
-
-    return () => {
-      setAllIntents([]);
-    };
+  const onSuccess = useCallback((data: CorpusDataPoint[]) => {
+    setAllIntents(data);
   }, []);
+
+  useFetch<null, CorpusDataPoint[]>({
+    url: "/training/intents/full",
+    method: "GET",
+    runOnMount: true,
+    onSuccess,
+  });
 
   const handleOnIntentSelect = (int: string) => {
     const selectedIntent = allIntents.find((i) => i.intent === int);

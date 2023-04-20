@@ -1,8 +1,21 @@
 import { useCallback, useEffect, useState } from "react";
 import { useBot } from "../contexts/Bot";
 import { api } from "../helpers/axios";
+import { DefaultResponse } from "../../documentation/server";
 
-function useFetch({
+export interface UseFetchConfig<B, D> {
+  url: string;
+  method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
+  body?: B;
+  onSuccess?: (data: D) => void;
+  onError?: (err: unknown) => void;
+  headers?: Record<string, string> | undefined;
+  query?: Record<string, string> | undefined;
+  bustCache?: boolean;
+  runOnMount?: boolean;
+}
+
+function useFetch<B, D>({
   url,
   method = "GET",
   body,
@@ -11,16 +24,8 @@ function useFetch({
   headers,
   query,
   bustCache,
-}: {
-  url: string;
-  method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
-  body?: unknown;
-  onSuccess?: (data: unknown) => void;
-  onError?: (err: unknown) => void;
-  headers?: Record<string, string> | undefined;
-  query?: Record<string, string> | undefined;
-  bustCache?: boolean;
-}) {
+  runOnMount = false,
+}: UseFetchConfig<B, D>) {
   const { bot } = useBot();
 
   const allQuery: Record<string, string> = {
@@ -37,26 +42,36 @@ function useFetch({
   const urlToUse = queryStr ? `${url}?${queryStr}` : url;
 
   const [loading, setLoading] = useState(true);
-  const [data, setData] = useState<unknown>();
+  const [data, setData] = useState<D>();
+  const [success, setSuccess] = useState(false);
 
-  const load = useCallback(() => {
+  const load = useCallback(async () => {
     if (!readyToRun) return;
     setLoading(true);
-    api(urlToUse, {
+    return api<DefaultResponse<D>>(urlToUse, {
       method,
-      data: body,
+      data: {
+        ...body,
+        bot_id: bot?.id,
+      },
       headers,
       cache: bustCache ? false : undefined,
     })
       .then((res) => {
-        onSuccess && onSuccess(res.data.data);
+        onSuccess && onSuccess(res.data.data as D);
         setData(res.data.data);
-        return res.data.data;
+        setSuccess(true);
+        return res.data;
       })
       .catch((err) => {
         onError && onError(err);
-        setData(err);
-        return err;
+        setData(undefined);
+        setSuccess(false);
+        return {
+          error: err,
+          success: false,
+          data: null,
+        } as DefaultResponse<null>;
       })
       .finally(() => {
         setLoading(false);
@@ -74,7 +89,9 @@ function useFetch({
 
   useEffect(() => {
     if (!readyToRun) return;
-    load();
+    if (runOnMount) {
+      load();
+    }
   }, [
     urlToUse,
     method,
@@ -84,12 +101,14 @@ function useFetch({
     onSuccess,
     onError,
     readyToRun,
+    runOnMount,
   ]);
 
   return {
     loading,
     data,
     load,
+    success,
   };
 }
 

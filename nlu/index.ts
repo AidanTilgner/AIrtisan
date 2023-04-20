@@ -47,8 +47,10 @@ export const train = async (id: number) => {
 
 export const retrain = async (id: number): Promise<0 | 1> => {
   try {
-    managers[id].bot = null;
-    managers[id].running = false;
+    if (managers[id]) {
+      managers[id].bot = null;
+      managers[id].running = false;
+    }
 
     const dock = await dockStart({
       use: ["Basic"],
@@ -64,8 +66,10 @@ export const retrain = async (id: number): Promise<0 | 1> => {
     const nlp = dock.get("nlp");
     await nlp.addCorpus(corpus_file);
     await nlp.train();
-    managers[id].bot = nlp;
-    managers[id].running = true;
+    managers[id] = {
+      bot: nlp,
+      running: true,
+    };
     generateMetadata(id);
 
     return 1;
