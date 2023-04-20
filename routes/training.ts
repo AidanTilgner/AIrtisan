@@ -486,11 +486,24 @@ router.post(
   "/conversation/:conversation_id/training_copy/",
   async (req, res) => {
     try {
+      const bot_id = req.body.bot_id || req.query.bot_id;
+
+      if (!bot_id) {
+        res.send({
+          message: "Bot ID not provided",
+          success: false,
+        });
+        return;
+      }
+
       const { conversation_id } = req.params;
 
       const formattedID = Number(conversation_id);
 
-      const data = await createTrainingCopyOfConversation(formattedID);
+      const data = await createTrainingCopyOfConversation(
+        Number(bot_id),
+        formattedID
+      );
 
       if (!data) {
         res.send({

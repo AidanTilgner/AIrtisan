@@ -321,24 +321,56 @@ export const useRetryChat = (
 };
 
 export const useMarkChatAsReviewed = (
-  {
-    chatId,
-    username,
-  }: {
-    chatId: number | string;
+  reviewConfig?: {
+    chatId?: number | string;
     username: string;
   },
   config?: Partial<UseFetchConfig<{ username: string }, Chat>>
 ) => {
-  const { load, data, success } = useFetch<{ username: string }, Chat>({
+  const { load, data, success } = useFetch<
+    { username: string | undefined },
+    Chat
+  >({
     ...config,
-    url: `/chat/as_admin/${chatId}/reviewed/`,
+    url: `/chat/as_admin/${reviewConfig?.chatId}/reviewed/`,
     method: "POST",
-    body: { username },
+    body: { username: reviewConfig?.username },
   });
 
   return {
     markChatAsReviewed: load,
+    data: data,
+    success,
+  };
+};
+
+export const useGetConversations = (
+  config?: Partial<UseFetchConfig<unknown, Conversation[]>>
+) => {
+  const { load, data, success } = useFetch<unknown, Conversation[]>({
+    ...config,
+    url: "/conversations",
+    method: "GET",
+  });
+
+  return {
+    getConversations: load,
+    data: data,
+    success,
+  };
+};
+
+export const useGetConversationsThatNeedReview = (
+  config?: Partial<UseFetchConfig<unknown, Conversation[]>>
+) => {
+  const { load, data, success } = useFetch<unknown, Conversation[]>({
+    ...config,
+    url: "/conversations/need_review",
+    method: "GET",
+  });
+
+  return {
+    getConversationsThatNeedReview: load,
     data: data,
     success,
   };

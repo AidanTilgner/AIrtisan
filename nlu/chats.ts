@@ -31,6 +31,7 @@ export const handleNewChat = async ({
       detectAndActivateTriggers(botId, intent, session_id);
     }
     const userChatResponse = await addChatToConversationAndCreateIfNotExists({
+      botId,
       sessionId: session_id,
       message,
       intent,
@@ -55,6 +56,7 @@ export const handleNewChat = async ({
     });
 
     const botChatResponse = await addChatToConversationAndCreateIfNotExists({
+      botId,
       sessionId: session_id,
       message: botAnswer,
       intent,

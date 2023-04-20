@@ -7,9 +7,7 @@ export interface CorpusDataPoint {
   intent: string;
   utterances: string[];
   answers: string[];
-  attachments: {
-    buttons: Button[];
-  };
+  buttons: Button[];
   enhance?: boolean;
 }
 

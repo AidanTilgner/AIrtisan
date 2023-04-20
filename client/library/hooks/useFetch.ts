@@ -45,52 +45,49 @@ function useFetch<B, D>({
   const [data, setData] = useState<D>();
   const [success, setSuccess] = useState(false);
 
-  const load = useCallback(async () => {
-    if (!readyToRun) return;
-    setLoading(true);
-    return api<DefaultResponse<D>>(urlToUse, {
-      method,
-      data: {
-        ...body,
-        bot_id: bot?.id,
-      },
-      headers,
-      cache: bustCache ? false : undefined,
-    })
-      .then((res) => {
-        onSuccess && onSuccess(res.data.data as D);
-        setData(res.data.data);
-        setSuccess(true);
-        return res.data;
+  const load = useCallback(
+    async (loadConfig?: { updatedUrl?: string; updatedBody?: B }) => {
+      if (!readyToRun) return;
+      setLoading(true);
+      return api<DefaultResponse<D>>(loadConfig?.updatedUrl || urlToUse, {
+        method,
+        data: {
+          ...(loadConfig?.updatedBody || body),
+          bot_id: bot?.id,
+        },
+        headers,
+        cache: bustCache ? false : undefined,
       })
-      .catch((err) => {
-        onError && onError(err);
-        setData(undefined);
-        setSuccess(false);
-        return {
-          error: err,
-          success: false,
-          data: null,
-        } as DefaultResponse<null>;
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, [
-    urlToUse,
-    method,
-    body,
-    headers,
-    bustCache,
-    onSuccess,
-    onError,
-    readyToRun,
-  ]);
+        .then((res) => {
+          onSuccess && onSuccess(res.data.data as D);
+          setData(res.data.data);
+          setSuccess(true);
+          return res.data;
+        })
+        .catch((err) => {
+          onError && onError(err);
+          setData(undefined);
+          setSuccess(false);
+          return {
+            error: err,
+            success: false,
+            data: null,
+          } as DefaultResponse<null>;
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    },
+    [urlToUse, method, body, headers, bustCache, onSuccess, onError, readyToRun]
+  );
 
   useEffect(() => {
     if (!readyToRun) return;
     if (runOnMount) {
-      load();
+      load({
+        updatedUrl: urlToUse,
+        updatedBody: body,
+      });
     }
   }, [
     urlToUse,

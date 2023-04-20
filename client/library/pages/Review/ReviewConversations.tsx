@@ -1,9 +1,9 @@
 import React, { useEffect, useLayoutEffect } from "react";
 import styles from "./ReviewConversations.module.scss";
 import {
-  getConversationsThatNeedReview,
-  markChatAsReviewed,
-  getConversations,
+  // getConversationsThatNeedReview,
+  // markChatAsReviewed,
+  // getConversations,
   createTrainingCopyOfConversation,
   deleteConversation,
 } from "../../helpers/fetching/chats";
@@ -26,35 +26,36 @@ import { showNotification } from "@mantine/notifications";
 import Search from "../../components/Search/Search";
 import { useSearch } from "../../contexts/Search";
 import { useModal } from "../../contexts/Modals";
+import {
+  useGetConversations,
+  useGetConversationsThatNeedReview,
+  useMarkChatAsReviewed,
+} from "../../hooks/fetching/common";
 
 function ReviewConversations() {
   const { query } = useSearch();
 
-  const [conversations, setConversations] = React.useState<
-    ConversationToReview[]
-  >([]);
-  const [allConversations, setAllConversations] = React.useState<
-    ConversationType[]
-  >([]);
+  // const [conversations, setConversations] = React.useState<
+  //   ConversationToReview[]
+  // >([]);
+  // const [allConversations, setAllConversations] = React.useState<
+  //   ConversationType[]
+  // >([]);
 
-  React.useEffect(() => {
-    (async () => {
-      const { conversations } = await getConversationsThatNeedReview();
-      setConversations(conversations);
-
-      const { conversations: allConversations } = await getConversations();
-      setAllConversations(allConversations);
-    })();
-  }, []);
+  const { data: allConversations, getConversations } = useGetConversations({
+    runOnMount: true,
+  });
+  const { data: conversations, getConversationsThatNeedReview } =
+    useGetConversationsThatNeedReview({
+      runOnMount: true,
+    });
 
   const [openedConversation, setOpenedConversation] =
     React.useState<ConversationToReview | null>(null);
 
   const reloadConversations = async () => {
-    const { conversations } = await getConversationsThatNeedReview();
-    setConversations(conversations);
-    const { conversations: allConversations } = await getConversations();
-    setAllConversations(allConversations);
+    await getConversationsThatNeedReview();
+    await getConversations();
   };
 
   const [viewAllConversations, setViewAllConversations] = React.useState(true);
@@ -140,8 +141,8 @@ function ReviewConversations() {
   };
 
   const conversationsToView = viewAllConversations
-    ? filterConversations(allConversations)
-    : filterConversations(conversations);
+    ? filterConversations(allConversations || [])
+    : filterConversations(conversations || []);
 
   // useEffect(() => {
   //   console.log("Using conversations: ", useConversations);
@@ -300,9 +301,15 @@ function Conversation({
     return text;
   };
 
+  const { markChatAsReviewed } = useMarkChatAsReviewed({
+    username: user?.username || "N/A",
+  });
+
   const handleMarkReviewed = async (chatId: number) => {
     if (!user) return;
-    await markChatAsReviewed(chatId, user.username);
+    await markChatAsReviewed({
+      updatedUrl: `/chat/as_admin/${chatId}/reviewed/`,
+    });
     reloadConversations();
   };
 

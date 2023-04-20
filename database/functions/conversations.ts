@@ -2,6 +2,7 @@ import { getGeneratedNameBasedOnContent } from "../../nlu/utils";
 import { entities, dataSource } from "../index";
 import { Chat, ChatRole } from "../models/chat";
 import { Conversation } from "../models/conversation";
+import { getBot } from "./bot";
 
 export const getConversations = async () => {
   try {
@@ -41,13 +42,20 @@ export const getConversation = async (conversationId: number) => {
 };
 
 export const createConversationFromSessionId = async (
+  botId: number,
   sessionId: string,
   training_copy: boolean
 ) => {
   try {
+    const bot = await getBot(botId);
+    if (!bot) {
+      console.error("Could not create conversation because bot was not found");
+      return null;
+    }
     const conversation = new entities.Conversation();
     conversation.session_id = sessionId;
     conversation.training_copy = training_copy ? true : false;
+    conversation.bot = bot;
     await dataSource.manager.save(conversation);
     return conversation;
   } catch (err) {
@@ -167,6 +175,7 @@ export const getConversationChatsFromSessionId = async (sessionId: string) => {
 };
 
 export const createConversationIfNotExists = async (
+  botId: number,
   sessionId: string,
   training_copy: boolean
 ) => {
@@ -177,7 +186,11 @@ export const createConversationIfNotExists = async (
     );
 
     if (!conversation) {
-      return await createConversationFromSessionId(sessionId, training_copy);
+      return await createConversationFromSessionId(
+        botId,
+        sessionId,
+        training_copy
+      );
     }
 
     const lengthMapper: {
@@ -210,6 +223,7 @@ export const createConversationIfNotExists = async (
 };
 
 export const addChatToConversationAndCreateIfNotExists = async ({
+  botId,
   sessionId,
   message,
   intent,
@@ -218,6 +232,7 @@ export const addChatToConversationAndCreateIfNotExists = async ({
   confidence,
   training_copy,
 }: {
+  botId: number;
   sessionId: string;
   message: string;
   intent: string;
@@ -228,6 +243,7 @@ export const addChatToConversationAndCreateIfNotExists = async ({
 }) => {
   try {
     const conversation = await createConversationIfNotExists(
+      botId,
       sessionId,
       !!training_copy
     );
@@ -332,6 +348,26 @@ export const getConversationsThatNeedReview = async () => {
   }
 };
 
+export const getBotConversationsThatNeedReview = async (botId: number) => {
+  try {
+    if (!botId) {
+      return null;
+    }
+    const bot = await dataSource.manager.findOne(entities.Bot, {
+      where: { id: botId },
+      relations: ["conversations"],
+    });
+    if (!bot) {
+      return null;
+    }
+    const botConversations = bot.conversations;
+    return botConversations;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};
+
 export const markChatAsReviewed = async (chatId: number, username: string) => {
   try {
     const chat = await dataSource.manager.findOne(entities.Chat, {
@@ -353,6 +389,7 @@ export const markChatAsReviewed = async (chatId: number, username: string) => {
 };
 
 export const createTrainingCopyOfConversation = async (
+  botId: number,
   conversationId: number
 ) => {
   try {
@@ -368,14 +405,20 @@ export const createTrainingCopyOfConversation = async (
       return null;
     }
 
+    const bot = await getBot(botId);
+
+    if (!bot) {
+      return null;
+    }
+
     const newConversation = new entities.Conversation();
     newConversation.session_id = conversation.session_id;
     newConversation.generated_name = `Copy of: ${
       conversation.generated_name || "Unnamed Conversation"
     }`;
     newConversation.training_copy = true;
+    newConversation.bot = bot;
     await dataSource.manager.save(newConversation);
-
     for (const chat of conversation.chats) {
       const newChat = new entities.Chat();
       newChat.session_id = chat.session_id;

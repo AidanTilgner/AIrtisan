@@ -55,12 +55,9 @@ export const BotProvider = ({ children }: { children: React.ReactNode }) => {
   }, [bot]);
 
   useEffect(() => {
-    console.log("Bot id changed, ", bot.id);
     (async () => {
       if (bot.id) {
-        console.log("restarting bot");
-        const manager = await startupBot(bot.id);
-        console.log("manager", manager);
+        await startupBot(bot.id);
       }
     })();
   }, [bot.id]);

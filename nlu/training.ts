@@ -5,6 +5,7 @@ import {
   removeDuplicatesFromStrings,
 } from "../utils/methods";
 import { getBotCorpus, updateBotCorpus } from "../database/functions/bot";
+import { Corpus, CorpusDataPoint } from "../types/lib";
 
 type corpusDataPoint = {
   intent: string;
@@ -17,11 +18,7 @@ type corpusDataPoint = {
 const getDefaultCorpus = async (id: number) => {
   try {
     const botFile = await getBotCorpus(id);
-    return botFile as unknown as {
-      name: string;
-      locale: string;
-      data: corpusDataPoint[];
-    };
+    return botFile as unknown as Corpus;
   } catch (error) {
     console.error(error);
   }
@@ -82,10 +79,17 @@ export const addData = async (newData: {
     const sortedCorpusData = getObjectsAlphabetically(
       corpusData,
       "intent"
-    ) as corpusDataPoint[];
+    ) as CorpusDataPoint[];
+
+    const corpus = await getDefaultCorpus(id);
+
+    if (!corpus) {
+      console.error("Corpus not found");
+      return null;
+    }
 
     const newCorpus = await updateBotCorpus(id, {
-      ...getDefaultCorpus(id),
+      ...corpus,
       data: sortedCorpusData,
     });
 
@@ -124,8 +128,15 @@ export const addResponseToIntent = async (
 
     const sortedCorpusData = getObjectsAlphabetically(corpusData, "intent");
 
+    const corpus = await getDefaultCorpus(id);
+
+    if (!corpus) {
+      console.error("Corpus not found");
+      return null;
+    }
+
     const newCorpus = await updateBotCorpus(id, {
-      ...getDefaultCorpus(id),
+      ...corpus,
       data: sortedCorpusData,
     });
 
@@ -166,8 +177,15 @@ export const removeResponseFromIntent = async (
 
     const sortedCorpusData = getObjectsAlphabetically(corpusData, "intent");
 
+    const corpus = await getDefaultCorpus(id);
+
+    if (!corpus) {
+      console.error("Corpus not found");
+      return null;
+    }
+
     const newCorpus = await updateBotCorpus(id, {
-      ...getDefaultCorpus(id),
+      ...corpus,
       data: sortedCorpusData,
     });
 
@@ -225,8 +243,15 @@ export const addOrUpdateUtteranceOnIntent = async (
 
     const sortedCorpusData = getObjectsAlphabetically(corpusData, "intent");
 
+    const corpus = await getDefaultCorpus(botId);
+
+    if (!corpus) {
+      console.error("Corpus not found");
+      return null;
+    }
+
     const newCorpus = await updateBotCorpus(botId, {
-      ...getDefaultCorpus(botId),
+      ...corpus,
       data: sortedCorpusData,
     });
 
@@ -267,8 +292,15 @@ export const removeUtteranceFromIntent = async (
 
     const sortedCorpusData = getObjectsAlphabetically(corpusData, "intent");
 
+    const corpus = await getDefaultCorpus(id);
+
+    if (!corpus) {
+      console.error("Corpus not found");
+      return null;
+    }
+
     const newCorpus = await updateBotCorpus(id, {
-      ...getDefaultCorpus(id),
+      ...corpus,
       data: sortedCorpusData,
     });
 
@@ -315,11 +347,17 @@ export const addUtteranceToIntent = async (
 
     const sortedCorpusData = getObjectsAlphabetically(corpusData, "intent");
 
+    const corpus = await getDefaultCorpus(id);
+
+    if (!corpus) {
+      console.error("Corpus not found");
+      return null;
+    }
+
     const newCorpus = await updateBotCorpus(id, {
-      ...getDefaultCorpus(id),
+      ...corpus,
       data: sortedCorpusData,
     });
-
     if (!newCorpus) {
       console.error("Corpus not found");
       return null;
@@ -355,8 +393,15 @@ export const enhanceIntent = async (
 
     const sortedCorpusData = getObjectsAlphabetically(corpusData, "intent");
 
+    const corpus = await getDefaultCorpus(id);
+
+    if (!corpus) {
+      console.error("Corpus not found");
+      return null;
+    }
+
     const newCorpus = await updateBotCorpus(id, {
-      ...getDefaultCorpus(id),
+      ...corpus,
       data: sortedCorpusData,
     });
 
@@ -395,8 +440,15 @@ export const updateButtonsOnIntent = async (
 
     const sortedCorpusData = getObjectsAlphabetically(corpusData, "intent");
 
+    const corpus = await getDefaultCorpus(id);
+
+    if (!corpus) {
+      console.error("Corpus not found");
+      return null;
+    }
+
     const newCorpus = await updateBotCorpus(id, {
-      ...getDefaultCorpus(id),
+      ...corpus,
       data: sortedCorpusData,
     });
 
@@ -437,8 +489,15 @@ export const removeButtonFromIntentByType = async (
 
     const sortedCorpusData = getObjectsAlphabetically(corpusData, "intent");
 
+    const corpus = await getDefaultCorpus(id);
+
+    if (!corpus) {
+      console.error("Corpus not found");
+      return null;
+    }
+
     const newCorpus = await updateBotCorpus(id, {
-      ...getDefaultCorpus(id),
+      ...corpus,
       data: sortedCorpusData,
     });
 
@@ -470,8 +529,15 @@ export const deleteDataPoint = async (id: number, intent: string) => {
 
     const sortedCorpusData = getObjectsAlphabetically(newData, "intent");
 
+    const corpus = await getDefaultCorpus(id);
+
+    if (!corpus) {
+      console.error("Corpus not found");
+      return null;
+    }
+
     const newCorpus = await updateBotCorpus(id, {
-      ...getDefaultCorpus(id),
+      ...corpus,
       data: sortedCorpusData,
     });
 
@@ -504,8 +570,15 @@ export const renameIntent = async (
 
     const sortedCorpusData = getObjectsAlphabetically(corpusData, "intent");
 
+    const corpus = await getDefaultCorpus(id);
+
+    if (!corpus) {
+      console.error("Corpus not found");
+      return null;
+    }
+
     const newCorpus = await updateBotCorpus(id, {
-      ...getDefaultCorpus(id),
+      ...corpus,
       data: sortedCorpusData,
     });
 

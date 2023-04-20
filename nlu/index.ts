@@ -13,8 +13,6 @@ export const managers: {
 } = {};
 
 export const getManager = (id: number) => {
-  console.log("MANAGERS: ", managers);
-  console.log("ID: ", String(id), id);
   return managers[String(id)];
 };
 
@@ -43,8 +41,13 @@ export const getManagerIsAlive = (id: number) => {
   return managers[String(id)]?.running;
 };
 
-export const train = async (id: number) => {
+export const train = async (id: number, forceRetrain = false) => {
   try {
+    if (!forceRetrain && managers[String(id)]) {
+      managers[String(id)].running = true;
+      managers[String(id)].stopTimeout.refresh();
+      return managers[String(id)];
+    }
     const dock = await dockStart({
       use: ["Basic"],
     });
@@ -116,8 +119,6 @@ export const retrain = async (id: number): Promise<0 | 1> => {
 export const getRawResponse = async (id: number, text: string) => {
   try {
     const manager = getManager(id);
-    console.log(manager);
-    console.log(getManagers());
     const response = await manager?.bot?.process("en", text);
     return response;
   } catch (err) {
