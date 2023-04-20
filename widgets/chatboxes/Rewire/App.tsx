@@ -238,7 +238,7 @@ function ChatBox() {
   return (
     <div className={chatStyles.chatBox}>
       <div className={chatStyles.header}>
-        <div className={chatStyles.tag}>Beta</div>
+        <div className={chatStyles.tag}>Experimental</div>
         <h3>Onyx Chat</h3>
       </div>
       <div className={chatStyles.chatBoxMessages} ref={scrollRef}>

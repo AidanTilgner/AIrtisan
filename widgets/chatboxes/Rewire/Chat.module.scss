@@ -156,6 +156,10 @@
     right: 0;
     bottom: calc(100% + 14px);
     gap: 14px;
+
+    @media screen and (min-width: 768px) {
+      right: 68px;
+    }
   }
 
   .button {
@@ -284,7 +288,7 @@
   scrollbar-width: none;
 
   @media screen and (min-width: 768px) {
-    padding: 24px 56px 82px 82px;
+    padding: 24px 82px 82px 82px;
   }
 }
 
