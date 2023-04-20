@@ -17,6 +17,7 @@ import {
   checkIsSuperAdmin,
   hasAccessToBot,
 } from "../middleware/auth";
+import { getActiveManagers, train } from "../nlu";
 
 router.get("/", checkIsSuperAdmin, async (req, res) => {
   try {
@@ -25,6 +26,20 @@ router.get("/", checkIsSuperAdmin, async (req, res) => {
       message: "Bots fetched successfully",
       success: true,
       data: bots,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error });
+  }
+});
+
+router.get("/running", checkIsSuperAdmin, async (req, res) => {
+  try {
+    const managers = getActiveManagers();
+    res.send({
+      message: "Bots fetched successfully",
+      success: true,
+      data: managers,
     });
   } catch (error) {
     console.error(error);
@@ -58,6 +73,35 @@ router.get("/:bot_id", hasAccessToBot, async (req, res) => {
       message: "Bot fetched successfully",
       success: true,
       data: bot,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error });
+  }
+});
+
+router.post("/:bot_id/startup", hasAccessToBot, async (req, res) => {
+  try {
+    if (!req.params.bot_id) {
+      return res.status(400).json({ error: "Bot id is required" });
+    }
+    const bot = getBot(Number(req.params.bot_id));
+    if (!bot) {
+      return res.status(400).json({ error: "Bot not found" });
+    }
+
+    const trained = await train(Number(req.params.bot_id));
+
+    if (!trained) {
+      return res.status(400).json({ error: "Bot could not be trained" });
+    }
+
+    const { stopTimeout, ...manager } = trained;
+
+    res.send({
+      message: "Bot trained successfully",
+      success: true,
+      data: manager,
     });
   } catch (error) {
     console.error(error);

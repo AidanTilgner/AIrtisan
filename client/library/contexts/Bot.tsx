@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { Bot } from "../../documentation/main";
-import { getBot } from "../helpers/fetching/bots";
+import { getBot, startupBot } from "../helpers/fetching/bots";
 
 interface BotContext {
   bot: Bot | null;
@@ -53,6 +53,17 @@ export const BotProvider = ({ children }: { children: React.ReactNode }) => {
     }
     localStorage.setItem("lastUsedBot", JSON.stringify(bot));
   }, [bot]);
+
+  useEffect(() => {
+    console.log("Bot id changed, ", bot.id);
+    (async () => {
+      if (bot.id) {
+        console.log("restarting bot");
+        const manager = await startupBot(bot.id);
+        console.log("manager", manager);
+      }
+    })();
+  }, [bot.id]);
 
   return <BotContext.Provider value={value}>{children}</BotContext.Provider>;
 };

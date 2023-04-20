@@ -152,7 +152,7 @@ function Corpus() {
       )}
       <div className={styles.searchArea}>
         <div className={styles.searchContainer}>
-          <Search />
+          <Search withShadow />
         </div>
       </div>
       <div className={styles.interface_container}>

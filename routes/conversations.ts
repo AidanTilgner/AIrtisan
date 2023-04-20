@@ -66,9 +66,7 @@ router.get("/:conversation_id", async (req, res) => {
     res.send({
       message: "Conversation retrieved",
       success: true,
-      data: {
-        conversation,
-      },
+      data: conversation,
     });
   } catch (err) {
     console.error(err);

@@ -54,3 +54,21 @@ export const getBot = async (id: number) => {
     };
   }
 };
+
+export const startupBot = async (id: number) => {
+  try {
+    const response = await api.post(`/bots/${id}/startup`);
+    return response.data as {
+      message: string;
+      success: boolean;
+      data: Bot;
+    };
+  } catch (error) {
+    console.error(error);
+    return {
+      message: "Error starting bot",
+      success: false,
+      data: null,
+    };
+  }
+};

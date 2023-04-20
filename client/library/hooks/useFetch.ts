@@ -104,11 +104,43 @@ function useFetch<B, D>({
     runOnMount,
   ]);
 
+  const loadWithUrl = useCallback(
+    (url: string) => {
+      api<DefaultResponse<D>>(url, {
+        method,
+        data: {
+          ...body,
+          bot_id: bot?.id,
+        },
+        headers,
+        cache: bustCache ? false : undefined,
+      })
+        .then((res) => {
+          onSuccess && onSuccess(res.data.data as D);
+          setData(res.data.data);
+          setSuccess(true);
+          return res.data;
+        })
+        .catch((err) => {
+          onError && onError(err);
+          setData(undefined);
+          setSuccess(false);
+          return {
+            error: err,
+            success: false,
+            data: null,
+          } as DefaultResponse<null>;
+        });
+    },
+    [load]
+  );
+
   return {
     loading,
     data,
     load,
     success,
+    loadWithUrl,
   };
 }
 

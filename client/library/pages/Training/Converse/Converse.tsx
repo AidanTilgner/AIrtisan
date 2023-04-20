@@ -2,12 +2,10 @@ import React from "react";
 import styles from "./Converse.module.scss";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Chat as ChatType, Conversation } from "../../../../documentation/main";
-import {
-  getConversation,
-  postTrainingChat,
-  retryChat,
-  markChatAsReviewed,
-} from "../../../helpers/fetching/chats";
+// import // postTrainingChat,
+// // retryChat,
+// // markChatAsReviewed,
+// "../../../helpers/fetching/chats";
 import { showNotification } from "@mantine/notifications";
 import {
   ArrowCounterClockwise,
@@ -28,6 +26,13 @@ import { useUser } from "../../../contexts/User";
 import { useSearch } from "../../../contexts/Search";
 import { useModal } from "../../../contexts/Modals";
 import Intent from "../../../components/Forms/Intent/Intent";
+import {
+  useGetConversation,
+  useMarkChatAsReviewed,
+  useRetryChat,
+  useSendTrainingChat,
+} from "../../../hooks/fetching/common";
+import { useBot } from "../../../contexts/Bot";
 
 type ChatPairType = {
   user: ChatType;
@@ -40,27 +45,39 @@ function Converse() {
   const [loading, setLoading] = React.useState(false);
   const [initialLoad, setInitialLoad] = React.useState(true);
 
-  const loadConversation = () => {
-    if (!urlSearchParams.get("load_conversation")) return;
+  const { bot } = useBot();
+  const conversationId =
+    conversation?.id || urlSearchParams.get("load_conversation") || "";
 
+  const { getConversation: getInitialConversation } = useGetConversation(
+    urlSearchParams.get("load_conversation") as string
+  );
+
+  const loadConversation = () => {
+    if (!urlSearchParams.get("load_conversation")) {
+      return;
+    }
     setLoading(true);
 
-    getConversation(urlSearchParams.get("load_conversation") as string)
-      .then(({ conversation }) => {
-        if (!conversation) {
+    getInitialConversation()
+      .then((response) => {
+        if (!response || !response.data) {
           showNotification({
             title: "Error",
             message: "Failed to load conversation",
+            color: "red",
           });
           return;
         }
-        setConversation(conversation);
+        const { data } = response;
+        setConversation(data);
       })
       .catch((err) => {
         console.error(err);
         showNotification({
           title: "Error",
           message: "Failed to load conversation",
+          color: "red",
         });
       })
       .finally(() => {
@@ -69,29 +86,39 @@ function Converse() {
   };
 
   React.useEffect(() => {
-    loadConversation();
-  }, []);
+    if (bot?.id) {
+      loadConversation();
+    }
+  }, [bot?.id]);
+
+  const { getConversation: getSpecificConversation } =
+    useGetConversation(conversationId);
 
   const reloadConversation = () => {
     if (!conversation || !conversation.id) return;
     setLoading(true);
 
-    getConversation(conversation.id)
-      .then(({ conversation }) => {
-        if (!conversation) {
+    getSpecificConversation()
+      .then((response) => {
+        if (!response || !response.data) {
           showNotification({
             title: "Error",
             message: "Failed to load conversation",
+            color: "red",
           });
           return;
         }
-        setConversation(conversation);
+
+        const { data } = response;
+
+        setConversation(data);
       })
       .catch((err) => {
         console.error(err);
         showNotification({
           title: "Error",
           message: "Failed to load conversation",
+          color: "red",
         });
       })
       .finally(() => {
@@ -119,30 +146,36 @@ function Converse() {
     );
   };
 
-  const sendChat = async (message: string) => {
+  const [newMessage, setNewMessage] = React.useState("");
+  const session_id = conversation?.session_id || getRandomSessionId();
+
+  const { sendTrainingChat } = useSendTrainingChat({
+    message: newMessage,
+    session_id,
+  });
+
+  const sendChat = async () => {
     setInitialLoad(false);
-    if (!message) return;
+    if (!newMessage) return;
     setLoading(true);
 
-    const session_id = conversation?.session_id || getRandomSessionId();
+    const response = await sendTrainingChat();
 
-    const { conversation: newConversation, success } = await postTrainingChat({
-      message,
-      session_id,
-    });
-
-    if (!success || !newConversation) {
+    if (!response || !response.data) {
       showNotification({
         title: "Error",
         message: "Failed to send message",
+        color: "red",
       });
       return;
     }
 
-    setTimeout(() => {
-      setConversation(newConversation);
-      setLoading(false);
-    }, 1000);
+    const { conversation: newConversation } = response.data;
+
+    // setTimeout(() => {
+    setConversation(newConversation);
+    setLoading(false);
+    // }, 1000);
   };
 
   // chats can be grouped into pairs, where every two chats is a user, assistant interaction
@@ -173,6 +206,8 @@ function Converse() {
             setInitialLoad(true);
           }}
           variant="outline"
+          title="Start a new conversation"
+          disabled={loading || !conversation}
         >
           <Plus weight="bold" />
         </Button>
@@ -204,7 +239,11 @@ function Converse() {
         <div ref={endRef} />
       </div>
       <div className={styles.textboxContainer}>
-        <TextBox sendChat={sendChat} />
+        <TextBox
+          sendChat={sendChat}
+          message={newMessage}
+          setMessage={setNewMessage}
+        />
       </div>
     </div>
   );
@@ -283,46 +322,61 @@ const ChatPair = ({
 
   const navigate = useNavigate();
 
+  const { retryChat } = useRetryChat(assistant.id as number);
+
   const handleRetryChat = async () => {
     if (!assistant.id) return;
 
     setAssistantLoading(true);
 
-    const res = await retryChat(assistant.id);
+    const res = await retryChat();
 
-    if (res.success && res.answer) {
-      showNotification({
-        title: "Success",
-        message: "Chat successfully retried",
-      });
-    } else {
+    if (!res || !res.data) {
       showNotification({
         title: "Error",
         message: "Failed to retry chat",
+        color: "red",
       });
+      return;
     }
+
+    // const { answer, conversation } = res.data;
+
+    showNotification({
+      title: "Success",
+      message: "Chat successfully retried",
+    });
+
     reloadConversation();
     setAssistantLoading(false);
   };
+
+  const { markChatAsReviewed } = useMarkChatAsReviewed({
+    chatId: assistant.id as number,
+    username: userContext?.username as string,
+  });
 
   const handleMarkReviewed = async () => {
     if (!assistant.id || !userContext?.username) return;
 
     setAssistantLoading(true);
 
-    const res = await markChatAsReviewed(assistant.id, userContext.username);
+    const res = await markChatAsReviewed();
 
-    if (res.success && res.answer) {
-      showNotification({
-        title: "Success",
-        message: "Chat successfully marked as reviewed",
-      });
-    } else {
+    if (!res || !res.success) {
       showNotification({
         title: "Error",
         message: "Failed to mark chat as reviewed",
+        color: "red",
       });
+      return;
     }
+
+    showNotification({
+      title: "Success",
+      message: "Chat successfully marked as reviewed",
+    });
+
     reloadConversation();
     setAssistantLoading(false);
   };
@@ -534,11 +588,17 @@ const Chat = ({
   );
 };
 
-const TextBox = ({ sendChat }: { sendChat: (message: string) => void }) => {
-  const [message, setMessage] = React.useState("");
-
+const TextBox = ({
+  sendChat,
+  setMessage,
+  message,
+}: {
+  sendChat: () => void;
+  setMessage: (message: string) => void;
+  message: string;
+}) => {
   const sendMessage = () => {
-    sendChat(message);
+    sendChat();
     setMessage("");
   };
 

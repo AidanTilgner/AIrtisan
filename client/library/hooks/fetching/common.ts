@@ -1,5 +1,7 @@
 import {
   ButtonType,
+  Chat,
+  Conversation,
   Corpus,
   CorpusDataPoint,
 } from "../../../documentation/main";
@@ -244,6 +246,99 @@ export const useAddDataPoint = (
 
   return {
     addDataPoint: load,
+    data: data,
+    success,
+  };
+};
+
+export const useGetConversation = (
+  conversationId: number | string,
+  config?: Partial<UseFetchConfig<unknown, Conversation>>
+) => {
+  const { load, data, success } = useFetch<unknown, Conversation>({
+    ...config,
+    url: `/conversations/${conversationId}`,
+    method: "GET",
+  });
+
+  return {
+    getConversation: load,
+    data: data,
+    success,
+  };
+};
+
+export const useSendTrainingChat = (
+  { message, session_id }: { message: string; session_id: string },
+  config?: Partial<
+    UseFetchConfig<
+      { message: string; session_id: string },
+      {
+        conversation: Conversation;
+      }
+    >
+  >
+) => {
+  const { load, data, success } = useFetch<
+    { message: string; session_id: string },
+    {
+      conversation: Conversation;
+    }
+  >({
+    ...config,
+    url: `/chat/as_admin/training`,
+    method: "POST",
+    body: { message, session_id },
+  });
+
+  return {
+    sendTrainingChat: load,
+    data: data,
+    success,
+  };
+};
+
+export const useRetryChat = (
+  chatId: number | string,
+  config?: Partial<
+    UseFetchConfig<unknown, { answer: string; conversation: Conversation }>
+  >
+) => {
+  const { load, data, success } = useFetch<
+    unknown,
+    { answer: string; conversation: Conversation }
+  >({
+    ...config,
+    url: `/chat/as_admin/${chatId}/retry/`,
+    method: "POST",
+  });
+
+  return {
+    retryChat: load,
+    data: data,
+    success,
+  };
+};
+
+export const useMarkChatAsReviewed = (
+  {
+    chatId,
+    username,
+  }: {
+    chatId: number | string;
+    username: string;
+  },
+  config?: Partial<UseFetchConfig<{ username: string }, Chat>>
+) => {
+  const { load, data, success } = useFetch<{ username: string }, Chat>({
+    ...config,
+    url: `/chat/as_admin/${chatId}/reviewed/`,
+    method: "POST",
+    body: { username },
+  });
+
+  return {
+    markChatAsReviewed: load,
     data: data,
     success,
   };

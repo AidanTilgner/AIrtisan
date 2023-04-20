@@ -4,18 +4,43 @@ import { extractAttachments, filterAttachments } from "./attachments";
 import { getBotFileLocations } from "../database/functions/bot";
 
 export const managers: {
-  [id: number]: {
+  [id: string]: {
+    id: number;
     bot: any;
     running: boolean;
+    stopTimeout: NodeJS.Timeout;
   };
 } = {};
 
 export const getManager = (id: number) => {
-  return managers[id];
+  console.log("MANAGERS: ", managers);
+  console.log("ID: ", String(id), id);
+  return managers[String(id)];
 };
 
 export const getManagers = () => {
   return managers;
+};
+
+export const getActiveManagers = () => {
+  const activeManagers: {
+    [id: string]: {
+      bot: any;
+      running: boolean;
+      stopTimeout: NodeJS.Timeout;
+    };
+  } = {};
+  Object.keys(managers).forEach((id) => {
+    const manager = managers[id];
+    if (manager.running) {
+      activeManagers[id] = manager;
+    }
+  });
+  return activeManagers;
+};
+
+export const getManagerIsAlive = (id: number) => {
+  return managers[String(id)]?.running;
 };
 
 export const train = async (id: number) => {
@@ -33,23 +58,28 @@ export const train = async (id: number) => {
     const nlp = dock.get("nlp");
     await nlp.addCorpus(corpus_file);
     await nlp.train();
-    managers[id] = {
+    managers[String(id)] = {
+      id: id,
       bot: nlp,
       running: true,
+      stopTimeout: setTimeout(() => {
+        managers[String(id)].running = false;
+      }, 1000 * 60 * 60),
     };
     generateMetadata(id);
-    return nlp;
+    return managers[String(id)];
   } catch (err) {
     console.error(err);
-    return;
+    return null;
   }
 };
 
 export const retrain = async (id: number): Promise<0 | 1> => {
   try {
-    if (managers[id]) {
-      managers[id].bot = null;
-      managers[id].running = false;
+    if (managers[String(id)]) {
+      managers[String(id)].bot = null;
+      managers[String(id)].running = false;
+      clearTimeout(managers[String(id)].stopTimeout);
     }
 
     const dock = await dockStart({
@@ -66,9 +96,13 @@ export const retrain = async (id: number): Promise<0 | 1> => {
     const nlp = dock.get("nlp");
     await nlp.addCorpus(corpus_file);
     await nlp.train();
-    managers[id] = {
+    managers[String(id)] = {
+      id: id,
       bot: nlp,
       running: true,
+      stopTimeout: setTimeout(() => {
+        managers[String(id)].running = false;
+      }, 1000 * 60 * 60),
     };
     generateMetadata(id);
 
@@ -81,7 +115,10 @@ export const retrain = async (id: number): Promise<0 | 1> => {
 
 export const getRawResponse = async (id: number, text: string) => {
   try {
-    const response = await getManager(id)?.bot?.process("en", text);
+    const manager = getManager(id);
+    console.log(manager);
+    console.log(getManagers());
+    const response = await manager?.bot?.process("en", text);
     return response;
   } catch (err) {
     console.error(err);
@@ -91,7 +128,12 @@ export const getRawResponse = async (id: number, text: string) => {
 
 export const getNLUResponse = async (id: number, text: string) => {
   try {
+    if (!id) {
+      console.error("No ID provided");
+      return null;
+    }
     const response = await getRawResponse(id, text);
+    if (!response) return null;
     const intent = response.intent as string;
     const entities = response.entities;
     const answer = response.answer as string;

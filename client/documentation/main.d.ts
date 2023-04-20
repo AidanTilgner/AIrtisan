@@ -88,3 +88,9 @@ export interface ButtonType {
   type: string;
   metadata?: Record<string, any>;
 }
+
+export interface Manager {
+  id: number;
+  bot: any;
+  running: boolean;
+}

@@ -3,7 +3,13 @@ import styles from "./index.module.scss";
 import { useSearch } from "../../../contexts/Search";
 import { X } from "@phosphor-icons/react";
 
-function Search({ typingDelay }: { typingDelay?: number }) {
+function Search({
+  typingDelay,
+  withShadow,
+}: {
+  typingDelay?: number;
+  withShadow?: boolean;
+}) {
   const { setQuery, query: contextQuery } = useSearch();
   const [timeout, setTimeoutState] = React.useState<NodeJS.Timeout | null>(
     null
@@ -34,6 +40,7 @@ function Search({ typingDelay }: { typingDelay?: number }) {
         onChange={(e) => setQueryState(e.target.value)}
         placeholder="Search..."
         value={query || ""}
+        className={withShadow ? styles.withShadow : ""}
       />
       <button
         className={styles.clearSearch}

@@ -2,7 +2,6 @@ import React, { useEffect, useMemo } from "react";
 import Interactive from "./Interactive/Interactive";
 import Converse from "./Converse/Converse";
 import styles from "./index.module.scss";
-import { SegmentedControl } from "@mantine/core";
 import { useSearchParams } from "react-router-dom";
 
 function index() {
@@ -19,7 +18,7 @@ function index() {
         return prev;
       });
     }
-  }, []);
+  }, [urlSearchParams]);
 
   const prevTrainingType = React.useRef(trainingType);
 
