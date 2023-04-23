@@ -117,30 +117,8 @@
     font-size: 16px;
     text-align: center;
 
-    @keyframes iconShake {
-      0% {
-        transform: rotate(0);
-      }
-      25% {
-        transform: rotate(10deg);
-      }
-      50% {
-        transform: rotate(-10deg);
-      }
-      100% {
-        transform: rotate(0);
-      }
-    }
-
     &:hover {
       background-color: #f6f6f6;
-
-      svg {
-        animation-name: iconShake;
-        animation-duration: 0.5s;
-        animation-fill-mode: forwards;
-        animation-timing-function: ease-in-out;
-      }
     }
 
     &:active {
@@ -166,6 +144,32 @@
       svg {
         opacity: 1;
       }
+    }
+  }
+}
+
+.shake {
+  @keyframes iconShake {
+    0% {
+      transform: rotate(0);
+    }
+    25% {
+      transform: rotate(10deg);
+    }
+    50% {
+      transform: rotate(-10deg);
+    }
+    100% {
+      transform: rotate(0);
+    }
+  }
+
+  &:hover {
+    svg {
+      animation-name: iconShake;
+      animation-duration: 0.5s;
+      animation-fill-mode: forwards;
+      animation-timing-function: ease-in-out;
     }
   }
 }
@@ -207,12 +211,20 @@
     text-decoration: underline;
   }
 
+  li {
+    width: 80%;
+  }
+
   a {
     text-decoration: none;
     color: black;
     font-size: 18px;
     font-weight: 600;
     transition: all 0.2s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
 
     &:hover {
       color: #2256f2;

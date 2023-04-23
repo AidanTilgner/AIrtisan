@@ -52,6 +52,7 @@ export const BotProvider = ({ children }: { children: React.ReactNode }) => {
       return;
     }
     localStorage.setItem("lastUsedBot", JSON.stringify(bot));
+    localStorage.setItem("lastUsedBotID", String(bot?.id));
   }, [bot]);
 
   useEffect(() => {

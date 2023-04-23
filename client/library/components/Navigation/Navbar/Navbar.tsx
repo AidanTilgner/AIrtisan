@@ -50,7 +50,9 @@ function Navbar() {
       <li>
         <Link
           to="/"
-          className={currentPath === "/" ? styles.active : styles.inactive}
+          className={`${
+            currentPath === "/" ? styles.active : styles.inactive
+          } ${styles.shake}`}
         >
           <HandWaving />
           Welcome
@@ -63,6 +65,17 @@ function Navbar() {
         >
           <Chat />
           Training
+        </Link>
+      </li>
+      <li>
+        <Link
+          to="/corpus"
+          className={
+            currentPath === "/corpus" ? styles.active : styles.inactive
+          }
+        >
+          <TextColumns />
+          Corpus
         </Link>
       </li>
       <li>
@@ -87,17 +100,6 @@ function Navbar() {
         >
           <MonitorPlay />
           Previews
-        </Link>
-      </li>
-      <li>
-        <Link
-          to="/corpus"
-          className={
-            currentPath === "/corpus" ? styles.active : styles.inactive
-          }
-        >
-          <TextColumns />
-          Corpus
         </Link>
       </li>
     </>

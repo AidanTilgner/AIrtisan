@@ -10,10 +10,7 @@ import {
   checkAdminIsInOrganization,
   checkBotIsInOrganization,
   getOrganization,
-  getOrganizationAdmins,
-  getOrganizationBots,
 } from "../database/functions/organization";
-import { getAdminOrganizations } from "../database/functions/admin";
 import { getBot } from "../database/functions/bot";
 
 config();

@@ -9,6 +9,7 @@ import {
 } from "../database/functions/conversations";
 import { checkAPIKey, checkIsAdmin, hasAccessToBot } from "../middleware/auth";
 import { handleNewChat, handleRetryChat } from "../nlu/chats";
+import { getManagerIsAlive } from "../nlu";
 
 config();
 const router = Router();
@@ -22,6 +23,19 @@ router.post("/", checkAPIKey, async (req, res) => {
 
     if (!bot_id) {
       res.status(400).send({ message: "No bot id provided" });
+      return;
+    }
+
+    const managerIsRunning = await getManagerIsAlive(Number(bot_id));
+
+    if (!managerIsRunning) {
+      res.status(200).send({
+        message: "Bot manager is not running",
+        data: {
+          answer:
+            "Sorry, but I'm not currently running. Please try again later.",
+        },
+      });
       return;
     }
 
@@ -42,8 +56,10 @@ router.post("/", checkAPIKey, async (req, res) => {
     if (!newChatInfo) {
       res.status(500).send({
         message: "Error getting response",
-        answer:
-          "Sorry, I've encountered an error. It has been reported. Please try again later.",
+        data: {
+          answer:
+            "Sorry, I've encountered an error. It has been reported. Please try again later.",
+        },
       });
       return;
     }

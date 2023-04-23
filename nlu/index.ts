@@ -2,6 +2,21 @@ import { dockStart } from "@nlpjs/basic";
 import { generateMetadata } from "./metadata";
 import { extractAttachments, filterAttachments } from "./attachments";
 import { getBotFileLocations } from "../database/functions/bot";
+import { config } from "dotenv";
+
+config();
+
+const daysToMilliseconds = (days: number) => {
+  return days * 24 * 60 * 60 * 1000;
+};
+
+const getDefaultBotRuntime = () => {
+  const days = process.env.BOT_DEFAULT_UPTIME_IN_DAYS
+    ? Number(process.env.BOT_DEFAULT_UPTIME_IN_DAYS)
+    : 1;
+
+  return daysToMilliseconds(days);
+};
 
 export const managers: {
   [id: string]: {
@@ -67,7 +82,7 @@ export const train = async (id: number, forceRetrain = false) => {
       running: true,
       stopTimeout: setTimeout(() => {
         managers[String(id)].running = false;
-      }, 1000 * 60 * 60),
+      }, getDefaultBotRuntime()),
     };
     generateMetadata(id);
     return managers[String(id)];
@@ -105,7 +120,7 @@ export const retrain = async (id: number): Promise<0 | 1> => {
       running: true,
       stopTimeout: setTimeout(() => {
         managers[String(id)].running = false;
-      }, 1000 * 60 * 60),
+      }, getDefaultBotRuntime()),
     };
     generateMetadata(id);
 
@@ -119,6 +134,10 @@ export const retrain = async (id: number): Promise<0 | 1> => {
 export const getRawResponse = async (id: number, text: string) => {
   try {
     const manager = getManager(id);
+    if (!manager) {
+      console.error("No manager found");
+      return null;
+    }
     const response = await manager?.bot?.process("en", text);
     return response;
   } catch (err) {
