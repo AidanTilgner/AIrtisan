@@ -13,4 +13,4 @@ npm run build:client
 npm run build:widgets
 
 # Restart the server using pm2
-pm2 restart pm2.config.js
+pm2 restart pm2.config.cjs
