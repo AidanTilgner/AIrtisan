@@ -23,7 +23,6 @@ export const managers: {
     id: number;
     bot: any;
     running: boolean;
-    stopTimeout: NodeJS.Timeout;
   };
 } = {};
 
@@ -38,9 +37,9 @@ export const getManagers = () => {
 export const getActiveManagers = () => {
   const activeManagers: {
     [id: string]: {
+      id: number;
       bot: any;
       running: boolean;
-      stopTimeout: NodeJS.Timeout;
     };
   } = {};
   Object.keys(managers).forEach((id) => {
@@ -60,7 +59,6 @@ export const train = async (id: number, forceRetrain = false) => {
   try {
     if (!forceRetrain && managers[String(id)]) {
       managers[String(id)].running = true;
-      managers[String(id)].stopTimeout.refresh();
       return managers[String(id)];
     }
     const dock = await dockStart({
@@ -80,9 +78,6 @@ export const train = async (id: number, forceRetrain = false) => {
       id: id,
       bot: nlp,
       running: true,
-      stopTimeout: setTimeout(() => {
-        managers[String(id)].running = false;
-      }, getDefaultBotRuntime()),
     };
     generateMetadata(id);
     return managers[String(id)];
@@ -97,7 +92,6 @@ export const retrain = async (id: number): Promise<0 | 1> => {
     if (managers[String(id)]) {
       managers[String(id)].bot = null;
       managers[String(id)].running = false;
-      clearTimeout(managers[String(id)].stopTimeout);
     }
 
     const dock = await dockStart({
@@ -118,9 +112,6 @@ export const retrain = async (id: number): Promise<0 | 1> => {
       id: id,
       bot: nlp,
       running: true,
-      stopTimeout: setTimeout(() => {
-        managers[String(id)].running = false;
-      }, getDefaultBotRuntime()),
     };
     generateMetadata(id);
 
