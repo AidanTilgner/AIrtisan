@@ -3,13 +3,14 @@ import Interactive from "./Interactive/Interactive";
 import Converse from "./Converse/Converse";
 import styles from "./index.module.scss";
 import { useSearchParams } from "react-router-dom";
+import { useBot } from "../../contexts/Bot";
 
 function index() {
   const [urlSearchParams, setUrlSearchParams] = useSearchParams();
 
-  const [trainingType, setTrainingType] = React.useState<
-    "interactive" | "converse"
-  >((urlSearchParams.get("tab") as "converse" | "interactive") || "converse");
+  const [trainingType] = React.useState<"interactive" | "converse">(
+    (urlSearchParams.get("tab") as "converse" | "interactive") || "converse"
+  );
 
   useEffect(() => {
     if (urlSearchParams.get("tab") !== trainingType) {
@@ -34,11 +35,13 @@ function index() {
     }
   };
 
+  const { bot } = useBot();
+
   return useMemo(
     () => (
       <div className={styles.training}>
         <div className={styles.header}>
-          <h2>Training</h2>
+          <h2>Training {bot?.name || "Bot"}</h2>
           {/* <div className={styles.trainingTypeInput}>
             <SegmentedControl
               value={trainingType}
@@ -57,7 +60,7 @@ function index() {
         </div>
       </div>
     ),
-    [trainingType]
+    [trainingType, bot?.name]
   );
 }
 

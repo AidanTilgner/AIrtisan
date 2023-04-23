@@ -375,3 +375,53 @@ export const useGetConversationsThatNeedReview = (
     success,
   };
 };
+
+export const useCreateTrainingCopyOfConversation = (
+  conversation_id: number | string,
+  config?: Partial<UseFetchConfig<unknown, Conversation>>
+) => {
+  const { load, data, success } = useFetch<unknown, Conversation>({
+    ...config,
+    url: `/training/conversations/${conversation_id}/training_copy`,
+    method: "POST",
+  });
+
+  return {
+    createTrainingCopyOfConversation: load,
+    data: data,
+    success,
+  };
+};
+
+export const useDeleteConversation = (
+  conversation_id: number | string,
+  config?: Partial<UseFetchConfig<unknown, Conversation>>
+) => {
+  const { load, data, success } = useFetch<unknown, Conversation>({
+    ...config,
+    url: `/conversations/${conversation_id}`,
+    method: "DELETE",
+  });
+
+  return {
+    deleteConversation: load,
+    data: data,
+    success,
+  };
+};
+
+export const useRetrainBot = (
+  config?: Partial<UseFetchConfig<unknown, { status: string }>>
+) => {
+  const { load, data, success } = useFetch<unknown, { status: string }>({
+    ...config,
+    url: "/training/retrain",
+    method: "POST",
+  });
+
+  return {
+    retrainBot: load,
+    data: data,
+    success,
+  };
+};

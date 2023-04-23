@@ -1,12 +1,5 @@
 import React, { useEffect, useLayoutEffect } from "react";
 import styles from "./ReviewConversations.module.scss";
-import {
-  // getConversationsThatNeedReview,
-  // markChatAsReviewed,
-  // getConversations,
-  createTrainingCopyOfConversation,
-  deleteConversation,
-} from "../../helpers/fetching/chats";
 import { Button, Chip, Highlight, SegmentedControl } from "@mantine/core";
 import { useUser } from "../../contexts/User";
 import {
@@ -27,6 +20,8 @@ import Search from "../../components/Search/Search";
 import { useSearch } from "../../contexts/Search";
 import { useModal } from "../../contexts/Modals";
 import {
+  useCreateTrainingCopyOfConversation,
+  useDeleteConversation,
   useGetConversations,
   useGetConversationsThatNeedReview,
   useMarkChatAsReviewed,
@@ -62,7 +57,7 @@ function ReviewConversations() {
 
   const [allowEnhanced, setAllowEnhanced] = React.useState(true);
   const [allowNoneIntent, setAllowNoneIntent] = React.useState(true);
-  const [allowTrainingCopy, setAllowTrainingCopy] = React.useState(false);
+  const [allowTrainingCopy, setAllowTrainingCopy] = React.useState(true);
 
   const conversationContainsNoneIntent = (conversation: ConversationType) => {
     return conversation.chats.find(
@@ -72,7 +67,18 @@ function ReviewConversations() {
 
   const filterConversations = (convs: ConversationType[]) => {
     const lowercaseQuery = query.toLowerCase();
-    return convs.filter((conv) => {
+    const filtered = convs.filter((conv) => {
+      const isEnhanced = conv.chats.find((chat) => !!chat.enhanced);
+      const passesEnhanced = allowEnhanced ? true : !isEnhanced;
+      const passesTrainingCopy = allowTrainingCopy ? true : !conv.training_copy;
+      const passesNoneIntent = allowNoneIntent
+        ? true
+        : !conversationContainsNoneIntent(conv);
+
+      if (!query) {
+        return passesEnhanced && passesTrainingCopy && passesNoneIntent;
+      }
+
       const generated_name_contains_query = conv.generated_name
         ? conv.generated_name?.toLowerCase().includes(lowercaseQuery)
         : "Unnamed Conversation".toLowerCase().includes(lowercaseQuery);
@@ -119,37 +125,25 @@ function ReviewConversations() {
         );
       });
 
-      const passesQuery = [
-        generated_name_contains_query,
-        conversation_id_contains_query,
-        session_id_contains_query,
-        conversation_is_training_copy,
-        someChatPassesQuery,
-      ].some((p) => p);
-
-      const isEnhanced = conv.chats.find((chat) => !!chat.enhanced);
-      const passesEnhanced = allowEnhanced ? true : !isEnhanced;
-      const passesTrainingCopy = allowTrainingCopy ? true : !conv.training_copy;
-      const passesNoneIntent = allowNoneIntent
-        ? true
-        : !conversationContainsNoneIntent(conv);
+      const passesQuery =
+        generated_name_contains_query ||
+        conversation_id_contains_query ||
+        session_id_contains_query ||
+        conversation_is_training_copy ||
+        someChatPassesQuery;
 
       return (
         passesQuery && passesEnhanced && passesTrainingCopy && passesNoneIntent
       );
     });
+
+    return filtered;
   };
 
   const conversationsToView = viewAllConversations
     ? filterConversations(allConversations || [])
     : filterConversations(conversations || []);
 
-  // useEffect(() => {
-  //   console.log("Using conversations: ", useConversations);
-  //   setConversationsToView(filterConversations(useConversations));
-  // }, [allowEnhanced, allowTrainingCopy, useConversations]);
-
-  // add a animation delay to each conversation
   useLayoutEffect(() => {
     (
       [...document.getElementsByClassName(styles.conversation)] as HTMLElement[]
@@ -280,8 +274,8 @@ function Conversation({
       });
 
   const reloadChats = () => {
-    const chats = getConversationChats || [];
-    setChats(chats);
+    const cs = getConversationChats;
+    setChats(cs);
   };
 
   useEffect(() => {
@@ -313,11 +307,26 @@ function Conversation({
     reloadConversations();
   };
 
-  const handleCreateTrainingCopy = async (chatId: number) => {
+  const { createTrainingCopyOfConversation } =
+    useCreateTrainingCopyOfConversation(conversation.id as number);
+
+  const handleCreateTrainingCopy = async () => {
     if (!user) return;
-    const { success, new_conversation_id } =
-      await createTrainingCopyOfConversation(chatId);
-    if (!success || !new_conversation_id) {
+    const response = await createTrainingCopyOfConversation();
+
+    if (!response || !response.data) {
+      console.error("Failed to create training copy of conversation");
+      showNotification({
+        title: "Error",
+        message: "Failed to create training copy of conversation",
+        color: "red",
+      });
+      return;
+    }
+
+    const { id: new_id } = response.data;
+
+    if (!new_id) {
       console.error("Failed to create training copy of conversation");
       showNotification({
         title: "Error",
@@ -333,7 +342,7 @@ function Conversation({
     });
 
     const newParams = new URLSearchParams({
-      load_conversation: new_conversation_id.toString(),
+      load_conversation: new_id.toString(),
       tab: "converse",
     }).toString();
 
@@ -344,7 +353,11 @@ function Conversation({
 
   const { setModal, closeModal } = useModal();
 
-  const handleDeleteConversation = async (chatId: number) => {
+  const { deleteConversation } = useDeleteConversation(
+    conversation.id as number
+  );
+
+  const handleDeleteConversation = async () => {
     if (!user) return;
     setModal({
       title: "Delete Conversation",
@@ -358,9 +371,9 @@ function Conversation({
         {
           text: "Delete",
           onClick: async () => {
-            const res = await deleteConversation(chatId);
+            const res = await deleteConversation();
 
-            if (!res.success) {
+            if (!res || !res.success || !res.data) {
               console.error("Failed to delete conversation");
               showNotification({
                 title: "Error",
@@ -484,19 +497,12 @@ function Conversation({
             {getFormattedTitle(conversation)}
           </Highlight>
         </h3>
-        <Highlight
-          highlight={query.toLocaleLowerCase()}
-          className={styles.bottomtext}
-        >
+        <Highlight highlight={query} className={styles.bottomtext}>
           {getShortenedText(
-            conversation.chats
-              .find((c) =>
-                c.message
-                  .toLocaleLowerCase()
-                  .includes(query.toLocaleLowerCase())
-              )
-              ?.message.toLocaleLowerCase() ||
-              conversation.chats[0]?.message.toLocaleLowerCase() ||
+            conversation.chats.find((c) =>
+              c.message.toLocaleLowerCase().includes(query.toLocaleLowerCase())
+            )?.message ||
+              conversation.chats[0]?.message ||
               "No messages",
             48
           )}
@@ -546,7 +552,7 @@ function Conversation({
                   title="Delete this conversation"
                   onClick={() => {
                     if (!conversation.id) return;
-                    handleDeleteConversation(conversation.id);
+                    handleDeleteConversation();
                   }}
                 >
                   <TrashSimple />
@@ -557,7 +563,7 @@ function Conversation({
                     title="Retry a copy of this conversation"
                     onClick={() => {
                       if (!conversation.id) return;
-                      handleCreateTrainingCopy(conversation.id);
+                      handleCreateTrainingCopy();
                     }}
                   >
                     <ArrowsClockwise />
@@ -579,80 +585,81 @@ function Conversation({
             </div>
           </div>
           <div className={styles.chats}>
-            {chats.map((chat) => (
-              <div key={chat.id} className={styles.chatContainer}>
-                {chat.needs_review && (
-                  <div className={styles.review_info}>
-                    <p>
-                      Intent classified as <b>{chat.intent}</b>{" "}
-                      {chat.confidence
-                        ? `with a confidence of ${chat.confidence}%`
-                        : ""}
-                      .
-                    </p>
-                    <p>
-                      User gave reason: {'"'}
-                      <b>{chat.review_text}</b>
-                      {'"'}
-                    </p>
-                  </div>
-                )}
-                <div
-                  key={chat.id}
-                  className={`${styles.chat} ${styles[chat.role]} ${
-                    chat.enhanced ? styles.enhanced : ""
-                  }`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                  }}
-                >
-                  <Highlight highlight={query} className={styles.content}>
-                    {chat.message}
-                  </Highlight>
-                  {chat.created_at && (
-                    <p
-                      className={styles.timestamps}
-                      onClick={() => {
-                        setQuery(chat.created_at);
-                      }}
-                    >
-                      <span className={styles.timestamp}>
-                        {getFormattedTimeStamp(chat.created_at)}
-                      </span>
-                    </p>
-                  )}
-                  {chat.enhanced && (
-                    <div
-                      className={styles.enhanced_tag}
-                      title="This chat was enhanced."
-                    >
-                      <MagicWand />
+            {chats.length > 0 ? (
+              chats.map((chat) => (
+                <div key={chat.id} className={styles.chatContainer}>
+                  {chat.needs_review && (
+                    <div className={styles.review_info}>
+                      <p>
+                        Intent classified as <b>{chat.intent}</b>{" "}
+                        {chat.confidence
+                          ? `with a confidence of ${chat.confidence}%`
+                          : ""}
+                        .
+                      </p>
+                      <p>
+                        User gave reason: {'"'}
+                        <b>{chat.review_text}</b>
+                        {'"'}
+                      </p>
                     </div>
                   )}
-                  {chat.needs_review && (
-                    <>
-                      <div
-                        className={styles.review_tag}
-                        title="This chat needs review."
+                  <div
+                    key={chat.id}
+                    className={`${styles.chat} ${styles[chat.role]} ${
+                      chat.enhanced ? styles.enhanced : ""
+                    }`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                  >
+                    <Highlight highlight={query} className={styles.content}>
+                      {chat.message}
+                    </Highlight>
+                    {chat.created_at && (
+                      <p
+                        className={styles.timestamps}
+                        onClick={() => {
+                          setQuery(chat.created_at);
+                        }}
                       >
-                        <WarningCircle />
+                        <span className={styles.timestamp}>
+                          {getFormattedTimeStamp(chat.created_at)}
+                        </span>
+                      </p>
+                    )}
+                    {chat.enhanced && (
+                      <div
+                        className={styles.enhanced_tag}
+                        title="This chat was enhanced."
+                      >
+                        <MagicWand />
                       </div>
-                      <div className={styles.review_button}>
-                        <Button
-                          onClick={() => {
-                            if (!chat?.id) return;
-                            handleMarkReviewed(chat.id);
-                            reloadChats();
-                          }}
-                          variant="default"
-                          size="xs"
+                    )}
+                    {chat.needs_review && (
+                      <>
+                        <div
+                          className={styles.review_tag}
+                          title="This chat needs review."
                         >
-                          Mark as reviewed
-                        </Button>
-                      </div>
-                    </>
-                  )}
-                  {/* {chat.role === "user" && (
+                          <WarningCircle />
+                        </div>
+                        <div className={styles.review_button}>
+                          <Button
+                            onClick={() => {
+                              if (!chat?.id) return;
+                              handleMarkReviewed(chat.id);
+                              reloadChats();
+                            }}
+                            variant="default"
+                            size="xs"
+                          >
+                            Mark as reviewed
+                          </Button>
+                        </div>
+                      </>
+                    )}
+                    {/* {chat.role === "user" && (
                     <div
                       className={styles.test_tag}
                       title="Retry this chat."
@@ -665,9 +672,22 @@ function Conversation({
                       <Lightning />
                     </div>
                   )} */}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p
+                style={{
+                  textAlign: "center",
+                  width: "100%",
+                  fontSize: "12px",
+                  opacity: 0.5,
+                  margin: "18px 0",
+                }}
+              >
+                No chats found.{" "}
+              </p>
+            )}
           </div>
           <div className={styles.buttons}>
             <Button

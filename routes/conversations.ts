@@ -65,6 +65,40 @@ router.get("/need_review", checkIsAdmin, hasAccessToBot, async (req, res) => {
   }
 });
 
+router.delete(
+  "/:conversation_id",
+  checkIsAdmin,
+  hasAccessToBot,
+  async (req, res) => {
+    try {
+      const { conversation_id } = req.params;
+
+      const formattedConversationId = Number(conversation_id);
+
+      if (!formattedConversationId) {
+        res.status(402).send({ message: "No conversation id provided" });
+        return;
+      }
+
+      const conversation = await deleteConversation(formattedConversationId);
+
+      if (!conversation) {
+        res.status(404).send({ message: "Conversation not found" });
+        return;
+      }
+
+      res.send({
+        message: "Conversation deleted",
+        success: true,
+        data: conversation,
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).send({ message: "Error deleting conversation" });
+    }
+  }
+);
+
 router.get("/all/need_review", checkIsSuperAdmin, async (req, res) => {
   try {
     const conversations = await getConversationsThatNeedReview();
@@ -81,6 +115,40 @@ router.get("/all/need_review", checkIsSuperAdmin, async (req, res) => {
     res.status(500).send({ message: "Error getting conversations" });
   }
 });
+
+router.get(
+  "/:conversation_id",
+  checkIsAdmin,
+  hasAccessToBot,
+  async (req, res) => {
+    try {
+      const { conversation_id } = req.params;
+
+      const formattedConversationId = Number(conversation_id);
+
+      if (!formattedConversationId) {
+        res.status(402).send({ message: "No conversation id provided" });
+        return;
+      }
+
+      const conversation = await getConversation(formattedConversationId);
+
+      if (!conversation) {
+        res.status(404).send({ message: "Conversation not found" });
+        return;
+      }
+
+      res.send({
+        message: "Conversation retrieved",
+        success: true,
+        data: conversation,
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).send({ message: "Error getting conversation" });
+    }
+  }
+);
 
 router.get("/all", checkIsSuperAdmin, async (req, res) => {
   try {

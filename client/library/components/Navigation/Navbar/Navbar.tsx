@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import styles from "./Navbar.module.scss";
 import { Button, Burger, Menu } from "@mantine/core";
-import { retrainModel } from "../../../helpers/fetching";
 import { getAllAdminBots } from "../../../helpers/fetching/bots";
 import { Link, useLocation } from "react-router-dom";
 import { useUser } from "../../../contexts/User";
@@ -19,6 +18,7 @@ import { logout } from "../../../helpers/auth";
 import SVG from "../../Utils/SVG";
 import { Bot } from "../../../../documentation/main";
 import { showNotification } from "@mantine/notifications";
+import { useRetrainBot } from "../../../hooks/fetching/common";
 
 function Navbar() {
   const isMobile = window.innerWidth < 768;
@@ -123,6 +123,8 @@ function Navbar() {
     setBot(bt);
   };
 
+  const { retrainBot } = useRetrainBot();
+
   const settingsOptions = (
     <div className={styles.settingsOptions}>
       <div className={`${styles.option} ${styles.botChoice}`}>
@@ -159,7 +161,7 @@ function Navbar() {
       <div className={styles.option}>
         <Button
           onClick={() => {
-            retrainModel();
+            retrainBot();
           }}
           variant="outline"
           style={{

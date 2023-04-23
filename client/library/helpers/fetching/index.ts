@@ -1,6 +1,4 @@
-import axios, { AxiosError } from "axios";
 import { showNotification } from "@mantine/notifications";
-import { logout } from "../auth";
 import { Corpus, CorpusDataPoint } from "../../../documentation/main";
 import { api } from "../axios";
 

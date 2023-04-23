@@ -464,6 +464,29 @@ export const deleteConversation = async (conversationId: number) => {
   }
 };
 
+export const deleteBotConversation = async (conversationId: number) => {
+  try {
+    const conversation = await dataSource.manager.findOne(
+      entities.Conversation,
+      {
+        where: { id: conversationId },
+        relations: ["chats"],
+      }
+    );
+
+    if (!conversation) {
+      return null;
+    }
+
+    await dataSource.manager.remove(conversation);
+
+    return conversation;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};
+
 export const getChat = async (chatId: number) => {
   try {
     const chat = await dataSource.manager.findOne(entities.Chat, {

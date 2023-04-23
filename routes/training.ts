@@ -516,10 +516,7 @@ router.post(
       const toSend = {
         message: "Training copy created",
         success: true,
-        data: {
-          conversation: data,
-          new_conversation_id: data.id,
-        },
+        data,
       };
 
       res.send(toSend);
