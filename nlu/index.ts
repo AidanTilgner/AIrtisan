@@ -6,17 +6,17 @@ import { config } from "dotenv";
 
 config();
 
-const daysToMilliseconds = (days: number) => {
-  return days * 24 * 60 * 60 * 1000;
-};
+// const daysToMilliseconds = (days: number) => {
+//   return days * 24 * 60 * 60 * 1000;
+// };
 
-const getDefaultBotRuntime = () => {
-  const days = process.env.BOT_DEFAULT_UPTIME_IN_DAYS
-    ? Number(process.env.BOT_DEFAULT_UPTIME_IN_DAYS)
-    : 1;
+// const getDefaultBotRuntime = () => {
+//   const days = process.env.BOT_DEFAULT_UPTIME_IN_DAYS
+//     ? Number(process.env.BOT_DEFAULT_UPTIME_IN_DAYS)
+//     : 1;
 
-  return daysToMilliseconds(days);
-};
+//   return daysToMilliseconds(days);
+// };
 
 export const managers: {
   [id: string]: {

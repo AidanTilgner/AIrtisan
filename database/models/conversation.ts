@@ -28,6 +28,11 @@ export class Conversation {
   })
   training_copy!: boolean;
 
+  @Column("text", {
+    nullable: true,
+  })
+  intents_graph!: string;
+
   @OneToMany(() => Chat, (chat) => chat.conversation, { eager: true })
   chats!: Chat[];
 

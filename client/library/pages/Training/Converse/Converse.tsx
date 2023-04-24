@@ -2,10 +2,6 @@ import React from "react";
 import styles from "./Converse.module.scss";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Chat as ChatType, Conversation } from "../../../../documentation/main";
-// import // postTrainingChat,
-// // retryChat,
-// // markChatAsReviewed,
-// "../../../helpers/fetching/chats";
 import { showNotification } from "@mantine/notifications";
 import {
   ArrowCounterClockwise,
@@ -19,8 +15,8 @@ import {
   X,
   Check,
   File,
+  ArrowRight,
 } from "@phosphor-icons/react";
-import { Button } from "@mantine/core";
 import Loaders from "../../../components/Utils/Loaders";
 import { useUser } from "../../../contexts/User";
 import { useSearch } from "../../../contexts/Search";
@@ -44,8 +40,10 @@ function Converse() {
   const [conversation, setConversation] = React.useState<Conversation>();
   const [loading, setLoading] = React.useState(false);
   const [initialLoad, setInitialLoad] = React.useState(true);
+  const { setQuery } = useSearch();
 
   const { bot } = useBot();
+  const navigate = useNavigate();
   const conversationId =
     conversation?.id || urlSearchParams.get("load_conversation") || "";
 
@@ -200,17 +198,36 @@ function Converse() {
             ? conversation.generated_name || "Unnamed Conversation"
             : "New Conversation"}
         </h3>
-        <Button
-          onClick={() => {
-            setConversation(undefined);
-            setInitialLoad(true);
-          }}
-          variant="outline"
-          title="Start a new conversation"
-          disabled={loading || !conversation}
-        >
-          <Plus weight="bold" />
-        </Button>
+        <div className={styles.menu_options}>
+          <button
+            onClick={() => {
+              setConversation(undefined);
+              setInitialLoad(true);
+            }}
+            title="Start a new conversation"
+            disabled={loading || !conversation}
+            className={styles.button__new}
+          >
+            <Plus weight="bold" />
+          </button>
+          {urlSearchParams.get("load_conversation") && (
+            <button
+              onClick={() => {
+                setQuery(
+                  conversation?.generated_name || String(conversation?.id)
+                );
+                navigate(
+                  `/review/conversations?load_conversation=${conversation?.id}`
+                );
+              }}
+              title="View conversation details"
+              disabled={loading || !conversation}
+              className={styles.button__details}
+            >
+              <ArrowRight weight="bold" />
+            </button>
+          )}
+        </div>
       </div>
       <div className={styles.content}>
         {groupedChats?.length ? (

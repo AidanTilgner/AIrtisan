@@ -8,8 +8,9 @@ import {
   ArrowsClockwise,
   TrashSimple,
   ArrowRight,
+  Graph,
 } from "@phosphor-icons/react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   Chat,
   Conversation as ConversationType,
@@ -64,6 +65,8 @@ function ReviewConversations() {
       (chat) => chat.intent.toLowerCase() === "none"
     );
   };
+
+  const [searchParams] = useSearchParams();
 
   const filterConversations = (convs: ConversationType[]) => {
     const lowercaseQuery = query.toLowerCase();
@@ -143,6 +146,24 @@ function ReviewConversations() {
   const conversationsToView = viewAllConversations
     ? filterConversations(allConversations || [])
     : filterConversations(conversations || []);
+
+  useEffect(() => {
+    if (searchParams.get("load_conversation")) {
+      setViewAllConversations(true);
+      const foundConversation = conversationsToView?.find((conv) => {
+        const is = conv.id === Number(searchParams.get("load_conversation"));
+        return is;
+      });
+
+      if (openedConversation && openedConversation.id === foundConversation?.id)
+        return;
+      setOpenedConversation(
+        {
+          ...(foundConversation as ConversationToReview),
+        } || null
+      );
+    }
+  }, [searchParams, conversationsToView]);
 
   useLayoutEffect(() => {
     (
@@ -581,6 +602,16 @@ function Conversation({
                     <ArrowRight />
                   </button>
                 )}
+                <button
+                  className={`${styles.option} ${styles.graph}`}
+                  title="View conversation graph"
+                  onClick={() => {
+                    if (!conversation.id) return;
+                    navigate(`/flows/${conversation.id}`);
+                  }}
+                >
+                  <Graph />
+                </button>
               </div>
             </div>
           </div>

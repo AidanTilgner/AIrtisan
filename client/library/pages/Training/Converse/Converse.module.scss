@@ -30,11 +30,12 @@
 .header {
   display: flex;
   align-items: center;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: space-between;
   padding: 0 24px;
   box-sizing: border-box;
   margin-bottom: 36px;
+  gap: 14px;
 
   @media (min-width: 768px) {
     padding: 0;
@@ -45,8 +46,36 @@
     margin: 0;
   }
 
+  .menu_options {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 14px;
+  }
+
   button {
     font-size: 18px;
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+
+    &:hover {
+      text-shadow: 0.2px 0.2px 2px rgba($color: #000000, $alpha: 0.1);
+    }
+  }
+
+  .button__new {
+    color: #64a60f;
+  }
+
+  .button__details {
+    color: #2256f2;
   }
 }
 

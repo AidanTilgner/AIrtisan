@@ -8,11 +8,12 @@ import { useBot } from "../../../contexts/Bot";
 import {
   Chat,
   Chats,
-  HandWaving,
   SignOut,
   MonitorPlay,
   TextColumns,
   Fingerprint,
+  TreeStructure,
+  SquaresFour,
 } from "@phosphor-icons/react";
 import { logout } from "../../../helpers/auth";
 import SVG from "../../Utils/SVG";
@@ -50,12 +51,10 @@ function Navbar() {
       <li>
         <Link
           to="/"
-          className={`${
-            currentPath === "/" ? styles.active : styles.inactive
-          } ${styles.shake}`}
+          className={`${currentPath === "/" ? styles.active : styles.inactive}`}
         >
-          <HandWaving />
-          Welcome
+          <SquaresFour />
+          Dashboard
         </Link>
       </li>
       <li>
@@ -89,6 +88,15 @@ function Navbar() {
         >
           <Chats />
           Conversations
+        </Link>
+      </li>
+      <li>
+        <Link
+          to="/flows"
+          className={currentPath === "/flows" ? styles.active : styles.inactive}
+        >
+          <TreeStructure />
+          Flows
         </Link>
       </li>
       <li>
@@ -208,7 +216,7 @@ function Navbar() {
         </div>
         <h2 className={styles.title}>Onyx Chat</h2>
       </div>
-      <hr />
+      <br />
       {isMobile && (
         <Burger
           opened={opened}

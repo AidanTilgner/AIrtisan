@@ -1,4 +1,5 @@
 import { getGeneratedNameBasedOnContent } from "../../nlu/utils";
+import { getConversationIntentFlow } from "../../utils/util";
 import { entities, dataSource } from "../index";
 import { Chat, ChatRole } from "../models/chat";
 import { Conversation } from "../models/conversation";
@@ -565,6 +566,28 @@ export const getBotForChat = async (chatId: number) => {
     return bot;
   } catch (err) {
     console.error(err);
+    return null;
+  }
+};
+
+export const generateIntentFlow = async (conversation_id: number) => {
+  try {
+    const conversation = await getConversation(conversation_id);
+    if (!conversation) {
+      return null;
+    }
+
+    const intentFlow = getConversationIntentFlow(conversation);
+
+    const intentFlowString = JSON.stringify(intentFlow, null, 2);
+
+    conversation.intents_graph = intentFlowString;
+
+    await dataSource.manager.save(conversation);
+
+    return conversation;
+  } catch (error) {
+    console.error(error);
     return null;
   }
 };

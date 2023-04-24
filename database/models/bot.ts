@@ -9,6 +9,7 @@ import {
 } from "typeorm";
 import { Conversation } from "./conversation";
 import { Organization } from "./organization";
+import { IntentNode } from "./flow";
 
 @Entity()
 export class Bot {
@@ -44,6 +45,9 @@ export class Bot {
 
   @ManyToOne(() => Organization, (organization) => organization.bots)
   organization!: Organization;
+
+  // @OneToMany(() => IntentNode, (intentNode) => intentNode.bot)
+  // intent_flow!: IntentNode[];
 
   @CreateDateColumn()
   created_at!: Date;

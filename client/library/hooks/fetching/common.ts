@@ -425,3 +425,20 @@ export const useRetrainBot = (
     success,
   };
 };
+
+export const useGenerateConversationFlow = (
+  conversation_id: number | string,
+  config?: Partial<UseFetchConfig<unknown, Conversation>>
+) => {
+  const { load, data, success } = useFetch<unknown, Conversation>({
+    ...config,
+    url: `/conversations/flow/${conversation_id}/generate`,
+    method: "POST",
+  });
+
+  return {
+    generateConversationFlow: load,
+    data: data,
+    success,
+  };
+};

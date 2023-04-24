@@ -21,6 +21,7 @@ export interface Conversation {
   session_id: string;
   chats: Chat[];
   training_copy: boolean;
+  intents_graph: string;
   created_at: Date;
   updated_at: Date;
 }

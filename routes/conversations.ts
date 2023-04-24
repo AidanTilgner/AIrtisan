@@ -11,6 +11,7 @@ import {
   getConversation,
   getBotConversations,
   getBotConversationsThatNeedReview,
+  generateIntentFlow,
 } from "../database/functions/conversations";
 
 const router = Router();
@@ -226,5 +227,39 @@ router.delete("/all/:conversation_id", checkIsSuperAdmin, async (req, res) => {
     res.status(500).send({ message: "Error deleting conversation" });
   }
 });
+
+router.post(
+  "/flow/:conversation_id/generate",
+  checkIsAdmin,
+  hasAccessToBot,
+  async (req, res) => {
+    try {
+      const { conversation_id } = req.params;
+
+      if (!conversation_id) {
+        res.status(402).send({ message: "No conversation id provided" });
+        return;
+      }
+
+      const formattedConversationId = Number(conversation_id);
+
+      const conversation = await generateIntentFlow(formattedConversationId);
+
+      if (!conversation) {
+        res.status(404).send({ message: "Conversation not found" });
+        return;
+      }
+
+      res.send({
+        message: "Conversation flow retrieved",
+        success: true,
+        data: conversation,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send({ message: "Error getting conversation flow" });
+    }
+  }
+);
 
 export default router;

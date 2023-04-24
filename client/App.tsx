@@ -5,11 +5,13 @@ import { Routes, Route } from "react-router-dom";
 import { MantineProvider } from "@mantine/core";
 import { NotificationsProvider } from "@mantine/notifications";
 import Preview from "./library/pages/Preview/Preview";
-import Welcome from "./library/pages/Welcome/Welcome";
 import Auth from "./library/pages/Auth/Auth";
 import ReviewConversations from "./library/pages/Review/ReviewConversations";
 import Training from "./library/pages/Training/";
 import Corpus from "./library/pages/Corpus/Corpus";
+import Home from "./library/pages/Home";
+import Flows from "./library/pages/Flows";
+import Flow from "./library/pages/Flows/Flow";
 import { useUser } from "./library/contexts/User";
 import { ModalProvider } from "./library/contexts/Modals";
 import GlobalModal from "./library/components/Utils/Modal";
@@ -52,8 +54,14 @@ function App() {
             <div className={styles.main_container}>
               <Routes>
                 <Route path="/">
-                  <Route index element={<Welcome />} />
+                  <Route index element={<Home />} />
                   <Route path="preview" element={<Preview />} />
+                  <Route path="flows">
+                    <Route index element={<Flows />} />
+                    <Route path=":conversation_id">
+                      <Route index element={<Flow />} />
+                    </Route>
+                  </Route>
                   <Route path="review">
                     <Route
                       path="conversations"
