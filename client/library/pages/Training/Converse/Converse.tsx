@@ -165,6 +165,7 @@ function Converse() {
         message: "Failed to send message",
         color: "red",
       });
+      setLoading(false);
       return;
     }
 

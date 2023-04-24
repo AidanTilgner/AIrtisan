@@ -126,6 +126,11 @@ export const createChatInConversation = async ({
 
     if (confidence) {
       chat.confidence = confidence;
+
+      if (confidence < 50) {
+        chat.needs_review = true;
+        chat.review_text = "Detected: Low confidence";
+      }
     }
 
     await dataSource.manager.save(chat);
@@ -586,6 +591,27 @@ export const generateIntentFlow = async (conversation_id: number) => {
     await dataSource.manager.save(conversation);
 
     return conversation;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+export const getRecentConversations = async (botId: number) => {
+  try {
+    const bot = await getBot(botId);
+    if (!bot) {
+      return null;
+    }
+
+    const conversations = await dataSource.manager.find(entities.Conversation, {
+      where: { bot: { id: botId } },
+      relations: ["chats"],
+      order: { updated_at: "DESC" },
+      take: 10,
+    });
+
+    return conversations;
   } catch (error) {
     console.error(error);
     return null;

@@ -1,4 +1,5 @@
 import {
+  Bot,
   ButtonType,
   Chat,
   Conversation,
@@ -438,6 +439,54 @@ export const useGenerateConversationFlow = (
 
   return {
     generateConversationFlow: load,
+    data: data,
+    success,
+  };
+};
+
+export const useGetBots = (
+  config?: Partial<UseFetchConfig<unknown, Bot[]>>
+) => {
+  const { load, data, success } = useFetch<unknown, Bot[]>({
+    ...config,
+    url: "/bots",
+    method: "GET",
+  });
+
+  return {
+    getBots: load,
+    data: data,
+    success,
+  };
+};
+
+export const useGetAllBots = (
+  config?: Partial<UseFetchConfig<unknown, Bot[]>>
+) => {
+  const { load, data, success } = useFetch<unknown, Bot[]>({
+    ...config,
+    url: "/bots/all",
+    method: "GET",
+  });
+
+  return {
+    getAllBots: load,
+    data: data,
+    success,
+  };
+};
+
+export const useGetRecentConversations = (
+  config?: Partial<UseFetchConfig<unknown, Conversation[]>>
+) => {
+  const { load, data, success } = useFetch<unknown, Conversation[]>({
+    ...config,
+    url: "/conversations/recent",
+    method: "GET",
+  });
+
+  return {
+    getRecentConversations: load,
     data: data,
     success,
   };

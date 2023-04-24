@@ -1,7 +1,6 @@
-import React, { useEffect } from "react";
+import React from "react";
 import styles from "./Navbar.module.scss";
 import { Button, Burger, Menu } from "@mantine/core";
-import { getAllAdminBots } from "../../../helpers/fetching/bots";
 import { Link, useLocation } from "react-router-dom";
 import { useUser } from "../../../contexts/User";
 import { useBot } from "../../../contexts/Bot";
@@ -12,35 +11,25 @@ import {
   MonitorPlay,
   TextColumns,
   Fingerprint,
-  TreeStructure,
+  // TreeStructure,
   SquaresFour,
 } from "@phosphor-icons/react";
 import { logout } from "../../../helpers/auth";
 import SVG from "../../Utils/SVG";
 import { Bot } from "../../../../documentation/main";
-import { showNotification } from "@mantine/notifications";
-import { useRetrainBot } from "../../../hooks/fetching/common";
+import { useRetrainBot, useGetBots } from "../../../hooks/fetching/common";
 
 function Navbar() {
   const isMobile = window.innerWidth < 768;
   const [opened, setOpened] = React.useState(false);
   const location = useLocation();
-  const [bots, setBots] = React.useState<Bot[]>([]);
+  // const [bots, setBots] = React.useState<Bot[]>([]);
   const { bot, botSelected, setBot } = useBot();
 
-  useEffect(() => {
-    getAllAdminBots().then(({ success, data }) => {
-      if (!success || !data) {
-        setBots(data);
-        showNotification({
-          title: "Error",
-          message: "Could not fetch bots",
-        });
-        return;
-      }
-      setBots(data);
-    });
-  }, []);
+  const { data: bots } = useGetBots({
+    runOnMount: true,
+    useBotId: false,
+  });
 
   const { isSuperAdmin } = useUser();
 
@@ -90,7 +79,7 @@ function Navbar() {
           Conversations
         </Link>
       </li>
-      <li>
+      {/* <li>
         <Link
           to="/flows"
           className={currentPath === "/flows" ? styles.active : styles.inactive}
@@ -98,7 +87,12 @@ function Navbar() {
           <TreeStructure />
           Flows
         </Link>
-      </li>
+      </li> */}
+    </>
+  );
+
+  const superAdminRoutes = isSuperAdmin ? (
+    <>
       <li>
         <Link
           to="/preview"
@@ -110,11 +104,6 @@ function Navbar() {
           Previews
         </Link>
       </li>
-    </>
-  );
-
-  const superAdminRoutes = isSuperAdmin ? (
-    <>
       <li>
         <Link
           to="/admin/auth"
@@ -155,7 +144,7 @@ function Navbar() {
 
           <Menu.Dropdown>
             <Menu.Label>Bots</Menu.Label>
-            {bots.map((bot) => (
+            {bots?.map((bot) => (
               <Menu.Item
                 key={bot.id}
                 onClick={() => {

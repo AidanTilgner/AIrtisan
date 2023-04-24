@@ -10,8 +10,8 @@ import {
   getBotCorpus,
   getBotContext,
   getBotModel,
+  getAdminBotsWithRunningStatus,
 } from "../database/functions/bot";
-import { getAdminBots } from "../database/functions/admin";
 import {
   checkIsAdmin,
   checkIsSuperAdmin,
@@ -19,7 +19,7 @@ import {
 } from "../middleware/auth";
 import { getActiveManagers, train } from "../nlu";
 
-router.get("/", checkIsSuperAdmin, async (req, res) => {
+router.get("/as_admin/all", checkIsSuperAdmin, async (req, res) => {
   try {
     const bots = await getBots();
     res.send({
@@ -47,14 +47,14 @@ router.get("/running", checkIsSuperAdmin, async (req, res) => {
   }
 });
 
-router.get("/all", checkIsAdmin, async (req, res) => {
+router.get("/", checkIsAdmin, async (req, res) => {
   try {
     const adminId = (
       req as unknown as {
         ["admin"]: { id: string };
       }
     )["admin"].id;
-    const bots = await getAdminBots(Number(adminId));
+    const bots = await getAdminBotsWithRunningStatus(Number(adminId));
     res.send({
       message: "Bots fetched successfully",
       success: true,
@@ -96,7 +96,7 @@ router.post("/:bot_id/startup", hasAccessToBot, async (req, res) => {
       return res.status(400).json({ error: "Bot could not be trained" });
     }
 
-    const { stopTimeout, ...manager } = trained;
+    const { ...manager } = trained;
 
     res.send({
       message: "Bot trained successfully",

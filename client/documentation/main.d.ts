@@ -22,6 +22,7 @@ export interface Conversation {
   chats: Chat[];
   training_copy: boolean;
   intents_graph: string;
+  running?: boolean | null;
   created_at: Date;
   updated_at: Date;
 }

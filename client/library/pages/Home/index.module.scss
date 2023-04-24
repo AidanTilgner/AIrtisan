@@ -1,18 +1,61 @@
 .Home {
   width: 100%;
   box-sizing: border-box;
-  padding: 36px 24px;
 }
 
 .top {
+  box-shadow: 0.2px 0.2px 18px rgba(0, 0, 0, 0.1);
+  padding: 36px 24px;
+
+  @media (min-width: 768px) {
+    padding: 36px 82px;
+  }
+
   .top_text {
     margin: 0;
-    margin-bottom: 24px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
 
   .big_text {
     margin: 0;
     font-weight: 300;
     font-family: "Lato", sans-serif;
+  }
+}
+
+.quickActions {
+  padding: 36px 24px;
+
+  @media (min-width: 768px) {
+    padding: 36px 82px;
+  }
+}
+
+.recentConversations {
+  padding: 36px 24px;
+
+  @media (min-width: 768px) {
+    padding: 36px 82px;
+  }
+
+  h2 {
+    margin: 0;
+    margin-bottom: 24px;
+    font-weight: 400;
+    font-size: 24px;
+  }
+}
+
+.cardList {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+
+  @media (min-width: 768px) {
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
   }
 }

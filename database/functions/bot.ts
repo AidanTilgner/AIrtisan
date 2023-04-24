@@ -5,6 +5,8 @@ import { readFileSync, writeFileSync } from "fs";
 import { format } from "prettier";
 import { Corpus } from "../../types/lib";
 import path from "path";
+import { getManagerIsAlive } from "../../nlu";
+import { getAdminBots } from "./admin";
 
 export const createBot = async ({
   name,
@@ -270,6 +272,45 @@ export const getBotByName = async (name: Bot["name"]) => {
       where: { name },
     });
     return bot;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+export const getBotStatus = async (id: Bot["id"]) => {
+  try {
+    const bot = await dataSource.manager.findOne(entities.Bot, {
+      where: { id },
+    });
+
+    if (!bot) return null;
+
+    const isAlive = getManagerIsAlive(bot.id);
+
+    return isAlive;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+export const getAdminBotsWithRunningStatus = async (admin_id: number) => {
+  try {
+    const bots = await getAdminBots(admin_id);
+
+    if (!bots) return null;
+
+    const botsWithStatus = await Promise.all(
+      bots.map(async (bot) => {
+        const status = await getBotStatus(bot.id);
+        return {
+          ...bot,
+          running: status,
+        };
+      })
+    );
+    return botsWithStatus;
   } catch (error) {
     console.error(error);
     return null;

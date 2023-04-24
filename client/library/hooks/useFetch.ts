@@ -13,6 +13,7 @@ export interface UseFetchConfig<B, D> {
   query?: Record<string, string> | undefined;
   bustCache?: boolean;
   runOnMount?: boolean;
+  useBotId?: boolean;
 }
 
 function useFetch<B, D>({
@@ -25,15 +26,20 @@ function useFetch<B, D>({
   query,
   bustCache,
   runOnMount = false,
+  useBotId = true,
 }: UseFetchConfig<B, D>) {
   const { bot } = useBot();
 
-  const allQuery: Record<string, string> = {
-    ...query,
-    bot_id: bot?.id?.toString() || "",
-  };
+  const allQuery: Record<string, string> = useBotId
+    ? {
+        ...query,
+        bot_id: bot?.id?.toString() || "",
+      }
+    : {
+        ...query,
+      };
 
-  const readyToRun = !!bot?.id;
+  const readyToRun = useBotId ? !!bot?.id : true;
 
   const queryStr = Object.keys(allQuery)
     .map((key) => (allQuery[key] ? `${key}=${allQuery[key]}` : ""))

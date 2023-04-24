@@ -55,7 +55,6 @@ function App() {
               <Routes>
                 <Route path="/">
                   <Route index element={<Home />} />
-                  <Route path="preview" element={<Preview />} />
                   <Route path="flows">
                     <Route index element={<Flows />} />
                     <Route path=":conversation_id">
@@ -75,9 +74,12 @@ function App() {
                     <Route index element={<Corpus />} />
                   </Route>
                   {isSuperAdmin && (
-                    <Route path="admin">
-                      <Route path="auth" element={<Auth />} />
-                    </Route>
+                    <>
+                      <Route path="admin">
+                        <Route path="auth" element={<Auth />} />
+                      </Route>
+                      <Route path="preview" element={<Preview />} />
+                    </>
                   )}
                 </Route>
               </Routes>
