@@ -9,16 +9,6 @@ body {
 }
 
 .main_container {
-  @media (min-width: 768px) {
-    width: 80%;
-    box-sizing: border-box;
-    margin-left: 20%;
-  }
-
-  @media (min-width: 1024px) {
-    width: 82%;
-    margin-left: 18%;
-  }
 }
 
 h1 {

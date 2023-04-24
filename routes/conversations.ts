@@ -91,6 +91,40 @@ router.get("/recent", checkIsAdmin, hasAccessToBot, async (req, res) => {
   }
 });
 
+router.get(
+  "/recent/:number_of_recent",
+  checkIsAdmin,
+  hasAccessToBot,
+  async (req, res) => {
+    try {
+      const { bot_id } = (req.query as { bot_id: string }) || req.body;
+      const { number_of_recent } = req.params;
+
+      if (!bot_id) {
+        res.status(402).send({ message: "No bot id provided" });
+        return;
+      }
+
+      const formattedBotId = Number(bot_id);
+      const formattedNumberOfRecent = Number(number_of_recent);
+
+      const conversations = await getRecentConversations(
+        formattedBotId,
+        formattedNumberOfRecent
+      );
+
+      res.send({
+        message: "Conversations retrieved",
+        success: true,
+        data: conversations,
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).send({ message: "Error getting conversations" });
+    }
+  }
+);
+
 router.delete(
   "/:conversation_id",
   checkIsAdmin,

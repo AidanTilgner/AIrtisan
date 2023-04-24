@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { Bot } from "../../documentation/main";
 import { getBot, startupBot } from "../helpers/fetching/bots";
+import { showNotification } from "@mantine/notifications";
 
 interface BotContext {
   bot: Bot | null;
@@ -29,7 +30,13 @@ const BotContext = createContext<BotContext>({
   botSelected: false,
 });
 
-export const BotProvider = ({ children }: { children: React.ReactNode }) => {
+export const BotProvider = ({
+  children,
+  botId,
+}: {
+  children: React.ReactNode;
+  botId: string | undefined;
+}) => {
   const [bot, setBot] = useState<Bot>(initialBot);
 
   const value = {
@@ -39,26 +46,33 @@ export const BotProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   useEffect(() => {
-    if (!bot.id) {
-      const lastUsedBot = localStorage.getItem("lastUsedBot");
-      if (lastUsedBot) {
-        const parsedBot = JSON.parse(lastUsedBot);
-        getBot(parsedBot.id).then(({ success, data }) => {
-          if (success && data) {
-            setBot(data);
-          }
-        });
-      }
+    if (botId) {
+      getBot(Number(botId)).then(({ success, data }) => {
+        if (success && data) {
+          setBot(data);
+        }
+      });
+
       return;
     }
-    localStorage.setItem("lastUsedBot", JSON.stringify(bot));
-    localStorage.setItem("lastUsedBotID", String(bot?.id));
-  }, [bot]);
+  }, [botId]);
 
   useEffect(() => {
     (async () => {
       if (bot.id) {
-        await startupBot(bot.id);
+        await startupBot(bot.id)
+          .then(() => {
+            showNotification({
+              title: "Bot started",
+              message: "Bot has been started",
+            });
+          })
+          .catch(() => {
+            showNotification({
+              title: "Error",
+              message: "Bot could not be started",
+            });
+          });
       }
     })();
   }, [bot.id]);

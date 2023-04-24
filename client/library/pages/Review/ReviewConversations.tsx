@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect } from "react";
+import React, { useEffect, useLayoutEffect, useRef } from "react";
 import styles from "./ReviewConversations.module.scss";
 import { Button, Chip, Highlight, SegmentedControl } from "@mantine/core";
 import { useUser } from "../../contexts/User";
@@ -25,6 +25,7 @@ import {
   useDeleteConversation,
   useGetConversations,
   useGetConversationsThatNeedReview,
+  useGetRecentConversations,
   useMarkChatAsReviewed,
 } from "../../hooks/fetching/common";
 
@@ -46,6 +47,10 @@ function ReviewConversations() {
       runOnMount: true,
     });
 
+  const { data: recentConversations } = useGetRecentConversations({
+    runOnMount: true,
+  });
+
   const [openedConversation, setOpenedConversation] =
     React.useState<ConversationToReview | null>(null);
 
@@ -54,7 +59,9 @@ function ReviewConversations() {
     await getConversations();
   };
 
-  const [viewAllConversations, setViewAllConversations] = React.useState(true);
+  const [viewMode, setViewMode] = React.useState<"all" | "review" | "recent">(
+    "all"
+  );
 
   const [allowEnhanced, setAllowEnhanced] = React.useState(true);
   const [allowNoneIntent, setAllowNoneIntent] = React.useState(true);
@@ -143,13 +150,18 @@ function ReviewConversations() {
     return filtered;
   };
 
-  const conversationsToView = viewAllConversations
-    ? filterConversations(allConversations || [])
-    : filterConversations(conversations || []);
+  const conversationsToView =
+    viewMode === "all"
+      ? filterConversations(allConversations || [])
+      : viewMode === "review"
+      ? filterConversations(conversations || [])
+      : viewMode === "recent"
+      ? filterConversations(recentConversations || [])
+      : [];
 
   useEffect(() => {
     if (searchParams.get("load_conversation")) {
-      setViewAllConversations(true);
+      setViewMode("all");
       const foundConversation = conversationsToView?.find((conv) => {
         const is = conv.id === Number(searchParams.get("load_conversation"));
         return is;
@@ -194,27 +206,23 @@ function ReviewConversations() {
         <SegmentedControl
           data={[
             {
-              label: "All Conversations",
+              label: "All",
               value: "all",
             },
             {
-              label: "Marked for Review",
-              value: "to_review",
+              label: "For Review",
+              value: "review",
+            },
+            {
+              label: "Recent",
+              value: "recent",
             },
           ]}
           onChange={(v) => {
-            switch (v) {
-              case "to_review":
-                setViewAllConversations(false);
-                break;
-              case "all":
-                setViewAllConversations(true);
-                break;
-            }
+            if (!v) return;
+            setViewMode(v as "all" | "review" | "recent");
           }}
-        >
-          {viewAllConversations ? "View To Review" : "View All"}
-        </SegmentedControl>
+        />
       </div>
       <div className={styles.searchContainer}>
         <Search />
@@ -256,7 +264,7 @@ function ReviewConversations() {
             ))
           ) : (
             <p className={styles.disclaimer}>
-              {viewAllConversations
+              {viewMode === "all" || viewMode === "recent"
                 ? "No conversations yet."
                 : "No conversations marked for review"}
             </p>
@@ -364,7 +372,6 @@ function Conversation({
 
     const newParams = new URLSearchParams({
       load_conversation: new_id.toString(),
-      tab: "converse",
     }).toString();
 
     reloadConversations();
@@ -434,7 +441,6 @@ function Conversation({
   const handleOpenInTraining = async (chatId: number) => {
     const urlSearchParams = new URLSearchParams({
       load_conversation: chatId.toString(),
-      tab: "converse",
     }).toString();
     navigate(`/train?${urlSearchParams}`);
   };
@@ -464,12 +470,26 @@ function Conversation({
     return `${hoursWithLeadingZero}:${minutesWithLeadingZero} ${dayOfTheWeek} ${month} ${day}, ${year}`;
   };
 
+  const conversationRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (openedConversation?.id === conversation.id && conversationRef.current) {
+      console.log("Scrolling into view");
+      // scroll the ref to the top of the screen
+      conversationRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  }, [openedConversation, conversation.id, conversationRef.current]);
+
   return (
     <div
       key={conversation.id}
       className={`${styles.conversation_interface} ${
         openedConversation ? styles.conversation_is_open : ""
       }`}
+      ref={conversationRef}
     >
       <div
         className={`${styles.conversation} ${

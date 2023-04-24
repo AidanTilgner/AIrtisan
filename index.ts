@@ -1,14 +1,6 @@
 import Express from "express";
 import { config } from "dotenv";
-import NLURouter from "./routes/nlu";
-import ChatRouter from "./routes/chat";
-import TrainingRouter from "./routes/training";
-import AuthRouter from "./routes/auth";
-import ConversationsRouter from "./routes/conversations";
-import WidgetsRouter from "./routes/widgets";
-import OrganizationRouter from "./routes/organizations";
-import BotRouter from "./routes/bots";
-import { logIP } from "./middleware/analysis";
+import ApiRouter from "./routes/api";
 import path from "path";
 import "reflect-metadata";
 import { initializeDatabase } from "./database";
@@ -41,16 +33,7 @@ app.use(
 app.use(Express.json());
 app.use(Express.urlencoded({ extended: true }));
 
-app.use(logIP);
-
-app.use("/organizations", OrganizationRouter);
-app.use("/nlu", NLURouter);
-app.use("/chat", ChatRouter);
-app.use("/training", TrainingRouter);
-app.use("/auth", AuthRouter);
-app.use("/conversations", ConversationsRouter);
-app.use("/widgets", WidgetsRouter);
-app.use("/bots", BotRouter);
+app.use("/api", ApiRouter);
 
 app.get("/login", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "auth", "login.html"));

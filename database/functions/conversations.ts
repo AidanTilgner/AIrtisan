@@ -597,7 +597,7 @@ export const generateIntentFlow = async (conversation_id: number) => {
   }
 };
 
-export const getRecentConversations = async (botId: number) => {
+export const getRecentConversations = async (botId: number, n = 10) => {
   try {
     const bot = await getBot(botId);
     if (!bot) {
@@ -608,7 +608,7 @@ export const getRecentConversations = async (botId: number) => {
       where: { bot: { id: botId } },
       relations: ["chats"],
       order: { updated_at: "DESC" },
-      take: 10,
+      take: n,
     });
 
     return conversations;

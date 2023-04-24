@@ -1,25 +1,11 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useMemo } from "react";
 import Interactive from "./Interactive/Interactive";
 import Converse from "./Converse/Converse";
 import styles from "./index.module.scss";
-import { useSearchParams } from "react-router-dom";
 import { useBot } from "../../contexts/Bot";
 
 function index() {
-  const [urlSearchParams, setUrlSearchParams] = useSearchParams();
-
-  const [trainingType] = React.useState<"interactive" | "converse">(
-    (urlSearchParams.get("tab") as "converse" | "interactive") || "converse"
-  );
-
-  useEffect(() => {
-    if (urlSearchParams.get("tab") !== trainingType) {
-      setUrlSearchParams((prev) => {
-        prev.set("tab", trainingType);
-        return prev;
-      });
-    }
-  }, [urlSearchParams]);
+  const [trainingType] = React.useState<"interactive" | "converse">("converse");
 
   const prevTrainingType = React.useRef(trainingType);
 

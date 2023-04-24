@@ -5,9 +5,10 @@ import { ArrowRight } from "@phosphor-icons/react";
 
 interface ConversationCardProps {
   conversation: Conversation;
+  onGoTo: (conversation: Conversation) => void;
 }
 
-function ConversationCard({ conversation }: ConversationCardProps) {
+function ConversationCard({ conversation, onGoTo }: ConversationCardProps) {
   const getFormattedTimeStamp = (timestamp: string) => {
     const date = new Date(timestamp);
 
@@ -58,7 +59,10 @@ function ConversationCard({ conversation }: ConversationCardProps) {
       </div>
       <div className={styles.bottom}>
         <div className={styles.options}>
-          <button className={`${styles.bottomOption} ${styles.go}`}>
+          <button
+            className={`${styles.bottomOption} ${styles.go}`}
+            onClick={() => onGoTo(conversation)}
+          >
             <ArrowRight weight="bold" />
           </button>
         </div>

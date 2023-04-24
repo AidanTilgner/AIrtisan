@@ -477,11 +477,12 @@ export const useGetAllBots = (
 };
 
 export const useGetRecentConversations = (
-  config?: Partial<UseFetchConfig<unknown, Conversation[]>>
+  config?: Partial<UseFetchConfig<unknown, Conversation[]>>,
+  n?: number
 ) => {
   const { load, data, success } = useFetch<unknown, Conversation[]>({
     ...config,
-    url: "/conversations/recent",
+    url: n ? `/conversations/recent/${n}` : "/conversations/recent",
     method: "GET",
   });
 

@@ -6,7 +6,7 @@ import { setupCache } from "axios-cache-interceptor";
 
 export const api = setupCache(
   axios.create({
-    baseURL: "/",
+    baseURL: "/api",
     withCredentials: true,
     headers: {
       "x-access-token": localStorage.getItem("accessToken"),

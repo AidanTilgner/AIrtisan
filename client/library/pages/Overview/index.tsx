@@ -7,6 +7,7 @@ import {
   useGetRecentConversations,
 } from "../../hooks/fetching/common";
 import ConversationCard from "../../components/Cards/Conversation/ConversationCard";
+import { useSearchParams } from "react-router-dom";
 
 function index() {
   const getWelcomeMessage = () => {
@@ -16,14 +17,18 @@ function index() {
     let message = "";
     let icon = <SunHorizon />;
     if (hours < 12) {
-      message = "Good morning";
+      message = "Good morning!";
     }
-    if (hours >= 12 && hours <= 17) {
-      message = "Good afternoon";
+    if (hours >= 12 && hours < 16) {
+      message = "Hi there, hope you're having a good day!";
       icon = <Sun />;
     }
-    if (hours > 17 && hours <= 24) {
-      message = "Good evening";
+    if (hours >= 16 && hours < 19) {
+      message = "Good evening, welcome!";
+      icon = <SunHorizon />;
+    }
+    if (hours >= 19) {
+      message = "Welcome, it's great to have you here!";
       icon = <MoonStars />;
     }
     return {
@@ -37,17 +42,19 @@ function index() {
 
   const { user } = useUser();
 
-  const { data: recentConversations } = useGetRecentConversations({
-    runOnMount: true,
-  });
-
-  console.log("Recent conversations", recentConversations);
+  const { data: recentConversations } = useGetRecentConversations(
+    {
+      runOnMount: true,
+    },
+    4
+  );
 
   const { data: bots } = useGetBots({
     runOnMount: true,
   });
 
   console.log("Bots", bots);
+  const [searchParams] = useSearchParams();
 
   return (
     <div className={styles.Home}>
@@ -56,14 +63,14 @@ function index() {
           {welcomeMessage.message} <WelcomeIcon />
         </p>
         <h1 className={styles.big_text}>
-          Hello, <strong>{user?.username}</strong>
+          <strong>{user?.username}</strong>
+          {"'s"} Dashboard
         </h1>
       </div>
       <div className={styles.quickActions}>
-        <p>
-          More content coming soon, maybe check out the{" "}
-          <a href="/documentation">documentation</a>.
-        </p>
+        <button className={`${styles.quickAction} ${styles.btnPrimary}`}>
+          See Conversations
+        </button>
       </div>
       <div className={styles.recentConversations}>
         <h2>Here are some recent user conversations...</h2>
@@ -72,6 +79,13 @@ function index() {
             <ConversationCard
               key={conversation.id}
               conversation={conversation}
+              onGoTo={(conv) => {
+                searchParams.set("tab", "review");
+                searchParams.set(
+                  "load_conversation",
+                  conv.id as unknown as string
+                );
+              }}
             />
           ))}
         </div>
