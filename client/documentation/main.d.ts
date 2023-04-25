@@ -56,13 +56,10 @@ export interface CorpusDataPoint {
   answers: string[];
   triggers?: {
     type: string;
-    args: Record<string, any>;
+    args: Record<string, unknown>;
     attachments: string[];
   }[];
-  buttons?: {
-    type: string;
-    metadata?: Record<string, any>;
-  }[];
+  buttons?: ButtonType[];
   enhance: boolean;
 }
 
@@ -90,11 +87,21 @@ export interface Bot {
 
 export interface ButtonType {
   type: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface Manager {
   id: number;
-  bot: any;
+  bot: unknown;
   running: boolean;
+}
+
+export interface Organization {
+  id?: number | null;
+  name: string;
+  description: string;
+  admins: Admin[];
+  bots: Bot[];
+  created_at: Date;
+  updated_at: Date;
 }

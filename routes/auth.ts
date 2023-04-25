@@ -5,6 +5,8 @@ import {
   getAdmins,
   updateAdmin,
   deleteAdmin,
+  getAdminOrganizations,
+  getAdminBots,
 } from "../database/functions/admin";
 import { Router } from "express";
 import { checkIsSuperAdmin, checkIsAdmin } from "../middleware/auth";
@@ -78,13 +80,6 @@ router.post("/admin/signup", async (req, res) => {
       res.status(500).send({ message: "Internal server error." });
       return;
     }
-
-    res.status(200).send({
-      message: "Admin created successfully.",
-      data: {
-        username,
-      },
-    });
 
     const access_token = generateAccessToken(result.id);
     const { token: refresh_token } = await createRefreshToken(result.id);
@@ -177,18 +172,14 @@ router.post("/check", async (req, res) => {
     if (!verified) {
       res.status(401).send({
         message: "Invalid access token provided.",
-        data: {
-          authenticated: false,
-        },
+        data: false,
       });
       return;
     }
 
     res.status(200).send({
       message: "Access token verified successfully.",
-      data: {
-        authenticated: true,
-      },
+      data: true,
     });
   } catch (err) {
     console.error(err);
@@ -196,15 +187,13 @@ router.post("/check", async (req, res) => {
   }
 });
 
-router.post("/is_super_admin", checkIsAdmin, async (req, res) => {
+router.get("/is_super_admin", checkIsAdmin, async (req, res) => {
   try {
     const admin = (req as unknown as Record<"admin", Admin>)["admin"];
 
     res.status(200).send({
       message: "Access token verified successfully.",
-      data: {
-        is_super_admin: admin.role === "superadmin",
-      },
+      data: admin.role === "superadmin",
     });
   } catch (err) {
     console.error(err);
@@ -220,10 +209,50 @@ router.get("/me", checkIsAdmin, async (req, res) => {
     const { password, ...adminWithoutPassword } = admin;
 
     res.status(200).send({
-      message: "Access token verified successfully.",
-      data: {
-        admin: adminWithoutPassword,
-      },
+      message: "Got admin from session.",
+      data: adminWithoutPassword,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ message: "Internal server error." });
+  }
+});
+
+router.get("/me/organizations", checkIsAdmin, async (req, res) => {
+  try {
+    const admin = (req as unknown as Record<"admin", Admin>)["admin"];
+
+    const organizations = await getAdminOrganizations(admin.id);
+
+    if (!organizations) {
+      res.status(500).send({ message: "Internal server error." });
+      return;
+    }
+
+    res.status(200).send({
+      message: "Got admin organizations from session.",
+      data: organizations,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ message: "Internal server error." });
+  }
+});
+
+router.get("/me/bots", checkIsAdmin, async (req, res) => {
+  try {
+    const admin = (req as unknown as Record<"admin", Admin>)["admin"];
+
+    const bots = await getAdminBots(admin.id);
+
+    if (!bots) {
+      res.status(500).send({ message: "Internal server error." });
+      return;
+    }
+
+    res.status(200).send({
+      message: "Got admin bots from session.",
+      data: bots,
     });
   } catch (err) {
     console.error(err);

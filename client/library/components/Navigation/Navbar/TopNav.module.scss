@@ -1,0 +1,43 @@
+.TopNav {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  box-sizing: border-box;
+  padding: 24px 24px;
+  display: flex;
+  align-items: center;
+  z-index: 10;
+  background-color: white;
+  transition: all 0.2s ease-in-out;
+
+  @media (min-width: 768px) {
+    padding: 24px 56px;
+  }
+}
+
+.scrolled {
+  padding: 18px 24px;
+  box-shadow: 0.2px 0.2px 15px rgba(0, 0, 0, 0.1);
+
+  @media (min-width: 768px) {
+    padding: 18px 56px;
+  }
+}
+
+.logo {
+  height: 36px;
+  width: 36px;
+  display: flex;
+  place-content: center;
+  padding: 0;
+  margin: 0;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}

@@ -8,6 +8,7 @@ import AuthRouter from "./auth";
 import ConversationsRouter from "./conversations";
 import WidgetsRouter from "./widgets";
 import BotRouter from "./bots";
+import AdminRouter from "./admin";
 
 const router = Router();
 
@@ -24,5 +25,6 @@ router.use("/auth", AuthRouter);
 router.use("/conversations", ConversationsRouter);
 router.use("/widgets", WidgetsRouter);
 router.use("/bots", BotRouter);
+router.use("/admin", AdminRouter);
 
 export default router;

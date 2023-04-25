@@ -1,0 +1,59 @@
+.Profile {
+  padding: 0 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+
+.left {
+}
+
+.right {
+}
+
+.iconContainer {
+  text-align: center;
+  margin-inline: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .icon {
+    border-radius: 50%;
+    height: 50vw;
+    aspect-ratio: 1/1;
+    border: 1px solid #eaeaea;
+    font-size: 30vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0.2px 0.2px 18px rgba($color: #000000, $alpha: 0.1);
+  }
+}
+
+.name {
+  font-size: 36px;
+  font-weight: 500;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+
+  button {
+    font-size: 24px;
+    color: #2256f2;
+    opacity: 0.5;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    background-color: transparent;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+}

@@ -1,10 +1,13 @@
+import { useEffect } from "react";
 import {
+  Admin,
   Bot,
   ButtonType,
   Chat,
   Conversation,
   Corpus,
   CorpusDataPoint,
+  Organization,
 } from "../../../documentation/main";
 import useFetch, { UseFetchConfig } from "../useFetch";
 
@@ -488,6 +491,132 @@ export const useGetRecentConversations = (
 
   return {
     getRecentConversations: load,
+    data: data,
+    success,
+  };
+};
+
+export const useGetMe = (
+  config?: Partial<UseFetchConfig<unknown, Omit<Admin, "password">>>
+) => {
+  const { load, data, success } = useFetch<unknown, Omit<Admin, "password">>({
+    useBotId: false,
+    ...config,
+    url: "/auth/me",
+    method: "GET",
+  });
+
+  return {
+    getMe: load,
+    data: data,
+    success,
+  };
+};
+
+export const useGetMyOrganizations = (
+  config?: Partial<UseFetchConfig<unknown, Organization[]>>
+) => {
+  const { load, data, success } = useFetch<unknown, Organization[]>({
+    useBotId: false,
+    ...config,
+    url: "/auth/me/organizations",
+    method: "GET",
+  });
+
+  return {
+    getMyOrganizations: load,
+    data: data,
+    success,
+  };
+};
+
+export const useGetMyBots = (
+  config?: Partial<UseFetchConfig<unknown, Bot[]>>
+) => {
+  const { load, data, success } = useFetch<unknown, Bot[]>({
+    useBotId: false,
+    ...config,
+    url: "/auth/me/bots",
+    method: "GET",
+  });
+
+  return {
+    getMyBots: load,
+    data: data,
+    success,
+  };
+};
+
+export const useCheckIsSuperAdmin = (
+  config?: Partial<UseFetchConfig<unknown, boolean>>
+) => {
+  const { load, data, success } = useFetch<unknown, boolean>({
+    useBotId: false,
+    ...config,
+    url: "/auth/is_super_admin",
+    method: "POST",
+  });
+
+  return {
+    checkIsSuperAdmin: load,
+    data: data,
+    success,
+  };
+};
+
+export const useCheckAuth = (
+  config?: Partial<UseFetchConfig<{ access_token: string }, boolean>>
+) => {
+  const { load, data, success } = useFetch<
+    {
+      access_token: string;
+    },
+    boolean
+  >({
+    useBotId: false,
+    ...config,
+    url: "/auth/check",
+    method: "POST",
+    body: {
+      access_token: localStorage.getItem("accessToken") || "",
+    },
+  });
+
+  return {
+    checkAuth: load,
+    data: data,
+    success,
+  };
+};
+
+export const useRefreshAccessToken = (
+  config?: Partial<
+    UseFetchConfig<{ refresh_token: string }, { access_token: string }>
+  >
+) => {
+  const { load, data, success } = useFetch<
+    {
+      refresh_token: string;
+    },
+    { access_token: string }
+  >({
+    useBotId: false,
+    ...config,
+    url: "/auth/refresh",
+    method: "POST",
+    body: {
+      refresh_token: localStorage.getItem("refreshToken") || "",
+    },
+  });
+
+  useEffect(() => {
+    if (data?.access_token) {
+      localStorage.setItem("accessToken", data.access_token);
+    }
+  }, [data]);
+
+  return {
+    refreshAccessToken: load,
     data: data,
     success,
   };

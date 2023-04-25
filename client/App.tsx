@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./App.module.scss";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import { MantineProvider } from "@mantine/core";
 import { NotificationsProvider } from "@mantine/notifications";
 import { ModalProvider } from "./library/contexts/Modals";
@@ -9,8 +9,11 @@ import Bot from "./library/Views/Bot/Bot";
 import Dashboard from "./library/Views/Dashboard/Dashboard";
 import ProfileNav from "./library/components/Navigation/Profile/Profile";
 import Profile from "./library/Views/Profile/Profile";
+import TopNav from "./library/components/Navigation/Navbar/TopNav";
 
 function App() {
+  const location = useLocation();
+
   return (
     <div className={styles.App}>
       <MantineProvider
@@ -41,8 +44,9 @@ function App() {
       >
         <ModalProvider>
           <NotificationsProvider position="bottom-right">
+            <TopNav />
             <GlobalModal />
-            <ProfileNav />
+            {!location.pathname.includes("/profile") && <ProfileNav />}
             <div className={styles.main_container}>
               <Routes>
                 <Route path="/">
