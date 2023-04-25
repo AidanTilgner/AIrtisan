@@ -1,8 +1,10 @@
+export type AdminRoles = "admin" | "superadmin";
+
 export interface Admin {
   id?: number | null;
   username: string;
   password?: string;
-  role: "admin" | "superadmin";
+  role: AdminRoles;
   created_at: Date;
   updated_at: Date;
 }

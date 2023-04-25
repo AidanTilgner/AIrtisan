@@ -55,7 +55,6 @@ function index() {
   });
 
   console.log("Bots", bots);
-  const [searchParams, setSearchParams] = useSearchParams();
 
   const updateSearchParams = useSearchParamsUpdate();
 

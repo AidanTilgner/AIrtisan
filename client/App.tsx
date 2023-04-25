@@ -7,6 +7,8 @@ import { ModalProvider } from "./library/contexts/Modals";
 import GlobalModal from "./library/components/Utils/Modal";
 import Bot from "./library/Views/Bot/Bot";
 import Dashboard from "./library/Views/Dashboard/Dashboard";
+import ProfileNav from "./library/components/Navigation/Profile/Profile";
+import Profile from "./library/Views/Profile/Profile";
 
 function App() {
   return (
@@ -40,10 +42,14 @@ function App() {
         <ModalProvider>
           <NotificationsProvider position="bottom-right">
             <GlobalModal />
+            <ProfileNav />
             <div className={styles.main_container}>
               <Routes>
                 <Route path="/">
                   <Route index element={<Dashboard />} />
+                </Route>
+                <Route path="profile">
+                  <Route index element={<Profile />} />
                 </Route>
                 <Route path="bots">
                   <Route path=":bot_id">

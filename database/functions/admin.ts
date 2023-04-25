@@ -7,16 +7,19 @@ export const createAdmin = async ({
   username,
   password,
   role,
+  display_name,
 }: {
-  username: string;
-  password: string;
-  role: "admin" | "superadmin";
+  username: Admin["username"];
+  password: Admin["password"];
+  role: Admin["role"];
+  display_name?: Admin["display_name"];
 }) => {
   try {
     const admin = new entities.Admin();
     admin.username = username;
     admin.password = hashPassword(password);
     admin.role = role;
+    if (display_name) admin.display_name = display_name;
     const result = await dataSource.manager.save(admin);
     return result;
   } catch (err) {
@@ -107,77 +110,6 @@ export const addAdminToOrganization = async (
     admin.organizations = [...(admin.organizations || []), organization];
     const result = await dataSource.manager.save(admin);
     await dataSource.manager.save(organization);
-    return result;
-  } catch (err) {
-    console.error(err);
-    return null;
-  }
-};
-
-export const createAdminInOrganization = async ({
-  username,
-  password,
-  role,
-  organization_id,
-}: {
-  username: string;
-  password: string;
-  role: "admin" | "superadmin";
-  organization_id: number;
-}) => {
-  try {
-    const createdAdmin = await createAdmin({
-      username,
-      password,
-      role,
-    });
-    if (!createdAdmin) return null;
-    const organization = await dataSource.manager.findOne(
-      entities.Organization,
-      {
-        where: { id: organization_id },
-      }
-    );
-    if (!organization) return null;
-    createdAdmin.organizations = [organization];
-    const result = await dataSource.manager.save(createdAdmin);
-    return result;
-  } catch (err) {
-    console.error(err);
-    return null;
-  }
-};
-
-export const createAdminInOrganizationByName = async ({
-  username,
-  password,
-  role,
-  organization_name,
-}: {
-  username: string;
-  password: string;
-  role: "admin" | "superadmin";
-  organization_name: string;
-}) => {
-  try {
-    const createdAdmin = await createAdmin({
-      username,
-      password,
-      role,
-    });
-    if (!createdAdmin) return null;
-    const organization = await dataSource.manager.findOne(
-      entities.Organization,
-      {
-        where: { name: organization_name },
-      }
-    );
-    if (!organization) return null;
-    createdAdmin.organizations = [
-      ...(createdAdmin.organizations || []),
-      organization,
-    ];
-    const result = await dataSource.manager.save(createdAdmin);
     return result;
   } catch (err) {
     console.error(err);

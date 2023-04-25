@@ -16,3 +16,5 @@ export interface Corpus {
   locale: string;
   data: CorpusDataPoint[];
 }
+
+export type AdminRoles = "admin" | "superadmin";

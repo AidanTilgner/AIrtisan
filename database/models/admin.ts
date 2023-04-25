@@ -8,6 +8,7 @@ import {
 } from "typeorm";
 import { Organization } from "./organization";
 import { comparePassword as compPass } from "../../utils/crypto";
+import { AdminRoles } from "../../types/lib";
 
 @Entity()
 export class Admin {
@@ -20,8 +21,18 @@ export class Admin {
   @Column("text")
   password!: string;
 
+  @Column("text", {
+    nullable: true,
+  })
+  display_name!: string;
+
+  @Column("text", {
+    nullable: true,
+  })
+  email!: string;
+
   @Column("text")
-  role: "admin" | "superadmin" = "admin";
+  role: AdminRoles = "admin";
 
   @ManyToMany(() => Organization, (organization) => organization.admins)
   organizations!: Organization[];
