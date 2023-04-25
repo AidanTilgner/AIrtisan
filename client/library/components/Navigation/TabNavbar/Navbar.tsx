@@ -5,12 +5,7 @@ import { useBot } from "../../../contexts/Bot";
 import { useRetrainBot } from "../../../hooks/fetching/common";
 import { showNotification } from "@mantine/notifications";
 import { Link } from "react-router-dom";
-import {
-  ArrowLeft,
-  ArrowsClockwise,
-  House,
-  HouseSimple,
-} from "@phosphor-icons/react";
+import { ArrowsClockwise, CaretLeft, House } from "@phosphor-icons/react";
 
 interface NavbarProps<Tabs> {
   tabs: { icon: JSX.Element; name: string; id: Tabs; visible: boolean }[];
@@ -88,8 +83,8 @@ function Navbar<Tab>({
         {hasBackToHomeButton && (
           <div className={styles.backToHome} title="Back to home">
             <Link to="/">
+              <CaretLeft weight="regular" />
               <House weight="regular" />
-              <ArrowLeft weight="regular" />
             </Link>
           </div>
         )}

@@ -6,6 +6,7 @@ import {
   useGetBots,
   useGetRecentConversations,
 } from "../../hooks/fetching/common";
+import { useSearchParamsUpdate } from "../../hooks/navigation";
 import ConversationCard from "../../components/Cards/Conversation/ConversationCard";
 import { useSearchParams } from "react-router-dom";
 
@@ -54,7 +55,9 @@ function index() {
   });
 
   console.log("Bots", bots);
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const updateSearchParams = useSearchParamsUpdate();
 
   return (
     <div className={styles.Home}>
@@ -80,10 +83,11 @@ function index() {
               key={conversation.id}
               conversation={conversation}
               onGoTo={(conv) => {
-                searchParams.set("tab", "review");
-                searchParams.set(
-                  "load_conversation",
-                  conv.id as unknown as string
+                updateSearchParams(
+                  new Map([
+                    ["tab", "review"],
+                    ["load_conversation", conv.id as unknown as string],
+                  ])
                 );
               }}
             />

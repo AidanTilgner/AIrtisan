@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./Converse.module.scss";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { Chat as ChatType, Conversation } from "../../../../documentation/main";
 import { showNotification } from "@mantine/notifications";
 import {
@@ -29,6 +29,7 @@ import {
   useSendTrainingChat,
 } from "../../../hooks/fetching/common";
 import { useBot } from "../../../contexts/Bot";
+import { useSearchParamsUpdate } from "../../../hooks/navigation";
 
 type ChatPairType = {
   user: ChatType;
@@ -43,7 +44,6 @@ function Converse() {
   const { setQuery } = useSearch();
 
   const { bot } = useBot();
-  const navigate = useNavigate();
   const conversationId =
     conversation?.id || urlSearchParams.get("load_conversation") || "";
 
@@ -191,6 +191,21 @@ function Converse() {
     [] as ChatPairType[]
   );
 
+  const updateSearchParams = useSearchParamsUpdate();
+
+  const removeLoadConversation = () => {
+    updateSearchParams(
+      new Map([
+        [
+          "load_conversation",
+          conversation?.generated_name || String(conversation?.id),
+        ],
+      ])
+    );
+  };
+
+  const searchParamsUpdate = useSearchParamsUpdate();
+
   return (
     <div className={styles.converse}>
       <div className={styles.header}>
@@ -204,6 +219,7 @@ function Converse() {
             onClick={() => {
               setConversation(undefined);
               setInitialLoad(true);
+              removeLoadConversation();
             }}
             title="Start a new conversation"
             disabled={loading || !conversation}
@@ -217,8 +233,8 @@ function Converse() {
                 setQuery(
                   conversation?.generated_name || String(conversation?.id)
                 );
-                navigate(
-                  `/review/conversations?load_conversation=${conversation?.id}`
+                searchParamsUpdate(
+                  new Map([["load_conversation", String(conversation?.id)]])
                 );
               }}
               title="View conversation details"
@@ -338,8 +354,6 @@ const ChatPair = ({
 
   const [assistantLoading, setAssistantLoading] = React.useState(false);
 
-  const navigate = useNavigate();
-
   const { retryChat } = useRetryChat(assistant.id as number);
 
   const handleRetryChat = async () => {
@@ -428,6 +442,8 @@ const ChatPair = ({
     });
   };
 
+  const searchParamsUpdate = useSearchParamsUpdate();
+
   return (
     <div
       className={`${styles.chatPair}`}
@@ -494,7 +510,7 @@ const ChatPair = ({
                   className={`${styles.edit_button} ${styles.metadataOption}`}
                   onClick={() => {
                     setQuery(user.message);
-                    navigate("/corpus");
+                    searchParamsUpdate(new Map([["tab", "corpus"]]));
                   }}
                   title="Modify the corpus"
                 >

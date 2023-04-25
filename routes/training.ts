@@ -483,7 +483,7 @@ router.get("/conversations/all", async (req, res) => {
 });
 
 router.post(
-  "/conversation/:conversation_id/training_copy/",
+  "/conversations/:conversation_id/training_copy/",
   async (req, res) => {
     try {
       const bot_id = req.body.bot_id || req.query.bot_id;

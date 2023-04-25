@@ -19,6 +19,7 @@ import {
   TreeStructure,
 } from "@phosphor-icons/react";
 import { useParams, useSearchParams } from "react-router-dom";
+import { useSearchParamsUpdate } from "../../hooks/navigation";
 
 type Tab =
   | "overview"
@@ -34,23 +35,24 @@ function Bot() {
 
   const { isSuperAdmin } = useUser();
 
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [currentTab, setCurrentTab] = React.useState<Tab>(
     (searchParams.get("tab") as Tab) || "overview"
   );
 
   useEffect(() => {
-    searchParams.set("tab", currentTab);
-  }, [currentTab]);
-
-  useEffect(() => {
-    const tabInParams = searchParams.get("tab") as Tab;
-    if (tabInParams === currentTab) {
-      return;
-    } else {
-      setCurrentTab(tabInParams);
+    if (searchParams.get("tab") !== currentTab) {
+      setCurrentTab(searchParams.get("tab") as Tab);
     }
   }, [searchParams]);
+
+  const searchParamsUpdate = useSearchParamsUpdate();
+
+  useEffect(() => {
+    if (currentTab && searchParams.get("tab") !== currentTab) {
+      searchParamsUpdate(new Map([["tab", currentTab]]));
+    }
+  }, [currentTab]);
 
   return (
     <div>

@@ -10,7 +10,7 @@ import {
   ArrowRight,
   Graph,
 } from "@phosphor-icons/react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import {
   Chat,
   Conversation as ConversationType,
@@ -28,6 +28,7 @@ import {
   useGetRecentConversations,
   useMarkChatAsReviewed,
 } from "../../hooks/fetching/common";
+import { useSearchParamsUpdate } from "../../hooks/navigation";
 
 function ReviewConversations() {
   const { query } = useSearch();
@@ -293,8 +294,6 @@ function Conversation({
   const { user } = useUser();
   const { setQuery, query } = useSearch();
 
-  const navigate = useNavigate();
-
   const getConversationChats = seeFullConversation
     ? conversation.chats
     : conversation.chats?.filter((c, i, chats) => {
@@ -339,6 +338,10 @@ function Conversation({
   const { createTrainingCopyOfConversation } =
     useCreateTrainingCopyOfConversation(conversation.id as number);
 
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const updateSearchParams = useSearchParamsUpdate();
+
   const handleCreateTrainingCopy = async () => {
     if (!user) return;
     const response = await createTrainingCopyOfConversation();
@@ -370,13 +373,13 @@ function Conversation({
       message: "Created training copy of conversation",
     });
 
-    const newParams = new URLSearchParams({
-      load_conversation: new_id.toString(),
-    }).toString();
-
+    updateSearchParams(
+      new Map([
+        ["load_conversation", `${new_id}`],
+        ["tab", "training"],
+      ])
+    );
     reloadConversations();
-
-    navigate(`/train?${newParams}`);
   };
 
   const { setModal, closeModal } = useModal();
@@ -430,19 +433,11 @@ function Conversation({
     });
   };
 
-  // const handleRetryChat = async (chatContent: string) => {
-  //   const urlSearchParams = new URLSearchParams({
-  //     run: chatContent,
-  //     tab: "interactive",
-  //   }).toString();
-  //   navigate(`/train?${urlSearchParams}`);
-  // };
+  const handleOpenInTraining = async () => {
+    const urlSearchParams = new URLSearchParams(searchParams.toString());
+    urlSearchParams.set("load_conversation", `${conversation.id}`);
 
-  const handleOpenInTraining = async (chatId: number) => {
-    const urlSearchParams = new URLSearchParams({
-      load_conversation: chatId.toString(),
-    }).toString();
-    navigate(`/train?${urlSearchParams}`);
+    setSearchParams(urlSearchParams);
   };
 
   const chatWasEnhanced = !!conversation.chats.find((c) => c.enhanced === true);
@@ -474,7 +469,6 @@ function Conversation({
 
   useEffect(() => {
     if (openedConversation?.id === conversation.id && conversationRef.current) {
-      console.log("Scrolling into view");
       // scroll the ref to the top of the screen
       conversationRef.current.scrollIntoView({
         behavior: "smooth",
@@ -482,6 +476,8 @@ function Conversation({
       });
     }
   }, [openedConversation, conversation.id, conversationRef.current]);
+
+  const updateSearchParamsState = useSearchParamsUpdate();
 
   return (
     <div
@@ -616,7 +612,7 @@ function Conversation({
                     title="Open in training"
                     onClick={() => {
                       if (!conversation.id) return;
-                      handleOpenInTraining(conversation.id);
+                      handleOpenInTraining();
                     }}
                   >
                     <ArrowRight />
@@ -627,7 +623,7 @@ function Conversation({
                   title="View conversation graph"
                   onClick={() => {
                     if (!conversation.id) return;
-                    navigate(`/flows/${conversation.id}`);
+                    updateSearchParamsState(new Map([["tab", "flows"]]));
                   }}
                 >
                   <Graph />
