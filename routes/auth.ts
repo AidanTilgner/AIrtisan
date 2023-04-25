@@ -12,7 +12,6 @@ import {
   generateAccessToken,
   verifyAccessToken,
   verifyRefreshToken,
-  generateRandomPassword,
 } from "../utils/crypto";
 import {
   createRefreshToken,
@@ -24,36 +23,9 @@ import {
   deleteApiKey,
   getAllApiKeys,
 } from "../database/functions/apiKey";
+import { Admin } from "../database/models/admin";
 
 const router = Router();
-
-router.post("/admin/register", checkIsSuperAdmin, async (req, res) => {
-  try {
-    const { username } = req.body;
-
-    const generatedPassword = generateRandomPassword();
-
-    const result = await createAdmin({
-      username,
-      password: generatedPassword,
-      role: "admin",
-    });
-    if (!result) {
-      res.status(500).send({ message: "Internal server error." });
-      return;
-    }
-    res.status(200).send({
-      message: "Admin created successfully.",
-      data: {
-        username,
-        password: generatedPassword,
-      },
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send({ message: "Internal server error." });
-  }
-});
 
 router.post("/admin/signin", async (req, res) => {
   try {
@@ -75,6 +47,50 @@ router.post("/admin/signin", async (req, res) => {
 
     res.status(200).send({
       message: "Admin signed in successfully.",
+      data: {
+        access_token,
+        refresh_token,
+      },
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ message: "Internal server error." });
+  }
+});
+
+router.post("/admin/signup", async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    const admin = await getAdminByUsername(username);
+
+    if (admin) {
+      res.status(409).send({ message: "Admin already exists." });
+      return;
+    }
+
+    const result = await createAdmin({
+      username,
+      password,
+      role: "admin",
+    });
+
+    if (!result) {
+      res.status(500).send({ message: "Internal server error." });
+      return;
+    }
+
+    res.status(200).send({
+      message: "Admin created successfully.",
+      data: {
+        username,
+      },
+    });
+
+    const access_token = generateAccessToken(result.id);
+    const { token: refresh_token } = await createRefreshToken(result.id);
+
+    res.status(200).send({
+      message: "Admin signed up successfully.",
       data: {
         access_token,
         refresh_token,
@@ -182,7 +198,7 @@ router.post("/check", async (req, res) => {
 
 router.post("/is_super_admin", checkIsAdmin, async (req, res) => {
   try {
-    const admin = req["admin"];
+    const admin = (req as unknown as Record<"admin", Admin>)["admin"];
 
     res.status(200).send({
       message: "Access token verified successfully.",
@@ -198,7 +214,7 @@ router.post("/is_super_admin", checkIsAdmin, async (req, res) => {
 
 router.get("/me", checkIsAdmin, async (req, res) => {
   try {
-    const admin = req["admin"];
+    const admin = (req as unknown as Record<"admin", Admin>)["admin"];
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...adminWithoutPassword } = admin;

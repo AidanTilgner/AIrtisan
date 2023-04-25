@@ -12,6 +12,9 @@ import {
   getOrganization,
 } from "../database/functions/organization";
 import { getBot } from "../database/functions/bot";
+import { Admin } from "../database/models/admin";
+import { Organization } from "../database/models/organization";
+import { Bot } from "../database/models/bot";
 
 config();
 
@@ -115,7 +118,7 @@ export const checkIsAdmin = async (
       return;
     }
 
-    req["admin"] = admin;
+    (req as unknown as Record<"admin", Admin>)["admin"] = admin;
 
     next();
   } catch (err) {
@@ -163,7 +166,7 @@ export const checkIsSuperAdmin = async (
       return;
     }
 
-    req["admin"] = admin;
+    (req as unknown as Record<"admin", Admin>)["admin"] = admin;
 
     next();
   } catch (err) {
@@ -267,8 +270,9 @@ export const isInOrganization = async (
       return;
     }
 
-    req["admin"] = admin;
-    req["organization"] = org;
+    (req as unknown as Record<"admin", Admin>)["admin"] = admin;
+    (req as unknown as Record<"organization", Organization>)["organization"] =
+      org;
 
     next();
   } catch (err) {
@@ -345,8 +349,8 @@ export const hasAccessToBot = async (
       return;
     }
 
-    req["admin"] = admin;
-    req["bot"] = bot;
+    (req as unknown as Record<"admin", Admin>)["admin"] = admin;
+    (req as unknown as Record<"bot", Bot>)["bot"] = bot;
 
     next();
   } catch (err) {

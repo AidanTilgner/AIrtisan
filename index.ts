@@ -39,6 +39,14 @@ app.get("/login", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "auth", "login.html"));
 });
 
+app.get("/signup", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "auth", "signup.html"));
+});
+
+app.get("/favicon", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "favicon.svg"));
+});
+
 if (process.env.ALLOW_TRAINING_UI === "true") {
   console.info("Training mode enabled");
   app.use(
