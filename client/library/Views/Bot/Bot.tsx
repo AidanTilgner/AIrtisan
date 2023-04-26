@@ -35,7 +35,7 @@ function Bot() {
 
   const { isSuperAdmin } = useUser();
 
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const [currentTab, setCurrentTab] = React.useState<Tab>(
     (searchParams.get("tab") as Tab) || "overview"
   );
@@ -58,7 +58,6 @@ function Bot() {
     <div>
       <BotProvider botId={bot_id}>
         <Navbar
-          hasBackToHomeButton
           tabs={[
             {
               name: "Overview",

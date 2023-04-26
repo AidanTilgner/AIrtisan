@@ -3,10 +3,10 @@ import { dataSource, entities } from "..";
 import { generateBotFiles } from "../../utils/bot";
 import { readFileSync, writeFileSync } from "fs";
 import { format } from "prettier";
-import { Corpus, OwnerTypes } from "../../types/lib";
+import { Context, Corpus, OwnerTypes } from "../../types/lib";
 import path from "path";
 import { getManagerIsAlive } from "../../nlu";
-import { getAdminBots } from "./admin";
+import { getAdminOrganizations } from "./admin";
 import { Organization } from "../models/organization";
 import { Admin } from "../models/admin";
 
@@ -257,7 +257,7 @@ export const updateBotCorpus = async (
   }
 };
 
-export const updateBotContext = async (id: Bot["id"], context: any) => {
+export const updateBotContext = async (id: Bot["id"], context: Context) => {
   try {
     const bot = await dataSource.manager.findOne(entities.Bot, {
       where: { id },
@@ -338,7 +338,7 @@ export const getBotStatus = async (id: Bot["id"]) => {
 
 export const getAdminBotsWithRunningStatus = async (admin_id: number) => {
   try {
-    const bots = await getAdminBots(admin_id);
+    const bots = await getBotsByOwner(admin_id, "admin");
 
     if (!bots) return null;
 
@@ -347,11 +347,88 @@ export const getAdminBotsWithRunningStatus = async (admin_id: number) => {
         const status = await getBotStatus(bot.id);
         return {
           running: status,
+          owner: await getBotOwner(bot.owner_id, bot.owner_type),
           ...bot,
         };
       })
     );
+
     return botsWithStatus;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+export const getOrganizationBotsWithRunningStatus = async (
+  organization_id: number
+) => {
+  try {
+    const bots = await getBotsByOwner(organization_id, "organization");
+
+    if (!bots) return null;
+
+    const botsWithStatus = await Promise.all(
+      bots.map(async (bot) => {
+        const status = await getBotStatus(bot.id);
+        return {
+          running: status,
+          owner: await getBotOwner(bot.owner_id, bot.owner_type),
+          ...bot,
+        };
+      })
+    );
+
+    return botsWithStatus;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+export const checkAdminHasAccessToBot = async (
+  admin_id: number,
+  bot_id: number
+) => {
+  try {
+    const bots = await getBotsByOwner(admin_id, "admin");
+
+    const bot = bots?.find((bot) => bot.id === bot_id);
+
+    if (bot) return true;
+
+    const organizations = await getAdminOrganizations(admin_id);
+
+    if (!organizations) return false;
+
+    const foundBotInOrganization = await Promise.all(
+      organizations.map(async (organization) => {
+        return await checkBotIsInOrganization(bot_id, organization.id);
+      })
+    );
+
+    if (foundBotInOrganization) return true;
+
+    return false;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+export const checkBotIsInOrganization = async (
+  bot_id: number,
+  organization_id: number
+) => {
+  try {
+    const bot = await getBot(bot_id);
+
+    if (!bot) return false;
+
+    if (bot.owner_type === "organization" && bot.owner_id === organization_id)
+      return true;
+
+    return false;
   } catch (error) {
     console.error(error);
     return null;

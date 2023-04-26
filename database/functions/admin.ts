@@ -130,15 +130,3 @@ export const getAdminOrganizations = async (id: number) => {
     return null;
   }
 };
-
-export const getAdminBots = async (id: number) => {
-  try {
-    const bots = await dataSource.manager.find(entities.Bot, {
-      where: { owner_id: id, owner_type: "admin" },
-    });
-    return bots;
-  } catch (err) {
-    console.error(err);
-    return null;
-  }
-};

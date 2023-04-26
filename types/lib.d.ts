@@ -17,6 +17,8 @@ export interface Corpus {
   data: CorpusDataPoint[];
 }
 
+export type Context = Record<string, unknown>;
+
 export type AdminRoles = "admin" | "superadmin";
 
 export type OwnerTypes = "admin" | "organization";

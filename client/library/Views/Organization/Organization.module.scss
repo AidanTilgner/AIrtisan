@@ -1,0 +1,150 @@
+.Organization {
+  padding: 36px 24px 82px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+
+  @media (min-width: 768px) {
+    padding: 36px 56px;
+    flex-direction: row;
+  }
+}
+
+.left {
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+
+  @media (min-width: 768px) {
+    flex-grow: 1;
+  }
+}
+
+.right {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  @media (min-width: 768px) {
+    flex-grow: 3;
+    gap: 36px;
+  }
+}
+
+.iconContainer {
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  @media (min-width: 768px) {
+    justify-content: flex-start;
+  }
+
+  .icon {
+    border-radius: 50%;
+    height: 50vw;
+    aspect-ratio: 1/1;
+    border: 1px solid #eaeaea;
+    font-size: 30vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0.2px 0.2px 18px rgba($color: #000000, $alpha: 0.1);
+    opacity: 0.5;
+
+    @media (min-width: 768px) {
+      height: 200px;
+      font-size: 150px;
+    }
+  }
+}
+
+.name {
+  font-size: 36px;
+  font-weight: 500;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+
+  @media (min-width: 768px) {
+    justify-content: flex-start;
+  }
+
+  button {
+    font-size: 24px;
+    color: #2256f2;
+    opacity: 0.5;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    background-color: transparent;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+}
+
+.organizationsContainer {
+  h3 {
+    font-size: 18px;
+    font-weight: 500;
+  }
+}
+
+.organizations {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 24px;
+  width: 100%;
+  box-sizing: border-box;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.newOrganization {
+  width: 100%;
+  aspect-ratio: 1/1;
+  border: 1px solid #eaeaea;
+  padding: 18px;
+  box-sizing: border-box;
+  border-radius: 10px;
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    background-color: #f8f8f8;
+  }
+
+  &:active {
+    transform: translateY(2px);
+  }
+}
+
+.content {
+  padding: 0;
+}
+
+.botsTab {
+  .searchContainer {
+    margin-bottom: 24px;
+  }
+
+  .bots {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+}

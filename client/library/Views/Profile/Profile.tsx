@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./Profile.module.scss";
 import { PencilSimple, Plus, User } from "@phosphor-icons/react";
 import { useUser } from "../../contexts/User";
@@ -11,6 +11,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import Tabs from "../../components/Navigation/Tabs/Tabs";
 import Search from "../../components/Search/Search";
 import BotCard from "../../components/Cards/Bot/BotCard";
+import { useSearchParamsUpdate } from "../../hooks/navigation";
 
 type Tab = "notifications" | "bots";
 
@@ -22,18 +23,27 @@ function Profile() {
 
   const navigate = useNavigate();
 
-  const [currentTab, setCurrentTab] = useState<Tab>("bots");
-
   const [searchParams] = useSearchParams();
 
-  console.log("Updated");
+  const [currentTab, setCurrentTab] = useState<Tab>(
+    (searchParams.get("tab") as Tab) || "bots"
+  );
 
-  React.useEffect(() => {
-    const tab = searchParams.get("tab") as Tab | null;
-    if (tab && tab !== currentTab) {
-      setCurrentTab(tab);
+  console.log(searchParams.get("tab"), currentTab);
+
+  useEffect(() => {
+    if (searchParams.get("tab") && searchParams.get("tab") !== currentTab) {
+      setCurrentTab(searchParams.get("tab") as Tab);
     }
   }, [searchParams]);
+
+  const searchParamsUpdate = useSearchParamsUpdate();
+
+  useEffect(() => {
+    if (currentTab && searchParams.get("tab") !== currentTab) {
+      searchParamsUpdate(new Map([["tab", currentTab]]));
+    }
+  }, [currentTab]);
 
   return (
     <div className={styles.Profile}>
@@ -110,7 +120,8 @@ function DisplayCurrentTab({ currentTab }: { currentTab: Tab }) {
 
 function BotsTab() {
   const { data: bots } = useGetMyBots({ runOnMount: true });
-  console.log("Bots", bots);
+
+  const navigate = useNavigate();
 
   return (
     <div className={styles.botsTab}>
@@ -119,7 +130,15 @@ function BotsTab() {
       </div>
       <div className={styles.bots}>
         {bots && bots?.length > 0 ? (
-          bots.map((b) => <BotCard key={b.id} bot={b} />)
+          bots.map((b) => (
+            <BotCard
+              key={b.id}
+              bot={b}
+              onClick={() => {
+                navigate(`/bots/${b.id}`);
+              }}
+            />
+          ))
         ) : (
           <p className={styles.disclaimer}></p>
         )}
@@ -131,7 +150,7 @@ function BotsTab() {
 function NotificationsTab() {
   return (
     <div className={styles.notificationsTab}>
-      <h3>Notifications</h3>
+      <p className={styles.disclaimer}>No notifications yet.</p>
     </div>
   );
 }

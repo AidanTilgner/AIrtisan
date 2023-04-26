@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import styles from "./Profile.module.scss";
 import {
   BellSimple,
@@ -14,8 +14,18 @@ import { logout } from "../../../helpers/auth";
 function Profile() {
   const navigate = useNavigate();
 
+  const navRef = useRef<HTMLDivElement>(null);
+
+  window.addEventListener("scroll", () => {
+    if (window.scrollY > 0 && navRef.current) {
+      navRef.current.classList.add(styles.scrolled);
+    } else if (navRef.current) {
+      navRef.current.classList.remove(styles.scrolled);
+    }
+  });
+
   return (
-    <div className={styles.profileContainer}>
+    <div className={styles.profileContainer} ref={navRef}>
       <Menu
         shadow="md"
         width={200}

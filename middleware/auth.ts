@@ -8,10 +8,9 @@ import { verifyAccessToken } from "../utils/crypto";
 import { getApiKey } from "../database/functions/apiKey";
 import {
   checkAdminIsInOrganization,
-  checkBotIsInOrganization,
   getOrganization,
 } from "../database/functions/organization";
-import { getBot } from "../database/functions/bot";
+import { checkAdminHasAccessToBot, getBot } from "../database/functions/bot";
 import { Admin } from "../database/models/admin";
 import { Organization } from "../database/models/organization";
 import { Bot } from "../database/models/bot";
@@ -322,29 +321,16 @@ export const hasAccessToBot = async (
       return;
     }
 
-    const bot = await getBot(Number(bot_id));
+    const bot = await getBot(bot_id);
 
     if (!bot) {
       res.status(400).send({ message: "Invalid bot id provided." });
       return;
     }
 
-    const isMember = await checkAdminIsInOrganization(
-      admin.id,
-      bot.organization.id
-    );
+    const hasAccess = await checkAdminHasAccessToBot(admin.id, bot_id);
 
-    if (!isMember) {
-      res.status(401).send({ message: "Unauthorized." });
-      return;
-    }
-
-    const botIsInOrganization = await checkBotIsInOrganization(
-      bot.id,
-      bot.organization.id
-    );
-
-    if (!botIsInOrganization) {
+    if (!hasAccess) {
       res.status(401).send({ message: "Unauthorized." });
       return;
     }

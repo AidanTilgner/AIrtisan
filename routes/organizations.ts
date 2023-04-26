@@ -6,6 +6,7 @@ import {
   updateOrganization,
   deleteOrganization,
 } from "../database/functions/organization";
+import { getOrganizationBotsWithRunningStatus } from "../database/functions/bot";
 
 const router = Router();
 
@@ -75,6 +76,25 @@ router.delete("/:id", async (req, res) => {
       message: "success",
       success: true,
       data: organization,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.get("/:id/bots", async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    if (!id) return res.status(400).json({ error: "Invalid organization id" });
+    const bots = await getOrganizationBotsWithRunningStatus(id);
+
+    if (!bots) return res.status(404).json({ error: "Organization not found" });
+
+    res.json({
+      message: "success",
+      success: true,
+      data: bots,
     });
   } catch (err) {
     console.error(err);

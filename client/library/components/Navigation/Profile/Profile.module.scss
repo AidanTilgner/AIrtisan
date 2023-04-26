@@ -2,9 +2,14 @@
   position: fixed;
   top: 24px;
   right: 24px;
-  height: 56px;
+  height: 45px;
   aspect-ratio: 1/1;
   z-index: 150;
+  transition: all 0.2s ease-in-out;
+}
+
+.scrolled {
+  top: 14px;
 }
 
 .Profile {
@@ -14,7 +19,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
+  font-size: 20px;
   //   border: 1px solid #eaeaea;
   box-shadow: 0.2px 0.2px 15px rgba(0, 0, 0, 0.1);
   cursor: pointer;

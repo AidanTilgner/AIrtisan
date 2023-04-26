@@ -112,24 +112,6 @@ export const getOrganizationAdmins = async (id: number) => {
   }
 };
 
-export const getOrganizationBots = async (id: number) => {
-  try {
-    const organization = await dataSource.manager.findOne(
-      entities.Organization,
-      {
-        where: { id },
-        relations: ["bots"],
-      }
-    );
-    if (!organization) return null;
-
-    return organization.bots;
-  } catch (err) {
-    console.error(err);
-    return null;
-  }
-};
-
 export const checkAdminIsInOrganization = async (
   admin_id: number,
   organization_id: number
@@ -145,27 +127,6 @@ export const checkAdminIsInOrganization = async (
     if (!organization) return null;
     const admin = organization.admins.find((admin) => admin.id === admin_id);
     return admin ? true : false;
-  } catch (err) {
-    console.error(err);
-    return null;
-  }
-};
-
-export const checkBotIsInOrganization = async (
-  bot_id: number,
-  organization_id: number
-) => {
-  try {
-    const organization = await dataSource.manager.findOne(
-      entities.Organization,
-      {
-        where: { id: organization_id },
-        relations: ["bots"],
-      }
-    );
-    if (!organization) return null;
-    const bot = organization.bots.find((bot) => bot.id === bot_id);
-    return bot ? true : false;
   } catch (err) {
     console.error(err);
     return null;
