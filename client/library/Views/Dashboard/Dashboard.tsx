@@ -43,13 +43,16 @@ function Dashboard() {
           {welcomeMessage.message} <WelcomeIcon />
         </p>
         <h1 className={styles.big_text}>
-          Hey, <strong>{user?.username}</strong>!
+          Hey <strong>{user?.username}</strong>!
         </h1>
         <div className={styles.quickActions}>
           <button className={`${styles.quickAction} ${styles.btnPrimary}`}>
             Do something
           </button>
         </div>
+      </div>
+      <div className={styles.content}>
+        <p>More coming soon.</p>
       </div>
     </div>
   );

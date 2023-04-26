@@ -1,7 +1,6 @@
 import { dataSource, entities } from "..";
 import { hashPassword } from "../../utils/crypto";
 import { Admin } from "../models/admin";
-import { Bot } from "../models/bot";
 
 export const createAdmin = async ({
   username,
@@ -134,19 +133,9 @@ export const getAdminOrganizations = async (id: number) => {
 
 export const getAdminBots = async (id: number) => {
   try {
-    const organizations = await getAdminOrganizations(id);
-    if (!organizations) return null;
-    const loadedOrganizations = organizations.map((organization) => {
-      return dataSource.manager.findOne(entities.Organization, {
-        where: { id: organization.id },
-        relations: ["bots"],
-      });
+    const bots = await dataSource.manager.find(entities.Bot, {
+      where: { owner_id: id, owner_type: "admin" },
     });
-    const loadedOrganizationsResult = await Promise.all(loadedOrganizations);
-    const bots = loadedOrganizationsResult.reduce((acc, organization) => {
-      if (!organization) return acc;
-      return [...acc, ...(organization.bots || [])];
-    }, [] as Bot[]);
     return bots;
   } catch (err) {
     console.error(err);

@@ -18,3 +18,5 @@ export interface Corpus {
 }
 
 export type AdminRoles = "admin" | "superadmin";
+
+export type OwnerTypes = "admin" | "organization";

@@ -15,75 +15,77 @@ function Profile() {
   const navigate = useNavigate();
 
   return (
-    <Menu
-      shadow="md"
-      width={200}
-      closeOnClickOutside
-      closeOnItemClick
-      position="bottom-end"
-    >
-      <Menu.Target>
-        <div className={styles.Profile}>
-          <User />
-        </div>
-      </Menu.Target>
+    <div className={styles.profileContainer}>
+      <Menu
+        shadow="md"
+        width={200}
+        closeOnClickOutside
+        closeOnItemClick
+        position="bottom-end"
+      >
+        <Menu.Target>
+          <div className={styles.Profile}>
+            <User />
+          </div>
+        </Menu.Target>
 
-      <Menu.Dropdown>
-        <Menu.Label>Your Stuff</Menu.Label>
+        <Menu.Dropdown>
+          <Menu.Label>Your Stuff</Menu.Label>
 
-        <Menu.Item
-          icon={<User />}
-          onClick={() => {
-            navigate("/profile?tab=overview");
-          }}
-        >
-          Profile
-        </Menu.Item>
-        <Menu.Item
-          icon={<Robot />}
-          onClick={() => {
-            navigate("/profile?tab=bots");
-          }}
-        >
-          Bots
-        </Menu.Item>
-        <Menu.Item
-          icon={<GearSix />}
-          onClick={() => {
-            navigate("/profile?tab=settings");
-          }}
-        >
-          Settings
-        </Menu.Item>
-        <Menu.Item
-          icon={<BellSimple />}
-          onClick={() => {
-            navigate("/profile?tab=notifications");
-          }}
-        >
-          Notifications
-        </Menu.Item>
+          <Menu.Item
+            icon={<User />}
+            onClick={() => {
+              navigate("/profile");
+            }}
+          >
+            Profile
+          </Menu.Item>
+          <Menu.Item
+            icon={<Robot />}
+            onClick={() => {
+              navigate("/profile?tab=bots");
+            }}
+          >
+            Bots
+          </Menu.Item>
+          <Menu.Item
+            icon={<BellSimple />}
+            onClick={() => {
+              navigate("/profile?tab=notifications");
+            }}
+          >
+            Notifications
+          </Menu.Item>
+          <Menu.Item
+            icon={<GearSix />}
+            onClick={() => {
+              navigate("/settings");
+            }}
+          >
+            Settings
+          </Menu.Item>
 
-        <Menu.Divider />
+          <Menu.Divider />
 
-        <Menu.Label>Actions</Menu.Label>
+          <Menu.Label>Actions</Menu.Label>
 
-        <Menu.Item
-          icon={<SignOut />}
-          onClick={() => {
-            logout();
-          }}
-        >
-          Logout
-        </Menu.Item>
+          <Menu.Item
+            icon={<SignOut />}
+            onClick={() => {
+              logout();
+            }}
+          >
+            Logout
+          </Menu.Item>
 
-        {/* <Menu.Label>Danger zone</Menu.Label>
+          {/* <Menu.Label>Danger zone</Menu.Label>
 
           <Menu.Item color="red" icon={<TrashSimple size={14} />}>
             Delete my account
           </Menu.Item> */}
-      </Menu.Dropdown>
-    </Menu>
+        </Menu.Dropdown>
+      </Menu>
+    </div>
   );
 }
 

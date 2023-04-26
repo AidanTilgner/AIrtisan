@@ -3,23 +3,51 @@ import { dataSource, entities } from "..";
 import { generateBotFiles } from "../../utils/bot";
 import { readFileSync, writeFileSync } from "fs";
 import { format } from "prettier";
-import { Corpus } from "../../types/lib";
+import { Corpus, OwnerTypes } from "../../types/lib";
 import path from "path";
 import { getManagerIsAlive } from "../../nlu";
 import { getAdminBots } from "./admin";
+import { Organization } from "../models/organization";
+import { Admin } from "../models/admin";
+
+interface BotWithLoadedOwner extends Bot {
+  owner: Organization | Admin | undefined;
+}
+
+export const getBotOwner = async (owner_id: number, owner_type: OwnerTypes) => {
+  try {
+    switch (owner_type) {
+      case "organization":
+        return await dataSource.manager.findOne(entities.Organization, {
+          where: { id: owner_id },
+        });
+      case "admin":
+        return await dataSource.manager.findOne(entities.Admin, {
+          where: { id: owner_id },
+        });
+      default:
+        return null;
+    }
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};
 
 export const createBot = async ({
   name,
   description,
   bot_version,
-  organization_id,
+  owner_id,
+  owner_type,
   enhancement_model,
   bot_language,
 }: {
   name: Bot["name"];
   description: Bot["description"];
   bot_version: Bot["bot_version"];
-  organization_id: Bot["organization"]["id"];
+  owner_id: Bot["owner_id"];
+  owner_type: Bot["owner_type"];
   enhancement_model: Bot["enhancement_model"];
   bot_language: Bot["bot_language"];
 }) => {
@@ -30,18 +58,16 @@ export const createBot = async ({
     bot.bot_version = bot_version;
     bot.enhancement_model = enhancement_model;
     bot.bot_language = bot_language;
-    const foundOrg = await dataSource.manager.findOne(entities.Organization, {
-      where: { id: organization_id },
-    });
-    if (!foundOrg) return null;
-    bot.organization = foundOrg;
+    const foundOwner = await getBotOwner(owner_id, owner_type);
+    if (!foundOwner) return null;
+    bot.owner_id = foundOwner.id;
+    bot.owner_type = owner_type;
     const files = await generateBotFiles(bot);
     if (!files) return null;
     bot.context_file = files.context_file;
     bot.corpus_file = files.corpus_file;
     bot.model_file = files.model_file;
     await dataSource.manager.save(bot);
-    await dataSource.manager.save(foundOrg);
     return bot;
   } catch (error) {
     console.error(error);
@@ -49,13 +75,27 @@ export const createBot = async ({
   }
 };
 
-export const getBot = async (id: Bot["id"]) => {
+export const getBot = async (id: Bot["id"], loadOwner = false) => {
   try {
     const bot = await dataSource.manager.findOne(entities.Bot, {
       where: { id },
-      relations: ["organization"],
     });
-    return bot;
+
+    if (!bot) return null;
+
+    const botToSend: BotWithLoadedOwner = {
+      ...bot,
+      owner: undefined,
+    };
+
+    if (loadOwner && bot) {
+      const owner = await getBotOwner(bot.owner_id, bot.owner_type);
+      if (owner) {
+        botToSend.owner = owner;
+      }
+    }
+
+    return botToSend;
   } catch (error) {
     console.error(error);
     return null;
@@ -101,12 +141,13 @@ export const deleteBot = async (id: Bot["id"]) => {
   }
 };
 
-export const getBotsByOrganization = async (
-  organization_id: Bot["organization"]["id"]
+export const getBotsByOwner = async (
+  owner_id: number,
+  owner_type: OwnerTypes
 ) => {
   try {
-    const bot = await dataSource.manager.findOne(entities.Bot, {
-      where: { organization: { id: organization_id } },
+    const bot = await dataSource.manager.find(entities.Bot, {
+      where: { owner_id, owner_type },
     });
     return bot;
   } catch (error) {
@@ -286,7 +327,7 @@ export const getBotStatus = async (id: Bot["id"]) => {
 
     if (!bot) return null;
 
-    const isAlive = getManagerIsAlive(bot.id);
+    const isAlive = !!getManagerIsAlive(bot.id);
 
     return isAlive;
   } catch (error) {
@@ -305,8 +346,8 @@ export const getAdminBotsWithRunningStatus = async (admin_id: number) => {
       bots.map(async (bot) => {
         const status = await getBotStatus(bot.id);
         return {
-          ...bot,
           running: status,
+          ...bot,
         };
       })
     );

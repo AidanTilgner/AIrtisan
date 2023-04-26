@@ -6,7 +6,6 @@ import {
   updateAdmin,
   deleteAdmin,
   getAdminOrganizations,
-  getAdminBots,
 } from "../database/functions/admin";
 import { Router } from "express";
 import { checkIsSuperAdmin, checkIsAdmin } from "../middleware/auth";
@@ -26,6 +25,7 @@ import {
   getAllApiKeys,
 } from "../database/functions/apiKey";
 import { Admin } from "../database/models/admin";
+import { getAdminBotsWithRunningStatus } from "../database/functions/bot";
 
 const router = Router();
 
@@ -243,7 +243,7 @@ router.get("/me/bots", checkIsAdmin, async (req, res) => {
   try {
     const admin = (req as unknown as Record<"admin", Admin>)["admin"];
 
-    const bots = await getAdminBots(admin.id);
+    const bots = await getAdminBotsWithRunningStatus(admin.id);
 
     if (!bots) {
       res.status(500).send({ message: "Internal server error." });

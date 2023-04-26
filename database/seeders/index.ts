@@ -4,6 +4,6 @@ import { seedAdmins } from "./admin";
 
 export const seedDatabase = async () => {
   await seedOrganization();
-  await seedBots();
   await seedAdmins();
+  await seedBots();
 };

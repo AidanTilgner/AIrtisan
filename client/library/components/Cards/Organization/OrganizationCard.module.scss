@@ -1,0 +1,32 @@
+.OrganizationCard {
+  border-radius: 10px;
+  border: 1px solid #eaeaee;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  width: 100%;
+  aspect-ratio: 1/1;
+  background-color: transparent;
+  cursor: pointer;
+  font-family: "QuickSand", sans-serif;
+  transition: all 0.2s ease-in-out;
+  box-sizing: border-box;
+
+  &:hover {
+    background-color: #f8f8f8;
+  }
+
+  &:active {
+    transform: translateY(2px);
+  }
+}
+
+.iconContainer {
+  font-size: 24px;
+}
+
+.name {
+  font-weight: 500;
+  font-size: 18px;
+}

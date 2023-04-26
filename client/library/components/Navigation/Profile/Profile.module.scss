@@ -1,8 +1,14 @@
-.Profile {
+.profileContainer {
   position: fixed;
   top: 24px;
   right: 24px;
   height: 56px;
+  aspect-ratio: 1/1;
+  z-index: 150;
+}
+
+.Profile {
+  height: 100%;
   aspect-ratio: 1/1;
   border-radius: 50%;
   display: flex;
@@ -14,7 +20,6 @@
   cursor: pointer;
   transition: all 0.2s ease-in-out;
   background-color: white;
-  z-index: 15;
 
   &:hover {
     box-shadow: 0.2px 0.2px 15px rgba(0, 0, 0, 0.15);

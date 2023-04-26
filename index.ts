@@ -6,12 +6,20 @@ import "reflect-metadata";
 import { initializeDatabase } from "./database";
 import { initGPT } from "./utils/gpt4all";
 import cors from "cors";
+import http from "http";
+import { Server } from "socket.io";
+import { initSocketIO } from "./utils/socketio";
 
 config();
 initializeDatabase();
 initGPT(false);
 
 const app = Express();
+
+const server = http.createServer(app);
+const io = new Server(server);
+
+const connection = initSocketIO(io);
 
 const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS as string;
 
@@ -47,8 +55,14 @@ app.get("/favicon", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "favicon.svg"));
 });
 
+if (process.env.NODE_ENV === "development") {
+  app.post("/esbuild-rebuilt", () => {
+    connection.emit("esbuild-rebuilt");
+  });
+}
+
 if (process.env.ALLOW_TRAINING_UI === "true") {
-  console.info("Training mode enabled");
+  console.info("UI enabled");
   app.use(
     "/documentation",
     Express.static(path.join(__dirname, "public", "documentation"))
@@ -76,6 +90,6 @@ if (process.env.ALLOW_TRAINING_UI === "true") {
   });
 }
 
-app.listen(process.env.PORT || 3000, () => {
+server.listen(process.env.PORT || 3000, () => {
   console.info(`Server is running on port ${process.env.PORT}`);
 });
