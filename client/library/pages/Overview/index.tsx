@@ -54,8 +54,6 @@ function index() {
     runOnMount: true,
   });
 
-  console.log("Bots", bots);
-
   const updateSearchParams = useSearchParamsUpdate();
 
   return (

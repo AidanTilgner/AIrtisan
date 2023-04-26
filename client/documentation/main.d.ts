@@ -4,6 +4,7 @@ export type OwnerTypes = "organization" | "admin";
 export interface Admin {
   id?: number | null;
   username: string;
+  display_name: string;
   password?: string;
   role: AdminRoles;
   created_at: Date;

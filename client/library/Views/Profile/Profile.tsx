@@ -29,8 +29,6 @@ function Profile() {
     (searchParams.get("tab") as Tab) || "bots"
   );
 
-  console.log(searchParams.get("tab"), currentTab);
-
   useEffect(() => {
     if (searchParams.get("tab") && searchParams.get("tab") !== currentTab) {
       setCurrentTab(searchParams.get("tab") as Tab);
@@ -140,7 +138,7 @@ function BotsTab() {
             />
           ))
         ) : (
-          <p className={styles.disclaimer}></p>
+          <p className={styles.disclaimer}>No bots yet.</p>
         )}
       </div>
     </div>

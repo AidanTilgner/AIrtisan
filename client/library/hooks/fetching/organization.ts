@@ -1,4 +1,4 @@
-import { Bot, Organization } from "../../../documentation/main";
+import { Admin, Bot, Organization } from "../../../documentation/main";
 import useFetch, { UseFetchConfig } from "../useFetch";
 
 export const useGetOrganization = (
@@ -32,6 +32,24 @@ export const useGetOrganizationBots = (
 
   return {
     getOrganizationBots: load,
+    data: data,
+    success,
+  };
+};
+
+export const useGetOrganizationAdmins = (
+  organization_id: number | string,
+  config?: Partial<UseFetchConfig<unknown, Admin[]>>
+) => {
+  const { load, data, success } = useFetch<unknown, Admin[]>({
+    useBotId: false,
+    ...config,
+    url: `/organizations/${organization_id}/admins`,
+    method: "GET",
+  });
+
+  return {
+    getOrganizationAdmins: load,
     data: data,
     success,
   };

@@ -23,3 +23,13 @@ export const getFormattedBotOwner = (bot: Bot) => {
     return "Unknown";
   }
 };
+
+export const getFormattedAdminName = (admin: Admin) => {
+  try {
+    const name = admin.display_name || admin.username;
+    return name;
+  } catch (error) {
+    console.error(error);
+    return "Unknown";
+  }
+};

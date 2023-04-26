@@ -55,7 +55,6 @@ function useFetch<B, D>({
     async (loadConfig?: { updatedUrl?: string; updatedBody?: B }) => {
       if (!readyToRun) return;
       setLoading(true);
-      console.log("Using url: ", loadConfig?.updatedUrl || urlToUse);
       return api<DefaultResponse<D>>(loadConfig?.updatedUrl || urlToUse, {
         method,
         data: {

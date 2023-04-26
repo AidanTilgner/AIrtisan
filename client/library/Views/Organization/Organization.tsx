@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import styles from "./Organization.module.scss";
 import { Buildings, PencilSimple } from "@phosphor-icons/react";
-import { useGetMyBots } from "../../hooks/fetching/common";
 import {
   useGetOrganization,
+  useGetOrganizationAdmins,
   useGetOrganizationBots,
 } from "../../hooks/fetching/organization";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
@@ -11,8 +11,9 @@ import Tabs from "../../components/Navigation/Tabs/Tabs";
 import Search from "../../components/Search/Search";
 import BotCard from "../../components/Cards/Bot/BotCard";
 import { useSearchParamsUpdate } from "../../hooks/navigation";
+import AdminCard from "../../components/Cards/Admin/AdminCard";
 
-type Tab = "users" | "bots";
+type Tab = "admins" | "bots";
 
 function Organization() {
   const { organization_id } = useParams();
@@ -21,17 +22,11 @@ function Organization() {
     runOnMount: true,
   });
 
-  console.log("Organization", organization);
-
-  const navigate = useNavigate();
-
   const [searchParams] = useSearchParams();
 
   const [currentTab, setCurrentTab] = useState<Tab>(
     (searchParams.get("tab") as Tab) || "bots"
   );
-
-  console.log(searchParams.get("tab"), currentTab);
 
   useEffect(() => {
     if (searchParams.get("tab") && searchParams.get("tab") !== currentTab) {
@@ -72,7 +67,7 @@ function Organization() {
               },
               {
                 name: "Users",
-                id: "users",
+                id: "admins",
               },
             ]}
             currentTab={currentTab}
@@ -93,7 +88,7 @@ function DisplayCurrentTab({ currentTab }: { currentTab: Tab }) {
   switch (currentTab) {
     case "bots":
       return <BotsTab />;
-    case "users":
+    case "admins":
       return <UsersTab />;
     default:
       return <p>Something went wrong</p>;
@@ -106,16 +101,14 @@ function BotsTab() {
     runOnMount: true,
   });
 
-  console.log("Bots", bots);
-
   const navigate = useNavigate();
 
   return (
-    <div className={styles.botsTab}>
+    <div className={styles.tab}>
       <div className={styles.searchContainer}>
         <Search />
       </div>
-      <div className={styles.bots}>
+      <div className={styles.list}>
         {bots && bots?.length > 0 ? (
           bots.map((b) => (
             <BotCard
@@ -127,7 +120,7 @@ function BotsTab() {
             />
           ))
         ) : (
-          <p className={styles.disclaimer}></p>
+          <p className={styles.disclaimer}>No bots yet.</p>
         )}
       </div>
     </div>
@@ -135,9 +128,33 @@ function BotsTab() {
 }
 
 function UsersTab() {
+  const { organization_id } = useParams();
+  const { data: users } = useGetOrganizationAdmins(organization_id as string, {
+    runOnMount: true,
+  });
+
+  const navigate = useNavigate();
+
   return (
-    <div className={styles.usersTab}>
-      <p className={styles.disclaimer}>No users yet.</p>
+    <div className={styles.tab}>
+      <div className={styles.searchContainer}>
+        <Search />
+      </div>
+      <div className={styles.list}>
+        {users && users?.length > 0 ? (
+          users.map((b) => (
+            <AdminCard
+              key={b.id}
+              admin={b}
+              onClick={() => {
+                navigate(`/users/${b.id}`);
+              }}
+            />
+          ))
+        ) : (
+          <p className={styles.disclaimer}></p>
+        )}
+      </div>
     </div>
   );
 }

@@ -24,8 +24,6 @@ export const seedBots = async () => {
       return;
     }
 
-    console.log("Creating bot", bot_name, description, owner_id, owner_type);
-
     const result = await createBot({
       name: bot_name,
       description: description,
