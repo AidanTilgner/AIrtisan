@@ -2,6 +2,7 @@ import React from "react";
 import styles from "./Dashboard.module.scss";
 import { MoonStars, Sun, SunHorizon } from "@phosphor-icons/react";
 import { useUser } from "../../contexts/User";
+import SVG from "../../components/Utils/SVG";
 
 function Dashboard() {
   const getWelcomeMessage = () => {
@@ -52,7 +53,8 @@ function Dashboard() {
         </div>
       </div>
       <div className={styles.content}>
-        <p>More coming soon.</p>
+        <SVG.UnderConstruction width="50%" height="50%" />
+        <h2>This page is under construction. More is coming soon!</h2>
       </div>
     </div>
   );

@@ -69,13 +69,16 @@
 .content {
   display: flex;
   align-items: center;
+  flex-direction: column;
+  justify-content: center;
   padding: 36px 24px;
 
   @media (min-width: 768px) {
     padding: 36px 56px;
   }
 
-  p {
-    opacity: 0.5;
+  h2 {
+    font-size: 20px;
+    font-weight: 500;
   }
 }
