@@ -12,7 +12,7 @@ import Profile from "./library/Views/Profile/Profile";
 import TopNav from "./library/components/Navigation/Navbar/TopNav";
 import Organization from "./library/Views/Organization/Organization";
 import Settings from "./library/Views/Settings/Settings";
-import NotFound from "./library/Views/ErrorPages/NotFound";
+import Fallback from "./library/Views/ErrorPages/Fallback";
 
 function App() {
   return (
@@ -52,7 +52,7 @@ function App() {
               <Routes>
                 <Route path="/">
                   <Route index element={<Dashboard />} />
-                  <Route path="404" element={<NotFound />} />
+                  <Route path="404" element={<Fallback />} />
                 </Route>
                 <Route path="settings">
                   <Route index element={<Settings />} />

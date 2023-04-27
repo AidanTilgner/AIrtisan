@@ -66,6 +66,12 @@ app.use(
   Express.static(path.join(__dirname, "public", "documentation"))
 );
 
+app.get("/help/support", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "help", "support.html"));
+});
+
+app.use("/help", Express.static(path.join(__dirname, "public", "help")));
+
 app.get("/build/bundle.js", (req, res) => {
   res.sendFile(
     path.join(__dirname, "public", "training", "build", "bundle.js")

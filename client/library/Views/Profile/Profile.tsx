@@ -44,8 +44,6 @@ function Profile() {
     setIsCurrentUser(currentUser?.id === Number(user_id));
   }, [currentUser, user_id]);
 
-  console.log("User: ", user);
-
   const { data: organizations = [] } = isCurrentUser
     ? useGetMyOrganizations({
         runOnMount: true,
@@ -89,7 +87,7 @@ function Profile() {
   }
 
   if (user_id && !user && !loading) {
-    return <Navigate to="/404" />;
+    return <Navigate to={`/404?reason="User not found"`} />;
   }
 
   return (
@@ -99,6 +97,14 @@ function Profile() {
           <div className={styles.icon}>
             <User weight="thin" />
           </div>
+        </div>
+        <div className={styles.name}>
+          <span>{user?.display_name}</span>
+          {isCurrentUser && (
+            <button title="Edit username">
+              <PencilSimple weight="regular" />
+            </button>
+          )}
         </div>
         <div className={styles.organizationsContainer}>
           <h3>Organizations</h3>
@@ -124,14 +130,6 @@ function Profile() {
         </div>
       </div>
       <div className={styles.right}>
-        <div className={styles.name}>
-          <span>{user?.username}</span>
-          {isCurrentUser && (
-            <button title="Edit username">
-              <PencilSimple weight="regular" />
-            </button>
-          )}
-        </div>
         <div className={styles.tabsContainer}>
           <Tabs
             tabs={[

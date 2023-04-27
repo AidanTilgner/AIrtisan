@@ -64,10 +64,12 @@ function Organization() {
               {
                 name: "Bots",
                 id: "bots",
+                visible: true,
               },
               {
                 name: "Users",
                 id: "admins",
+                visible: true,
               },
             ]}
             currentTab={currentTab}
