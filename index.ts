@@ -61,34 +61,31 @@ if (process.env.NODE_ENV === "development") {
   });
 }
 
-if (process.env.ALLOW_TRAINING_UI === "true") {
-  console.info("UI enabled");
-  app.use(
-    "/documentation",
-    Express.static(path.join(__dirname, "public", "documentation"))
+app.use(
+  "/documentation",
+  Express.static(path.join(__dirname, "public", "documentation"))
+);
+
+app.get("/build/bundle.js", (req, res) => {
+  res.sendFile(
+    path.join(__dirname, "public", "training", "build", "bundle.js")
   );
+});
+app.get("/build/bundle.js.map", (req, res) => {
+  res.sendFile(
+    path.join(__dirname, "public", "training", "build", "bundle.js.map")
+  );
+});
+app.get("/build/bundle.css", (req, res) => {
+  res.sendFile(
+    path.join(__dirname, "public", "training", "build", "bundle.css")
+  );
+});
 
-  app.get("/build/bundle.js", (req, res) => {
-    res.sendFile(
-      path.join(__dirname, "public", "training", "build", "bundle.js")
-    );
-  });
-  app.get("/build/bundle.js.map", (req, res) => {
-    res.sendFile(
-      path.join(__dirname, "public", "training", "build", "bundle.js.map")
-    );
-  });
-  app.get("/build/bundle.css", (req, res) => {
-    res.sendFile(
-      path.join(__dirname, "public", "training", "build", "bundle.css")
-    );
-  });
-
-  app.use("/", Express.static(path.join(__dirname, "public", "training")));
-  app.get("/*", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "training", "index.html"));
-  });
-}
+app.use("/", Express.static(path.join(__dirname, "public", "training")));
+app.get("/*", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "training", "index.html"));
+});
 
 server.listen(process.env.PORT || 3000, () => {
   console.info(`Server is running on port ${process.env.PORT}`);

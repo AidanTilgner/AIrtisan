@@ -9,6 +9,7 @@ export interface UseFetchConfig<B, D> {
   body?: B;
   onSuccess?: (data: D) => void;
   onError?: (err: unknown) => void;
+  onFinally?: () => void;
   headers?: Record<string, string> | undefined;
   query?: Record<string, string> | undefined;
   bustCache?: boolean;
@@ -22,6 +23,7 @@ function useFetch<B, D>({
   body,
   onSuccess,
   onError,
+  onFinally,
   headers,
   query,
   bustCache,
@@ -82,6 +84,7 @@ function useFetch<B, D>({
         })
         .finally(() => {
           setLoading(false);
+          onFinally && onFinally();
         });
     },
     [urlToUse, method, body, headers, bustCache, onSuccess, onError, readyToRun]

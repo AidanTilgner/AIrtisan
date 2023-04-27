@@ -10,9 +10,12 @@ import {
 import { Menu } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../../helpers/auth";
+import { useUser } from "../../../contexts/User";
 
 function Profile() {
   const navigate = useNavigate();
+
+  const { user } = useUser();
 
   const navRef = useRef<HTMLDivElement>(null);
 
@@ -45,7 +48,7 @@ function Profile() {
           <Menu.Item
             icon={<User />}
             onClick={() => {
-              navigate("/profile");
+              navigate(`/profile/${user?.id}`);
             }}
           >
             Profile
@@ -53,7 +56,7 @@ function Profile() {
           <Menu.Item
             icon={<Robot />}
             onClick={() => {
-              navigate("/profile?tab=bots");
+              navigate(`/profile/${user?.id}?tab=bots`);
             }}
           >
             Bots
@@ -61,7 +64,7 @@ function Profile() {
           <Menu.Item
             icon={<BellSimple />}
             onClick={() => {
-              navigate("/profile?tab=notifications");
+              navigate(`/profile/${user?.id}?tab=notifications`);
             }}
           >
             Notifications

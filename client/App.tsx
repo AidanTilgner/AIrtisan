@@ -12,6 +12,7 @@ import Profile from "./library/Views/Profile/Profile";
 import TopNav from "./library/components/Navigation/Navbar/TopNav";
 import Organization from "./library/Views/Organization/Organization";
 import Settings from "./library/Views/Settings/Settings";
+import NotFound from "./library/Views/ErrorPages/NotFound";
 
 function App() {
   return (
@@ -51,12 +52,12 @@ function App() {
               <Routes>
                 <Route path="/">
                   <Route index element={<Dashboard />} />
+                  <Route path="404" element={<NotFound />} />
                 </Route>
                 <Route path="settings">
                   <Route index element={<Settings />} />
                 </Route>
                 <Route path="profile">
-                  <Route index element={<Profile />} />
                   <Route path=":user_id">
                     <Route index element={<Profile />} />
                   </Route>

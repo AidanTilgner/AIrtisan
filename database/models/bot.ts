@@ -44,6 +44,11 @@ export class Bot {
   @Column("text")
   owner_type!: OwnerTypes;
 
+  @Column("text", {
+    default: "private",
+  })
+  visibility!: "private" | "public" | "unlisted";
+
   @OneToMany(() => Conversation, (conversation) => conversation.bot)
   conversations!: Conversation[];
 
