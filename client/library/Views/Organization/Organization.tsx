@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styles from "./Organization.module.scss";
-import { Buildings, PencilSimple } from "@phosphor-icons/react";
+import { Buildings } from "@phosphor-icons/react";
 import {
   useGetOrganization,
   useGetOrganizationAdmins,
@@ -54,9 +54,9 @@ function Organization() {
       <div className={styles.right}>
         <div className={styles.name}>
           <span>{organization?.name}</span>
-          <button title="Edit username">
+          {/* <button title="Edit username">
             <PencilSimple weight="regular" />
-          </button>
+          </button> */}
         </div>
         <div className={styles.tabsContainer}>
           <Tabs
@@ -147,7 +147,7 @@ function UsersTab() {
               key={b.id}
               admin={b}
               onClick={() => {
-                navigate(`/users/${b.id}`);
+                navigate(`/profile/${b.id}`);
               }}
             />
           ))

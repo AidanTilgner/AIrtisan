@@ -7,7 +7,7 @@ import {
   useGetMyOrganizations,
 } from "../../hooks/fetching/common";
 import OrganizationCard from "../../components/Cards/Organization/OrganizationCard";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import Tabs from "../../components/Navigation/Tabs/Tabs";
 import Search from "../../components/Search/Search";
 import BotCard from "../../components/Cards/Bot/BotCard";
@@ -16,7 +16,18 @@ import { useSearchParamsUpdate } from "../../hooks/navigation";
 type Tab = "notifications" | "bots";
 
 function Profile() {
+  const { user_id } = useParams();
   const { user } = useUser();
+
+  const [isCurrentUser, setIsCurrentUser] = useState(false);
+
+  useEffect(() => {
+    console.log("User is current: ", user?.id === user_id);
+    setIsCurrentUser(user?.id === Number(user_id));
+  }, [user, user_id]);
+
+  console.log("Is current user: ", isCurrentUser);
+
   const { data: organizations = [] } = useGetMyOrganizations({
     runOnMount: true,
   });
@@ -75,9 +86,11 @@ function Profile() {
       <div className={styles.right}>
         <div className={styles.name}>
           <span>{user?.username}</span>
-          <button title="Edit username">
-            <PencilSimple weight="regular" />
-          </button>
+          {isCurrentUser && (
+            <button title="Edit username">
+              <PencilSimple weight="regular" />
+            </button>
+          )}
         </div>
         <div className={styles.tabsContainer}>
           <Tabs
@@ -85,10 +98,12 @@ function Profile() {
               {
                 name: "Bots",
                 id: "bots",
+                visible: true,
               },
               {
                 name: "Notifications",
                 id: "notifications",
+                visible: isCurrentUser,
               },
             ]}
             currentTab={currentTab}

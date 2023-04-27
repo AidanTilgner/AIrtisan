@@ -57,6 +57,9 @@ function App() {
                 </Route>
                 <Route path="profile">
                   <Route index element={<Profile />} />
+                  <Route path=":user_id">
+                    <Route index element={<Profile />} />
+                  </Route>
                 </Route>
                 <Route path="organizations">
                   <Route path=":organization_id">
