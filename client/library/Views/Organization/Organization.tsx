@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import styles from "./Organization.module.scss";
 import { Buildings } from "@phosphor-icons/react";
 import {
@@ -6,20 +6,31 @@ import {
   useGetOrganizationAdmins,
   useGetOrganizationBots,
 } from "../../hooks/fetching/organization";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import {
+  Navigate,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 import Tabs from "../../components/Navigation/Tabs/Tabs";
 import Search from "../../components/Search/Search";
 import BotCard from "../../components/Cards/Bot/BotCard";
 import { useSearchParamsUpdate } from "../../hooks/navigation";
 import AdminCard from "../../components/Cards/Admin/AdminCard";
+import { Organization } from "../../../documentation/main";
+import Loaders from "../../components/Utils/Loaders";
 
 type Tab = "admins" | "bots";
 
 function Organization() {
   const { organization_id } = useParams();
+  const [loading, setLoading] = useState(true);
   // const { user } = useUser();
   const { data: organization } = useGetOrganization(organization_id as string, {
     runOnMount: true,
+    onFinally: () => {
+      setLoading(false);
+    },
   });
 
   const [searchParams] = useSearchParams();
@@ -41,6 +52,22 @@ function Organization() {
       searchParamsUpdate(new Map([["tab", currentTab]]));
     }
   }, [currentTab]);
+
+  if (loading) {
+    return (
+      <div
+        style={{
+          height: "50vh",
+        }}
+      >
+        <Loaders.CenteredSpinner />
+      </div>
+    );
+  }
+
+  if (organization_id && !organization && !loading) {
+    return <Navigate to={`/404?reason="Organization not found"`} />;
+  }
 
   return (
     <div className={styles.Organization}>
@@ -77,7 +104,10 @@ function Organization() {
           />
         </div>
         <div className={styles.content}>
-          <DisplayCurrentTab currentTab={currentTab} />
+          <DisplayCurrentTab
+            currentTab={currentTab}
+            organization={organization as Organization}
+          />
         </div>
       </div>
     </div>
@@ -86,12 +116,18 @@ function Organization() {
 
 export default Organization;
 
-function DisplayCurrentTab({ currentTab }: { currentTab: Tab }) {
+function DisplayCurrentTab({
+  currentTab,
+  organization,
+}: {
+  currentTab: Tab;
+  organization: Organization;
+}) {
   switch (currentTab) {
     case "bots":
       return <BotsTab />;
     case "admins":
-      return <UsersTab />;
+      return <UsersTab organization={organization} />;
     default:
       return <p>Something went wrong</p>;
   }
@@ -105,31 +141,34 @@ function BotsTab() {
 
   const navigate = useNavigate();
 
-  return (
-    <div className={styles.tab}>
-      <div className={styles.searchContainer}>
-        <Search />
+  return useMemo(
+    () => (
+      <div className={styles.tab}>
+        <div className={styles.searchContainer}>
+          <Search />
+        </div>
+        <div className={styles.list}>
+          {bots && bots?.length > 0 ? (
+            bots.map((b) => (
+              <BotCard
+                key={b.id}
+                bot={b}
+                onClick={() => {
+                  navigate(`/bots/${b.id}`);
+                }}
+              />
+            ))
+          ) : (
+            <p className={styles.disclaimer}>No bots yet.</p>
+          )}
+        </div>
       </div>
-      <div className={styles.list}>
-        {bots && bots?.length > 0 ? (
-          bots.map((b) => (
-            <BotCard
-              key={b.id}
-              bot={b}
-              onClick={() => {
-                navigate(`/bots/${b.id}`);
-              }}
-            />
-          ))
-        ) : (
-          <p className={styles.disclaimer}>No bots yet.</p>
-        )}
-      </div>
-    </div>
+    ),
+    [bots]
   );
 }
 
-function UsersTab() {
+function UsersTab({ organization }: { organization: Organization }) {
   const { organization_id } = useParams();
   const { data: users } = useGetOrganizationAdmins(organization_id as string, {
     runOnMount: true,
@@ -137,26 +176,30 @@ function UsersTab() {
 
   const navigate = useNavigate();
 
-  return (
-    <div className={styles.tab}>
-      <div className={styles.searchContainer}>
-        <Search />
+  return useMemo(
+    () => (
+      <div className={styles.tab}>
+        <div className={styles.searchContainer}>
+          <Search />
+        </div>
+        <div className={styles.list}>
+          {users && users?.length > 0 ? (
+            users.map((b) => (
+              <AdminCard
+                key={b.id}
+                admin={b}
+                onClick={() => {
+                  navigate(`/profile/${b.username}`);
+                }}
+                tag={organization.owner.id === b.id ? "Owner" : undefined}
+              />
+            ))
+          ) : (
+            <p className={styles.disclaimer}></p>
+          )}
+        </div>
       </div>
-      <div className={styles.list}>
-        {users && users?.length > 0 ? (
-          users.map((b) => (
-            <AdminCard
-              key={b.id}
-              admin={b}
-              onClick={() => {
-                navigate(`/profile/${b.id}`);
-              }}
-            />
-          ))
-        ) : (
-          <p className={styles.disclaimer}></p>
-        )}
-      </div>
-    </div>
+    ),
+    [users]
   );
 }

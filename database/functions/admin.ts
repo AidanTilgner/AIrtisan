@@ -155,11 +155,11 @@ export const getAdminOrganizations = async (id: number) => {
   try {
     const admin = await dataSource.manager.findOne(entities.Admin, {
       where: { id },
-      relations: ["organizations"],
+      relations: ["organizations", "owned_organizations"],
     });
     if (!admin) return null;
 
-    return admin.organizations;
+    return [...admin.organizations, ...admin.owned_organizations];
   } catch (err) {
     console.error(err);
     return null;

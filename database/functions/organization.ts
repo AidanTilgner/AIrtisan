@@ -1,18 +1,27 @@
 import { Organization } from "../models/organization";
 import { entities, dataSource } from "..";
+import { getAdmin } from "./admin";
 
 export const createOrganization = async ({
   name,
   description,
+  owner_id,
 }: {
   name: Organization["name"];
   description: Organization["description"];
+  owner_id: number;
 }) => {
   try {
+    const owner = await getAdmin(owner_id);
+
+    if (!owner) return null;
+
     const organization = new entities.Organization();
     organization.name = name;
     organization.description = description;
+    organization.owner = owner;
     await dataSource.manager.save(organization);
+    await dataSource.manager.save(owner);
     return organization;
   } catch (error) {
     console.error(error);
@@ -100,12 +109,12 @@ export const getOrganizationAdmins = async (id: number) => {
       entities.Organization,
       {
         where: { id },
-        relations: ["admins"],
+        relations: ["admins", "owner"],
       }
     );
     if (!organization) return null;
 
-    return organization.admins;
+    return [...(organization.admins || []), organization.owner];
   } catch (err) {
     console.error(err);
     return null;

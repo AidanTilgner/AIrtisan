@@ -2,6 +2,7 @@ import React, { useRef } from "react";
 import styles from "./Profile.module.scss";
 import {
   BellSimple,
+  Buildings,
   GearSix,
   Robot,
   SignOut,
@@ -68,6 +69,14 @@ function Profile() {
             }}
           >
             Notifications
+          </Menu.Item>
+          <Menu.Item
+            icon={<Buildings />}
+            onClick={() => {
+              navigate(`/profile/${user?.username}`);
+            }}
+          >
+            Organizations
           </Menu.Item>
           <Menu.Item
             icon={<GearSix />}

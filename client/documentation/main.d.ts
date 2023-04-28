@@ -106,6 +106,7 @@ export interface Organization {
   id?: number | null;
   name: string;
   description: string;
+  owner: Admin;
   admins: Admin[];
   bots: Bot[];
   created_at: Date;

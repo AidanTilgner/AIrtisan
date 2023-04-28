@@ -6,10 +6,9 @@ import {
   Entity,
   ManyToMany,
   JoinTable,
-  OneToMany,
+  ManyToOne,
 } from "typeorm";
 import { Admin } from "./admin";
-import { Bot } from "./bot";
 
 @Entity()
 export class Organization {
@@ -22,12 +21,12 @@ export class Organization {
   @Column("text")
   description!: string;
 
+  @ManyToOne(() => Admin, (admin) => admin.owned_organizations, { eager: true })
+  owner!: Admin;
+
   @ManyToMany(() => Admin, (admin) => admin.organizations)
   @JoinTable()
   admins!: Admin[];
-
-  @OneToMany(() => Bot, (bot) => bot.organization)
-  bots!: Bot[];
 
   @CreateDateColumn()
   created_at!: Date;

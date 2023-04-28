@@ -7,9 +7,10 @@ import { Admin } from "../../../../documentation/main";
 interface AdminCardProps {
   admin: Admin;
   onClick?: () => void;
+  tag?: string;
 }
 
-function AdminCard({ admin, onClick }: AdminCardProps) {
+function AdminCard({ admin, onClick, tag }: AdminCardProps) {
   return (
     <button className={styles.AdminCard} onClick={onClick}>
       <div className={styles.top}>
@@ -18,9 +19,7 @@ function AdminCard({ admin, onClick }: AdminCardProps) {
         </div>
         <div className={styles.name}>{getFormattedAdminName(admin)}</div>
         <div className={styles.tags}>
-          <div className={`${styles.tag} ${styles[admin.role]}`}>
-            {admin.role}
-          </div>
+          {tag && <div className={`${styles.tag}`}>{tag}</div>}
         </div>
       </div>
       <div className={styles.body}>

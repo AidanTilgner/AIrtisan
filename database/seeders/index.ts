@@ -3,7 +3,7 @@ import { seedBots } from "./bot";
 import { seedAdmins } from "./admin";
 
 export const seedDatabase = async () => {
-  await seedOrganization();
   await seedAdmins();
+  await seedOrganization();
   await seedBots();
 };

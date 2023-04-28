@@ -1,3 +1,4 @@
+import { getAdminByUsername } from "../functions/admin";
 import {
   createOrganization,
   getOrganizationByName,
@@ -17,7 +18,7 @@ export const seedOrganization = async () => {
   const orgs = ORGANIZATIONS.split(",");
 
   orgs.forEach(async (o) => {
-    const [name, description] = o.split(":");
+    const [name, description, owner_username] = o.split(":");
 
     const existingOrganization = await getOrganizationByName(name);
 
@@ -26,9 +27,17 @@ export const seedOrganization = async () => {
       return;
     }
 
+    const admin = await getAdminByUsername(owner_username);
+
+    if (!admin) {
+      console.info(`Admin ${owner_username} does not exist. Skipping.`);
+      return;
+    }
+
     const result = await createOrganization({
       name,
       description,
+      owner_id: admin.id,
     });
 
     if (result) {

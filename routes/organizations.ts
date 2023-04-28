@@ -6,6 +6,7 @@ import {
   updateOrganization,
   deleteOrganization,
   getOrganizationAdmins,
+  checkAdminIsInOrganization,
 } from "../database/functions/organization";
 import { getOrganizationBotsWithRunningStatus } from "../database/functions/bot";
 
@@ -120,6 +121,28 @@ router.get("/:id/admins", async (req, res) => {
       message: "success",
       success: true,
       data: admins,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.get("/:id/is_member/:admin_id", async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    const admin_id = Number(req.params.admin_id);
+
+    if (!id) return res.status(400).json({ error: "Invalid organization id" });
+
+    if (!admin_id) return res.status(400).json({ error: "Invalid admin id" });
+
+    const belongs = await checkAdminIsInOrganization(id, admin_id);
+
+    res.json({
+      message: "success",
+      success: true,
+      data: belongs,
     });
   } catch (err) {
     console.error(err);

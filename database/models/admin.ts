@@ -5,6 +5,7 @@ import {
   UpdateDateColumn,
   Entity,
   ManyToMany,
+  OneToMany,
 } from "typeorm";
 import { Organization } from "./organization";
 import { comparePassword as compPass } from "../../utils/crypto";
@@ -33,6 +34,9 @@ export class Admin {
 
   @Column("text")
   role: AdminRoles = "admin";
+
+  @OneToMany(() => Organization, (organization) => organization.owner)
+  owned_organizations!: Organization[];
 
   @ManyToMany(() => Organization, (organization) => organization.admins)
   organizations!: Organization[];
