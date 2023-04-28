@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useMemo } from "react";
 import { Admin } from "../../documentation/main";
-import { useGetMe, useRefreshAccessToken } from "../hooks/fetching/common";
+import { useRefreshAccessToken } from "../hooks/fetching/common";
+import { useGetMe } from "../hooks/fetching/admin";
 import { useEffect } from "react";
 
 interface UserContextType {

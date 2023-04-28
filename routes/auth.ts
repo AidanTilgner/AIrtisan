@@ -4,8 +4,8 @@ import {
   getAdmin,
   getAdmins,
   updateAdmin,
-  deleteAdmin,
   getAdminOrganizations,
+  checkUsernameTaken,
 } from "../database/functions/admin";
 import { Router } from "express";
 import { checkIsSuperAdmin, checkIsAdmin } from "../middleware/auth";
@@ -218,6 +218,49 @@ router.get("/me", checkIsAdmin, async (req, res) => {
   }
 });
 
+router.put("/me", checkIsAdmin, async (req, res) => {
+  try {
+    const admin = (req as unknown as Record<"admin", Admin>)["admin"];
+
+    if (!admin) {
+      res
+        .status(500)
+        .send({ message: "There was an error updating your profile." });
+      return;
+    }
+
+    const { username, display_name, email } = req.body;
+
+    const usernameTaken = username
+      ? await checkUsernameTaken(username, admin.id)
+      : false;
+
+    if (usernameTaken) {
+      res.status(409).send({ message: "Username already taken." });
+      return;
+    }
+
+    const result = await updateAdmin(admin.id, {
+      username,
+      display_name,
+      email,
+    });
+
+    if (!result) {
+      res.status(500).send({ message: "Internal server error." });
+      return;
+    }
+
+    res.status(200).send({
+      message: "Admin updated successfully.",
+      data: result,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ message: "Internal server error." });
+  }
+});
+
 router.get("/me/organizations", checkIsAdmin, async (req, res) => {
   try {
     const admin = (req as unknown as Record<"admin", Admin>)["admin"];
@@ -257,51 +300,6 @@ router.get("/me/bots", checkIsAdmin, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).send({ message: "Internal server error." });
-  }
-});
-
-router.get("/admin/:id", checkIsSuperAdmin, async (req, res) => {
-  try {
-    const { id } = req.params;
-    const admin = await getAdmin(parseInt(id));
-    if (!admin) {
-      res.status(404).send({ message: "Admin not found." });
-      return;
-    }
-    res.status(200).send({
-      message: "Admin fetched successfully.",
-      data: {
-        admin,
-      },
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send({ message: "Internal server error." });
-  }
-});
-
-router.delete("/admin/:id", checkIsSuperAdmin, async (req, res) => {
-  try {
-    const { id } = req.params;
-    const admin = await getAdmin(parseInt(id));
-    if (!admin) {
-      res.status(404).send({ message: "Admin not found.", success: true });
-      return;
-    }
-    const result = await deleteAdmin(parseInt(id));
-    if (!result) {
-      res
-        .status(500)
-        .send({ message: "Internal server error.", success: true });
-      return;
-    }
-    res
-      .status(200)
-      .send({ message: "Admin deleted successfully.", success: true });
-  } catch (err) {
-    console.error(err);
-
-    res.status(500).send({ message: "Internal server error.", success: true });
   }
 });
 

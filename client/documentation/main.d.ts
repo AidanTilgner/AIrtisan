@@ -7,6 +7,7 @@ export interface Admin {
   display_name: string;
   password?: string;
   role: AdminRoles;
+  email: string;
   created_at: Date;
   updated_at: Date;
 }

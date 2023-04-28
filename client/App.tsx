@@ -58,7 +58,7 @@ function App() {
                   <Route index element={<Settings />} />
                 </Route>
                 <Route path="profile">
-                  <Route path=":user_id">
+                  <Route path=":username">
                     <Route index element={<Profile />} />
                   </Route>
                 </Route>

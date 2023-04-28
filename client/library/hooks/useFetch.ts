@@ -15,6 +15,8 @@ export interface UseFetchConfig<B, D> {
   bustCache?: boolean;
   runOnMount?: boolean;
   useBotId?: boolean;
+  dependencies?: unknown[];
+  runOnDependencies?: unknown[];
 }
 
 function useFetch<B, D>({
@@ -29,6 +31,8 @@ function useFetch<B, D>({
   bustCache,
   runOnMount = false,
   useBotId = true,
+  dependencies = [],
+  runOnDependencies = [],
 }: UseFetchConfig<B, D>) {
   const { bot } = useBot();
 
@@ -76,10 +80,12 @@ function useFetch<B, D>({
           onError && onError(err);
           setData(undefined);
           setSuccess(false);
+          const message = err?.response?.data?.message || err?.message || null;
           return {
             error: err,
             success: false,
             data: null,
+            message,
           } as DefaultResponse<null>;
         })
         .finally(() => {
@@ -87,12 +93,26 @@ function useFetch<B, D>({
           onFinally && onFinally();
         });
     },
-    [urlToUse, method, body, headers, bustCache, onSuccess, onError, readyToRun]
+    [
+      urlToUse,
+      method,
+      body,
+      headers,
+      bustCache,
+      onSuccess,
+      onError,
+      readyToRun,
+      onFinally,
+      ...dependencies,
+    ]
   );
 
   useEffect(() => {
     if (!readyToRun) return;
-    if (runOnMount) {
+    if (
+      runOnMount ||
+      (runOnDependencies.length > 0 && runOnDependencies.every((dep) => !!dep))
+    ) {
       load({
         updatedUrl: urlToUse,
         updatedBody: body,
@@ -108,6 +128,7 @@ function useFetch<B, D>({
     onError,
     readyToRun,
     runOnMount,
+    ...runOnDependencies,
   ]);
 
   const loadWithUrl = useCallback(

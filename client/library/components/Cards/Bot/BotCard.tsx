@@ -18,13 +18,15 @@ function BotCard({ bot, onClick }: BotCardProps) {
         </div>
         <div className={styles.name}>{bot.name}</div>
         <div className={styles.tags}>
-          <div
-            className={`${styles.tag} ${
-              bot.running ? styles.running : styles.not_running
-            }`}
-          >
-            {bot.running ? "Running" : "Not running"}
-          </div>
+          {bot.running !== undefined && bot.running !== null && (
+            <div
+              className={`${styles.tag} ${
+                bot.running ? styles.running : styles.not_running
+              }`}
+            >
+              {bot.running ? "Running" : "Not running"}
+            </div>
+          )}
         </div>
       </div>
       <div className={styles.body}>

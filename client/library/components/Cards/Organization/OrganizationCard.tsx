@@ -6,12 +6,17 @@ import { Buildings } from "@phosphor-icons/react";
 interface OrganizationCardProps {
   organization: Organization;
   onClick?: () => void;
+  size?: "small";
 }
 
-function OrganizationCard({ organization, onClick }: OrganizationCardProps) {
+function OrganizationCard({
+  organization,
+  onClick,
+  size = "small",
+}: OrganizationCardProps) {
   return (
     <button
-      className={styles.OrganizationCard}
+      className={`${styles.OrganizationCard} ${styles[size]}`}
       onClick={onClick}
       title={`${organization.name}`}
     >

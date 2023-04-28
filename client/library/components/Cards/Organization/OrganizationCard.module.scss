@@ -1,17 +1,19 @@
 .OrganizationCard {
+  width: 100%;
+  aspect-ratio: 1/1;
+  border: 1px solid #eaeaea;
+  padding: 18px;
+  box-sizing: border-box;
   border-radius: 10px;
-  border: 1px solid #eaeaee;
+  background-color: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  width: 100%;
-  aspect-ratio: 1/1;
-  background-color: transparent;
+  font-size: 24px;
   cursor: pointer;
-  font-family: "QuickSand", sans-serif;
   transition: all 0.2s ease-in-out;
-  box-sizing: border-box;
+  padding: 14px;
 
   &:hover {
     background-color: #f8f8f8;
@@ -20,13 +22,25 @@
   &:active {
     transform: translateY(2px);
   }
+
+  .iconContainer {
+    font-size: 24px;
+  }
+
+  .name {
+    font-weight: 500;
+    font-size: 18px;
+  }
 }
 
-.iconContainer {
-  font-size: 24px;
-}
+.small {
+  padding: 8px;
 
-.name {
-  font-weight: 500;
-  font-size: 18px;
+  .iconContainer {
+    font-size: 20px;
+  }
+
+  .name {
+    font-size: 14px;
+  }
 }

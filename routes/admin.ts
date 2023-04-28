@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getAdmin } from "../database/functions/admin";
+import { getAdmin, getAdminByUsername } from "../database/functions/admin";
 import { checkIsAdmin } from "../middleware/auth";
 import { getBotsByOwner } from "../database/functions/bot";
 import { getAdminOrganizations } from "../database/functions/admin";
@@ -91,6 +91,32 @@ router.get("/:admin_id/organizations", checkIsAdmin, async (req, res) => {
   } catch (err) {
     console.error(err);
 
+    res.status(500).send({ message: "Internal server error." });
+  }
+});
+
+router.get("/by_name/:username", checkIsAdmin, async (req, res) => {
+  try {
+    const { username } = req.params;
+
+    if (!username) {
+      res.status(400).send({ message: "Username not provided." });
+      return;
+    }
+
+    const admin = await getAdminByUsername(username);
+
+    if (!admin) {
+      res.status(404).send({ message: "Admin not found." });
+      return;
+    }
+
+    res.status(200).send({
+      message: "Admin fetched successfully.",
+      data: admin,
+    });
+  } catch (err) {
+    console.error(err);
     res.status(500).send({ message: "Internal server error." });
   }
 });

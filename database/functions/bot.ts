@@ -434,3 +434,18 @@ export const checkBotIsInOrganization = async (
     return null;
   }
 };
+
+export const getPublicBotsByOwner = async (
+  owner_id: number,
+  owner_type: Bot["owner_type"]
+) => {
+  try {
+    const bots = await dataSource.manager.find(entities.Bot, {
+      where: { owner_id, owner_type, visibility: "public" },
+    });
+    return bots;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};

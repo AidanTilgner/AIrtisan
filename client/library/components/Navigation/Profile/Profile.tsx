@@ -48,7 +48,7 @@ function Profile() {
           <Menu.Item
             icon={<User />}
             onClick={() => {
-              navigate(`/profile/${user?.id}`);
+              navigate(`/profile/${user?.username}`);
             }}
           >
             Profile
@@ -56,7 +56,7 @@ function Profile() {
           <Menu.Item
             icon={<Robot />}
             onClick={() => {
-              navigate(`/profile/${user?.id}?tab=bots`);
+              navigate(`/profile/${user?.username}?tab=bots`);
             }}
           >
             Bots
@@ -64,7 +64,7 @@ function Profile() {
           <Menu.Item
             icon={<BellSimple />}
             onClick={() => {
-              navigate(`/profile/${user?.id}?tab=notifications`);
+              navigate(`/profile/${user?.username}?tab=notifications`);
             }}
           >
             Notifications

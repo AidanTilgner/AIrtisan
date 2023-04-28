@@ -1,11 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import styles from "./Profile.module.scss";
-import { PencilSimple, Plus, User } from "@phosphor-icons/react";
+import { Check, PencilSimple, Plus, User, X } from "@phosphor-icons/react";
 import { useUser } from "../../contexts/User";
-import {
-  useGetMyBots,
-  useGetMyOrganizations,
-} from "../../hooks/fetching/common";
 import OrganizationCard from "../../components/Cards/Organization/OrganizationCard";
 import {
   Navigate,
@@ -18,39 +14,46 @@ import Search from "../../components/Search/Search";
 import BotCard from "../../components/Cards/Bot/BotCard";
 import { useSearchParamsUpdate } from "../../hooks/navigation";
 import {
-  useGetAdmin,
+  useGetAdminByUsername,
   useGetAdminBots,
   useGetAdminOrganizations,
+  useUpdateMe,
+  useGetMyBots,
 } from "../../hooks/fetching/admin";
 import Loaders from "../../components/Utils/Loaders";
+import { TextInput } from "@mantine/core";
+import { showNotification } from "@mantine/notifications";
+import { Bot } from "../../../documentation/main";
 
 type Tab = "notifications" | "bots";
 
 function Profile() {
-  const { user_id } = useParams();
+  const { username } = useParams();
   const { user: currentUser } = useUser();
 
   const [isCurrentUser, setIsCurrentUser] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const { data: user } = useGetAdmin(user_id as string, {
-    runOnMount: true,
-    onFinally: () => {
-      setLoading(false);
-    },
-  });
+  const { data: user, getAdmin: reloadAdmin } = useGetAdminByUsername(
+    username as string,
+    {
+      runOnMount: true,
+      onFinally: () => {
+        setLoading(false);
+      },
+    }
+  );
 
   useEffect(() => {
-    setIsCurrentUser(currentUser?.id === Number(user_id));
-  }, [currentUser, user_id]);
+    setIsCurrentUser(currentUser?.username === username);
+  }, [currentUser, username]);
 
-  const { data: organizations = [] } = isCurrentUser
-    ? useGetMyOrganizations({
-        runOnMount: true,
-      })
-    : useGetAdminOrganizations(user_id as string, {
-        runOnMount: true,
-      });
+  const { data: organizations = [] } = useGetAdminOrganizations(
+    user?.id as unknown as string,
+    {
+      runOnDependencies: [user?.id],
+    }
+  );
 
   const navigate = useNavigate();
 
@@ -74,6 +77,58 @@ function Profile() {
     }
   }, [currentTab]);
 
+  const [isEditing, setIsEditingState] = useState(false);
+
+  const setIsEditing = (value: boolean) => {
+    if (!isCurrentUser) return;
+    setIsEditingState(value);
+  };
+
+  const [newProfile, setNewProfile] = useState({
+    username: user?.username,
+    display_name: user?.display_name,
+    email: user?.email,
+  });
+
+  useEffect(() => {
+    setNewProfile({
+      username: user?.username,
+      display_name: user?.display_name,
+      email: user?.email,
+    });
+  }, [user]);
+
+  const { updateMe } = useUpdateMe(newProfile, {
+    onSuccess: () => {
+      setIsEditing(false);
+    },
+    dependencies: [newProfile],
+  });
+
+  const handleUpdateProfile = async () => {
+    if (!(user?.username === username)) {
+      return;
+    }
+
+    const res = await updateMe();
+
+    if (!res || res.error) {
+      showNotification({
+        title: "Error",
+        message:
+          res?.message || "Something went wrong while updating your profile",
+        color: "red",
+      });
+      return;
+    }
+
+    showNotification({
+      title: "Success",
+      message: "Your profile has been updated",
+    });
+    reloadAdmin();
+  };
+
   if (loading) {
     return (
       <div
@@ -86,7 +141,7 @@ function Profile() {
     );
   }
 
-  if (user_id && !user && !loading) {
+  if (username && !user && !loading) {
     return <Navigate to={`/404?reason="User not found"`} />;
   }
 
@@ -98,14 +153,82 @@ function Profile() {
             <User weight="thin" />
           </div>
         </div>
-        <div className={styles.name}>
-          <span>{user?.display_name}</span>
-          {isCurrentUser && (
-            <button title="Edit username">
-              <PencilSimple weight="regular" />
-            </button>
-          )}
-        </div>
+        {isEditing ? (
+          <div className={styles.profileEdit}>
+            <div className={styles.form}>
+              <TextInput
+                label="Username"
+                type="text"
+                value={newProfile.username || ""}
+                onChange={(e) => {
+                  setNewProfile({
+                    ...newProfile,
+                    username: e.currentTarget.value,
+                  });
+                }}
+                placeholder="Your official, unique username"
+              />
+              <TextInput
+                label="Display name"
+                type="text"
+                value={newProfile.display_name || ""}
+                onChange={(e) => {
+                  setNewProfile({
+                    ...newProfile,
+                    display_name: e.currentTarget.value,
+                  });
+                }}
+                placeholder="How people see your name"
+              />
+              <TextInput
+                label="Email"
+                type="email"
+                value={newProfile.email || ""}
+                onChange={(e) => {
+                  setNewProfile({
+                    ...newProfile,
+                    email: e.currentTarget.value,
+                  });
+                }}
+                placeholder="Your email address"
+              />
+            </div>
+            <div className={styles.editOptions}>
+              <button
+                title="Cancel changes"
+                className={`${styles.cancel} ${styles.editOption}`}
+                onClick={() => {
+                  setIsEditing(false);
+                }}
+              >
+                <X weight="regular" />
+              </button>
+              <button
+                title="Save changes"
+                className={`${styles.save} ${styles.editOption}`}
+                onClick={() => {
+                  handleUpdateProfile();
+                }}
+              >
+                <Check weight="regular" />
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className={styles.name}>
+            <span>{user?.display_name || user?.username}</span>
+            {isCurrentUser && (
+              <button
+                title="Edit profile"
+                onClick={() => {
+                  setIsEditing(true);
+                }}
+              >
+                <PencilSimple weight="regular" />
+              </button>
+            )}
+          </div>
+        )}
         <div className={styles.organizationsContainer}>
           <h3>Organizations</h3>
           <div className={styles.organizations}>
@@ -119,12 +242,14 @@ function Profile() {
               />
             ))}
             {isCurrentUser && (
-              <button
-                title="Create or join organization"
-                className={styles.newOrganization}
-              >
-                <Plus weight="thin" />
-              </button>
+              <div className={styles.addOrgContainer}>
+                <button
+                  title="Create or join organization"
+                  className={styles.newOrganization}
+                >
+                  <Plus weight="regular" />
+                </button>
+              </div>
             )}
           </div>
         </div>
@@ -152,6 +277,7 @@ function Profile() {
           <DisplayCurrentTab
             currentTab={currentTab}
             isCurrentUser={isCurrentUser}
+            user_id={user?.id || undefined}
           />
         </div>
       </div>
@@ -164,13 +290,15 @@ export default Profile;
 function DisplayCurrentTab({
   currentTab,
   isCurrentUser,
+  user_id,
 }: {
   currentTab: Tab;
   isCurrentUser: boolean;
+  user_id: number | undefined;
 }) {
   switch (currentTab) {
     case "bots":
-      return <BotsTab isCurrentUser={isCurrentUser} />;
+      return <BotsTab isCurrentUser={isCurrentUser} user_id={user_id} />;
     case "notifications":
       return <NotificationsTab />;
     default:
@@ -178,35 +306,70 @@ function DisplayCurrentTab({
   }
 }
 
-function BotsTab({ isCurrentUser }: { isCurrentUser: boolean }) {
-  const { user_id } = useParams();
-  const { data: bots } = isCurrentUser
-    ? useGetMyBots({ runOnMount: true })
-    : useGetAdminBots(user_id as string, { runOnMount: true });
+function BotsTab({
+  isCurrentUser,
+  user_id,
+}: {
+  isCurrentUser: boolean;
+  user_id: number | undefined;
+}) {
+  const [bots, setBots] = useState<Bot[]>([]);
+
+  const { getMyBots } = useGetMyBots({
+    dependencies: [isCurrentUser],
+  });
+
+  const { getAdminBots } = useGetAdminBots(user_id as number, {
+    dependencies: [isCurrentUser, user_id],
+  });
+
+  useEffect(() => {
+    if (isCurrentUser) {
+      getMyBots().then((res) => {
+        if (!res || !res.data) {
+          showNotification({
+            title: "Error",
+            message: "Could not fetch bots",
+            color: "red",
+          });
+          return;
+        }
+        setBots(res.data);
+      });
+    } else {
+      getAdminBots().then((res) => {
+        if (!res || !res.data) return;
+        setBots(res.data);
+      });
+    }
+  }, [isCurrentUser, getMyBots, getAdminBots]);
 
   const navigate = useNavigate();
 
-  return (
-    <div className={styles.botsTab}>
-      <div className={styles.searchContainer}>
-        <Search />
+  return useMemo(
+    () => (
+      <div className={styles.botsTab}>
+        <div className={styles.searchContainer}>
+          <Search />
+        </div>
+        <div className={styles.bots}>
+          {bots && bots?.length > 0 ? (
+            bots.map((b) => (
+              <BotCard
+                key={b.id}
+                bot={b}
+                onClick={() => {
+                  navigate(`/bots/${b.id}`);
+                }}
+              />
+            ))
+          ) : (
+            <p className={styles.disclaimer}>No bots yet.</p>
+          )}
+        </div>
       </div>
-      <div className={styles.bots}>
-        {bots && bots?.length > 0 ? (
-          bots.map((b) => (
-            <BotCard
-              key={b.id}
-              bot={b}
-              onClick={() => {
-                navigate(`/bots/${b.id}`);
-              }}
-            />
-          ))
-        ) : (
-          <p className={styles.disclaimer}>No bots yet.</p>
-        )}
-      </div>
-    </div>
+    ),
+    [bots, navigate]
   );
 }
 

@@ -10,6 +10,7 @@ export const getShortenedMessage = (message: string) => {
 
 export const getFormattedBotOwner = (bot: Bot) => {
   try {
+    if (!bot.owner) return "Unknown";
     switch (bot.owner_type) {
       case "admin":
         return (bot.owner as Admin).username;
@@ -26,7 +27,7 @@ export const getFormattedBotOwner = (bot: Bot) => {
 
 export const getFormattedAdminName = (admin: Admin) => {
   try {
-    const name = admin.display_name || admin.username;
+    const name = admin.display_name || admin.username || admin.email;
     return name;
   } catch (error) {
     console.error(error);
