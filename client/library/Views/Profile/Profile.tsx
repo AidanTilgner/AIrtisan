@@ -19,6 +19,7 @@ import {
   useGetAdminOrganizations,
   useUpdateMe,
   useGetMyBots,
+  useGetMyNotifications,
 } from "../../hooks/fetching/admin";
 import Loaders from "../../components/Utils/Loaders";
 import { TextInput } from "@mantine/core";
@@ -128,7 +129,6 @@ function Profile() {
     });
     reloadAdmin();
   };
-
   if (loading) {
     return (
       <div
@@ -374,6 +374,12 @@ function BotsTab({
 }
 
 function NotificationsTab() {
+  const { data: notifications } = useGetMyNotifications({
+    runOnMount: true,
+  });
+
+  console.log("notifications", notifications);
+
   return (
     <div className={styles.notificationsTab}>
       <p className={styles.disclaimer}>No notifications yet.</p>

@@ -51,3 +51,17 @@ export type Context = Record<string, unknown>;
 export type AdminRoles = "admin" | "superadmin";
 
 export type OwnerTypes = "admin" | "organization";
+
+export interface Notification {
+  title: string;
+  priority: "low" | "medium" | "high";
+  body: string;
+  actions: {
+    title: string;
+    type: string;
+  }[];
+  metadata: {
+    [key: string]: unknown;
+  };
+  type: "organization_invite";
+}

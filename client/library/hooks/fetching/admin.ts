@@ -186,3 +186,22 @@ export const useSearchAdmins = (
     loading: loading,
   };
 };
+
+export const useGetMyNotifications = (
+  config?: Partial<UseFetchConfig<undefined, Notification[]>>
+) => {
+  const { data, load, loading } = useFetch<undefined, Notification[]>({
+    useBotId: false,
+    ...config,
+    url: `/auth/me/notifications`,
+    method: "GET",
+  });
+
+  return {
+    getMyNotifications: () => {
+      load();
+    },
+    data: data,
+    loading: loading,
+  };
+};

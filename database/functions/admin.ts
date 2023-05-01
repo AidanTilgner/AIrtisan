@@ -1,6 +1,8 @@
 import { dataSource, entities } from "..";
+import { Notification } from "../../types/lib";
 import { hashPassword } from "../../utils/crypto";
 import { Admin } from "../models/admin";
+import { getOrganizationInvitationsByAdmin } from "./organization";
 
 export const createAdmin = async ({
   username,
@@ -182,6 +184,47 @@ export const searchAdmins = async (query: string) => {
     });
 
     return filteredResults;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};
+
+export const getAdminNotifications = async (admin_id: number) => {
+  try {
+    const admin = await dataSource.manager.findOne(entities.Admin, {
+      where: { id: admin_id },
+    });
+    if (!admin) return null;
+
+    const adminOrgInvites = await getOrganizationInvitationsByAdmin(admin_id);
+
+    const notifications: Notification[] = [];
+
+    adminOrgInvites?.forEach((invite) => {
+      notifications.push({
+        title: "Organization Invitation",
+        body: `You have been invited to join ${invite.organization.name}`,
+        priority: "medium",
+        actions: [
+          {
+            title: "Accept",
+            type: "accept_organization_invite",
+          },
+          {
+            title: "Decline",
+            type: "decline_organization_invite",
+          },
+        ],
+        metadata: {
+          organization: invite.organization,
+          admin: invite.admin,
+        },
+        type: "organization_invite",
+      });
+    });
+
+    return notifications;
   } catch (err) {
     console.error(err);
     return null;

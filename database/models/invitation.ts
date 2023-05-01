@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToOne,
+  ManyToOne,
 } from "typeorm";
 import { Organization } from "./organization";
 import { Admin } from "./admin";
@@ -14,10 +15,10 @@ export class OrganizationInvitation {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @OneToOne(() => Organization, { eager: true })
+  @ManyToOne(() => Organization, { eager: true })
   organization!: Organization;
 
-  @OneToOne(() => Admin, { eager: true })
+  @ManyToOne(() => Admin, { eager: true })
   admin!: Admin;
 
   @Column("text")

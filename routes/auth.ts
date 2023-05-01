@@ -6,6 +6,7 @@ import {
   updateAdmin,
   getAdminOrganizations,
   checkUsernameTaken,
+  getAdminNotifications,
 } from "../database/functions/admin";
 import { Router } from "express";
 import { checkIsSuperAdmin, checkIsAdmin } from "../middleware/auth";
@@ -306,6 +307,27 @@ router.get("/me/bots", checkIsAdmin, async (req, res) => {
     res.status(200).send({
       message: "Got admin bots from session.",
       data: bots,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ message: "Internal server error." });
+  }
+});
+
+router.get("/me/notifications", checkIsAdmin, async (req, res) => {
+  try {
+    const admin = (req as unknown as Record<"admin", Admin>)["admin"];
+
+    const notifications = await getAdminNotifications(admin.id);
+
+    if (!notifications) {
+      res.status(500).send({ message: "Internal server error." });
+      return;
+    }
+
+    res.status(200).send({
+      message: "Got admin notifications from session.",
+      data: notifications,
     });
   } catch (err) {
     console.error(err);

@@ -282,7 +282,6 @@ export const getOrganizationInvitations = async (organization_id: number) => {
       entities.OrganizationInvitation,
       {
         where: { organization: { id: organization_id } },
-        relations: ["admin"],
       }
     );
     return invitations;
@@ -298,7 +297,6 @@ export const getOrganizationInvitationByToken = async (token: string) => {
       entities.OrganizationInvitation,
       {
         where: { token },
-        relations: ["admin", "organization"],
       }
     );
     return invitation;
@@ -321,13 +319,12 @@ export const deleteOrganizationInvitation = async (id: number) => {
   }
 };
 
-export const getOrganizationInvitationByAdmin = async (admin_id: number) => {
+export const getOrganizationInvitationsByAdmin = async (admin_id: number) => {
   try {
-    const invitation = await dataSource.manager.findOne(
+    const invitation = await dataSource.manager.find(
       entities.OrganizationInvitation,
       {
         where: { admin: { id: admin_id } },
-        relations: ["admin", "organization"],
       }
     );
     return invitation;
