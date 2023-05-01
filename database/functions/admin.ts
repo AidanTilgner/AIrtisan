@@ -219,6 +219,7 @@ export const getAdminNotifications = async (admin_id: number) => {
         metadata: {
           organization: invite.organization,
           admin: invite.admin,
+          invitation: invite,
         },
         type: "organization_invite",
       });

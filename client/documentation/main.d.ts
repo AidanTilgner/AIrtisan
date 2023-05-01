@@ -112,3 +112,17 @@ export interface Organization {
   created_at: Date;
   updated_at: Date;
 }
+
+export interface Notification {
+  title: string;
+  priority: "low" | "medium" | "high";
+  body: string;
+  actions: {
+    title: string;
+    type: string;
+  }[];
+  metadata: {
+    [key: string]: unknown;
+  };
+  type: "organization_invite";
+}

@@ -19,7 +19,9 @@ export class Admin {
   @Column("text")
   username!: string;
 
-  @Column("text")
+  @Column("text", {
+    select: false,
+  })
   password!: string;
 
   @Column("text", {

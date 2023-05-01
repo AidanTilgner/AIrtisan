@@ -1,5 +1,10 @@
 import useFetch, { UseFetchConfig } from "../useFetch";
-import { Admin, Bot, Organization } from "../../../documentation/main";
+import {
+  Admin,
+  Bot,
+  Notification,
+  Organization,
+} from "../../../documentation/main";
 
 export const useGetMe = (
   config?: Partial<UseFetchConfig<unknown, Omit<Admin, "password">>>

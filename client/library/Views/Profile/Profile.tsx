@@ -25,6 +25,7 @@ import Loaders from "../../components/Utils/Loaders";
 import { TextInput } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { Bot } from "../../../documentation/main";
+import NotificationCard from "../../components/Cards/Notification/Notification";
 
 type Tab = "notifications" | "bots";
 
@@ -378,11 +379,20 @@ function NotificationsTab() {
     runOnMount: true,
   });
 
-  console.log("notifications", notifications);
-
   return (
     <div className={styles.notificationsTab}>
-      <p className={styles.disclaimer}>No notifications yet.</p>
+      {notifications?.length && notifications.length > 0 ? (
+        <div className={styles.list}>
+          {notifications.map((notification) => (
+            <NotificationCard
+              key={notification.body}
+              notification={notification}
+            />
+          ))}
+        </div>
+      ) : (
+        <p className={styles.disclaimer}>No notifications yet.</p>
+      )}
     </div>
   );
 }
