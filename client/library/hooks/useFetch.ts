@@ -162,13 +162,7 @@ function useFetch<B, D>({
     [load]
   );
 
-  return {
-    loading,
-    data,
-    load,
-    success,
-    loadWithUrl,
-  };
+  return { loading, data, load, success, loadWithUrl };
 }
 
 export default useFetch;

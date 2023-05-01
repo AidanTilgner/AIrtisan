@@ -26,6 +26,9 @@ import {
 } from "../database/functions/apiKey";
 import { Admin } from "../database/models/admin";
 import { getAdminBotsWithRunningStatus } from "../database/functions/bot";
+import { config } from "dotenv";
+
+config();
 
 const router = Router();
 
@@ -62,6 +65,13 @@ router.post("/admin/signin", async (req, res) => {
 
 router.post("/admin/signup", async (req, res) => {
   try {
+    const { ALLOW_NEW_USERS } = process.env;
+
+    if (ALLOW_NEW_USERS !== "TRUE") {
+      res.status(403).send({ message: "New users are not allowed." });
+      return;
+    }
+
     const { username, password } = req.body;
     const admin = await getAdminByUsername(username);
 

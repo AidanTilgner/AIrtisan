@@ -8,6 +8,7 @@ import { verifyAccessToken } from "../utils/crypto";
 import { getApiKey } from "../database/functions/apiKey";
 import {
   checkAdminIsInOrganization,
+  checkAdminIsOwnerOfOrganization,
   getOrganization,
 } from "../database/functions/organization";
 import { checkAdminHasAccessToBot, getBot } from "../database/functions/bot";
@@ -265,6 +266,72 @@ export const isInOrganization = async (
     const isMember = await checkAdminIsInOrganization(admin.id, org.id);
 
     if (!isMember) {
+      res.status(401).send({ message: "Unauthorized." });
+      return;
+    }
+
+    (req as unknown as Record<"admin", Admin>)["admin"] = admin;
+    (req as unknown as Record<"organization", Organization>)["organization"] =
+      org;
+
+    next();
+  } catch (err) {
+    res.status(500).send({ message: "Internal server error." });
+    logger.log(String(err));
+  }
+};
+
+export const isOwnerOfOrganization = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const access_token =
+      (req.headers["x-access-token"] as string) ||
+      (req.query["x-access-token"] as string) ||
+      req.headers["authorization"]?.split(" ")?.[1];
+
+    if (!access_token) {
+      res.status(401).send({ message: "No access token provided." });
+      return;
+    }
+
+    const verified = (await verifyAccessToken(access_token)) as
+      | { id: number }
+      | false;
+
+    if (!verified) {
+      res.status(401).send({ message: "Invalid access token provided." });
+      return;
+    }
+
+    const { id } = verified;
+
+    const admin = await getAdmin(id);
+
+    if (!admin) {
+      res.status(401).send({ message: "Invalid access token provided." });
+      return;
+    }
+
+    const { id: organization } = req.params;
+
+    if (!organization) {
+      res.status(400).send({ message: "No organization provided." });
+      return;
+    }
+
+    const org = await getOrganization(Number(organization));
+
+    if (!org) {
+      res.status(400).send({ message: "Invalid organization provided." });
+      return;
+    }
+
+    const isOwner = await checkAdminIsOwnerOfOrganization(admin.id, org.id);
+
+    if (!isOwner) {
       res.status(401).send({ message: "Unauthorized." });
       return;
     }

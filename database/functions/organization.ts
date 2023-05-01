@@ -1,6 +1,7 @@
 import { Organization } from "../models/organization";
 import { entities, dataSource } from "..";
 import { getAdmin } from "./admin";
+import { addRunningStatusToBots, getBotsByOwner } from "./bot";
 
 export const createOrganization = async ({
   name,
@@ -66,11 +67,10 @@ export const updateOrganization = async (
       }
     );
     if (!organization) return null;
-    const result = await dataSource.manager.update(
-      entities.Organization,
+    const result = await dataSource.manager.save(entities.Organization, {
       id,
-      data
-    );
+      ...data,
+    });
     return result;
   } catch (err) {
     console.error(err);
@@ -114,7 +114,7 @@ export const getOrganizationAdmins = async (id: number) => {
     );
     if (!organization) return null;
 
-    return [...(organization.admins || []), organization.owner];
+    return [organization.owner, ...(organization.admins || [])];
   } catch (err) {
     console.error(err);
     return null;
@@ -122,20 +122,44 @@ export const getOrganizationAdmins = async (id: number) => {
 };
 
 export const checkAdminIsInOrganization = async (
-  admin_id: number,
-  organization_id: number
+  organization_id: number,
+  admin_id: number
 ) => {
   try {
     const organization = await dataSource.manager.findOne(
       entities.Organization,
       {
         where: { id: organization_id },
-        relations: ["admins"],
+        relations: ["admins", "owner"],
       }
     );
     if (!organization) return null;
+
+    if (organization.owner.id === admin_id) return true;
+
     const admin = organization.admins.find((admin) => admin.id === admin_id);
     return admin ? true : false;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};
+
+export const checkAdminIsOwnerOfOrganization = async (
+  organization_id: number,
+  admin_id: number
+) => {
+  try {
+    const organization = await dataSource.manager.findOne(
+      entities.Organization,
+      {
+        where: { id: organization_id },
+        relations: ["owner"],
+      }
+    );
+    if (!organization) return null;
+
+    return organization.owner.id === admin_id;
   } catch (err) {
     console.error(err);
     return null;
@@ -164,6 +188,53 @@ export const addAdminToOrganization = async (
     return organization;
   } catch (err) {
     console.error(err);
+    return null;
+  }
+};
+
+export const getOrganizationBotsThatAdminHasAccessTo = async (
+  organization_id: number,
+  admin_id: number
+) => {
+  try {
+    const organization = await dataSource.manager.findOne(
+      entities.Organization,
+      {
+        where: { id: organization_id },
+        relations: ["owner", "admins"],
+      }
+    );
+    if (!organization) return null;
+
+    const isOwner = organization.owner.id === admin_id;
+    const isMember = organization.admins.find((admin) => admin.id === admin_id);
+
+    const publicBots = await getBotsByOwner(
+      organization_id,
+      "organization",
+      "public"
+    );
+
+    if (isOwner || isMember) {
+      const privateBots = await getBotsByOwner(
+        organization_id,
+        "organization",
+        "private"
+      );
+      const bots = [...(privateBots || []), ...(publicBots || [])];
+      const botsWithRunningStatus = await addRunningStatusToBots(bots);
+      return botsWithRunningStatus;
+    }
+
+    const botsWithRunningStatus = await addRunningStatusToBots(
+      publicBots || []
+    );
+
+    if (!publicBots) return null;
+
+    return botsWithRunningStatus;
+  } catch (error) {
+    console.error(error);
     return null;
   }
 };

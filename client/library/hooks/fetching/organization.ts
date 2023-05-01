@@ -54,3 +54,69 @@ export const useGetOrganizationAdmins = (
     success,
   };
 };
+
+export const useCheckIsInOrganization = (
+  {
+    organization_id,
+    admin_id,
+  }: { organization_id: number | string; admin_id: number | string },
+  config?: Partial<UseFetchConfig<unknown, boolean>>
+) => {
+  const { load, data, success } = useFetch<unknown, boolean>({
+    useBotId: false,
+    ...config,
+    url: `/organizations/${organization_id}/is_member/${admin_id}`,
+    method: "GET",
+  });
+
+  return {
+    checkIsInOrganization: load,
+    data: data,
+    success,
+  };
+};
+
+export const useCheckIsOwnerOfOrganization = (
+  {
+    organization_id,
+    admin_id,
+  }: { organization_id: number | string; admin_id: number | string },
+  config?: Partial<UseFetchConfig<unknown, boolean>>
+) => {
+  const { load, data, success } = useFetch<unknown, boolean>({
+    useBotId: false,
+    ...config,
+    url: `/organizations/${organization_id}/is_owner/${admin_id}`,
+    method: "GET",
+  });
+
+  return {
+    checkIsOwnerOfOrganization: load,
+    data: data,
+    success,
+  };
+};
+
+export const useUpdateOrganization = (
+  organization_id: number | string,
+  update: Partial<Organization>,
+  config?: Partial<UseFetchConfig<Partial<Organization>, Organization>>
+) => {
+  const { load, data, success } = useFetch<Partial<Organization>, Organization>(
+    {
+      useBotId: false,
+      ...config,
+      url: `/organizations/${organization_id}`,
+      method: "PUT",
+      body: {
+        ...update,
+      },
+    }
+  );
+
+  return {
+    updateOrganization: load,
+    data: data,
+    success,
+  };
+};

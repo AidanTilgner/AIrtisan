@@ -1,10 +1,12 @@
 import React, { useEffect, useMemo, useState } from "react";
 import styles from "./Organization.module.scss";
-import { Buildings } from "@phosphor-icons/react";
+import { Buildings, Check, PencilSimple, X } from "@phosphor-icons/react";
 import {
+  useCheckIsOwnerOfOrganization,
   useGetOrganization,
   useGetOrganizationAdmins,
   useGetOrganizationBots,
+  useUpdateOrganization,
 } from "../../hooks/fetching/organization";
 import {
   Navigate,
@@ -17,21 +19,36 @@ import Search from "../../components/Search/Search";
 import BotCard from "../../components/Cards/Bot/BotCard";
 import { useSearchParamsUpdate } from "../../hooks/navigation";
 import AdminCard from "../../components/Cards/Admin/AdminCard";
-import { Organization } from "../../../documentation/main";
+import { Organization as OrganizationType } from "../../../documentation/main";
 import Loaders from "../../components/Utils/Loaders";
+import { useUser } from "../../contexts/User";
+import { TextInput, Textarea } from "@mantine/core";
+import { showNotification } from "@mantine/notifications";
 
 type Tab = "admins" | "bots";
 
 function Organization() {
+  const { user } = useUser();
   const { organization_id } = useParams();
   const [loading, setLoading] = useState(true);
   // const { user } = useUser();
-  const { data: organization } = useGetOrganization(organization_id as string, {
-    runOnMount: true,
-    onFinally: () => {
-      setLoading(false);
+  const { data: organization, getOrganization: reloadOrganization } =
+    useGetOrganization(organization_id as string, {
+      runOnMount: true,
+      onFinally: () => {
+        setLoading(false);
+      },
+    });
+
+  const { data: isOwner } = useCheckIsOwnerOfOrganization(
+    {
+      organization_id: organization_id as string,
+      admin_id: user?.id as number,
     },
-  });
+    {
+      runOnDependencies: [organization_id, user?.id],
+    }
+  );
 
   const [searchParams] = useSearchParams();
 
@@ -52,6 +69,49 @@ function Organization() {
       searchParamsUpdate(new Map([["tab", currentTab]]));
     }
   }, [currentTab]);
+
+  const [editing, setEditing] = useState(false);
+
+  const [newOrganization, setNewOrganization] = useState({
+    name: organization?.name as string,
+    description: organization?.description as string,
+  });
+
+  useEffect(() => {
+    setNewOrganization({
+      name: organization?.name as string,
+      description: organization?.description as string,
+    });
+  }, [organization]);
+
+  const { updateOrganization } = useUpdateOrganization(
+    organization_id as string,
+    {
+      name: newOrganization.name,
+      description: newOrganization.description,
+    },
+    {
+      dependencies: [organization_id, newOrganization],
+    }
+  );
+
+  const handleUpdateOrganization = async () => {
+    const res = await updateOrganization();
+    if (!res || !res.data || !res.success) {
+      showNotification({
+        title: "Error",
+        message: "Something went wrong while updating your organization",
+        color: "red",
+      });
+      return;
+    }
+    setEditing(false);
+    showNotification({
+      title: "Success",
+      message: "Organization updated successfully",
+    });
+    reloadOrganization();
+  };
 
   if (loading) {
     return (
@@ -79,12 +139,69 @@ function Organization() {
         </div>
       </div>
       <div className={styles.right}>
-        <div className={styles.name}>
-          <span>{organization?.name}</span>
-          {/* <button title="Edit username">
-            <PencilSimple weight="regular" />
-          </button> */}
-        </div>
+        {editing ? (
+          <div className={styles.organizationEdit}>
+            <div className={styles.form}>
+              <TextInput
+                label="Name"
+                type="text"
+                value={newOrganization.name || ""}
+                onChange={(e) => {
+                  setNewOrganization({
+                    ...newOrganization,
+                    name: e.currentTarget.value,
+                  });
+                }}
+                placeholder="Your official organization name"
+              />
+              <Textarea
+                label="Description"
+                value={newOrganization.description || ""}
+                onChange={(e) => {
+                  setNewOrganization({
+                    ...newOrganization,
+                    description: e.currentTarget.value,
+                  });
+                }}
+                placeholder="Your official organization description"
+              />
+            </div>
+            <div className={styles.editOptions}>
+              <button
+                title="Cancel changes"
+                className={`${styles.cancel} ${styles.editOption}`}
+                onClick={() => {
+                  setEditing(false);
+                }}
+              >
+                <X weight="regular" />
+              </button>
+              <button
+                title="Save changes"
+                className={`${styles.save} ${styles.editOption}`}
+                onClick={() => {
+                  handleUpdateOrganization();
+                }}
+              >
+                <Check weight="regular" />
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className={styles.name}>
+            <span>{organization?.name}</span>
+            {isOwner && (
+              <button
+                title="Edit organization"
+                onClick={() => {
+                  setEditing(!editing);
+                }}
+              >
+                <PencilSimple weight="regular" />
+              </button>
+            )}
+          </div>
+        )}
         <div className={styles.tabsContainer}>
           <Tabs
             tabs={[
@@ -106,7 +223,7 @@ function Organization() {
         <div className={styles.content}>
           <DisplayCurrentTab
             currentTab={currentTab}
-            organization={organization as Organization}
+            organization={organization as OrganizationType}
           />
         </div>
       </div>
@@ -121,7 +238,7 @@ function DisplayCurrentTab({
   organization,
 }: {
   currentTab: Tab;
-  organization: Organization;
+  organization: OrganizationType;
 }) {
   switch (currentTab) {
     case "bots":
@@ -168,7 +285,7 @@ function BotsTab() {
   );
 }
 
-function UsersTab({ organization }: { organization: Organization }) {
+function UsersTab({ organization }: { organization: OrganizationType }) {
   const { organization_id } = useParams();
   const { data: users } = useGetOrganizationAdmins(organization_id as string, {
     runOnMount: true,

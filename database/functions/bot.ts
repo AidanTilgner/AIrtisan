@@ -3,7 +3,7 @@ import { dataSource, entities } from "..";
 import { generateBotFiles } from "../../utils/bot";
 import { readFileSync, writeFileSync } from "fs";
 import { format } from "prettier";
-import { Context, Corpus, OwnerTypes } from "../../types/lib";
+import { Context, Corpus, Model, OwnerTypes } from "../../types/lib";
 import path from "path";
 import { getManagerIsAlive } from "../../nlu";
 import { getAdminOrganizations } from "./admin";
@@ -143,11 +143,12 @@ export const deleteBot = async (id: Bot["id"]) => {
 
 export const getBotsByOwner = async (
   owner_id: number,
-  owner_type: OwnerTypes
+  owner_type: OwnerTypes,
+  visibility?: Bot["visibility"]
 ) => {
   try {
     const bot = await dataSource.manager.find(entities.Bot, {
-      where: { owner_id, owner_type },
+      where: { owner_id, owner_type, visibility },
     });
     return bot;
   } catch (error) {
@@ -282,7 +283,7 @@ export const updateBotContext = async (id: Bot["id"], context: Context) => {
   }
 };
 
-export const updateBotModel = async (id: Bot["id"], model: any) => {
+export const updateBotModel = async (id: Bot["id"], model: Model) => {
   try {
     const bot = await dataSource.manager.findOne(entities.Bot, {
       where: { id },
@@ -444,6 +445,26 @@ export const getPublicBotsByOwner = async (
       where: { owner_id, owner_type, visibility: "public" },
     });
     return bots;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+export const addRunningStatusToBots = async (bots: Bot[]) => {
+  try {
+    const botsWithStatus = await Promise.all(
+      bots.map(async (bot) => {
+        const status = await getBotStatus(bot.id);
+        return {
+          running: status,
+          owner: await getBotOwner(bot.owner_id, bot.owner_type),
+          ...bot,
+        };
+      })
+    );
+
+    return botsWithStatus;
   } catch (error) {
     console.error(error);
     return null;
