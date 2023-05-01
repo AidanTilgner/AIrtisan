@@ -421,7 +421,7 @@ const ChatPair = ({
       type: "form",
       onClose: closeModal,
       buttons: [],
-      content: (
+      content: () => (
         <div className={styles.intentFormContainer}>
           <Intent
             type="either"

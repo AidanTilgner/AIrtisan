@@ -329,7 +329,7 @@ export const isOwnerOfOrganization = async (
       return;
     }
 
-    const isOwner = await checkAdminIsOwnerOfOrganization(admin.id, org.id);
+    const isOwner = await checkAdminIsOwnerOfOrganization(org.id, admin.id);
 
     if (!isOwner) {
       res.status(401).send({ message: "Unauthorized." });

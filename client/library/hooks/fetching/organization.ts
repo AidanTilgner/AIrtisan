@@ -120,3 +120,21 @@ export const useUpdateOrganization = (
     success,
   };
 };
+
+export const useDeleteOrganization = (
+  organization_id: number | string,
+  config?: Partial<UseFetchConfig<unknown, Organization>>
+) => {
+  const { load, data, success } = useFetch<unknown, Organization>({
+    useBotId: false,
+    ...config,
+    url: `/organizations/${organization_id}`,
+    method: "DELETE",
+  });
+
+  return {
+    deleteOrganization: load,
+    data: data,
+    success,
+  };
+};

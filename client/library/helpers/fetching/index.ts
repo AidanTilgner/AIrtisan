@@ -705,7 +705,7 @@ export const refreshAccessToken = async () => {
       })
       .then((res) => {
         localStorage.setItem("accessToken", res.data.data.access_token);
-        return res.data.data.access_token;
+        return res.data.data.access_token as string;
       })
       .catch((err) => {
         console.error(err);

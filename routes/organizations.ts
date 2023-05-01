@@ -73,7 +73,7 @@ router.put("/:id", checkIsAdmin, isOwnerOfOrganization, async (req, res) => {
   }
 });
 
-router.delete("/:id", checkIsAdmin, async (req, res) => {
+router.delete("/:id", checkIsAdmin, isOwnerOfOrganization, async (req, res) => {
   try {
     const id = Number(req.params.id);
     const organization = await deleteOrganization(id);

@@ -9,10 +9,12 @@ interface Modal {
     text: string;
     onClick: () => void;
     variant: ButtonVariant;
+    visible: boolean;
     color?: MantineColor;
+    disabled?: boolean;
   }[];
   onClose: () => void;
-  content: React.ReactNode | string;
+  content: () => JSX.Element;
   size: MantineSize;
 }
 
@@ -26,7 +28,7 @@ interface ModalContextType {
 const initialModal: Modal = {
   open: false,
   title: "",
-  content: "",
+  content: () => <></>,
   type: "confirmation",
   buttons: [],
   // eslint-disable-next-line @typescript-eslint/no-empty-function

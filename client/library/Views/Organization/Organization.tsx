@@ -3,6 +3,7 @@ import styles from "./Organization.module.scss";
 import { Buildings, Check, PencilSimple, X } from "@phosphor-icons/react";
 import {
   useCheckIsOwnerOfOrganization,
+  useDeleteOrganization,
   useGetOrganization,
   useGetOrganizationAdmins,
   useGetOrganizationBots,
@@ -22,10 +23,11 @@ import AdminCard from "../../components/Cards/Admin/AdminCard";
 import { Organization as OrganizationType } from "../../../documentation/main";
 import Loaders from "../../components/Utils/Loaders";
 import { useUser } from "../../contexts/User";
-import { TextInput, Textarea } from "@mantine/core";
+import { Button, Flex, TextInput, Textarea } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
+import { useModal } from "../../contexts/Modals";
 
-type Tab = "admins" | "bots";
+type Tab = "admins" | "bots" | "settings";
 
 function Organization() {
   const { user } = useUser();
@@ -215,6 +217,11 @@ function Organization() {
                 id: "admins",
                 visible: true,
               },
+              {
+                name: "Settings",
+                id: "settings",
+                visible: !!isOwner,
+              },
             ]}
             currentTab={currentTab}
             setCurrentTab={setCurrentTab}
@@ -245,6 +252,8 @@ function DisplayCurrentTab({
       return <BotsTab />;
     case "admins":
       return <UsersTab organization={organization} />;
+    case "settings":
+      return <SettingsTab organization={organization} />;
     default:
       return <p>Something went wrong</p>;
   }
@@ -318,5 +327,113 @@ function UsersTab({ organization }: { organization: OrganizationType }) {
       </div>
     ),
     [users]
+  );
+}
+
+function SettingsTab({ organization }: { organization: OrganizationType }) {
+  const { setModal, closeModal } = useModal();
+
+  const { deleteOrganization } = useDeleteOrganization(
+    organization.id as number,
+    {
+      onSuccess: () => {
+        closeModal();
+      },
+      dependencies: [organization.id],
+    }
+  );
+
+  const navigate = useNavigate();
+
+  const { user } = useUser();
+
+  const handleDeleteOrganization = () => {
+    setModal({
+      title: "Delete Organization",
+      content: () => {
+        const [nameConfirmation, setNameConfirmation] = useState("");
+
+        return (
+          <div>
+            <p>
+              Type {'"'}
+              <strong>{organization.name}</strong>
+              {'"'} to confirm deletion of the organization.
+            </p>
+            <TextInput
+              label="Organization Name"
+              value={nameConfirmation}
+              onChange={(e) => {
+                setNameConfirmation(e.currentTarget.value);
+              }}
+            />
+            <br />
+            <Flex align="center" justify="flex-end" gap="24px">
+              <Button variant="default" onClick={closeModal}>
+                Cancel
+              </Button>
+              <Button
+                variant="filled"
+                color="red"
+                onClick={async () => {
+                  const res = await deleteOrganization();
+                  if (!res || !res.data || !res.success) {
+                    showNotification({
+                      title: "Error",
+                      message: "Something went wrong",
+                      color: "red",
+                    });
+                    return;
+                  }
+                  showNotification({
+                    title: "Success",
+                    message: `Organization ${organization.name} deleted successfully`,
+                  });
+                  closeModal();
+                  navigate(`/profile/${user?.username}`);
+                }}
+                disabled={nameConfirmation !== organization.name}
+              >
+                Delete
+              </Button>
+            </Flex>
+          </div>
+        );
+      },
+      type: "confirmation",
+      buttons: [],
+      onClose: closeModal,
+      size: "md",
+    });
+  };
+
+  return (
+    <div className={styles.tab}>
+      <section className={styles.danger_zone}>
+        <h3>Danger Zone</h3>
+        <div className={styles.danger_zone_content}>
+          <div className={styles.danger_zone_content_disclaimer}>
+            <p>
+              Deleting your organization will delete all of the bots belonging
+              to it.
+            </p>
+            <p>
+              Are you sure you want to delete {'"'}
+              {organization.name}
+              {'"'}?
+            </p>
+          </div>
+          <div className={styles.danger_zone_content_action}>
+            <Button
+              color="red"
+              className={styles.delete_button}
+              onClick={handleDeleteOrganization}
+            >
+              Delete Organization
+            </Button>
+          </div>
+        </div>
+      </section>
+    </div>
   );
 }

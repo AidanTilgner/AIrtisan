@@ -289,12 +289,13 @@ export const Intent = ({
   const handleDeleteIntent = async () => {
     setModal({
       title: "Delete intent",
-      content: "Are you sure you want to delete this intent?",
+      content: () => <p>Are you sure you want to delete this intent?</p>,
       buttons: [
         {
           text: "Cancel",
           onClick: () => closeModal(),
           variant: "default",
+          visible: true,
         },
         {
           text: "Delete",
@@ -321,6 +322,7 @@ export const Intent = ({
           },
           variant: "filled",
           color: "red",
+          visible: true,
         },
       ],
       type: "confirmation",
