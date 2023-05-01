@@ -63,5 +63,5 @@ export interface Notification {
   metadata: {
     [key: string]: unknown;
   };
-  type: "organization_invite";
+  type: "organization_invitation";
 }

@@ -324,7 +324,77 @@ export const getOrganizationInvitationsByAdmin = async (admin_id: number) => {
     const invitation = await dataSource.manager.find(
       entities.OrganizationInvitation,
       {
-        where: { admin: { id: admin_id } },
+        where: { admin: { id: admin_id }, completed: false },
+      }
+    );
+    return invitation;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+export const markOrganizationInviteAsAcceptedOrRejected = async (
+  id: number,
+  accepted: boolean
+) => {
+  try {
+    const invitation = await dataSource.manager.findOne(
+      entities.OrganizationInvitation,
+      {
+        where: { id },
+      }
+    );
+    if (!invitation) return null;
+    invitation.accepted = accepted;
+    invitation.completed = true;
+    await dataSource.manager.save(invitation);
+    await addAdminToOrganization(
+      invitation.admin.id,
+      invitation.organization.id
+    );
+    return invitation;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+export const markOrganizationInviteAsAcceptedOrRejectedByToken = async (
+  token: string,
+  accepted: boolean
+) => {
+  try {
+    const invitation = await dataSource.manager.findOne(
+      entities.OrganizationInvitation,
+      {
+        where: { token },
+      }
+    );
+    if (!invitation) return null;
+    return await markOrganizationInviteAsAcceptedOrRejected(
+      invitation.id,
+      accepted
+    );
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+export const getOrganizationInvitationByAdmin = async (
+  organization_id: number,
+  admin_id: number
+) => {
+  try {
+    const invitation = await dataSource.manager.findOne(
+      entities.OrganizationInvitation,
+      {
+        where: {
+          organization: { id: organization_id },
+          admin: { id: admin_id },
+          completed: false,
+        },
       }
     );
     return invitation;

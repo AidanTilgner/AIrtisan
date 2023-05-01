@@ -208,12 +208,8 @@ export const getAdminNotifications = async (admin_id: number) => {
         priority: "medium",
         actions: [
           {
-            title: "Accept",
-            type: "accept_organization_invite",
-          },
-          {
-            title: "Decline",
-            type: "decline_organization_invite",
+            title: "View",
+            type: "view_organization_invitation",
           },
         ],
         metadata: {
@@ -221,11 +217,27 @@ export const getAdminNotifications = async (admin_id: number) => {
           admin: invite.admin,
           invitation: invite,
         },
-        type: "organization_invite",
+        type: "organization_invitation",
       });
     });
 
     return notifications;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};
+
+export const getAdminOrganizationInvitations = async (admin_id: number) => {
+  try {
+    const admin = await dataSource.manager.findOne(entities.Admin, {
+      where: { id: admin_id },
+    });
+    if (!admin) return null;
+
+    const adminOrgInvites = await getOrganizationInvitationsByAdmin(admin_id);
+
+    return adminOrgInvites;
   } catch (err) {
     console.error(err);
     return null;

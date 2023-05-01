@@ -162,3 +162,48 @@ export const useCreateOrganizationInvitation = (
     success,
   };
 };
+
+export const useGetOrganizationInvitation = (
+  organization_id: number | string,
+  config?: Partial<UseFetchConfig<unknown, Organization>>
+) => {
+  const { load, data, success } = useFetch<unknown, Organization>({
+    useBotId: false,
+    ...config,
+    url: `/organizations/${organization_id}/invitations`,
+    method: "GET",
+  });
+
+  return {
+    getOrganizationInvitation: load,
+    data: data,
+    success,
+  };
+};
+
+export const useCompleteOrganizationInvitation = (
+  { accepted, token }: { accepted: boolean; token: string },
+  config?: Partial<
+    UseFetchConfig<{ accepted: boolean; token: string }, Organization>
+  >
+) => {
+  const { load, data, success } = useFetch<
+    { accepted: boolean; token: string },
+    Organization
+  >({
+    useBotId: false,
+    ...config,
+    url: `/organizations/invitation/complete`,
+    method: "POST",
+    body: {
+      accepted,
+      token,
+    },
+  });
+
+  return {
+    completeOrganizationInvitation: load,
+    data: data,
+    success,
+  };
+};

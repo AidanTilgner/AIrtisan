@@ -29,6 +29,11 @@ export class OrganizationInvitation {
   })
   accepted!: boolean;
 
+  @Column("boolean", {
+    default: false,
+  })
+  completed!: boolean;
+
   @CreateDateColumn()
   created_at!: Date;
 

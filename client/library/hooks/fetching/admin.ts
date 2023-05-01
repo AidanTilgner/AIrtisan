@@ -4,6 +4,7 @@ import {
   Bot,
   Notification,
   Organization,
+  OrganizationInvitation,
 } from "../../../documentation/main";
 
 export const useGetMe = (
@@ -204,6 +205,47 @@ export const useGetMyNotifications = (
 
   return {
     getMyNotifications: () => {
+      load();
+    },
+    data: data,
+    loading: loading,
+  };
+};
+
+export const useGetMyOrganizationInvitations = (
+  config?: Partial<UseFetchConfig<undefined, OrganizationInvitation[]>>
+) => {
+  const { data, load, loading } = useFetch<undefined, OrganizationInvitation[]>(
+    {
+      useBotId: false,
+      ...config,
+      url: `/auth/me/organization_invitations`,
+      method: "GET",
+    }
+  );
+
+  return {
+    getMyOrganizationInvitation: () => {
+      load();
+    },
+    data: data,
+    loading: loading,
+  };
+};
+
+export const useGetMyOrganizationInvitation = (
+  organization_id: string | number,
+  config?: Partial<UseFetchConfig<undefined, OrganizationInvitation>>
+) => {
+  const { data, load, loading } = useFetch<undefined, OrganizationInvitation>({
+    useBotId: false,
+    ...config,
+    url: `/auth/me/organization_invitation/${organization_id}`,
+    method: "GET",
+  });
+
+  return {
+    getMyOrganizationInvitation: () => {
       load();
     },
     data: data,

@@ -12,6 +12,7 @@ import {
   createOrganizationInvitation,
   getOrganizationInvitations,
   getOrganizationInvitationByToken,
+  markOrganizationInviteAsAcceptedOrRejectedByToken,
 } from "../database/functions/organization";
 import { checkIsAdmin, isOwnerOfOrganization } from "../middleware/auth";
 import { Admin } from "../database/models/admin";
@@ -264,6 +265,41 @@ router.get("/invitation/by_token/:token", checkIsAdmin, async (req, res) => {
     });
   } catch (err) {
     console.error(err);
+    res.status(500).send({ error: "Internal server error" });
+  }
+});
+
+router.post("/invitation/complete", checkIsAdmin, async (req, res) => {
+  try {
+    const admin = (req as unknown as Record<string, Admin>).admin;
+    const token = req.body.token || req.query.token;
+    const accept = req.body.accept || req.query.accept;
+
+    if (!admin) return res.status(401).send({ error: "Unauthorized" });
+    if (!token) return res.status(400).send({ error: "Invalid token" });
+
+    const invitation = await getOrganizationInvitationByToken(token);
+
+    if (!invitation)
+      return res.status(404).send({ error: "Invitation not found" });
+
+    if (!(invitation.admin.id === admin.id))
+      return res.status(401).send({ error: "Unauthorized" });
+
+    const invite = await markOrganizationInviteAsAcceptedOrRejectedByToken(
+      token,
+      accept
+    );
+
+    if (!invite) return res.status(404).send({ error: "Invitation not found" });
+
+    res.send({
+      message: "success",
+      success: true,
+      data: invite,
+    });
+  } catch (error) {
+    console.error(error);
     res.status(500).send({ error: "Internal server error" });
   }
 });

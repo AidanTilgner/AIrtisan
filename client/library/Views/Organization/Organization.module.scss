@@ -60,34 +60,41 @@
   }
 }
 
-.name {
-  font-size: 36px;
-  font-weight: 500;
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 24px;
-
-  @media (min-width: 768px) {
-    justify-content: flex-start;
-  }
-
-  button {
-    font-size: 18px;
-    color: #2256f2;
-    opacity: 0.25;
-    transition: all 0.2s ease-in-out;
-    cursor: pointer;
-    background-color: transparent;
-    border: none;
+.info {
+  .name {
+    font-size: 36px;
+    font-weight: 500;
+    text-align: center;
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 24px;
+    margin-bottom: 24px;
 
-    &:hover {
-      opacity: 1;
+    @media (min-width: 768px) {
+      justify-content: flex-start;
     }
+
+    button {
+      font-size: 18px;
+      color: #2256f2;
+      opacity: 0.25;
+      transition: all 0.2s ease-in-out;
+      cursor: pointer;
+      background-color: transparent;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+
+  .description {
+    font-size: 16px;
   }
 }
 
@@ -153,6 +160,7 @@
   .list {
     display: grid;
     grid-template-columns: 1fr;
+    gap: 14px;
   }
 }
 
@@ -190,5 +198,20 @@
     .save {
       color: #2256f2;
     }
+  }
+}
+
+.invitationBanner {
+  border: 1px solid #eaeaea;
+  padding: 14px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+
+  .inviteOptions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 14px;
   }
 }

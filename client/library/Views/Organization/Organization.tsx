@@ -3,6 +3,7 @@ import styles from "./Organization.module.scss";
 import { Buildings, Check, PencilSimple, X } from "@phosphor-icons/react";
 import {
   useCheckIsOwnerOfOrganization,
+  useCompleteOrganizationInvitation,
   useDeleteOrganization,
   useGetOrganization,
   useGetOrganizationAdmins,
@@ -27,6 +28,7 @@ import { useUser } from "../../contexts/User";
 import { Button, Flex, TextInput, Textarea } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { useModal } from "../../contexts/Modals";
+import { useGetMyOrganizationInvitation } from "../../hooks/fetching/admin";
 
 type Tab = "admins" | "bots" | "settings";
 
@@ -56,7 +58,7 @@ function Organization() {
   const [searchParams] = useSearchParams();
 
   const [currentTab, setCurrentTab] = useState<Tab>(
-    (searchParams.get("tab") as Tab) || "bots"
+    (searchParams.get("tab") as Tab) || "admins"
   );
 
   useEffect(() => {
@@ -114,6 +116,75 @@ function Organization() {
       message: "Organization updated successfully",
     });
     reloadOrganization();
+  };
+
+  const { data: myInvitation, getMyOrganizationInvitation: reloadInvitation } =
+    useGetMyOrganizationInvitation(organization_id as string, {
+      runOnDependencies: [organization_id],
+    });
+
+  const { completeOrganizationInvitation: acceptOrganizationInvitation } =
+    useCompleteOrganizationInvitation({
+      token: myInvitation?.token as string,
+      accepted: true,
+    });
+
+  const { completeOrganizationInvitation: declineOrganizationInvitation } =
+    useCompleteOrganizationInvitation({
+      token: myInvitation?.token as string,
+      accepted: false,
+    });
+
+  const handleInvitationSelection = async (accepted: boolean) => {
+    try {
+      switch (accepted) {
+        case true:
+          await acceptOrganizationInvitation().then((res) => {
+            if (!res || !res.data) {
+              showNotification({
+                title: "Error",
+                message: "Something went wrong while accepting the invitation",
+                color: "red",
+              });
+              return;
+            }
+            showNotification({
+              title: "Success",
+              message: "Invitation accepted successfully",
+            });
+            reloadOrganization();
+            reloadInvitation();
+          });
+          break;
+        case false:
+          await declineOrganizationInvitation().then((res) => {
+            if (!res || !res.data) {
+              showNotification({
+                title: "Error",
+                message: "Something went wrong while declining the invitation",
+                color: "red",
+              });
+              return;
+            }
+            showNotification({
+              title: "Success",
+              message: "Invitation declined successfully",
+            });
+            reloadOrganization();
+            reloadInvitation();
+          });
+          break;
+        default:
+          break;
+      }
+    } catch (error) {
+      console.error(error);
+      showNotification({
+        title: "Error",
+        message: "Something went wrong while accepting the invitation",
+        color: "red",
+      });
+    }
   };
 
   if (loading) {
@@ -191,31 +262,61 @@ function Organization() {
             </div>
           </div>
         ) : (
-          <div className={styles.name}>
-            <span>{organization?.name}</span>
-            {isOwner && (
-              <button
-                title="Edit organization"
+          <div className={styles.info}>
+            <div className={styles.name}>
+              <span>{organization?.name}</span>
+              {isOwner && (
+                <button
+                  title="Edit organization"
+                  onClick={() => {
+                    setEditing(!editing);
+                  }}
+                >
+                  <PencilSimple weight="regular" />
+                </button>
+              )}
+            </div>
+            <div className={styles.description}>
+              <span>{organization?.description}</span>
+            </div>
+          </div>
+        )}
+        {myInvitation && (
+          <div className={styles.invitationBanner}>
+            <p>
+              You{"'"}ve been invited to join this organization as an admin.
+            </p>
+            <div className={styles.inviteOptions}>
+              <Button
+                variant="light"
+                color="red"
                 onClick={() => {
-                  setEditing(!editing);
+                  handleInvitationSelection(false);
                 }}
               >
-                <PencilSimple weight="regular" />
-              </button>
-            )}
+                Reject
+              </Button>
+              <Button
+                onClick={() => {
+                  handleInvitationSelection(true);
+                }}
+              >
+                Accept
+              </Button>
+            </div>
           </div>
         )}
         <div className={styles.tabsContainer}>
           <Tabs
             tabs={[
               {
-                name: "Bots",
-                id: "bots",
+                name: "Users",
+                id: "admins",
                 visible: true,
               },
               {
-                name: "Users",
-                id: "admins",
+                name: "Bots",
+                id: "bots",
                 visible: true,
               },
               {
@@ -301,6 +402,9 @@ function UsersTab({ organization }: { organization: OrganizationType }) {
     runOnMount: true,
   });
 
+  const { user } = useUser();
+  const isOwner = user?.id === organization.owner.id;
+
   const navigate = useNavigate();
 
   return useMemo(
@@ -309,9 +413,11 @@ function UsersTab({ organization }: { organization: OrganizationType }) {
         <div className={styles.searchContainer}>
           <Search />
         </div>
-        <div className={styles.add}>
-          <Link to="invite">Invite User</Link>
-        </div>
+        {isOwner && (
+          <div className={styles.add}>
+            <Link to="invite">Invite User</Link>
+          </div>
+        )}
         <div className={styles.list}>
           {users && users?.length > 0 ? (
             users.map((b) => (

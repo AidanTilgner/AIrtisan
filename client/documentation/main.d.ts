@@ -126,3 +126,14 @@ export interface Notification {
   };
   type: "organization_invite";
 }
+
+export interface OrganizationInvitation {
+  id?: number | null;
+  organization: Organization;
+  admin: Admin;
+  token: string;
+  accepted: boolean;
+  completed: boolean;
+  created_at: Date;
+  updated_at: Date;
+}

@@ -44,6 +44,8 @@ function Profile() {
         </Menu.Target>
 
         <Menu.Dropdown>
+          <Menu.Label>Signed in as {user?.username}</Menu.Label>
+          <Menu.Divider />
           <Menu.Label>Your Stuff</Menu.Label>
 
           <Menu.Item
