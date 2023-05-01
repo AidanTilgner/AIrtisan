@@ -233,7 +233,6 @@
           }),
         })
           .then((res) => {
-            console.log("Response", res);
             if (res.status !== 200) {
               return res.json().then((data) => {
                 alert(data.message);

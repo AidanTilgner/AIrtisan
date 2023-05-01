@@ -1,5 +1,6 @@
 import {
-  createAdminInOrganizationByName,
+  addAdminToOrganization,
+  createAdmin,
   getAdminByUsername,
 } from "../functions/admin";
 import { config } from "dotenv";
@@ -23,8 +24,8 @@ export const seedAdmins = async () => {
   } = {};
 
   for (const admin of adminsArray) {
-    const [orgName, username] = admin.split(":");
-    if (!orgName || !username) {
+    const [username, display_name, organization = null] = admin.split(":");
+    if (!username || !display_name) {
       console.info(`Admin ${admin} is not valid. Skipping.`);
       continue;
     }
@@ -38,18 +39,36 @@ export const seedAdmins = async () => {
 
     const generatedPassword = generateRandomPassword();
 
-    const result = await createAdminInOrganizationByName({
+    const result = await createAdmin({
       username,
+      display_name,
       password: generatedPassword,
       role: "superadmin",
-      organization_name: orgName,
     });
+
+    if (!result) {
+      console.error(`Admin ${username} could not be created.`);
+      continue;
+    }
 
     if (result) {
       console.info(`Admin ${username} created.`);
       adminsCreated[username] = generatedPassword;
     } else {
-      console.info(`Admin ${username} could not be created.`);
+      console.error(`Admin ${username} could not be created.`);
+    }
+    if (organization) {
+      const parsedOrganization = Number(organization);
+      if (!parsedOrganization) {
+        console.error(`Organization ${organization} is not valid.`);
+      }
+      const added = await addAdminToOrganization(result.id, parsedOrganization);
+
+      if (!added) {
+        console.error(`Admin ${username} could not be added to organization.`);
+      } else {
+        console.info(`Admin ${username} added to organization.`);
+      }
     }
   }
 

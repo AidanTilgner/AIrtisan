@@ -1,4 +1,5 @@
 import React from "react";
+import { NotFoundBackdrop, UnderConstruction } from "./svgs/common";
 
 export const VVibrantLogo = ({
   width = "100%",
@@ -62,4 +63,6 @@ export const OnyxLogo = ({
 export default {
   VVibrantLogo,
   OnyxLogo,
+  NotFoundBackdrop,
+  UnderConstruction,
 };

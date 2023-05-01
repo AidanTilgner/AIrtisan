@@ -4,22 +4,15 @@ import { Burger } from "@mantine/core";
 import { useBot } from "../../../contexts/Bot";
 import { useRetrainBot } from "../../../hooks/fetching/common";
 import { showNotification } from "@mantine/notifications";
-import { Link } from "react-router-dom";
-import { ArrowsClockwise, CaretLeft, House } from "@phosphor-icons/react";
+import { ArrowsClockwise } from "@phosphor-icons/react";
 
 interface NavbarProps<Tabs> {
   tabs: { icon: JSX.Element; name: string; id: Tabs; visible: boolean }[];
   currentTab: Tabs;
   setTab: (tab: Tabs) => void;
-  hasBackToHomeButton?: boolean;
 }
 
-function Navbar<Tab>({
-  tabs,
-  currentTab,
-  setTab,
-  hasBackToHomeButton,
-}: NavbarProps<Tab>) {
+function Navbar<Tab>({ tabs, currentTab, setTab }: NavbarProps<Tab>) {
   const isMobile = window.innerWidth < 768;
   const [opened, setOpened] = React.useState(false);
 
@@ -77,17 +70,6 @@ function Navbar<Tab>({
   return (
     <div className={styles.navbar}>
       <div className={styles.header}>
-        {/* <div className={styles.logo}>
-          <SVG.OnyxLogo width="100%" height="100%" />
-        </div> */}
-        {hasBackToHomeButton && (
-          <div className={styles.backToHome} title="Back to home">
-            <Link to="/">
-              <CaretLeft weight="regular" />
-              <House weight="regular" />
-            </Link>
-          </div>
-        )}
         <h2 className={styles.title}>Training: {bot?.name}</h2>
       </div>
       <br />

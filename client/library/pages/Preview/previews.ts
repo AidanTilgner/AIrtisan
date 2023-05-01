@@ -2,8 +2,8 @@ export const previews = [
   {
     name: "Rewire",
     hostedLocation: "https://vvibrant.dev",
-    widgetJsFile: "/widgets/chatboxes/rewire-site.js",
-    widgetCssFile: "/widgets/chatboxes/rewire-site.css",
+    widgetJsFile: "/api/widgets/chatboxes/rewire-site.js",
+    widgetCssFile: "/api/widgets/chatboxes/rewire-site.css",
     rootId: "onyx-chat-rewire-root",
   },
 ];

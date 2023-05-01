@@ -1,36 +1,43 @@
+import { OwnerTypes } from "../../types/lib";
 import { createBot, getBotByName } from "../functions/bot";
 import { config } from "dotenv";
 
 config();
 
-const { DEFAULT_BOT_NAME, DEFAULT_BOT_DESCRIPTION = "A super cool chatbot." } =
-  process.env;
+const { BOTS } = process.env;
 
 export const seedBots = async () => {
-  if (!DEFAULT_BOT_NAME) {
+  if (!BOTS) {
     console.info("No bots to seed.");
     return;
   }
 
-  const existingBot = await getBotByName(DEFAULT_BOT_NAME);
+  const bots = BOTS.split(",");
+  bots.forEach(async (bot) => {
+    const [owner_id, owner_type, bot_name, description = "A very nice bot."] =
+      bot.split(":");
 
-  if (existingBot) {
-    console.info(`Bot ${DEFAULT_BOT_NAME} already exists.`);
-    return;
-  }
+    const existingBot = await getBotByName(bot_name);
 
-  const result = await createBot({
-    name: DEFAULT_BOT_NAME,
-    description: DEFAULT_BOT_DESCRIPTION,
-    bot_version: "1.0.0",
-    organization_id: 1,
-    enhancement_model: "gpt-3.5-turbo",
-    bot_language: "en-US",
+    if (existingBot) {
+      console.info(`Bot ${bot_name} already exists.`);
+      return;
+    }
+
+    const result = await createBot({
+      name: bot_name,
+      description: description,
+      bot_version: "1.0.0",
+      owner_id: Number(owner_id),
+      owner_type: owner_type as OwnerTypes,
+      enhancement_model: "gpt-3.5-turbo",
+      bot_language: "en-US",
+    });
+
+    if (result) {
+      console.info(`Bot ${bot_name} created.`);
+    } else {
+      console.info(`Bot ${bot_name} could not be created.`);
+    }
   });
-
-  if (result) {
-    console.info(`Bot ${DEFAULT_BOT_NAME} created.`);
-  } else {
-    console.info(`Bot ${DEFAULT_BOT_NAME} could not be created.`);
-  }
 };

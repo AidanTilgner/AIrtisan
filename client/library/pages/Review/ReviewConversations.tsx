@@ -392,15 +392,17 @@ function Conversation({
     if (!user) return;
     setModal({
       title: "Delete Conversation",
-      content: "Are you sure you want to delete this conversation?",
+      content: () => <p>Are you sure you want to delete this conversation?</p>,
       buttons: [
         {
           text: "Cancel",
           onClick: () => closeModal(),
           variant: "default",
+          visible: true,
         },
         {
           text: "Delete",
+          visible: true,
           onClick: async () => {
             const res = await deleteConversation();
 

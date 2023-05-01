@@ -2,6 +2,7 @@ import React from "react";
 import styles from "./Dashboard.module.scss";
 import { MoonStars, Sun, SunHorizon } from "@phosphor-icons/react";
 import { useUser } from "../../contexts/User";
+import SVG from "../../components/Utils/SVG";
 
 function Dashboard() {
   const getWelcomeMessage = () => {
@@ -43,13 +44,17 @@ function Dashboard() {
           {welcomeMessage.message} <WelcomeIcon />
         </p>
         <h1 className={styles.big_text}>
-          Hey, <strong>{user?.username}</strong>!
+          Hey <strong>{user?.display_name || user?.username}</strong>!
         </h1>
         <div className={styles.quickActions}>
           <button className={`${styles.quickAction} ${styles.btnPrimary}`}>
             Do something
           </button>
         </div>
+      </div>
+      <div className={styles.content}>
+        <SVG.UnderConstruction width="50%" height="50%" />
+        <h2>This page is under construction. More is coming soon!</h2>
       </div>
     </div>
   );

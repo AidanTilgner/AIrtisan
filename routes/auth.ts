@@ -4,9 +4,10 @@ import {
   getAdmin,
   getAdmins,
   updateAdmin,
-  deleteAdmin,
   getAdminOrganizations,
-  getAdminBots,
+  checkUsernameTaken,
+  getAdminNotifications,
+  getAdminOrganizationInvitations,
 } from "../database/functions/admin";
 import { Router } from "express";
 import { checkIsSuperAdmin, checkIsAdmin } from "../middleware/auth";
@@ -26,6 +27,11 @@ import {
   getAllApiKeys,
 } from "../database/functions/apiKey";
 import { Admin } from "../database/models/admin";
+import { getAdminBotsWithRunningStatus } from "../database/functions/bot";
+import { config } from "dotenv";
+import { getOrganizationInvitationByAdmin } from "../database/functions/organization";
+
+config();
 
 const router = Router();
 
@@ -62,6 +68,13 @@ router.post("/admin/signin", async (req, res) => {
 
 router.post("/admin/signup", async (req, res) => {
   try {
+    const { ALLOW_NEW_USERS } = process.env;
+
+    if (ALLOW_NEW_USERS !== "TRUE") {
+      res.status(403).send({ message: "New users are not allowed." });
+      return;
+    }
+
     const { username, password } = req.body;
     const admin = await getAdminByUsername(username);
 
@@ -218,6 +231,49 @@ router.get("/me", checkIsAdmin, async (req, res) => {
   }
 });
 
+router.put("/me", checkIsAdmin, async (req, res) => {
+  try {
+    const admin = (req as unknown as Record<"admin", Admin>)["admin"];
+
+    if (!admin) {
+      res
+        .status(500)
+        .send({ message: "There was an error updating your profile." });
+      return;
+    }
+
+    const { username, display_name, email } = req.body;
+
+    const usernameTaken = username
+      ? await checkUsernameTaken(username, admin.id)
+      : false;
+
+    if (usernameTaken) {
+      res.status(409).send({ message: "Username already taken." });
+      return;
+    }
+
+    const result = await updateAdmin(admin.id, {
+      username,
+      display_name,
+      email,
+    });
+
+    if (!result) {
+      res.status(500).send({ message: "Internal server error." });
+      return;
+    }
+
+    res.status(200).send({
+      message: "Admin updated successfully.",
+      data: result,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ message: "Internal server error." });
+  }
+});
+
 router.get("/me/organizations", checkIsAdmin, async (req, res) => {
   try {
     const admin = (req as unknown as Record<"admin", Admin>)["admin"];
@@ -243,7 +299,7 @@ router.get("/me/bots", checkIsAdmin, async (req, res) => {
   try {
     const admin = (req as unknown as Record<"admin", Admin>)["admin"];
 
-    const bots = await getAdminBots(admin.id);
+    const bots = await getAdminBotsWithRunningStatus(admin.id);
 
     if (!bots) {
       res.status(500).send({ message: "Internal server error." });
@@ -260,19 +316,20 @@ router.get("/me/bots", checkIsAdmin, async (req, res) => {
   }
 });
 
-router.get("/admin/:id", checkIsSuperAdmin, async (req, res) => {
+router.get("/me/notifications", checkIsAdmin, async (req, res) => {
   try {
-    const { id } = req.params;
-    const admin = await getAdmin(parseInt(id));
-    if (!admin) {
-      res.status(404).send({ message: "Admin not found." });
+    const admin = (req as unknown as Record<"admin", Admin>)["admin"];
+
+    const notifications = await getAdminNotifications(admin.id);
+
+    if (!notifications) {
+      res.status(500).send({ message: "Internal server error." });
       return;
     }
+
     res.status(200).send({
-      message: "Admin fetched successfully.",
-      data: {
-        admin,
-      },
+      message: "Got admin notifications from session.",
+      data: notifications,
     });
   } catch (err) {
     console.error(err);
@@ -280,30 +337,63 @@ router.get("/admin/:id", checkIsSuperAdmin, async (req, res) => {
   }
 });
 
-router.delete("/admin/:id", checkIsSuperAdmin, async (req, res) => {
+router.get("/me/organization_invitations", checkIsAdmin, async (req, res) => {
   try {
-    const { id } = req.params;
-    const admin = await getAdmin(parseInt(id));
-    if (!admin) {
-      res.status(404).send({ message: "Admin not found.", success: true });
+    const admin = (req as unknown as Record<"admin", Admin>)["admin"];
+
+    const invitations = await getAdminOrganizationInvitations(admin.id);
+
+    if (!invitations) {
+      res.status(500).send({ message: "Internal server error." });
       return;
     }
-    const result = await deleteAdmin(parseInt(id));
-    if (!result) {
-      res
-        .status(500)
-        .send({ message: "Internal server error.", success: true });
-      return;
-    }
-    res
-      .status(200)
-      .send({ message: "Admin deleted successfully.", success: true });
+
+    res.status(200).send({
+      message: "Got admin organization invitations from session.",
+      data: invitations,
+    });
   } catch (err) {
     console.error(err);
-
-    res.status(500).send({ message: "Internal server error.", success: true });
+    res.status(500).send({ message: "Internal server error." });
   }
 });
+
+router.get(
+  "/me/organization_invitation/:organization_id",
+  checkIsAdmin,
+  async (req, res) => {
+    try {
+      const admin = (req as unknown as Record<"admin", Admin>)["admin"];
+      const { organization_id } = req.params;
+      if (!organization_id) {
+        res.status(400).send({ message: "Missing organization id." });
+        return;
+      }
+
+      const invitation = await getOrganizationInvitationByAdmin(
+        Number(organization_id),
+        admin.id
+      );
+
+      if (!invitation) {
+        res.status(200).send({
+          message:
+            "No organization invitation exists for this admin and this organization.",
+          data: null,
+        });
+        return;
+      }
+
+      res.status(200).send({
+        message: "Got admin organization invitation from session.",
+        data: invitation,
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).send({ message: "Internal server error." });
+    }
+  }
+);
 
 router.post("/api-key/register", checkIsAdmin, async (req, res) => {
   try {

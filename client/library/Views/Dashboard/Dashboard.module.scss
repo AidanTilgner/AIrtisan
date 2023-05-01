@@ -8,7 +8,7 @@
   padding: 36px 24px;
 
   @media (min-width: 768px) {
-    padding: 36px 82px;
+    padding: 36px 56px;
   }
 
   .top_text {
@@ -63,5 +63,22 @@
       background-color: #2256f2;
       color: white;
     }
+  }
+}
+
+.content {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  padding: 36px 24px;
+
+  @media (min-width: 768px) {
+    padding: 36px 56px;
+  }
+
+  h2 {
+    font-size: 20px;
+    font-weight: 500;
   }
 }

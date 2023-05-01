@@ -496,57 +496,6 @@ export const useGetRecentConversations = (
   };
 };
 
-export const useGetMe = (
-  config?: Partial<UseFetchConfig<unknown, Omit<Admin, "password">>>
-) => {
-  const { load, data, success } = useFetch<unknown, Omit<Admin, "password">>({
-    useBotId: false,
-    ...config,
-    url: "/auth/me",
-    method: "GET",
-  });
-
-  return {
-    getMe: load,
-    data: data,
-    success,
-  };
-};
-
-export const useGetMyOrganizations = (
-  config?: Partial<UseFetchConfig<unknown, Organization[]>>
-) => {
-  const { load, data, success } = useFetch<unknown, Organization[]>({
-    useBotId: false,
-    ...config,
-    url: "/auth/me/organizations",
-    method: "GET",
-  });
-
-  return {
-    getMyOrganizations: load,
-    data: data,
-    success,
-  };
-};
-
-export const useGetMyBots = (
-  config?: Partial<UseFetchConfig<unknown, Bot[]>>
-) => {
-  const { load, data, success } = useFetch<unknown, Bot[]>({
-    useBotId: false,
-    ...config,
-    url: "/auth/me/bots",
-    method: "GET",
-  });
-
-  return {
-    getMyBots: load,
-    data: data,
-    success,
-  };
-};
-
 export const useCheckIsSuperAdmin = (
   config?: Partial<UseFetchConfig<unknown, boolean>>
 ) => {

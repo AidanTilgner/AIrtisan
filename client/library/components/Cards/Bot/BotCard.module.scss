@@ -1,0 +1,71 @@
+.BotCard {
+  box-sizing: border-box;
+  border: 1px solid #eaeaea;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  background-color: white;
+  font-family: "QuickSand", sans-serif;
+
+  &:hover {
+    background-color: #f6f6f6;
+  }
+}
+
+.top {
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 8px;
+  position: relative;
+
+  .icon {
+    opacity: 0.5;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+  }
+
+  .name {
+    font-size: 20px;
+    font-weight: 500;
+  }
+}
+
+.body {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 8px 24px;
+}
+
+.tags {
+  display: flex;
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  margin: 0;
+
+  .tag {
+    border-radius: 5px;
+    font-size: 12px;
+    padding: 4px 8px;
+    color: white;
+    font-weight: 600;
+    background-color: black;
+    opacity: 0.8;
+  }
+
+  .running {
+    background-color: green;
+  }
+
+  .not_running {
+    background-color: red;
+  }
+}
+
+.owner {
+  margin: 0;
+  font-weight: 500;
+}

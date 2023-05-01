@@ -1,7 +1,8 @@
 import { dataSource, entities } from "..";
+import { Notification } from "../../types/lib";
 import { hashPassword } from "../../utils/crypto";
 import { Admin } from "../models/admin";
-import { Bot } from "../models/bot";
+import { getOrganizationInvitationsByAdmin } from "./organization";
 
 export const createAdmin = async ({
   username,
@@ -15,6 +16,8 @@ export const createAdmin = async ({
   display_name?: Admin["display_name"];
 }) => {
   try {
+    const usernameTaken = await checkUsernameTaken(username);
+    if (usernameTaken) return null;
     const admin = new entities.Admin();
     admin.username = username;
     admin.password = hashPassword(password);
@@ -52,6 +55,26 @@ export const getAdminByUsername = async (username: string) => {
   }
 };
 
+export const checkUsernameTaken = async (
+  username: string,
+  currentId?: number
+) => {
+  try {
+    const admin = await dataSource.manager.findOne(entities.Admin, {
+      where: { username },
+    });
+
+    if (currentId) {
+      return !!admin && admin.id !== currentId;
+    }
+
+    return !!admin;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};
+
 export const getAdmins = async () => {
   try {
     const admins = await dataSource.manager.find(entities.Admin);
@@ -70,12 +93,24 @@ export const getAdmins = async () => {
 
 export const updateAdmin = async (id: number, data: Partial<Admin>) => {
   try {
+    if (data.username) {
+      const usernameTaken = await checkUsernameTaken(data.username, id);
+      if (usernameTaken) return null;
+    }
+
     const admin = await dataSource.manager.findOne(entities.Admin, {
       where: { id },
     });
     if (!admin) return null;
-    const result = await dataSource.manager.update(entities.Admin, id, data);
-    return result;
+
+    const { role, password, ...editableData } = data;
+    const result = await dataSource.manager.save(entities.Admin, {
+      id,
+      ...editableData,
+    });
+    const { password: _, ...rest } = result;
+
+    return rest;
   } catch (err) {
     console.error(err);
     return null;
@@ -121,33 +156,88 @@ export const getAdminOrganizations = async (id: number) => {
   try {
     const admin = await dataSource.manager.findOne(entities.Admin, {
       where: { id },
-      relations: ["organizations"],
+      relations: ["organizations", "owned_organizations"],
     });
     if (!admin) return null;
 
-    return admin.organizations;
+    return [...admin.organizations, ...admin.owned_organizations];
   } catch (err) {
     console.error(err);
     return null;
   }
 };
 
-export const getAdminBots = async (id: number) => {
+export const searchAdmins = async (query: string) => {
   try {
-    const organizations = await getAdminOrganizations(id);
-    if (!organizations) return null;
-    const loadedOrganizations = organizations.map((organization) => {
-      return dataSource.manager.findOne(entities.Organization, {
-        where: { id: organization.id },
-        relations: ["bots"],
+    const repo = dataSource.manager.getRepository(entities.Admin);
+    const results = await repo
+      .createQueryBuilder("admin")
+      .where("admin.username LIKE :query", { query: `%${query}%` })
+      .orWhere("admin.display_name LIKE :query", { query: `%${query}%` })
+      .orWhere("admin.email LIKE :query", { query: `%${query}%` })
+      .limit(10)
+      .getMany();
+
+    const filteredResults = results.map((result) => {
+      const { password, ...rest } = result;
+      return rest;
+    });
+
+    return filteredResults;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};
+
+export const getAdminNotifications = async (admin_id: number) => {
+  try {
+    const admin = await dataSource.manager.findOne(entities.Admin, {
+      where: { id: admin_id },
+    });
+    if (!admin) return null;
+
+    const adminOrgInvites = await getOrganizationInvitationsByAdmin(admin_id);
+
+    const notifications: Notification[] = [];
+
+    adminOrgInvites?.forEach((invite) => {
+      notifications.push({
+        title: "Organization Invitation",
+        body: `You have been invited to join ${invite.organization.name}`,
+        priority: "medium",
+        actions: [
+          {
+            title: "View",
+            type: "view_organization_invitation",
+          },
+        ],
+        metadata: {
+          organization: invite.organization,
+          admin: invite.admin,
+          invitation: invite,
+        },
+        type: "organization_invitation",
       });
     });
-    const loadedOrganizationsResult = await Promise.all(loadedOrganizations);
-    const bots = loadedOrganizationsResult.reduce((acc, organization) => {
-      if (!organization) return acc;
-      return [...acc, ...(organization.bots || [])];
-    }, [] as Bot[]);
-    return bots;
+
+    return notifications;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};
+
+export const getAdminOrganizationInvitations = async (admin_id: number) => {
+  try {
+    const admin = await dataSource.manager.findOne(entities.Admin, {
+      where: { id: admin_id },
+    });
+    if (!admin) return null;
+
+    const adminOrgInvites = await getOrganizationInvitationsByAdmin(admin_id);
+
+    return adminOrgInvites;
   } catch (err) {
     console.error(err);
     return null;

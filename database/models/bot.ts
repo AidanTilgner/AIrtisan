@@ -5,11 +5,9 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
-  ManyToOne,
 } from "typeorm";
 import { Conversation } from "./conversation";
-import { Organization } from "./organization";
-import { IntentNode } from "./flow";
+import { OwnerTypes } from "../../types/lib";
 
 @Entity()
 export class Bot {
@@ -40,14 +38,19 @@ export class Bot {
   @Column("text")
   enhancement_model!: string;
 
+  @Column("int")
+  owner_id!: number;
+
+  @Column("text")
+  owner_type!: OwnerTypes;
+
+  @Column("text", {
+    default: "private",
+  })
+  visibility!: "private" | "public" | "unlisted";
+
   @OneToMany(() => Conversation, (conversation) => conversation.bot)
   conversations!: Conversation[];
-
-  @ManyToOne(() => Organization, (organization) => organization.bots)
-  organization!: Organization;
-
-  // @OneToMany(() => IntentNode, (intentNode) => intentNode.bot)
-  // intent_flow!: IntentNode[];
 
   @CreateDateColumn()
   created_at!: Date;

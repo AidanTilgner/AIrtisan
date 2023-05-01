@@ -4,11 +4,21 @@ body {
   font-family: "QuickSand", sans-serif;
 }
 
+@keyframes appIn {
+  0% {
+  }
+  100% {
+  }
+}
+
 .App {
   font-family: "QuickSand", sans-serif;
+  animation: appIn 0.3s ease-in-out;
+  animation-fill-mode: forwards;
 }
 
 .main_container {
+  // position: initial;
 }
 
 h1 {

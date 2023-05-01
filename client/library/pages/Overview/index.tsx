@@ -1,16 +1,18 @@
 import React from "react";
 import styles from "./index.module.scss";
 import { useUser } from "../../contexts/User";
-import { SunHorizon, Sun, MoonStars } from "@phosphor-icons/react";
+import { SunHorizon, Sun, MoonStars, HandWaving } from "@phosphor-icons/react";
 import {
   useGetBots,
   useGetRecentConversations,
 } from "../../hooks/fetching/common";
 import { useSearchParamsUpdate } from "../../hooks/navigation";
 import ConversationCard from "../../components/Cards/Conversation/ConversationCard";
-import { useSearchParams } from "react-router-dom";
+import { useBot } from "../../contexts/Bot";
 
 function index() {
+  const { bot } = useBot();
+
   const getWelcomeMessage = () => {
     // based on time of day
     const date = new Date();
@@ -18,18 +20,18 @@ function index() {
     let message = "";
     let icon = <SunHorizon />;
     if (hours < 12) {
-      message = "Good morning!";
+      message = `Good morning! Say hi to ${bot?.name}!`;
     }
     if (hours >= 12 && hours < 16) {
-      message = "Hi there, hope you're having a good day!";
+      message = `Good afternoon! Say hi to ${bot?.name}!`;
       icon = <Sun />;
     }
     if (hours >= 16 && hours < 19) {
-      message = "Good evening, welcome!";
+      message = `Good evening! Say hi to ${bot?.name}!`;
       icon = <SunHorizon />;
     }
     if (hours >= 19) {
-      message = "Welcome, it's great to have you here!";
+      message = `You're up late! Say hi to ${bot?.name}!`;
       icon = <MoonStars />;
     }
     return {
@@ -54,8 +56,6 @@ function index() {
     runOnMount: true,
   });
 
-  console.log("Bots", bots);
-
   const updateSearchParams = useSearchParamsUpdate();
 
   return (
@@ -63,10 +63,11 @@ function index() {
       <div className={styles.top}>
         <p className={styles.top_text}>
           {welcomeMessage.message} <WelcomeIcon />
+          <HandWaving />
         </p>
         <h1 className={styles.big_text}>
-          <strong>{user?.username}</strong>
-          {"'s"} Dashboard
+          <strong>{bot?.name}</strong>
+          {"'s"} Overview
         </h1>
       </div>
       <div className={styles.quickActions}>

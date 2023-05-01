@@ -7,6 +7,7 @@ import { Token } from "./models/token";
 import { ApiKey } from "./models/apiKey";
 import { Bot } from "./models/bot";
 import { Organization } from "./models/organization";
+import { OrganizationInvitation } from "./models/invitation";
 import { seedDatabase } from "./seeders";
 
 export const entities = {
@@ -17,6 +18,7 @@ export const entities = {
   ApiKey,
   Bot,
   Organization,
+  OrganizationInvitation,
 };
 
 export const dataSource = new DataSource({

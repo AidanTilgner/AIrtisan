@@ -9,11 +9,14 @@ export interface UseFetchConfig<B, D> {
   body?: B;
   onSuccess?: (data: D) => void;
   onError?: (err: unknown) => void;
+  onFinally?: () => void;
   headers?: Record<string, string> | undefined;
   query?: Record<string, string> | undefined;
   bustCache?: boolean;
   runOnMount?: boolean;
   useBotId?: boolean;
+  dependencies?: unknown[];
+  runOnDependencies?: unknown[];
 }
 
 function useFetch<B, D>({
@@ -22,11 +25,14 @@ function useFetch<B, D>({
   body,
   onSuccess,
   onError,
+  onFinally,
   headers,
   query,
   bustCache,
   runOnMount = false,
   useBotId = true,
+  dependencies = [],
+  runOnDependencies = [],
 }: UseFetchConfig<B, D>) {
   const { bot } = useBot();
 
@@ -74,22 +80,39 @@ function useFetch<B, D>({
           onError && onError(err);
           setData(undefined);
           setSuccess(false);
+          const message = err?.response?.data?.message || err?.message || null;
           return {
             error: err,
             success: false,
             data: null,
+            message,
           } as DefaultResponse<null>;
         })
         .finally(() => {
           setLoading(false);
+          onFinally && onFinally();
         });
     },
-    [urlToUse, method, body, headers, bustCache, onSuccess, onError, readyToRun]
+    [
+      urlToUse,
+      method,
+      body,
+      headers,
+      bustCache,
+      onSuccess,
+      onError,
+      readyToRun,
+      onFinally,
+      ...dependencies,
+    ]
   );
 
   useEffect(() => {
     if (!readyToRun) return;
-    if (runOnMount) {
+    if (
+      runOnMount ||
+      (runOnDependencies.length > 0 && runOnDependencies.every((dep) => !!dep))
+    ) {
       load({
         updatedUrl: urlToUse,
         updatedBody: body,
@@ -105,6 +128,7 @@ function useFetch<B, D>({
     onError,
     readyToRun,
     runOnMount,
+    ...runOnDependencies,
   ]);
 
   const loadWithUrl = useCallback(
@@ -138,13 +162,7 @@ function useFetch<B, D>({
     [load]
   );
 
-  return {
-    loading,
-    data,
-    load,
-    success,
-    loadWithUrl,
-  };
+  return { loading, data, load, success, loadWithUrl };
 }
 
 export default useFetch;

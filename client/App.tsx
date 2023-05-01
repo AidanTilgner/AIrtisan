@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./App.module.scss";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { MantineProvider } from "@mantine/core";
 import { NotificationsProvider } from "@mantine/notifications";
 import { ModalProvider } from "./library/contexts/Modals";
@@ -10,10 +10,12 @@ import Dashboard from "./library/Views/Dashboard/Dashboard";
 import ProfileNav from "./library/components/Navigation/Profile/Profile";
 import Profile from "./library/Views/Profile/Profile";
 import TopNav from "./library/components/Navigation/Navbar/TopNav";
+import Organization from "./library/Views/Organization/Organization";
+import Settings from "./library/Views/Settings/Settings";
+import Fallback from "./library/Views/ErrorPages/Fallback";
+import InviteUser from "./library/Views/Organization/InviteUser";
 
 function App() {
-  const location = useLocation();
-
   return (
     <div className={styles.App}>
       <MantineProvider
@@ -44,16 +46,28 @@ function App() {
       >
         <ModalProvider>
           <NotificationsProvider position="bottom-right">
-            <TopNav />
-            <GlobalModal />
-            {!location.pathname.includes("/profile") && <ProfileNav />}
             <div className={styles.main_container}>
+              <TopNav />
+              <GlobalModal />
+              <ProfileNav />
               <Routes>
                 <Route path="/">
                   <Route index element={<Dashboard />} />
+                  <Route path="404" element={<Fallback />} />
+                </Route>
+                <Route path="settings">
+                  <Route index element={<Settings />} />
                 </Route>
                 <Route path="profile">
-                  <Route index element={<Profile />} />
+                  <Route path=":username">
+                    <Route index element={<Profile />} />
+                  </Route>
+                </Route>
+                <Route path="organizations">
+                  <Route path=":organization_id">
+                    <Route index element={<Organization />} />
+                    <Route path="invite" element={<InviteUser />} />
+                  </Route>
                 </Route>
                 <Route path="bots">
                   <Route path=":bot_id">

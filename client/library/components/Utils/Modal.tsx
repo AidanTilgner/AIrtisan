@@ -5,6 +5,8 @@ import { Box, Button, Flex, Modal } from "@mantine/core";
 function GlobalModal() {
   const { modal, resetModal } = useModal();
 
+  const Content = modal.content;
+
   return (
     <Modal
       opened={modal.open}
@@ -15,22 +17,29 @@ function GlobalModal() {
       }}
       size={modal.size}
     >
-      <Box>{modal.content}</Box>
+      <Box>
+        <Content />
+      </Box>
       <br />
       <Flex align="center" justify="flex-end" gap={14}>
-        {modal.buttons.map((button) => (
-          <Button
-            onClick={() => {
-              resetModal();
-              button.onClick();
-            }}
-            variant={button.variant}
-            key={button.text}
-            color={button.color}
-          >
-            {button.text}
-          </Button>
-        ))}
+        {modal.buttons
+          .filter((b) => {
+            return !!b.visible;
+          })
+          .map((button) => (
+            <Button
+              onClick={() => {
+                resetModal();
+                button.onClick();
+              }}
+              variant={button.variant}
+              key={button.text}
+              color={button.color}
+              disabled={button.disabled}
+            >
+              {button.text}
+            </Button>
+          ))}
       </Flex>
     </Modal>
   );

@@ -12,6 +12,20 @@ export const Spinner = () => {
   );
 };
 
+export const CenteredSpinner = () => {
+  return (
+    <div className={styles["centered-spinner"]}>
+      <div className={styles["lds-ring"]}>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+    </div>
+  );
+};
+
 export default {
   Spinner,
+  CenteredSpinner,
 };
