@@ -24,7 +24,8 @@ interface ChatURL {
 ).chat_urls = {};
 
 const useChatURL: ChatURL = {
-  url: () => `/chat/as_admin?bot_id=${localStorage.getItem("lastUsedBotID")}`,
+  url: () =>
+    `/api/chat/as_admin?bot_id=${localStorage.getItem("lastUsedBotID")}`,
   headers: {
     "Content-Type": "application/json",
     "x-access-token": localStorage.getItem("accessToken") || "",
@@ -41,7 +42,7 @@ const useChatURL: ChatURL = {
 
 const reviewChatURL: ChatURL = {
   url: (chat_id) => {
-    return `/chat/as_admin/${chat_id}/should_review`;
+    return `/api/chat/as_admin/${chat_id}/should_review`;
   },
   headers: {
     "Content-Type": "application/json",
