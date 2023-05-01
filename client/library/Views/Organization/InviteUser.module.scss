@@ -1,0 +1,63 @@
+.InviteUser {
+  padding: 0 24px;
+
+  @media screen and (min-width: 768px) {
+    padding: 0 56px;
+  }
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+
+  @media screen and (min-width: 768px) {
+    margin-bottom: 36px;
+  }
+
+  h1 {
+    font-size: 32px;
+    font-weight: 400;
+    margin: 0;
+  }
+}
+
+.userSearch {
+}
+
+.results {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+.result {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: column;
+  gap: 14px;
+}
+
+@keyframes optionsIn {
+  0% {
+    opacity: 0;
+    transform: translateX(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.options {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+  box-sizing: border-box;
+  animation: optionsIn 0.3s ease-in-out;
+  animation-fill-mode: forwards;
+}

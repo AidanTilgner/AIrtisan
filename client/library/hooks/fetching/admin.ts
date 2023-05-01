@@ -166,3 +166,23 @@ export const useGetAdminOrganizations = (
     success,
   };
 };
+
+export const useSearchAdmins = (
+  query: string,
+  config?: Partial<UseFetchConfig<undefined, Admin[]>>
+) => {
+  const { data, load, loading } = useFetch<undefined, Admin[]>({
+    useBotId: false,
+    ...config,
+    url: `/admin/search?query=${query}`,
+    method: "GET",
+  });
+
+  return {
+    searchAdmins: () => {
+      load();
+    },
+    data: data,
+    loading: loading,
+  };
+};

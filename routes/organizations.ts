@@ -9,9 +9,13 @@ import {
   checkAdminIsInOrganization,
   checkAdminIsOwnerOfOrganization,
   getOrganizationBotsThatAdminHasAccessTo,
+  createOrganizationInvitation,
+  getOrganizationInvitations,
+  getOrganizationInvitationByToken,
 } from "../database/functions/organization";
 import { checkIsAdmin, isOwnerOfOrganization } from "../middleware/auth";
 import { Admin } from "../database/models/admin";
+import { getAdmin } from "../database/functions/admin";
 
 const router = Router();
 
@@ -175,6 +179,88 @@ router.get("/:id/is_owner/:admin_id", checkIsAdmin, async (req, res) => {
       message: "success",
       success: true,
       data: isOwner,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ error: "Internal server error" });
+  }
+});
+
+router.post(
+  "/:id/invite",
+  checkIsAdmin,
+  isOwnerOfOrganization,
+  async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+      const admin_id = Number(req.body.admin_id);
+
+      if (!id)
+        return res.status(400).send({ error: "Invalid organization id" });
+
+      if (!admin_id) return res.status(400).send({ error: "Invalid admin id" });
+
+      const invite = await createOrganizationInvitation(id, admin_id);
+
+      if (!invite)
+        return res.status(500).send({ error: "Internal server error" });
+
+      res.send({
+        message: "success",
+        success: true,
+        data: invite,
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).send({ error: "Internal server error" });
+    }
+  }
+);
+
+router.get(
+  "/:id/invitations",
+  checkIsAdmin,
+  isOwnerOfOrganization,
+  async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+
+      if (!id)
+        return res.status(400).send({ error: "Invalid organization id" });
+
+      const organization = await getOrganization(id);
+
+      if (!organization)
+        return res.status(404).send({ error: "Organization not found" });
+
+      const invites = await getOrganizationInvitations(id);
+
+      res.send({
+        message: "success",
+        success: true,
+        data: invites,
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).send({ error: "Internal server error" });
+    }
+  }
+);
+
+router.get("/invitation/by_token/:token", checkIsAdmin, async (req, res) => {
+  try {
+    const token = req.params.token;
+
+    if (!token) return res.status(400).send({ error: "Invalid token" });
+
+    const invite = await getOrganizationInvitationByToken(token);
+
+    if (!invite) return res.status(404).send({ error: "Invitation not found" });
+
+    res.send({
+      message: "success",
+      success: true,
+      data: invite,
     });
   } catch (err) {
     console.error(err);

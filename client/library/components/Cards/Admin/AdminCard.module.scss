@@ -5,6 +5,8 @@
   transition: all 0.2s ease-in-out;
   background-color: white;
   font-family: "QuickSand", sans-serif;
+  width: 100%;
+  box-sizing: border-box;
 
   &:hover {
     background-color: #f6f6f6;

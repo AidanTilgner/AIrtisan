@@ -6,15 +6,28 @@ import { X } from "@phosphor-icons/react";
 function Search({
   typingDelay,
   withShadow,
+  placeholder,
 }: {
   typingDelay?: number;
   withShadow?: boolean;
+  placeholder?: string;
 }) {
   const { setQuery, query: contextQuery } = useSearch();
   const [timeout, setTimeoutState] = React.useState<NodeJS.Timeout | null>(
     null
   );
   const [query, setQueryState] = React.useState<string>(contextQuery);
+
+  React.useEffect(() => {
+    return () => {
+      if (query) {
+        setQuery(query);
+      }
+      if (timeout) {
+        clearTimeout(timeout);
+      }
+    };
+  }, []);
 
   React.useEffect(() => {
     if (query !== contextQuery) {
@@ -31,6 +44,12 @@ function Search({
         setQuery(query);
       }, typingDelay || 200)
     );
+
+    return () => {
+      if (timeout) {
+        clearTimeout(timeout);
+      }
+    };
   }, [query]);
 
   return (
@@ -38,7 +57,7 @@ function Search({
       <input
         type="text"
         onChange={(e) => setQueryState(e.target.value)}
-        placeholder="Search..."
+        placeholder={placeholder || "Search..."}
         value={query || ""}
         className={withShadow ? styles.withShadow : ""}
       />

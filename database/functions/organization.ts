@@ -2,6 +2,7 @@ import { Organization } from "../models/organization";
 import { entities, dataSource } from "..";
 import { getAdmin } from "./admin";
 import { addRunningStatusToBots, getBotsByOwner } from "./bot";
+import { getRandomID } from "../../utils/crypto";
 
 export const createOrganization = async ({
   name,
@@ -233,6 +234,103 @@ export const getOrganizationBotsThatAdminHasAccessTo = async (
     if (!publicBots) return null;
 
     return botsWithRunningStatus;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+export const createOrganizationInvitation = async (
+  organization_id: number,
+  admin_id: number
+) => {
+  try {
+    const organization = await dataSource.manager.findOne(
+      entities.Organization,
+      {
+        where: { id: organization_id },
+        relations: ["owner", "admins"],
+      }
+    );
+    if (!organization) return null;
+
+    const admin = await dataSource.manager.findOne(entities.Admin, {
+      where: { id: admin_id },
+    });
+
+    if (!admin) return null;
+
+    const invitation = new entities.OrganizationInvitation();
+    invitation.organization = organization;
+    invitation.admin = admin;
+
+    const token = getRandomID();
+    invitation.token = token;
+
+    await dataSource.manager.save(invitation);
+
+    return invitation;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+export const getOrganizationInvitations = async (organization_id: number) => {
+  try {
+    const invitations = await dataSource.manager.find(
+      entities.OrganizationInvitation,
+      {
+        where: { organization: { id: organization_id } },
+        relations: ["admin"],
+      }
+    );
+    return invitations;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+export const getOrganizationInvitationByToken = async (token: string) => {
+  try {
+    const invitation = await dataSource.manager.findOne(
+      entities.OrganizationInvitation,
+      {
+        where: { token },
+        relations: ["admin", "organization"],
+      }
+    );
+    return invitation;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+export const deleteOrganizationInvitation = async (id: number) => {
+  try {
+    const result = await dataSource.manager.delete(
+      entities.OrganizationInvitation,
+      id
+    );
+    return result;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+export const getOrganizationInvitationByAdmin = async (admin_id: number) => {
+  try {
+    const invitation = await dataSource.manager.findOne(
+      entities.OrganizationInvitation,
+      {
+        where: { admin: { id: admin_id } },
+        relations: ["admin", "organization"],
+      }
+    );
+    return invitation;
   } catch (error) {
     console.error(error);
     return null;

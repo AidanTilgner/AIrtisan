@@ -138,3 +138,27 @@ export const useDeleteOrganization = (
     success,
   };
 };
+
+export const useCreateOrganizationInvitation = (
+  {
+    organization_id,
+    admin_id,
+  }: { organization_id: number | string; admin_id: number | string },
+  config?: Partial<UseFetchConfig<{ admin_id: number }, Organization>>
+) => {
+  const { load, data, success } = useFetch<{ admin_id: number }, Organization>({
+    useBotId: false,
+    ...config,
+    url: `/organizations/${organization_id}/invite`,
+    method: "POST",
+    body: {
+      admin_id: Number(admin_id),
+    },
+  });
+
+  return {
+    createOrganizationInvitation: load,
+    data: data,
+    success,
+  };
+};

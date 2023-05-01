@@ -10,6 +10,7 @@ import {
   useUpdateOrganization,
 } from "../../hooks/fetching/organization";
 import {
+  Link,
   Navigate,
   useNavigate,
   useParams,
@@ -307,6 +308,9 @@ function UsersTab({ organization }: { organization: OrganizationType }) {
       <div className={styles.tab}>
         <div className={styles.searchContainer}>
           <Search />
+        </div>
+        <div className={styles.add}>
+          <Link to="invite">Invite User</Link>
         </div>
         <div className={styles.list}>
           {users && users?.length > 0 ? (

@@ -13,6 +13,7 @@ import TopNav from "./library/components/Navigation/Navbar/TopNav";
 import Organization from "./library/Views/Organization/Organization";
 import Settings from "./library/Views/Settings/Settings";
 import Fallback from "./library/Views/ErrorPages/Fallback";
+import InviteUser from "./library/Views/Organization/InviteUser";
 
 function App() {
   return (
@@ -65,6 +66,7 @@ function App() {
                 <Route path="organizations">
                   <Route path=":organization_id">
                     <Route index element={<Organization />} />
+                    <Route path="invite" element={<InviteUser />} />
                   </Route>
                 </Route>
                 <Route path="bots">

@@ -102,12 +102,11 @@ export const updateAdmin = async (id: number, data: Partial<Admin>) => {
     if (!admin) return null;
 
     const { role, password, ...editableData } = data;
-    const result = await dataSource.manager.update(
-      entities.Admin,
+    const result = await dataSource.manager.save(entities.Admin, {
       id,
-      editableData
-    );
-    const { password: _, ...rest } = admin;
+      ...editableData,
+    });
+    const { password: _, ...rest } = result;
 
     return rest;
   } catch (err) {
@@ -160,6 +159,29 @@ export const getAdminOrganizations = async (id: number) => {
     if (!admin) return null;
 
     return [...admin.organizations, ...admin.owned_organizations];
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};
+
+export const searchAdmins = async (query: string) => {
+  try {
+    const repo = dataSource.manager.getRepository(entities.Admin);
+    const results = await repo
+      .createQueryBuilder("admin")
+      .where("admin.username LIKE :query", { query: `%${query}%` })
+      .orWhere("admin.display_name LIKE :query", { query: `%${query}%` })
+      .orWhere("admin.email LIKE :query", { query: `%${query}%` })
+      .limit(10)
+      .getMany();
+
+    const filteredResults = results.map((result) => {
+      const { password, ...rest } = result;
+      return rest;
+    });
+
+    return filteredResults;
   } catch (err) {
     console.error(err);
     return null;

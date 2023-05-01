@@ -2,9 +2,33 @@ import { Router } from "express";
 import { getAdmin, getAdminByUsername } from "../database/functions/admin";
 import { checkIsAdmin } from "../middleware/auth";
 import { getBotsByOwner } from "../database/functions/bot";
-import { getAdminOrganizations } from "../database/functions/admin";
+import {
+  getAdminOrganizations,
+  searchAdmins,
+} from "../database/functions/admin";
 
 const router = Router();
+
+router.get("/search", checkIsAdmin, async (req, res) => {
+  try {
+    const { query } = req.query as { query: string };
+
+    if (!query) {
+      res.status(400).send({ message: "Query not provided." });
+      return;
+    }
+
+    const admins = await searchAdmins(query);
+
+    res.status(200).send({
+      message: "Admins fetched successfully.",
+      data: admins,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ message: "Internal server error." });
+  }
+});
 
 router.get("/:admin_id", checkIsAdmin, async (req, res) => {
   try {
