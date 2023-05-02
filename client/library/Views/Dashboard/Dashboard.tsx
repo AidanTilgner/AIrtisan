@@ -3,6 +3,7 @@ import styles from "./Dashboard.module.scss";
 import { MoonStars, Sun, SunHorizon } from "@phosphor-icons/react";
 import { useUser } from "../../contexts/User";
 import SVG from "../../components/Utils/SVG";
+import { useNavigate } from "react-router-dom";
 
 function Dashboard() {
   const getWelcomeMessage = () => {
@@ -37,6 +38,8 @@ function Dashboard() {
 
   const { user } = useUser();
 
+  const navigate = useNavigate();
+
   return (
     <div className={styles.Dashboard}>
       <div className={styles.top}>
@@ -47,8 +50,11 @@ function Dashboard() {
           Hey <strong>{user?.display_name || user?.username}</strong>!
         </h1>
         <div className={styles.quickActions}>
-          <button className={`${styles.quickAction} ${styles.btnPrimary}`}>
-            Do something
+          <button
+            className={`${styles.quickAction} ${styles.btnPrimary}`}
+            onClick={() => navigate(`/bots/create`)}
+          >
+            New Bot
           </button>
         </div>
       </div>
