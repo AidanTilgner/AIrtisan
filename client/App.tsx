@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./App.module.scss";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import { MantineProvider } from "@mantine/core";
 import { NotificationsProvider } from "@mantine/notifications";
 import { ModalProvider } from "./library/contexts/Modals";
@@ -18,6 +18,10 @@ import CreateOrganization from "./library/Views/Organization/Create";
 import CreateBot from "./library/Views/Bot/Create";
 
 function App() {
+  const location = useLocation();
+
+  const topNavScrolled = location.pathname.includes("/bots/");
+
   return (
     <div className={styles.App}>
       <MantineProvider
@@ -49,7 +53,7 @@ function App() {
         <ModalProvider>
           <NotificationsProvider position="bottom-right">
             <div className={styles.main_container}>
-              <TopNav />
+              <TopNav alwaysScrolled={topNavScrolled} />
               <GlobalModal />
               <ProfileNav />
               <Routes>

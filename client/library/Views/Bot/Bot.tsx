@@ -12,6 +12,7 @@ import { useUser } from "../../contexts/User";
 import styles from "./Bot.module.scss";
 import {
   Chat,
+  Chats,
   FingerprintSimple,
   MonitorPlay,
   SquaresFour,
@@ -80,7 +81,7 @@ function Bot() {
             {
               name: "Conversations",
               id: "review",
-              icon: <TextColumns />,
+              icon: <Chats />,
               visible: true,
             },
             {

@@ -2,16 +2,14 @@ import React from "react";
 import styles from "./index.module.scss";
 import { useUser } from "../../contexts/User";
 import { SunHorizon, Sun, MoonStars, HandWaving } from "@phosphor-icons/react";
-import {
-  useGetBots,
-  useGetRecentConversations,
-} from "../../hooks/fetching/common";
+import { useGetRecentConversations } from "../../hooks/fetching/common";
 import { useSearchParamsUpdate } from "../../hooks/navigation";
 import ConversationCard from "../../components/Cards/Conversation/ConversationCard";
 import { useBot } from "../../contexts/Bot";
+import { usePauseBot, useStartupBot } from "../../hooks/fetching/bot";
 
 function index() {
-  const { bot } = useBot();
+  const { bot, isRunning, reloadBot, isLoading } = useBot();
 
   const getWelcomeMessage = () => {
     // based on time of day
@@ -52,11 +50,25 @@ function index() {
     4
   );
 
-  const { data: bots } = useGetBots({
-    runOnMount: true,
+  const updateSearchParams = useSearchParamsUpdate();
+
+  const { startupBot } = useStartupBot(bot?.id as number, {
+    dependencies: [bot?.id],
   });
 
-  const updateSearchParams = useSearchParamsUpdate();
+  const handleStartBot = async () => {
+    await startupBot();
+    await reloadBot();
+  };
+
+  const { pauseBot } = usePauseBot(bot?.id as number, {
+    dependencies: [bot?.id],
+  });
+
+  const handleStopBot = async () => {
+    await pauseBot();
+    await reloadBot();
+  };
 
   return (
     <div className={styles.Home}>
@@ -69,6 +81,13 @@ function index() {
           <strong>{bot?.name}</strong>
           {"'s"} Overview
         </h1>
+        <p className={styles.bottom_text}>
+          {isRunning ? (
+            <span className={styles.running}>{bot?.name} is running</span>
+          ) : (
+            <span className={styles.stopped}>{bot?.name} is not running</span>
+          )}
+        </p>
       </div>
       <div className={styles.quickActions}>
         <button
@@ -79,6 +98,23 @@ function index() {
         >
           See Conversations
         </button>
+        {isRunning ? (
+          <button
+            className={`${styles.quickAction} ${styles.btnSecondary}`}
+            onClick={handleStopBot}
+            disabled={isLoading}
+          >
+            Stop Bot
+          </button>
+        ) : (
+          <button
+            className={`${styles.quickAction} ${styles.btnSecondary}`}
+            onClick={handleStartBot}
+            disabled={isLoading}
+          >
+            Start Bot
+          </button>
+        )}
       </div>
       <div className={styles.recentConversations}>
         <h2>Here are some recent user conversations...</h2>

@@ -3,11 +3,12 @@ import styles from "./TopNav.module.scss";
 import SVG from "../../Utils/SVG";
 import { useNavigate } from "react-router-dom";
 
-function TopNav() {
+function TopNav({ alwaysScrolled }: { alwaysScrolled?: boolean }) {
   const navigate = useNavigate();
   const navRef = useRef<HTMLDivElement>(null);
 
   window.addEventListener("scroll", () => {
+    if (alwaysScrolled) return;
     if (window.scrollY > 0 && navRef.current) {
       navRef.current.classList.add(styles.scrolled);
     } else if (navRef.current) {
@@ -16,7 +17,10 @@ function TopNav() {
   });
 
   return (
-    <div className={styles.TopNav} ref={navRef}>
+    <div
+      className={`${styles.TopNav} ${alwaysScrolled ? styles.scrolled : ""}`}
+      ref={navRef}
+    >
       <button
         className={styles.logo}
         onClick={() => {

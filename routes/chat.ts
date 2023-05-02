@@ -9,7 +9,7 @@ import {
 } from "../database/functions/conversations";
 import { checkAPIKey, checkIsAdmin, hasAccessToBot } from "../middleware/auth";
 import { handleNewChat, handleRetryChat } from "../nlu/chats";
-import { getManagerExistsAndIsAliveAndActivateIfNot } from "../nlu";
+import { getManagerIsAlive } from "../nlu";
 
 config();
 const router = Router();
@@ -26,9 +26,7 @@ router.post("/", checkAPIKey, async (req, res) => {
       return;
     }
 
-    const managerIsRunning = await getManagerExistsAndIsAliveAndActivateIfNot(
-      Number(bot_id)
-    );
+    const managerIsRunning = await getManagerIsAlive(Number(bot_id));
 
     if (!managerIsRunning) {
       res.status(200).send({
@@ -113,9 +111,7 @@ router.post("/as_admin", checkIsAdmin, hasAccessToBot, async (req, res) => {
       return;
     }
 
-    const managerIsRunning = await getManagerExistsAndIsAliveAndActivateIfNot(
-      Number(bot_id)
-    );
+    const managerIsRunning = await getManagerIsAlive(Number(bot_id));
 
     if (!managerIsRunning) {
       res.status(200).send({
@@ -201,9 +197,7 @@ router.post("/as_admin/training", checkIsAdmin, async (req, res) => {
       return;
     }
 
-    const managerIsRunning = await getManagerExistsAndIsAliveAndActivateIfNot(
-      Number(bot_id)
-    );
+    const managerIsRunning = await getManagerIsAlive(Number(bot_id));
 
     if (!managerIsRunning) {
       res.status(200).send({

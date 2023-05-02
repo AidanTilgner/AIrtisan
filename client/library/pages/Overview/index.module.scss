@@ -32,6 +32,9 @@
 
 .quickActions {
   padding: 36px 24px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
 
   @media (min-width: 768px) {
     padding: 36px 82px;
@@ -62,6 +65,11 @@
   .btnPrimary {
     background-color: #2256f2;
     color: white;
+  }
+
+  .btnSecondary {
+    background-color: white;
+    color: #2256f2;
   }
 }
 

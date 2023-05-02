@@ -63,7 +63,6 @@ function Create() {
   const handleSubmitNewBot = async () => {
     try {
       const res = await createBot();
-      console.log("Response: ", res);
       if (!res || !res.data) {
         showNotification({
           title: "Error",

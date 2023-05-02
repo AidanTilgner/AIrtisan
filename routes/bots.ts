@@ -17,7 +17,12 @@ import {
   checkIsSuperAdmin,
   hasAccessToBot,
 } from "../middleware/auth";
-import { getActiveManagers, train } from "../nlu";
+import {
+  getActiveManagers,
+  getManagerIsAlive,
+  pauseManager,
+  train,
+} from "../nlu";
 import { checkAdminIsInOrganization } from "../database/functions/organization";
 import { Admin } from "../database/models/admin";
 
@@ -110,6 +115,58 @@ router.post("/:bot_id/startup", hasAccessToBot, async (req, res) => {
     res.status(500).json({ error });
   }
 });
+
+router.post("/:bot_id/pause", hasAccessToBot, async (req, res) => {
+  try {
+    if (!req.params.bot_id) {
+      return res.status(400).json({ error: "Bot id is required" });
+    }
+    const bot = getBot(Number(req.params.bot_id));
+    if (!bot) {
+      return res.status(400).json({ error: "Bot not found" });
+    }
+
+    const paused = await pauseManager(Number(req.params.bot_id));
+
+    if (!paused) {
+      return res.status(400).json({ error: "Bot could not be paused" });
+    }
+
+    res.send({
+      message: "Bot paused successfully",
+      success: true,
+      data: paused,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error });
+  }
+});
+
+router.get(
+  "/:bot_id/running",
+  checkIsAdmin,
+  hasAccessToBot,
+  async (req, res) => {
+    try {
+      const bot = getBot(Number(req.params.bot_id));
+      if (!bot) {
+        return res.status(400).json({ error: "Bot not found" });
+      }
+
+      const isRunning = await getManagerIsAlive(Number(req.params.bot_id));
+
+      res.send({
+        message: "Bot running status fetched successfully",
+        success: true,
+        data: isRunning,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error });
+    }
+  }
+);
 
 router.get("/:bot_id/corpus", hasAccessToBot, async (req, res) => {
   try {

@@ -1,33 +1,25 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useMemo } from "react";
 import { Bot } from "../../documentation/main";
-import { getBot, startupBot } from "../helpers/fetching/bots";
+import { useGetBot, useGetBotIsRunning } from "../hooks/fetching/bot";
 import { showNotification } from "@mantine/notifications";
 
 interface BotContext {
   bot: Bot | null;
-  setBot: (bot: Bot) => void;
   botSelected: boolean;
+  isRunning: boolean;
+  reloadBot: () => void;
+  isLoading: boolean;
 }
 
-const initialBot: Bot = {
-  id: undefined,
-  name: "",
-  description: "",
-  bot_language: "",
-  bot_version: "",
-  corpus_file: "",
-  model_file: "",
-  context_file: "",
-  enhancement_model: "",
-  created_at: "",
-  updated_at: "",
-};
+const initialBot: Bot | null = null;
 
 const BotContext = createContext<BotContext>({
   bot: initialBot,
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  setBot: () => {},
   botSelected: false,
+  isRunning: false,
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  reloadBot: () => {},
+  isLoading: false,
 });
 
 export const BotProvider = ({
@@ -37,45 +29,57 @@ export const BotProvider = ({
   children: React.ReactNode;
   botId: string | undefined;
 }) => {
-  const [bot, setBot] = useState<Bot>(initialBot);
+  const [isLoading, setIsLoading] = React.useState(true);
 
-  const value = {
-    bot,
-    setBot,
-    botSelected: bot.id !== undefined,
+  const { data: bot = null, getBot: reloadGetBot } = useGetBot(
+    botId as string,
+    {
+      runOnMount: true,
+      onBefore: () => {
+        setIsLoading(true);
+      },
+      onError: () => {
+        showNotification({
+          title: "Error",
+          message: "Could not load bot",
+          color: "red",
+        });
+      },
+      onFinally: () => {
+        setIsLoading(false);
+      },
+    }
+  );
+
+  const { data: isRunning, getBotIsRunning: reloadRunning } =
+    useGetBotIsRunning(botId as string, {
+      runOnDependencies: [bot?.id],
+      onError: () => {
+        showNotification({
+          title: "Error",
+          message: "Could not load bot",
+          color: "red",
+        });
+      },
+    });
+
+  const reload = async () => {
+    setIsLoading(true);
+    await reloadGetBot();
+    await reloadRunning();
+    setIsLoading(false);
   };
 
-  useEffect(() => {
-    if (botId) {
-      getBot(Number(botId)).then(({ success, data }) => {
-        if (success && data) {
-          setBot(data);
-        }
-      });
-
-      return;
-    }
-  }, [botId]);
-
-  useEffect(() => {
-    (async () => {
-      if (bot.id) {
-        await startupBot(bot.id)
-          .then(() => {
-            showNotification({
-              title: "Bot started",
-              message: "Bot has been started",
-            });
-          })
-          .catch(() => {
-            showNotification({
-              title: "Error",
-              message: "Bot could not be started",
-            });
-          });
-      }
-    })();
-  }, [bot.id]);
+  const value: BotContext = useMemo(
+    () => ({
+      bot,
+      botSelected: bot?.id !== undefined,
+      isRunning: !!isRunning,
+      reloadBot: reload,
+      isLoading,
+    }),
+    [bot, isRunning, reload, isLoading]
+  );
 
   return <BotContext.Provider value={value}>{children}</BotContext.Provider>;
 };

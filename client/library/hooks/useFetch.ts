@@ -7,6 +7,7 @@ export interface UseFetchConfig<B, D> {
   url: string;
   method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
   body?: B;
+  onBefore?: () => void;
   onSuccess?: (data: D) => void;
   onError?: (err: unknown) => void;
   onFinally?: () => void;
@@ -23,6 +24,7 @@ function useFetch<B, D>({
   url,
   method = "GET",
   body,
+  onBefore,
   onSuccess,
   onError,
   onFinally,
@@ -60,6 +62,7 @@ function useFetch<B, D>({
   const load = useCallback(
     async (loadConfig?: { updatedUrl?: string; updatedBody?: B }) => {
       if (!readyToRun) return;
+      onBefore && onBefore();
       setLoading(true);
       return api<DefaultResponse<D>>(loadConfig?.updatedUrl || urlToUse, {
         method,
@@ -93,18 +96,7 @@ function useFetch<B, D>({
           onFinally && onFinally();
         });
     },
-    [
-      urlToUse,
-      method,
-      body,
-      headers,
-      bustCache,
-      onSuccess,
-      onError,
-      readyToRun,
-      onFinally,
-      ...dependencies,
-    ]
+    [urlToUse, method, body, headers, bustCache, readyToRun, ...dependencies]
   );
 
   useEffect(() => {
@@ -124,8 +116,6 @@ function useFetch<B, D>({
     body,
     headers,
     bustCache,
-    onSuccess,
-    onError,
     readyToRun,
     runOnMount,
     ...runOnDependencies,

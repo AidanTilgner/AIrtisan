@@ -142,6 +142,21 @@ export const getManagerExistsAndIsAliveAndActivateIfNot = async (
   }
 };
 
+export const pauseManager = async (id: number) => {
+  try {
+    const manager = getManager(id);
+    if (!manager) {
+      console.error("No manager found");
+      return null;
+    }
+    manager.running = false;
+    return manager;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};
+
 export const getRawResponse = async (id: number, text: string) => {
   try {
     const manager = getManager(id);
