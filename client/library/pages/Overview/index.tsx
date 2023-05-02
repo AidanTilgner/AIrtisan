@@ -71,7 +71,12 @@ function index() {
         </h1>
       </div>
       <div className={styles.quickActions}>
-        <button className={`${styles.quickAction} ${styles.btnPrimary}`}>
+        <button
+          className={`${styles.quickAction} ${styles.btnPrimary}`}
+          onClick={() => {
+            updateSearchParams(new Map([["tab", "review"]]));
+          }}
+        >
           See Conversations
         </button>
       </div>

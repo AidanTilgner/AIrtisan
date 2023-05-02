@@ -14,6 +14,7 @@ import Organization from "./library/Views/Organization/Organization";
 import Settings from "./library/Views/Settings/Settings";
 import Fallback from "./library/Views/ErrorPages/Fallback";
 import InviteUser from "./library/Views/Organization/InviteUser";
+import CreateOrganization from "./library/Views/Organization/Create";
 
 function App() {
   return (
@@ -64,6 +65,7 @@ function App() {
                   </Route>
                 </Route>
                 <Route path="organizations">
+                  <Route path="create" element={<CreateOrganization />} />
                   <Route path=":organization_id">
                     <Route index element={<Organization />} />
                     <Route path="invite" element={<InviteUser />} />

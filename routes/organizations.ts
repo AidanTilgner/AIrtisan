@@ -16,7 +16,6 @@ import {
 } from "../database/functions/organization";
 import { checkIsAdmin, isOwnerOfOrganization } from "../middleware/auth";
 import { Admin } from "../database/models/admin";
-import { getAdmin } from "../database/functions/admin";
 
 const router = Router();
 
@@ -51,7 +50,28 @@ router.get("/:id", checkIsAdmin, async (req, res) => {
 
 router.post("/", checkIsAdmin, async (req, res) => {
   try {
-    const organization = await createOrganization(req.body);
+    const admin = (req as unknown as Record<string, Admin>).admin;
+    if (!admin) return res.status(401).send({ error: "Unauthorized" });
+
+    const { name, description } = req.body;
+
+    if (!name) {
+      res.status(400).send({
+        message: "Name is required",
+      });
+    }
+
+    if (!description) {
+      res.status(400).send({
+        message: "Description is required",
+      });
+    }
+
+    const organization = await createOrganization({
+      name,
+      description,
+      owner_id: admin.id,
+    });
     res.send({
       message: "success",
       success: true,

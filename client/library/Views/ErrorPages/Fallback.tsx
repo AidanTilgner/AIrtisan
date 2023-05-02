@@ -31,6 +31,14 @@ function NotFound() {
         </a>
       </Flex>
     ),
+    "Organization not found": () => (
+      <Flex align={"center"} direction={"column"}>
+        <p>Interested in an organization?</p>
+        <Link to="/organizations/create">
+          <Button variant="outline">Create an Organization</Button>
+        </Link>
+      </Flex>
+    ),
   };
 
   const reasonToIcon: {

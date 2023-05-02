@@ -245,8 +245,11 @@ function Profile() {
             {isCurrentUser && (
               <div className={styles.addOrgContainer}>
                 <button
-                  title="Create or join organization"
+                  title="Create new organization"
                   className={styles.newOrganization}
+                  onClick={() => {
+                    navigate("/organizations/create");
+                  }}
                 >
                   <Plus weight="regular" />
                 </button>

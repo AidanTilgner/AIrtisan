@@ -21,7 +21,10 @@ export class Organization {
   @Column("text")
   description!: string;
 
-  @ManyToOne(() => Admin, (admin) => admin.owned_organizations, { eager: true })
+  @ManyToOne(() => Admin, (admin) => admin.owned_organizations, {
+    eager: true,
+    nullable: false,
+  })
   owner!: Admin;
 
   @ManyToMany(() => Admin, (admin) => admin.organizations)

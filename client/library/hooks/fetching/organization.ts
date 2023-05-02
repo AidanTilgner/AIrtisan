@@ -207,3 +207,38 @@ export const useCompleteOrganizationInvitation = (
     success,
   };
 };
+
+export const useCreateOrganization = (
+  {
+    name,
+    description,
+    owner_id,
+  }: { name: string; description: string; owner_id: number },
+  config?: Partial<
+    UseFetchConfig<
+      { name: string; description: string; owner_id: number },
+      Organization
+    >
+  >
+) => {
+  const { load, data, success } = useFetch<
+    { name: string; description: string; owner_id: number },
+    Organization
+  >({
+    useBotId: false,
+    ...config,
+    url: `/organizations`,
+    method: "POST",
+    body: {
+      name,
+      description,
+      owner_id,
+    },
+  });
+
+  return {
+    createOrganization: load,
+    data: data,
+    success,
+  };
+};
