@@ -32,6 +32,18 @@ export const checkAPIKey = async (
     req.query["x-api-key"] ||
     req.headers["authorization"]?.split(" ")?.[1]) as string;
 
+  const bot_id = Number(req.params.bot_id) || Number(req.query.bot_id);
+
+  const bot = await getBot(bot_id);
+
+  if (!bot) {
+    res.status(401).send({
+      message: "No bot found for the specified bot ID.",
+    });
+    logger.log("A request was made with a bot ID that has no bot.");
+    return;
+  }
+
   if (!key) {
     res.status(401).send({ message: "No API key provided." });
     // sendWarningEmail(
@@ -57,7 +69,9 @@ export const checkAPIKey = async (
     return;
   }
 
-  const keyInDB = await getApiKey(service);
+  const keyInDB = await getApiKey(service, bot.id);
+
+  console.log("Key in DB: ", keyInDB);
 
   if (!keyInDB) {
     res.status(401).send({

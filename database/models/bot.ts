@@ -8,6 +8,7 @@ import {
 } from "typeorm";
 import { Conversation } from "./conversation";
 import { OwnerTypes } from "../../types/lib";
+import { ApiKey } from "./apiKey";
 
 @Entity()
 export class Bot {
@@ -51,6 +52,9 @@ export class Bot {
 
   @OneToMany(() => Conversation, (conversation) => conversation.bot)
   conversations!: Conversation[];
+
+  @OneToMany(() => ApiKey, (apiKey) => apiKey.bot)
+  apiKeys!: ApiKey[];
 
   @CreateDateColumn()
   created_at!: Date;

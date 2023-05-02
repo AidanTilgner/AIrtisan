@@ -1,13 +1,11 @@
 import { useEffect } from "react";
 import {
-  Admin,
   Bot,
   ButtonType,
   Chat,
   Conversation,
   Corpus,
   CorpusDataPoint,
-  Organization,
 } from "../../../documentation/main";
 import useFetch, { UseFetchConfig } from "../useFetch";
 

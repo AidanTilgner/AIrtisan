@@ -4,8 +4,10 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToOne,
 } from "typeorm";
 import { comparePassword } from "../../utils/crypto";
+import { Bot } from "./bot";
 
 @Entity()
 export class ApiKey {
@@ -17,6 +19,9 @@ export class ApiKey {
 
   @Column("text")
   for!: string;
+
+  @ManyToOne(() => Bot, (bot) => bot.apiKeys, { eager: true })
+  bot!: Bot;
 
   @CreateDateColumn()
   created_at!: Date;

@@ -10,7 +10,11 @@ import {
   getAdminOrganizationInvitations,
 } from "../database/functions/admin";
 import { Router } from "express";
-import { checkIsSuperAdmin, checkIsAdmin } from "../middleware/auth";
+import {
+  checkIsSuperAdmin,
+  checkIsAdmin,
+  hasAccessToBot,
+} from "../middleware/auth";
 import {
   generateAccessToken,
   verifyAccessToken,
@@ -395,38 +399,52 @@ router.get(
   }
 );
 
-router.post("/api-key/register", checkIsAdmin, async (req, res) => {
-  try {
-    const { name } = req.body;
+router.post(
+  "/api-key/register",
+  checkIsAdmin,
+  hasAccessToBot,
+  async (req, res) => {
+    try {
+      const { name } = req.body;
+      const bot_id = req.body.bot_id || req.query.bot_id;
 
-    const created = await createApiKey(name);
+      if (!name) {
+        res.status(400).send({ message: "Missing name." });
+        return;
+      }
 
-    if (!created) {
-      res.status(500).send({ message: "Internal server error." });
-      return;
-    }
+      if (!bot_id) {
+        res.status(400).send({ message: "Missing bot id." });
+        return;
+      }
 
-    const { generated_key, result } = created;
+      const created = await createApiKey(name, bot_id);
 
-    if (!result || !generated_key) {
-      res.status(500).send({ message: "Internal server error." });
-      return;
-    }
+      if (!created) {
+        res.status(500).send({ message: "Internal server error." });
+        return;
+      }
 
-    res.status(200).send({
-      message: "API key created successfully.",
-      data: {
-        apiKey: {
+      const { generated_key, result } = created;
+
+      if (!result || !generated_key) {
+        res.status(500).send({ message: "Internal server error." });
+        return;
+      }
+
+      res.status(200).send({
+        message: "API key created successfully.",
+        data: {
           ...result,
           key: generated_key,
         },
-      },
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send({ message: "Internal server error." });
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).send({ message: "Internal server error." });
+    }
   }
-});
+);
 
 router.delete("/api-key/:id", checkIsAdmin, async (req, res) => {
   try {

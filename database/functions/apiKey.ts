@@ -1,13 +1,17 @@
 import { entities, dataSource } from "..";
 import { generateRandomApiKey } from "../../utils/crypto";
 import { hashPassword } from "../../utils/crypto";
+import { getBot } from "./bot";
 
-export const createApiKey = async (name: string) => {
+export const createApiKey = async (name: string, bot_id: number) => {
   try {
+    const bot = await getBot(bot_id);
+    if (!bot) return null;
     const key = generateRandomApiKey();
     const newKey = new entities.ApiKey();
     newKey.key = hashPassword(key);
     newKey.for = name;
+    newKey.bot = bot;
     const result = await dataSource.manager.save(newKey);
     return {
       result,
@@ -19,11 +23,14 @@ export const createApiKey = async (name: string) => {
   }
 };
 
-export const getApiKey = async (name: string) => {
+export const getApiKey = async (name: string, bot_id: number) => {
   try {
     const result = await dataSource.manager.findOne(entities.ApiKey, {
       where: {
         for: name,
+        bot: {
+          id: bot_id,
+        },
       },
     });
     return result;
