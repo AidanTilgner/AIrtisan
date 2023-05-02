@@ -71,8 +71,6 @@ export const checkAPIKey = async (
 
   const keyInDB = await getApiKey(service, bot.id);
 
-  console.log("Key in DB: ", keyInDB);
-
   if (!keyInDB) {
     res.status(401).send({
       message: "No API key found for the specified service.",
