@@ -17,7 +17,6 @@ function Create() {
 
   const { createOrganization } = useCreateOrganization(
     {
-      owner_id: user?.id as number,
       name: formData.name as string,
       description: formData.description as string,
     },

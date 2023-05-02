@@ -15,6 +15,7 @@ import Settings from "./library/Views/Settings/Settings";
 import Fallback from "./library/Views/ErrorPages/Fallback";
 import InviteUser from "./library/Views/Organization/InviteUser";
 import CreateOrganization from "./library/Views/Organization/Create";
+import CreateBot from "./library/Views/Bot/Create";
 
 function App() {
   return (
@@ -72,6 +73,7 @@ function App() {
                   </Route>
                 </Route>
                 <Route path="bots">
+                  <Route path="create" element={<CreateBot />} />
                   <Route path=":bot_id">
                     <Route index element={<Bot />} />
                   </Route>

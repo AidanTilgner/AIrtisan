@@ -122,6 +122,26 @@ export const retrain = async (id: number): Promise<0 | 1> => {
   }
 };
 
+export const getManagerExistsAndIsAliveAndActivateIfNot = async (
+  id: number
+): Promise<boolean> => {
+  try {
+    const manager = getManager(id);
+    if (!manager) {
+      console.error("No manager found");
+      train(id);
+      return true;
+    }
+    if (!manager.running) {
+      await retrain(id);
+    }
+    return true;
+  } catch (err) {
+    console.error(err);
+    return false;
+  }
+};
+
 export const getRawResponse = async (id: number, text: string) => {
   try {
     const manager = getManager(id);

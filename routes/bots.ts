@@ -18,6 +18,8 @@ import {
   hasAccessToBot,
 } from "../middleware/auth";
 import { getActiveManagers, train } from "../nlu";
+import { checkAdminIsInOrganization } from "../database/functions/organization";
+import { Admin } from "../database/models/admin";
 
 router.get("/as_admin/all", checkIsSuperAdmin, async (req, res) => {
   try {
@@ -153,7 +155,51 @@ router.get("/:bot_id/model", hasAccessToBot, async (req, res) => {
 
 router.post("/", checkIsAdmin, async (req, res) => {
   try {
-    const bot = await createBot(req.body);
+    const admin = (
+      req as unknown as {
+        ["admin"]: Admin;
+      }
+    )["admin"];
+
+    const {
+      name,
+      description,
+      owner_id,
+      owner_type,
+      bot_version = "0.1.0 Beta",
+      enhancement_model = "gpt-3.5-turbo",
+      bot_language = "en-US",
+    } = req.body;
+
+    if (admin.id !== owner_id && owner_type === "admin") {
+      return res
+        .status(401)
+        .json({ error: "Admin can only create bots for themselves" });
+    }
+
+    if (owner_type === "organization") {
+      const belongs = await checkAdminIsInOrganization(owner_id, admin.id);
+      if (!belongs) {
+        res.status(401).send({
+          message: "Admin does not belong to organization",
+          success: false,
+        });
+      }
+    }
+
+    if (!name || !description || !owner_id || !owner_type) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    const bot = await createBot({
+      name,
+      description,
+      owner_id,
+      owner_type,
+      bot_version,
+      enhancement_model,
+      bot_language,
+    });
     res.send({
       message: "Bot created successfully",
       success: true,

@@ -9,7 +9,7 @@ import {
 } from "../database/functions/conversations";
 import { checkAPIKey, checkIsAdmin, hasAccessToBot } from "../middleware/auth";
 import { handleNewChat, handleRetryChat } from "../nlu/chats";
-import { getManagerIsAlive } from "../nlu";
+import { getManagerExistsAndIsAliveAndActivateIfNot } from "../nlu";
 
 config();
 const router = Router();
@@ -26,7 +26,9 @@ router.post("/", checkAPIKey, async (req, res) => {
       return;
     }
 
-    const managerIsRunning = await getManagerIsAlive(Number(bot_id));
+    const managerIsRunning = await getManagerExistsAndIsAliveAndActivateIfNot(
+      Number(bot_id)
+    );
 
     if (!managerIsRunning) {
       res.status(200).send({
@@ -111,6 +113,21 @@ router.post("/as_admin", checkIsAdmin, hasAccessToBot, async (req, res) => {
       return;
     }
 
+    const managerIsRunning = await getManagerExistsAndIsAliveAndActivateIfNot(
+      Number(bot_id)
+    );
+
+    if (!managerIsRunning) {
+      res.status(200).send({
+        message: "Bot manager is not running",
+        data: {
+          answer:
+            "Sorry, but I'm not currently running. Please try again later.",
+        },
+      });
+      return;
+    }
+
     const allowTriggers =
       !!req.body.allow_triggers || !!req.query.allow_triggers;
     if (!message) {
@@ -183,6 +200,22 @@ router.post("/as_admin/training", checkIsAdmin, async (req, res) => {
       res.status(400).send({ message: "No bot_id provided" });
       return;
     }
+
+    const managerIsRunning = await getManagerExistsAndIsAliveAndActivateIfNot(
+      Number(bot_id)
+    );
+
+    if (!managerIsRunning) {
+      res.status(200).send({
+        message: "Bot manager is not running",
+        data: {
+          answer:
+            "Sorry, but I'm not currently running. Please try again later.",
+        },
+      });
+      return;
+    }
+
     const message = req.body.message || req.query.message;
     if (!message) {
       res.status(400).send({ message: "No message provided" });

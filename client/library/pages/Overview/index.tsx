@@ -83,20 +83,24 @@ function index() {
       <div className={styles.recentConversations}>
         <h2>Here are some recent user conversations...</h2>
         <div className={styles.cardList}>
-          {recentConversations?.map((conversation) => (
-            <ConversationCard
-              key={conversation.id}
-              conversation={conversation}
-              onGoTo={(conv) => {
-                updateSearchParams(
-                  new Map([
-                    ["tab", "review"],
-                    ["load_conversation", conv.id as unknown as string],
-                  ])
-                );
-              }}
-            />
-          ))}
+          {recentConversations && recentConversations.length ? (
+            recentConversations.map((conversation) => (
+              <ConversationCard
+                key={conversation.id}
+                conversation={conversation}
+                onGoTo={(conv) => {
+                  updateSearchParams(
+                    new Map([
+                      ["tab", "review"],
+                      ["load_conversation", conv.id as unknown as string],
+                    ])
+                  );
+                }}
+              />
+            ))
+          ) : (
+            <p>No recent conversations found.</p>
+          )}
         </div>
       </div>
     </div>

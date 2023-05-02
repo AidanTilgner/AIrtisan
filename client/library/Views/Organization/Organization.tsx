@@ -387,7 +387,9 @@ function BotsTab() {
               />
             ))
           ) : (
-            <p className={styles.disclaimer}>No bots yet.</p>
+            <p className={styles.disclaimer}>
+              No bots yet. <Link to="/bots/create">Add one</Link>?
+            </p>
           )}
         </div>
       </div>
