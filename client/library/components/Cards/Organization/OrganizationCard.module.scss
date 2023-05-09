@@ -1,7 +1,7 @@
 .OrganizationCard {
   width: 100%;
   aspect-ratio: 1/1;
-  border: 1px solid #eaeaea;
+  border: 1px solid var(--background-contrast);
   padding: 18px;
   box-sizing: border-box;
   border-radius: 10px;
@@ -14,9 +14,10 @@
   cursor: pointer;
   transition: all 0.2s ease-in-out;
   padding: 14px;
+  color: var(--text-color-light);
 
   &:hover {
-    background-color: #f8f8f8;
+    background-color: var(--background-alt);
   }
 
   &:active {

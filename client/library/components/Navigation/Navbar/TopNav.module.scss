@@ -8,7 +8,8 @@
   display: flex;
   align-items: center;
   z-index: 100;
-  background-color: white;
+  background-color: var(--background-color);
+  color: var(--text-color);
   transition: all 0.2s ease-in-out;
 
   @media (min-width: 768px) {
@@ -36,9 +37,11 @@
   border: none;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
+  box-shadow: 0.2px 0.2px 12px rgba(87, 22, 249, 0.25);
+  border-radius: 5px;
 
   &:hover {
-    opacity: 0.9;
+    box-shadow: 0.2px 0.2px 15px rgba(87, 22, 249, 0.35);
   }
 
   &:active {

@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./AdminCard.module.scss";
-import { Person, User } from "@phosphor-icons/react";
+import { User } from "@phosphor-icons/react";
 import { getFormattedAdminName } from "../../../helpers/formating";
 import { Admin } from "../../../../documentation/main";
 

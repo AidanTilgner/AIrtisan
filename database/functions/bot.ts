@@ -14,6 +14,10 @@ interface BotWithLoadedOwner extends Bot {
   owner: Organization | Admin | undefined;
 }
 
+interface BotWithLoadedRunningStatus extends Bot {
+  running: boolean | undefined;
+}
+
 export const getBotOwner = async (owner_id: number, owner_type: OwnerTypes) => {
   try {
     switch (owner_type) {
@@ -75,7 +79,11 @@ export const createBot = async ({
   }
 };
 
-export const getBot = async (id: Bot["id"], loadOwner = false) => {
+export const getBot = async (
+  id: Bot["id"],
+  loadOwner = false,
+  loadRunningStatus = false
+) => {
   try {
     const bot = await dataSource.manager.findOne(entities.Bot, {
       where: { id },
@@ -83,15 +91,23 @@ export const getBot = async (id: Bot["id"], loadOwner = false) => {
 
     if (!bot) return null;
 
-    const botToSend: BotWithLoadedOwner = {
+    const botToSend: BotWithLoadedOwner & BotWithLoadedRunningStatus = {
       ...bot,
       owner: undefined,
+      running: undefined,
     };
 
     if (loadOwner && bot) {
       const owner = await getBotOwner(bot.owner_id, bot.owner_type);
       if (owner) {
         botToSend.owner = owner;
+      }
+    }
+
+    if (loadRunningStatus && bot) {
+      const status = await getBotStatus(bot.id);
+      if (status !== null) {
+        botToSend.running = status;
       }
     }
 

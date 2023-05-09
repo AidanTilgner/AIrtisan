@@ -1,6 +1,5 @@
 import React from "react";
 import styles from "./index.module.scss";
-import { useUser } from "../../contexts/User";
 import { SunHorizon, Sun, MoonStars, HandWaving } from "@phosphor-icons/react";
 import { useGetRecentConversations } from "../../hooks/fetching/common";
 import { useSearchParamsUpdate } from "../../hooks/navigation";
@@ -41,8 +40,6 @@ function index() {
   const welcomeMessage = getWelcomeMessage();
   const WelcomeIcon = () => welcomeMessage.icon;
 
-  const { user } = useUser();
-
   const { data: recentConversations } = useGetRecentConversations(
     {
       runOnMount: true,
@@ -74,8 +71,13 @@ function index() {
     <div className={styles.Home}>
       <div className={styles.top}>
         <p className={styles.top_text}>
-          {welcomeMessage.message} <WelcomeIcon />
-          <HandWaving />
+          {welcomeMessage.message}
+          <span className={styles.iconContainer}>
+            <WelcomeIcon />
+          </span>
+          <span className={styles.shake}>
+            <HandWaving />
+          </span>
         </p>
         <h1 className={styles.big_text}>
           <strong>{bot?.name}</strong>
@@ -89,54 +91,56 @@ function index() {
           )}
         </p>
       </div>
-      <div className={styles.quickActions}>
-        <button
-          className={`${styles.quickAction} ${styles.btnPrimary}`}
-          onClick={() => {
-            updateSearchParams(new Map([["tab", "review"]]));
-          }}
-        >
-          See Conversations
-        </button>
-        {isRunning ? (
+      <div className={styles.content}>
+        <div className={styles.quickActions}>
           <button
-            className={`${styles.quickAction} ${styles.btnSecondary}`}
-            onClick={handleStopBot}
-            disabled={isLoading}
+            className={`${styles.quickAction} ${styles.btnPrimary}`}
+            onClick={() => {
+              updateSearchParams(new Map([["tab", "review"]]));
+            }}
           >
-            Stop Bot
+            See Conversations
           </button>
-        ) : (
-          <button
-            className={`${styles.quickAction} ${styles.btnSecondary}`}
-            onClick={handleStartBot}
-            disabled={isLoading}
-          >
-            Start Bot
-          </button>
-        )}
-      </div>
-      <div className={styles.recentConversations}>
-        <h2>Here are some recent user conversations...</h2>
-        <div className={styles.cardList}>
-          {recentConversations && recentConversations.length ? (
-            recentConversations.map((conversation) => (
-              <ConversationCard
-                key={conversation.id}
-                conversation={conversation}
-                onGoTo={(conv) => {
-                  updateSearchParams(
-                    new Map([
-                      ["tab", "review"],
-                      ["load_conversation", conv.id as unknown as string],
-                    ])
-                  );
-                }}
-              />
-            ))
+          {isRunning ? (
+            <button
+              className={`${styles.quickAction} ${styles.btnPause}`}
+              onClick={handleStopBot}
+              disabled={isLoading}
+            >
+              Stop Bot
+            </button>
           ) : (
-            <p>No recent conversations found.</p>
+            <button
+              className={`${styles.quickAction} ${styles.btnStartup}`}
+              onClick={handleStartBot}
+              disabled={isLoading}
+            >
+              Start Bot
+            </button>
           )}
+        </div>
+        <div className={styles.recentConversations}>
+          <h2>Here are some recent user conversations...</h2>
+          <div className={styles.cardList}>
+            {recentConversations && recentConversations.length ? (
+              recentConversations.map((conversation) => (
+                <ConversationCard
+                  key={conversation.id}
+                  conversation={conversation}
+                  onGoTo={(conv) => {
+                    updateSearchParams(
+                      new Map([
+                        ["tab", "review"],
+                        ["load_conversation", conv.id as unknown as string],
+                      ])
+                    );
+                  }}
+                />
+              ))
+            ) : (
+              <p>No recent conversations found.</p>
+            )}
+          </div>
         </div>
       </div>
     </div>

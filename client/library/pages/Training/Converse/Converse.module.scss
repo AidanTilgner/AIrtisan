@@ -66,26 +66,27 @@
     transition: all 0.2s ease-in-out;
 
     &:hover {
-      text-shadow: 0.2px 0.2px 2px rgba($color: #000000, $alpha: 0.1);
+      opacity: 0.6;
     }
   }
 
   .button__new {
-    color: #2256f2;
+    color: var(--primary-color);
   }
 
   .button__details {
-    color: #2256f2;
+    color: var(--text-color);
   }
 }
 
 .content {
+  border: 1px solid var(--background-contrast);
   overflow-y: scroll;
   min-height: 30vh;
   max-height: 50vh;
   margin-bottom: 20vh;
   padding: 18px 24px;
-  box-shadow: inset 0.2px 0.2px 10px 0 rgba($color: #000000, $alpha: 0.1);
+  // box-shadow: inset 0.2px 0.2px 10px 0 rgba($color: #000000, $alpha: 0.1);
   border-radius: 5px;
   margin-inline: 24px;
 
@@ -133,20 +134,22 @@
     border: none;
     border-radius: 5px;
     resize: none;
-    font-family: "Quicksand", sans-serif;
+    font-family: var(--font-family);
     font-weight: 500;
     height: 100%;
-    // box-shadow: 0.2px 0.2px 10px 0 rgba($color: #000000, $alpha: 0.1);
+    box-shadow: 0.2px 0.2px 10px 0 rgba($color: #000000, $alpha: 0.1);
     transition: all 0.2s ease-in-out;
     font-size: 16px;
-    border: 1px solid #eaeaea;
+    border: 1px solid var(--background-contrast);
+    background-color: var(--background-color);
 
     &:focus {
       outline: none;
-      box-shadow: 0.2px 0.2px 12px 0 rgba($color: #000000, $alpha: 0.12);
+      // box-shadow: 0.2px 0.2px 12px 0 rgba($color: #000000, $alpha: 0.12);
       padding: 18px 24px;
       border-radius: 0;
-      border: 1px solid #2256f2;
+      border: 1px solid var(--primary-color);
+      background-color: var(--background-alt);
     }
   }
 
@@ -158,12 +161,12 @@
     justify-content: center;
     border-radius: 5px;
     border: none;
-    background-color: #2256f2;
-    color: white;
+    background-color: var(--primary-color);
+    color: var(text-color);
     font-size: 16px;
     cursor: pointer;
     transition: all 0.2s ease-in-out;
-    box-shadow: 0.2px 0.2px 10px rgba($color: #000000, $alpha: 0.1);
+    // box-shadow: 0.2px 0.2px 10px rgba($color: #000000, $alpha: 0.1);
 
     &:hover {
       transform: scale(1.02);
@@ -199,15 +202,15 @@
 
 @keyframes openMetadataIn {
   0% {
-    border-color: white;
+    // border-color: var(--background-contrast);
   }
   100% {
-    border-color: #eaeaea;
+    // border-color: var(--background-contrast);
   }
 }
 
 .openMetadata {
-  border: 1px solid #eaeaea;
+  border: 1px solid var(--background-contrast);
   padding: 24px;
   animation-name: openMetadataIn;
   animation-duration: 0.25s;
@@ -239,7 +242,7 @@
   align-items: center;
   gap: 8px;
   font-size: 16px;
-  color: rgba(255, 0, 0, 1);
+  color: var(--danger-color);
 
   svg {
     vertical-align: middle;
@@ -255,7 +258,7 @@
   align-items: center;
   gap: 8px;
   font-size: 16px;
-  color: rgba(214, 87, 19, 1);
+  color: var(--warning-color);
 
   svg {
     vertical-align: middle;
@@ -305,20 +308,20 @@
       place-content: center;
       cursor: pointer;
       box-sizing: border-box;
-      border: 1px solid #fff;
+      border: 1px solid var(--background-contrast);
       padding: 5px;
       transition: all 0.2s ease-in-out;
-      background-color: white;
+      background-color: var(--background);
 
       &:hover {
-        background-color: #f4f4f4;
-        border: 1px solid #eaeaea;
+        background-color: var(--background-alt);
+        border: 1px solid var(--background-contrast);
       }
 
       &:active {
         // transform: rotate(15deg);
         border-radius: 50%;
-        border: 1px solid #fff;
+        border: 1px solid var(--text-color);
       }
     }
 
@@ -369,7 +372,7 @@
       vertical-align: middle;
       position: relative;
       bottom: 2px;
-      color: #2256f2;
+      color: var(--primary-color);
     }
   }
 }
@@ -389,17 +392,17 @@
 
 .user {
   margin-left: auto;
-  border: 1px solid #eaeaea;
-  background-color: white;
+  border: 1px solid var(--background-contrast);
+  background-color: var(--background-alt);
 }
 
 .assistant {
   margin-right: auto;
-  border: 1px solid #eaeaea;
-  background-color: #f4f4f4;
+  border: 1px solid var(--background-contrast);
+  background-color: var(--background-alt);
 
   a {
-    color: #2256f2;
+    color: var(--primary-color);
     text-decoration: underline;
     font-weight: 600;
   }
@@ -418,7 +421,7 @@
   }
 
   .enhancedTag {
-    color: #2256f2;
+    color: var(--primary-color);
   }
 }
 

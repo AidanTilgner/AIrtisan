@@ -3,8 +3,8 @@
   flex-direction: column;
 }
 
-.organization_invite {
-}
+// .organization_invite {
+// }
 
 .title {
   h3 {
@@ -21,8 +21,8 @@
   gap: 8px;
   padding: 14px;
   border-radius: 5px;
-  background-color: white;
-  border: 1px solid #eaeaea;
+  background-color: var(--background-color);
+  border: 1px solid var(--background-contrast);
 }
 
 .high {
@@ -38,7 +38,7 @@
 }
 
 .priority {
-  outline: 1px solid red;
+  outline: 1px solid var(--danger-color);
   padding: 0;
   font-size: 12px;
 

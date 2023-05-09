@@ -4,8 +4,10 @@
 }
 
 .top {
-  box-shadow: 0.2px 0.2px 18px rgba(0, 0, 0, 0.1);
+  // box-shadow: 0.2px 0.2px 18px rgba(0, 0, 0, 0.1);
+  background-color: var(--background);
   padding: 36px 24px;
+  border-bottom: 1px solid var(--background-contrast);
 
   @media (min-width: 768px) {
     padding: 36px 82px;
@@ -63,14 +65,60 @@
   }
 
   .btnPrimary {
-    background-color: #2256f2;
-    color: white;
+    background-color: var(--primary-color);
+    color: var(--primary-contrast);
   }
 
   .btnSecondary {
-    background-color: white;
-    color: #2256f2;
+    background-color: var(--background-alt);
+    color: var(--text-color-light);
   }
+
+  .btnStartup {
+    background-color: var(--success-color);
+    color: var(--success-contrast);
+  }
+
+  .btnPause {
+    background-color: var(--danger-color);
+    color: var(--danger-contrast);
+  }
+}
+
+.iconContainer {
+  svg {
+    vertical-align: middle;
+  }
+}
+
+.shake {
+  @keyframes iconShake {
+    0% {
+      transform: rotate(0);
+    }
+    25% {
+      transform: rotate(10deg);
+    }
+    50% {
+      transform: rotate(-10deg);
+    }
+    100% {
+      transform: rotate(0);
+    }
+  }
+  height: fit-content;
+
+  svg {
+    animation-name: iconShake;
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+    animation-timing-function: ease-in-out;
+    vertical-align: middle;
+  }
+}
+
+.content {
+  background-color: var(--background-alt);
 }
 
 .recentConversations {

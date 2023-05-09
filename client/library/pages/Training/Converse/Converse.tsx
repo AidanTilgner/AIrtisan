@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./Converse.module.scss";
-import { Link, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { Chat as ChatType, Conversation } from "../../../../documentation/main";
 import { showNotification } from "@mantine/notifications";
 import {
@@ -234,7 +234,10 @@ function Converse() {
                   conversation?.generated_name || String(conversation?.id)
                 );
                 searchParamsUpdate(
-                  new Map([["load_conversation", String(conversation?.id)]])
+                  new Map([
+                    ["tab", "review"],
+                    ["load_conversation", String(conversation?.id)],
+                  ])
                 );
               }}
               title="View conversation details"
@@ -262,7 +265,19 @@ function Converse() {
           <p className={styles.disclaimer}>
             No chats yet. Start a conversation by typing a message below, or
             select an old one from the{" "}
-            <Link to="/review/conversations">conversations page</Link>.
+            <span
+              style={{
+                textDecoration: "underline",
+                cursor: "pointer",
+                color: "var(--text-link)",
+              }}
+              onClick={() => {
+                updateSearchParams(new Map([["tab", "review"]]));
+              }}
+            >
+              conversations page
+            </span>
+            .
           </p>
         )}
         {loading && (

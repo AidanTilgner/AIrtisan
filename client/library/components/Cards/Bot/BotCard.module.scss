@@ -1,13 +1,15 @@
 .BotCard {
   box-sizing: border-box;
-  border: 1px solid #eaeaea;
+  border: 1px solid var(--background-contrast);
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  background-color: white;
-  font-family: "QuickSand", sans-serif;
+  transition: all 0.4s ease-in-out;
+  background-color: var(--background-alt);
+  font-family: var(--font-family);
+  border-radius: var(--card-border-radius);
 
   &:hover {
-    background-color: #f6f6f6;
+    background-color: var(--background);
+    border-radius: var(--card-border-radius-hover);
   }
 }
 
@@ -50,18 +52,18 @@
     border-radius: 5px;
     font-size: 12px;
     padding: 4px 8px;
-    color: white;
+    color: var(--text-color);
+    background-color: var(--background);
     font-weight: 600;
-    background-color: black;
     opacity: 0.8;
   }
 
   .running {
-    background-color: green;
+    background-color: var(--success-color);
   }
 
   .not_running {
-    background-color: red;
+    background-color: var(--danger-color);
   }
 }
 

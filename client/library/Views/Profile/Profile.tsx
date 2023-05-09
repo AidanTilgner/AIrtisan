@@ -26,6 +26,7 @@ import { TextInput } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { Bot } from "../../../documentation/main";
 import NotificationCard from "../../components/Cards/Notification/Notification";
+import { useSearch } from "../../contexts/Search";
 
 type Tab = "notifications" | "bots";
 
@@ -350,6 +351,16 @@ function BotsTab({
 
   const navigate = useNavigate();
 
+  const { query } = useSearch();
+
+  const filteredBots = bots.filter((b) => {
+    const passesQuery =
+      b.name.toLowerCase().includes(query.toLowerCase()) ||
+      b.description.toLowerCase().includes(query.toLowerCase());
+
+    return passesQuery;
+  });
+
   return useMemo(
     () => (
       <div className={styles.botsTab}>
@@ -357,8 +368,8 @@ function BotsTab({
           <Search />
         </div>
         <div className={styles.bots}>
-          {bots && bots?.length > 0 ? (
-            bots.map((b) => (
+          {filteredBots && filteredBots?.length > 0 ? (
+            filteredBots.map((b) => (
               <BotCard
                 key={b.id}
                 bot={b}
@@ -373,7 +384,7 @@ function BotsTab({
         </div>
       </div>
     ),
-    [bots, navigate]
+    [bots, navigate, query]
   );
 }
 

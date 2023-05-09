@@ -28,6 +28,7 @@ function App() {
         withGlobalStyles
         withNormalizeCSS
         theme={{
+          colorScheme: "dark",
           headings: {
             fontFamily: "Quicksand",
             fontWeight: 500,
