@@ -41,7 +41,7 @@ function Dashboard() {
   const navigate = useNavigate();
 
   const formattedDisplayName = (n: string) => {
-    const [first, ...rest] = n.split(" ");
+    const [first] = n.split(" ");
     return `${first}`;
   };
 

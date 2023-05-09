@@ -91,54 +91,56 @@ function index() {
           )}
         </p>
       </div>
-      <div className={styles.quickActions}>
-        <button
-          className={`${styles.quickAction} ${styles.btnPrimary}`}
-          onClick={() => {
-            updateSearchParams(new Map([["tab", "review"]]));
-          }}
-        >
-          See Conversations
-        </button>
-        {isRunning ? (
+      <div className={styles.content}>
+        <div className={styles.quickActions}>
           <button
-            className={`${styles.quickAction} ${styles.btnPause}`}
-            onClick={handleStopBot}
-            disabled={isLoading}
+            className={`${styles.quickAction} ${styles.btnPrimary}`}
+            onClick={() => {
+              updateSearchParams(new Map([["tab", "review"]]));
+            }}
           >
-            Stop Bot
+            See Conversations
           </button>
-        ) : (
-          <button
-            className={`${styles.quickAction} ${styles.btnStartup}`}
-            onClick={handleStartBot}
-            disabled={isLoading}
-          >
-            Start Bot
-          </button>
-        )}
-      </div>
-      <div className={styles.recentConversations}>
-        <h2>Here are some recent user conversations...</h2>
-        <div className={styles.cardList}>
-          {recentConversations && recentConversations.length ? (
-            recentConversations.map((conversation) => (
-              <ConversationCard
-                key={conversation.id}
-                conversation={conversation}
-                onGoTo={(conv) => {
-                  updateSearchParams(
-                    new Map([
-                      ["tab", "review"],
-                      ["load_conversation", conv.id as unknown as string],
-                    ])
-                  );
-                }}
-              />
-            ))
+          {isRunning ? (
+            <button
+              className={`${styles.quickAction} ${styles.btnPause}`}
+              onClick={handleStopBot}
+              disabled={isLoading}
+            >
+              Stop Bot
+            </button>
           ) : (
-            <p>No recent conversations found.</p>
+            <button
+              className={`${styles.quickAction} ${styles.btnStartup}`}
+              onClick={handleStartBot}
+              disabled={isLoading}
+            >
+              Start Bot
+            </button>
           )}
+        </div>
+        <div className={styles.recentConversations}>
+          <h2>Here are some recent user conversations...</h2>
+          <div className={styles.cardList}>
+            {recentConversations && recentConversations.length ? (
+              recentConversations.map((conversation) => (
+                <ConversationCard
+                  key={conversation.id}
+                  conversation={conversation}
+                  onGoTo={(conv) => {
+                    updateSearchParams(
+                      new Map([
+                        ["tab", "review"],
+                        ["load_conversation", conv.id as unknown as string],
+                      ])
+                    );
+                  }}
+                />
+              ))
+            ) : (
+              <p>No recent conversations found.</p>
+            )}
+          </div>
         </div>
       </div>
     </div>

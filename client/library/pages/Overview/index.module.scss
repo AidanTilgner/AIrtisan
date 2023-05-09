@@ -4,8 +4,10 @@
 }
 
 .top {
-  box-shadow: 0.2px 0.2px 18px rgba(0, 0, 0, 0.1);
+  // box-shadow: 0.2px 0.2px 18px rgba(0, 0, 0, 0.1);
+  background-color: var(--background);
   padding: 36px 24px;
+  border-bottom: 1px solid var(--background-contrast);
 
   @media (min-width: 768px) {
     padding: 36px 82px;
@@ -113,6 +115,10 @@
     animation-timing-function: ease-in-out;
     vertical-align: middle;
   }
+}
+
+.content {
+  background-color: var(--background-alt);
 }
 
 .recentConversations {
