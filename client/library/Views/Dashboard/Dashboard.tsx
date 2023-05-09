@@ -73,6 +73,12 @@ function Dashboard() {
           >
             Your Profile
           </button>
+          <button
+            className={`${styles.quickAction} ${styles.btnSecondary}`}
+            onClick={() => (window.location.href = "/documentation")}
+          >
+            Read the Docs
+          </button>
         </div>
       </div>
       <div className={styles.content}>
