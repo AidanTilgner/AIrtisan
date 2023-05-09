@@ -69,7 +69,7 @@
   box-sizing: border-box;
   position: relative;
   animation: addIntentIn 0.5s ease-in-out forwards;
-  background-color: white;
+  background-color: var(--background-color);
   overflow: hidden;
 
   @media screen and (min-width: 768px) {
