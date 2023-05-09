@@ -71,6 +71,48 @@
     background-color: white;
     color: #2256f2;
   }
+
+  .btnStartup {
+    background-color: #64a60f;
+    color: #fff;
+  }
+
+  .btnPause {
+    background-color: #a63417;
+    color: #fff;
+  }
+}
+
+.iconContainer {
+  svg {
+    vertical-align: middle;
+  }
+}
+
+.shake {
+  @keyframes iconShake {
+    0% {
+      transform: rotate(0);
+    }
+    25% {
+      transform: rotate(10deg);
+    }
+    50% {
+      transform: rotate(-10deg);
+    }
+    100% {
+      transform: rotate(0);
+    }
+  }
+  height: fit-content;
+
+  svg {
+    animation-name: iconShake;
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+    animation-timing-function: ease-in-out;
+    vertical-align: middle;
+  }
 }
 
 .recentConversations {

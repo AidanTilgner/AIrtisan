@@ -1,6 +1,5 @@
 import React from "react";
 import styles from "./index.module.scss";
-import { useUser } from "../../contexts/User";
 import { SunHorizon, Sun, MoonStars, HandWaving } from "@phosphor-icons/react";
 import { useGetRecentConversations } from "../../hooks/fetching/common";
 import { useSearchParamsUpdate } from "../../hooks/navigation";
@@ -41,8 +40,6 @@ function index() {
   const welcomeMessage = getWelcomeMessage();
   const WelcomeIcon = () => welcomeMessage.icon;
 
-  const { user } = useUser();
-
   const { data: recentConversations } = useGetRecentConversations(
     {
       runOnMount: true,
@@ -74,8 +71,13 @@ function index() {
     <div className={styles.Home}>
       <div className={styles.top}>
         <p className={styles.top_text}>
-          {welcomeMessage.message} <WelcomeIcon />
-          <HandWaving />
+          {welcomeMessage.message}
+          <div className={styles.iconContainer}>
+            <WelcomeIcon />
+          </div>
+          <div className={styles.shake}>
+            <HandWaving />
+          </div>
         </p>
         <h1 className={styles.big_text}>
           <strong>{bot?.name}</strong>
@@ -100,7 +102,7 @@ function index() {
         </button>
         {isRunning ? (
           <button
-            className={`${styles.quickAction} ${styles.btnSecondary}`}
+            className={`${styles.quickAction} ${styles.btnPause}`}
             onClick={handleStopBot}
             disabled={isLoading}
           >
@@ -108,7 +110,7 @@ function index() {
           </button>
         ) : (
           <button
-            className={`${styles.quickAction} ${styles.btnSecondary}`}
+            className={`${styles.quickAction} ${styles.btnStartup}`}
             onClick={handleStartBot}
             disabled={isLoading}
           >

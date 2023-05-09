@@ -8,12 +8,16 @@ export const getShortenedMessage = (message: string) => {
   return message;
 };
 
-export const getFormattedBotOwner = (bot: Bot) => {
+export const getFormattedBotOwner = (bot: Bot | undefined | null) => {
+  if (!bot) return "Unknown";
+
   try {
     if (!bot.owner) return "Unknown";
     switch (bot.owner_type) {
       case "admin":
-        return (bot.owner as Admin).username;
+        return (
+          (bot.owner as Admin).display_name || (bot.owner as Admin).username
+        );
       case "organization":
         return (bot.owner as Organization).name;
       default:

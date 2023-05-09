@@ -75,7 +75,7 @@ router.get("/", checkIsAdmin, async (req, res) => {
 
 router.get("/:bot_id", hasAccessToBot, async (req, res) => {
   try {
-    const bot = await getBot(Number(req.params.bot_id));
+    const bot = await getBot(Number(req.params.bot_id), true, true);
     res.send({
       message: "Bot fetched successfully",
       success: true,

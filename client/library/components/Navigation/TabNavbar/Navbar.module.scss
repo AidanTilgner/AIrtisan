@@ -168,6 +168,21 @@
   }
 }
 
+.namelink {
+  color: inherit;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.botname {
+  color: inherit;
+  text-decoration: none;
+  font-weight: bold;
+}
+
 .shake {
   @keyframes iconShake {
     0% {

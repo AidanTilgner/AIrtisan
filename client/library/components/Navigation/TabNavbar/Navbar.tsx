@@ -5,6 +5,9 @@ import { useBot } from "../../../contexts/Bot";
 import { useRetrainBot } from "../../../hooks/fetching/common";
 import { showNotification } from "@mantine/notifications";
 import { ArrowsClockwise } from "@phosphor-icons/react";
+import { getFormattedBotOwner } from "../../../helpers/formating";
+import { Link } from "react-router-dom";
+import { useUser } from "../../../contexts/User";
 
 interface NavbarProps<Tabs> {
   tabs: { icon: JSX.Element; name: string; id: Tabs; visible: boolean }[];
@@ -66,11 +69,24 @@ function Navbar<Tab>({ tabs, currentTab, setTab }: NavbarProps<Tab>) {
       </>
     );
   };
+  const { user } = useUser();
+
+  const owner = getFormattedBotOwner(bot);
+
+  const ownerLink =
+    bot?.owner_type === "organization"
+      ? `/organization/${bot.owner_id}`
+      : `/profile/${user?.username}`;
 
   return (
     <div className={styles.navbar}>
       <div className={styles.header}>
-        <h2 className={styles.title}>Training: {bot?.name}</h2>
+        <h2 className={styles.title}>
+          <Link className={styles.namelink} to={ownerLink}>
+            {owner}
+          </Link>{" "}
+          / <span className={styles.botname}>{bot?.name}</span>
+        </h2>
       </div>
       <br />
       {isMobile && (

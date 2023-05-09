@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useMemo } from "react";
 import { Bot } from "../../documentation/main";
-import { useGetBot, useGetBotIsRunning } from "../hooks/fetching/bot";
+import { useGetBot } from "../hooks/fetching/bot";
 import { showNotification } from "@mantine/notifications";
 
 interface BotContext {
@@ -34,7 +34,7 @@ export const BotProvider = ({
   const { data: bot = null, getBot: reloadGetBot } = useGetBot(
     botId as string,
     {
-      runOnMount: true,
+      runOnDependencies: [botId],
       onBefore: () => {
         setIsLoading(true);
       },
@@ -51,22 +51,9 @@ export const BotProvider = ({
     }
   );
 
-  const { data: isRunning, getBotIsRunning: reloadRunning } =
-    useGetBotIsRunning(botId as string, {
-      runOnDependencies: [bot?.id],
-      onError: () => {
-        showNotification({
-          title: "Error",
-          message: "Could not load bot",
-          color: "red",
-        });
-      },
-    });
-
   const reload = async () => {
     setIsLoading(true);
     await reloadGetBot();
-    await reloadRunning();
     setIsLoading(false);
   };
 
@@ -74,11 +61,11 @@ export const BotProvider = ({
     () => ({
       bot,
       botSelected: bot?.id !== undefined,
-      isRunning: !!isRunning,
+      isRunning: !!bot?.running,
       reloadBot: reload,
       isLoading,
     }),
-    [bot, isRunning, reload, isLoading]
+    [bot, reload, isLoading]
   );
 
   return <BotContext.Provider value={value}>{children}</BotContext.Provider>;
