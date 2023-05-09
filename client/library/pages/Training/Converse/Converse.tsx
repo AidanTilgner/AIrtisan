@@ -206,6 +206,8 @@ function Converse() {
 
   const searchParamsUpdate = useSearchParamsUpdate();
 
+  const { isRunning } = useBot();
+
   return (
     <div className={styles.converse}>
       <div className={styles.header}>
@@ -249,44 +251,51 @@ function Converse() {
           )}
         </div>
       </div>
-      <div className={styles.content}>
-        {groupedChats?.length ? (
-          groupedChats.map(({ user, assistant }) => (
-            <div key={`${user.id}-${assistant.id}`}>
-              <ChatPair
-                user={user}
-                assistant={assistant}
-                initialLoad={initialLoad}
-                reloadConversation={reloadConversation}
-              />
+      {isRunning ? (
+        <div className={styles.content}>
+          {groupedChats?.length ? (
+            groupedChats.map(({ user, assistant }) => (
+              <div key={`${user.id}-${assistant.id}`}>
+                <ChatPair
+                  user={user}
+                  assistant={assistant}
+                  initialLoad={initialLoad}
+                  reloadConversation={reloadConversation}
+                />
+              </div>
+            ))
+          ) : (
+            <p className={styles.disclaimer}>
+              No chats yet. Start a conversation by typing a message below, or
+              select an old one from the{" "}
+              <span
+                style={{
+                  textDecoration: "underline",
+                  cursor: "pointer",
+                  color: "var(--text-link)",
+                }}
+                onClick={() => {
+                  updateSearchParams(new Map([["tab", "review"]]));
+                }}
+              >
+                conversations page
+              </span>
+              .
+            </p>
+          )}
+          {loading && (
+            <div className={styles.loading}>
+              <Loaders.Spinner />
             </div>
-          ))
-        ) : (
-          <p className={styles.disclaimer}>
-            No chats yet. Start a conversation by typing a message below, or
-            select an old one from the{" "}
-            <span
-              style={{
-                textDecoration: "underline",
-                cursor: "pointer",
-                color: "var(--text-link)",
-              }}
-              onClick={() => {
-                updateSearchParams(new Map([["tab", "review"]]));
-              }}
-            >
-              conversations page
-            </span>
-            .
-          </p>
-        )}
-        {loading && (
-          <div className={styles.loading}>
-            <Loaders.Spinner />
-          </div>
-        )}
-        <div ref={endRef} />
-      </div>
+          )}
+          <div ref={endRef} />
+        </div>
+      ) : (
+        <p>
+          The bot is not running, please start the bot in the overview tab to
+          converse with it.
+        </p>
+      )}
       <div className={styles.textboxContainer}>
         <TextBox
           sendChat={sendChat}
@@ -657,9 +666,12 @@ const TextBox = ({
     inputRef.current?.focus();
   }, []);
 
+  const { isRunning } = useBot();
+
   return (
     <div className={styles.textbox}>
       <textarea
+        disabled={!isRunning}
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         placeholder="Say something..."
