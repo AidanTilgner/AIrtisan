@@ -45,7 +45,7 @@
     border-radius: 50%;
     height: 50vw;
     aspect-ratio: 1/1;
-    border: 1px solid #eaeaea;
+    border: 1px solid var(--background-contrast);
     font-size: 30vw;
     display: flex;
     align-items: center;
@@ -77,8 +77,8 @@
 
     button {
       font-size: 18px;
-      color: #2256f2;
-      opacity: 0.25;
+      color: var(--primary-color);
+      opacity: 0.5;
       transition: all 0.2s ease-in-out;
       cursor: pointer;
       background-color: transparent;
@@ -120,7 +120,7 @@
 .newOrganization {
   width: 100%;
   aspect-ratio: 1/1;
-  border: 1px solid #eaeaea;
+  border: 1px solid var(--background-contrast);
   padding: 18px;
   box-sizing: border-box;
   border-radius: 10px;
@@ -133,7 +133,7 @@
   transition: all 0.2s ease-in-out;
 
   &:hover {
-    background-color: #f8f8f8;
+    background-color: var(--background-alt);
   }
 
   &:active {
@@ -192,17 +192,17 @@
     }
 
     .cancel {
-      color: #242424;
+      color: var(--text-color-light);
     }
 
     .save {
-      color: #2256f2;
+      color: var(--primary-color);
     }
   }
 }
 
 .invitationBanner {
-  border: 1px solid #eaeaea;
+  border: 1px solid var(--background-contrast);
   padding: 14px 24px;
   display: flex;
   flex-direction: column;
