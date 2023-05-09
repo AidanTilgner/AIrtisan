@@ -72,12 +72,12 @@ function index() {
       <div className={styles.top}>
         <p className={styles.top_text}>
           {welcomeMessage.message}
-          <div className={styles.iconContainer}>
+          <span className={styles.iconContainer}>
             <WelcomeIcon />
-          </div>
-          <div className={styles.shake}>
+          </span>
+          <span className={styles.shake}>
             <HandWaving />
-          </div>
+          </span>
         </p>
         <h1 className={styles.big_text}>
           <strong>{bot?.name}</strong>

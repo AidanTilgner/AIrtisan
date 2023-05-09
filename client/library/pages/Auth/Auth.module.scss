@@ -33,7 +33,7 @@
   flex-direction: column;
   align-items: flex-start;
   padding: 14px 24px;
-  border: 1px solid #eaeaea;
+  border: 1px solid var(--background-contrast);
   box-shadow: 0.2px 0.2px 10px rgba($color: #000000, $alpha: 0.15);
   width: 100%;
   box-sizing: border-box;
@@ -63,15 +63,15 @@
       background-color: transparent;
       cursor: pointer;
       font-size: 14px;
-      color: #a0a0a0;
+      color: var(--text-color-light);
       transition: all 0.3s ease-in-out;
 
       &:hover {
-        color: #ff0000;
+        color: var(--danger-color);
       }
 
       &:active {
-        color: #ff8080;
+        color: var(--danger-color);
       }
     }
 
@@ -80,15 +80,15 @@
       background-color: transparent;
       cursor: pointer;
       font-size: 14px;
-      color: #a0a0a0;
+      color: var(--text-color-light);
       transition: all 0.3s ease-in-out;
 
       &:hover {
-        color: #008000;
+        color: var(--success-color);
       }
 
       &:active {
-        color: #00ff00;
+        color: var(--success-color);
       }
     }
   }
@@ -110,10 +110,10 @@
     width: 100%;
     margin-bottom: 24px;
     border: none;
-    border-bottom: 1px solid black;
+    border-bottom: 1px solid var(--background);
     box-sizing: border-box;
     padding: 14px 24px;
-    font-family: "Quicksand", sans-serif;
+    font-family: var(--font-family);
   }
 
   .select {
@@ -122,7 +122,7 @@
     border: none;
     box-sizing: border-box;
     padding: 14px 24px;
-    font-family: "Quicksand", sans-serif;
+    font-family: var(--font-family);
   }
 
   .add_button {
@@ -131,12 +131,12 @@
     border: none;
     box-sizing: border-box;
     padding: 14px 24px;
-    font-family: "Quicksand", sans-serif;
-    background-color: #f0f0f0;
+    font-family: var(--font-family);
+    background-color: var(--background-alt);
     cursor: pointer;
 
     &:hover {
-      background-color: #e0e0e0;
+      background-color: var(--background-contrast);
     }
   }
 }

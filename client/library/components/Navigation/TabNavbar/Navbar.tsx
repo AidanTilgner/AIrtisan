@@ -24,20 +24,22 @@ function Navbar<Tab>({ tabs, currentTab, setTab }: NavbarProps<Tab>) {
 
   const tabElements = React.useMemo(
     () =>
-      tabs.map((tab, i) => (
-        <li
-          key={i}
-          className={`${styles.item} ${
-            currentTab === tab.id ? styles.active : ""
-          }`}
-          onClick={() => {
-            setTab(tab.id);
-          }}
-        >
-          <div className={styles.icon}>{tab.icon}</div>
-          <span className={styles.name}>{tab.name}</span>
-        </li>
-      )),
+      tabs
+        .filter((t) => t.visible)
+        .map((tab, i) => (
+          <li
+            key={i}
+            className={`${styles.item} ${
+              currentTab === tab.id ? styles.active : ""
+            }`}
+            onClick={() => {
+              setTab(tab.id);
+            }}
+          >
+            <div className={styles.icon}>{tab.icon}</div>
+            <span className={styles.name}>{tab.name}</span>
+          </li>
+        )),
     [tabs, currentTab, setTab]
   );
 
