@@ -88,7 +88,7 @@
     margin-inline: auto;
     position: sticky;
     top: 72px;
-    background-color: rgba($color: #fff, $alpha: 0.75);
+    background-color: var(--background);
     backdrop-filter: blur(10px);
     z-index: 50;
   }
@@ -149,7 +149,7 @@
 .intent {
   opacity: 0;
   width: 100%;
-  border: 1px solid #eaeaea;
+  border: 1px solid var(--background-contrast);
   box-sizing: border-box;
   padding: 14px 24px;
   cursor: pointer;
@@ -161,7 +161,7 @@
   text-align: left;
 
   &:hover {
-    background-color: #f5f5f5;
+    background-color: var(--background-alt);
     transform: scale(1.01);
   }
 
@@ -205,13 +205,13 @@
     margin: 0;
     box-sizing: border-box;
     z-index: 10;
-    background-color: rgba($color: #fff, $alpha: 1);
+    background-color: var(--background);
     font-weight: 600;
   }
 }
 
 .selected {
-  border: 1px solid rgba(34, 86, 242, 0.5);
+  border: 1px solid var(--primary-color);
 }
 
 @keyframes openIntent {
@@ -227,6 +227,7 @@
 
 .intentOpen {
   // outline: 1px solid rgb(34, 86, 242, 0.8);
+  background-color: var(--background);
   height: 70vh;
   overflow-y: scroll;
   box-sizing: border-box;
@@ -259,7 +260,7 @@
 
   .intentHeader {
     padding-bottom: 14px;
-    border-bottom: 1px solid #eaeaea;
+    border-bottom: 1px solid var(--background-contrast);
     margin-bottom: 24px;
     width: 100%;
   }
@@ -284,7 +285,7 @@
       padding: 14px 24px;
       box-sizing: border-box;
       width: 100%;
-      border: 1px solid #eaeaea;
+      border: 1px solid var(--background-contrast);
       font-family: "Quicksand", sans-serif;
       font-size: 18px;
     }
@@ -325,11 +326,11 @@
       }
 
       .edit {
-        color: #2256f2;
+        color: var(--primary-color);
       }
 
       .delete {
-        color: #ff0000;
+        color: var(--danger-color);
       }
     }
   }
@@ -383,12 +384,12 @@
     li {
       padding-left: 14px;
       position: relative;
-      border-left: 1px solid #eaeaea;
+      border-left: 1px solid var(--background-contrast);
       transition: all 0.2s ease-in-out;
 
       &:hover {
         padding-left: 18px;
-        border-left: 2px solid #2256f2;
+        border-left: 2px solid var(--primary-color);
       }
     }
   }
@@ -409,7 +410,7 @@
   }
 
   input {
-    border: 1px solid #eaeaea;
+    border: 1px solid var(--background-contrast);
     width: 50%;
     box-sizing: border-box;
     font-size: 16px;
@@ -464,12 +465,12 @@
     li {
       padding-left: 14px;
       position: relative;
-      border-left: 1px solid #eaeaea;
+      border-left: 1px solid var(--background-contrast);
       transition: all 0.2s ease-in-out;
 
       &:hover {
         padding-left: 18px;
-        border-left: 2px solid #2256f2;
+        border-left: 2px solid var(--primary-color);
       }
     }
   }
@@ -490,7 +491,7 @@
   }
 
   input {
-    border: 1px solid #eaeaea;
+    border: 1px solid var(--background-contrast);
     width: 50%;
     box-sizing: border-box;
     font-size: 16px;
@@ -545,12 +546,12 @@
     li {
       padding-left: 14px;
       position: relative;
-      border-left: 1px solid #eaeaea;
+      border-left: 1px solid var(--background-contrast);
       transition: all 0.2s ease-in-out;
 
       &:hover {
         padding-left: 18px;
-        border-left: 2px solid #2256f2;
+        border-left: 2px solid var(--primary-color);
       }
     }
   }
@@ -575,12 +576,12 @@
     li {
       padding-left: 14px;
       position: relative;
-      border-left: 1px solid #eaeaea;
+      border-left: 1px solid var(--background-contrast);
       transition: all 0.2s ease-in-out;
 
       &:hover {
         padding-left: 18px;
-        border-left: 2px solid #2256f2;
+        border-left: 2px solid var(--primary-color);
       }
     }
   }
@@ -601,7 +602,7 @@
   }
 
   input {
-    border: 1px solid #eaeaea;
+    border: 1px solid var(--background-contrast);
     width: 50%;
     box-sizing: border-box;
     font-size: 16px;
@@ -646,7 +647,7 @@
 
   input {
     border: none;
-    border-bottom: 1px solid #eaeaea;
+    border-bottom: 1px solid var(--background-contrast);
     transition: all 0.2s ease-in-out;
     padding: 8px 14px;
     font-family: "QuickSand", sans-serif;
@@ -660,7 +661,7 @@
     }
 
     &:focus {
-      border-bottom: 1px solid #2256f2;
+      border-bottom: 1px solid var(--primary-color);
       outline: none;
     }
   }
@@ -677,7 +678,7 @@
     cursor: pointer;
     transition: all 0.2s ease-in-out;
     opacity: 0.65;
-    color: #2256f2;
+    color: var(--primary-color);
 
     &:hover {
       opacity: 1;
