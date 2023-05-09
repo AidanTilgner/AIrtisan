@@ -65,23 +65,23 @@
   }
 
   .btnPrimary {
-    background-color: #2256f2;
-    color: white;
+    background-color: var(--primary-color);
+    color: var(--primary-contrast);
   }
 
   .btnSecondary {
-    background-color: white;
-    color: #2256f2;
+    background-color: var(--background-alt);
+    color: var(--text-color-light);
   }
 
   .btnStartup {
-    background-color: #64a60f;
-    color: #fff;
+    background-color: var(--success-color);
+    color: var(--success-contrast);
   }
 
   .btnPause {
-    background-color: #a63417;
-    color: #fff;
+    background-color: var(--danger-color);
+    color: var(--danger-contrast);
   }
 }
 
