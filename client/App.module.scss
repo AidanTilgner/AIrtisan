@@ -1,7 +1,43 @@
+html {
+  // * Colors
+  --background-color: #1e1e1e;
+  --background-alt: #2e2e2e;
+  --background-contrast: #3e3e3e;
+  --text-color: #ffffff;
+  --text-color-light: #c1c2c5;
+  --text-link: #2256f2;
+  --primary-color: #2256f2;
+  --primary-contrast: #ffffff;
+  --deep-primary-color: #1614db;
+  --deep-primary-contrast: #ffffff;
+  --danger-color: #ff0000;
+  --danger-contrast: #ffffff;
+  --success-color: #64a60f;
+  --success-contrast: #ffffff;
+  --warning-color: #f28f2e;
+  --warning-contrast: #ffffff;
+  --info-color: #147adb;
+  --info-contrast: #ffffff;
+
+  // * Fonts
+  --font-family: "QuickSand", sans-serif;
+  --font-family-alt: "Lato", sans-serif;
+
+  // * Current Color Scheme
+  --color-scheme: dark;
+
+  // * Details
+  --card-border-radius: 5px;
+  --card-border-radius-hover: 0;
+}
+
 body {
   margin: 0;
   padding: 0;
-  font-family: "QuickSand", sans-serif;
+  font-family: var(--font-family);
+  color-scheme: var(--color-scheme);
+  background-color: var(--background-color);
+  color: var(--text-color);
 }
 
 @keyframes appIn {
@@ -15,14 +51,18 @@ body {
   font-family: "QuickSand", sans-serif;
   animation: appIn 0.3s ease-in-out;
   animation-fill-mode: forwards;
+  animation-timing-function: ease-in-out;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  min-height: 100vh;
 }
 
-.main_container {
-  // position: initial;
-}
+// .main_container {
+//   // position: initial;
+// }
 
 h1 {
-  font-family: "QuickSand", sans-serif;
+  font-family: var(--font-family-alt);
   font-weight: 500;
   font-size: 36px;
 }

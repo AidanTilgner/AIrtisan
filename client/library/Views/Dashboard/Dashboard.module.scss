@@ -4,7 +4,8 @@
 }
 
 .top {
-  box-shadow: 0.2px 0.2px 18px rgba(0, 0, 0, 0.1);
+  background-color: var(--background-alt);
+  border-bottom: 1px solid var(--background-contrast);
   padding: 36px 24px;
 
   @media (min-width: 768px) {
@@ -17,8 +18,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    opacity: 0.5;
-    font-weight: 500;
+    color: var(--text-color-light);
 
     svg {
       font-size: 18px;
@@ -60,8 +60,13 @@
     }
 
     .btnPrimary {
-      background-color: #2256f2;
-      color: white;
+      background-color: var(--primary-color);
+      color: var(--primary-contrast);
+    }
+
+    .btnSecondary {
+      color: var(--text-color);
+      background-color: var(--background-contrast);
     }
   }
 }
@@ -72,6 +77,7 @@
   flex-direction: column;
   justify-content: center;
   padding: 36px 24px;
+  background-color: var(--background);
 
   @media (min-width: 768px) {
     padding: 36px 56px;
