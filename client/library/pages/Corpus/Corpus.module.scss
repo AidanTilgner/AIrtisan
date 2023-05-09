@@ -11,7 +11,7 @@
 }
 
 .header {
-  border-bottom: 1px solid #eaeaea;
+  border-bottom: 1px solid var(--background-contrast);
   padding-bottom: 24px;
   margin-bottom: 36px;
   box-sizing: border-box;
@@ -29,7 +29,6 @@
     flex-direction: row;
     position: sticky;
     top: 0;
-    background-color: rgba($color: #fff, $alpha: 0.75);
     backdrop-filter: blur(10px);
     z-index: 50;
   }

@@ -75,7 +75,7 @@ function Navbar<Tab>({ tabs, currentTab, setTab }: NavbarProps<Tab>) {
 
   const ownerLink =
     bot?.owner_type === "organization"
-      ? `/organization/${bot.owner_id}`
+      ? `/organizations/${bot.owner_id}`
       : `/profile/${user?.username}`;
 
   return (

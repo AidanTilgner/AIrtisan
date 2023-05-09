@@ -4,7 +4,7 @@
   cursor: pointer;
   transition: all 0.4s ease-in-out;
   background-color: var(--background-alt);
-  font-family: "QuickSand", sans-serif;
+  font-family: var(--font-family);
   border-radius: var(--card-border-radius);
 
   &:hover {

@@ -1,15 +1,17 @@
 .AdminCard {
   box-sizing: border-box;
-  border: 1px solid #eaeaea;
+  border: 1px solid var(--background-contrast);
   cursor: pointer;
   transition: all 0.2s ease-in-out;
-  background-color: white;
-  font-family: "QuickSand", sans-serif;
+  font-family: var(--font-family);
   width: 100%;
   box-sizing: border-box;
+  background-color: var(--background-alt);
+  border-radius: var(--card-border-radius);
 
   &:hover {
-    background-color: #f6f6f6;
+    background-color: var(--background);
+    border-radius: var(--card-border-radius-hover);
   }
 }
 
