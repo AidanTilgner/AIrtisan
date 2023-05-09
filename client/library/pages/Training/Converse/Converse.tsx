@@ -234,7 +234,10 @@ function Converse() {
                   conversation?.generated_name || String(conversation?.id)
                 );
                 searchParamsUpdate(
-                  new Map([["load_conversation", String(conversation?.id)]])
+                  new Map([
+                    ["tab", "review"],
+                    ["load_conversation", String(conversation?.id)],
+                  ])
                 );
               }}
               title="View conversation details"
