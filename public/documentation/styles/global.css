@@ -1,0 +1,20 @@
+body {
+  padding: 24px 24px;
+}
+
+h1 {
+}
+
+section {
+  margin-bottom: 36px;
+}
+
+@media screen and (min-width: 748px) {
+  body {
+    padding: 24px 82px;
+  }
+
+  section {
+    margin-bottom: 56px;
+  }
+}
