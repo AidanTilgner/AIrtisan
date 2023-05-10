@@ -61,7 +61,7 @@ export const BotProvider = ({
     () => ({
       bot,
       botSelected: bot?.id !== undefined,
-      isRunning: !!bot?.running,
+      isRunning: !!bot?.is_running,
       reloadBot: reload,
       isLoading,
     }),

@@ -79,11 +79,7 @@ export const createBot = async ({
   }
 };
 
-export const getBot = async (
-  id: Bot["id"],
-  loadOwner = false,
-  loadRunningStatus = false
-) => {
+export const getBot = async (id: Bot["id"], loadOwner = false) => {
   try {
     const bot = await dataSource.manager.findOne(entities.Bot, {
       where: { id },
@@ -91,23 +87,15 @@ export const getBot = async (
 
     if (!bot) return null;
 
-    const botToSend: BotWithLoadedOwner & BotWithLoadedRunningStatus = {
+    const botToSend: BotWithLoadedOwner = {
       ...bot,
       owner: undefined,
-      running: undefined,
     };
 
     if (loadOwner && bot) {
       const owner = await getBotOwner(bot.owner_id, bot.owner_type);
       if (owner) {
         botToSend.owner = owner;
-      }
-    }
-
-    if (loadRunningStatus && bot) {
-      const status = await getBotStatus(bot.id);
-      if (status !== null) {
-        botToSend.running = status;
       }
     }
 
@@ -165,6 +153,27 @@ export const getBotsByOwner = async (
   try {
     const bot = await dataSource.manager.find(entities.Bot, {
       where: { owner_id, owner_type, visibility },
+    });
+    return bot;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+export const getRecentBotsByOwner = async (
+  owner_id: number,
+  owner_type: OwnerTypes,
+  visibility?: Bot["visibility"],
+  take = 5
+) => {
+  try {
+    const bot = await dataSource.manager.find(entities.Bot, {
+      where: { owner_id, owner_type, visibility },
+      order: {
+        updated_at: "DESC",
+      },
+      take: take,
     });
     return bot;
   } catch (error) {
@@ -353,56 +362,6 @@ export const getBotStatus = async (id: Bot["id"]) => {
   }
 };
 
-export const getAdminBotsWithRunningStatus = async (admin_id: number) => {
-  try {
-    const bots = await getBotsByOwner(admin_id, "admin");
-
-    if (!bots) return null;
-
-    const botsWithStatus = await Promise.all(
-      bots.map(async (bot) => {
-        const status = await getBotStatus(bot.id);
-        return {
-          running: status,
-          owner: await getBotOwner(bot.owner_id, bot.owner_type),
-          ...bot,
-        };
-      })
-    );
-
-    return botsWithStatus;
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
-};
-
-export const getOrganizationBotsWithRunningStatus = async (
-  organization_id: number
-) => {
-  try {
-    const bots = await getBotsByOwner(organization_id, "organization");
-
-    if (!bots) return null;
-
-    const botsWithStatus = await Promise.all(
-      bots.map(async (bot) => {
-        const status = await getBotStatus(bot.id);
-        return {
-          running: status,
-          owner: await getBotOwner(bot.owner_id, bot.owner_type),
-          ...bot,
-        };
-      })
-    );
-
-    return botsWithStatus;
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
-};
-
 export const checkAdminHasAccessToBot = async (
   admin_id: number,
   bot_id: number
@@ -481,6 +440,25 @@ export const addRunningStatusToBots = async (bots: Bot[]) => {
     );
 
     return botsWithStatus;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+export const markBotAsRunning = async (bot_id: number, running: boolean) => {
+  try {
+    const bot = await dataSource.manager.findOne(entities.Bot, {
+      where: { id: bot_id },
+    });
+
+    if (!bot) return null;
+
+    bot.is_running = running;
+
+    await dataSource.manager.save(bot);
+
+    return bot;
   } catch (error) {
     console.error(error);
     return null;

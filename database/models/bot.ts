@@ -50,6 +50,11 @@ export class Bot {
   })
   visibility!: "private" | "public" | "unlisted";
 
+  @Column("boolean", {
+    default: false,
+  })
+  is_running!: boolean;
+
   @OneToMany(() => Conversation, (conversation) => conversation.bot)
   conversations!: Conversation[];
 

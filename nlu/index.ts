@@ -1,7 +1,10 @@
 import { dockStart } from "@nlpjs/basic";
 import { generateMetadata } from "./metadata";
 import { extractAttachments, filterAttachments } from "./attachments";
-import { getBotFileLocations } from "../database/functions/bot";
+import {
+  getBotFileLocations,
+  markBotAsRunning,
+} from "../database/functions/bot";
 import { config } from "dotenv";
 
 config();
@@ -59,6 +62,7 @@ export const train = async (id: number, forceRetrain = false) => {
   try {
     if (!forceRetrain && managers[String(id)]) {
       managers[String(id)].running = true;
+      await markBotAsRunning(id, true);
       return managers[String(id)];
     }
     const dock = await dockStart({
@@ -79,6 +83,7 @@ export const train = async (id: number, forceRetrain = false) => {
       bot: nlp,
       running: true,
     };
+    await markBotAsRunning(id, true);
     generateMetadata(id);
     return managers[String(id)];
   } catch (err) {
@@ -92,6 +97,7 @@ export const retrain = async (id: number): Promise<0 | 1> => {
     if (managers[String(id)]) {
       managers[String(id)].bot = null;
       managers[String(id)].running = false;
+      markBotAsRunning(id, false);
     }
 
     const dock = await dockStart({
@@ -113,6 +119,7 @@ export const retrain = async (id: number): Promise<0 | 1> => {
       bot: nlp,
       running: true,
     };
+    await markBotAsRunning(id, true);
     generateMetadata(id);
 
     return 1;
@@ -150,6 +157,7 @@ export const pauseManager = async (id: number) => {
       return null;
     }
     manager.running = false;
+    await markBotAsRunning(id, false);
     return manager;
   } catch (err) {
     console.error(err);

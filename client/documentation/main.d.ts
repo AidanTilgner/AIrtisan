@@ -84,8 +84,8 @@ export interface Bot {
   bot_version: string;
   owner_id: number;
   owner_type: OwnerTypes;
+  is_running: boolean | null;
   owner?: Organization | Admin;
-  running?: boolean | null;
   enhancement_model: string;
   created_at: Date | string;
   updated_at: Date | string;

@@ -2,6 +2,7 @@ import { dataSource, entities } from "..";
 import { Notification } from "../../types/lib";
 import { hashPassword } from "../../utils/crypto";
 import { Admin } from "../models/admin";
+import { getRecentBotsByOwner } from "./bot";
 import { getOrganizationInvitationsByAdmin } from "./organization";
 
 export const createAdmin = async ({
@@ -240,6 +241,15 @@ export const getAdminOrganizationInvitations = async (admin_id: number) => {
     return adminOrgInvites;
   } catch (err) {
     console.error(err);
+    return null;
+  }
+};
+
+export const getAdminRecentBots = async (admin_id: number) => {
+  try {
+    return getRecentBotsByOwner(admin_id, "admin");
+  } catch (error) {
+    console.error(error);
     return null;
   }
 };

@@ -31,9 +31,9 @@ import {
   getAllApiKeys,
 } from "../database/functions/apiKey";
 import { Admin } from "../database/models/admin";
-import { getAdminBotsWithRunningStatus } from "../database/functions/bot";
 import { config } from "dotenv";
 import { getOrganizationInvitationByAdmin } from "../database/functions/organization";
+import { getBotsByOwner } from "../database/functions/bot";
 
 config();
 
@@ -303,7 +303,7 @@ router.get("/me/bots", checkIsAdmin, async (req, res) => {
   try {
     const admin = (req as unknown as Record<"admin", Admin>)["admin"];
 
-    const bots = await getAdminBotsWithRunningStatus(admin.id);
+    const bots = await getBotsByOwner(admin.id, "admin");
 
     if (!bots) {
       res.status(500).send({ message: "Internal server error." });

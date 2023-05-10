@@ -10,7 +10,7 @@ import {
   getBotCorpus,
   getBotContext,
   getBotModel,
-  getAdminBotsWithRunningStatus,
+  getBotsByOwner,
 } from "../database/functions/bot";
 import {
   checkIsAdmin,
@@ -61,7 +61,7 @@ router.get("/", checkIsAdmin, async (req, res) => {
         ["admin"]: { id: string };
       }
     )["admin"].id;
-    const bots = await getAdminBotsWithRunningStatus(Number(adminId));
+    const bots = await getBotsByOwner(Number(adminId), "admin");
     res.send({
       message: "Bots fetched successfully",
       success: true,
@@ -75,7 +75,7 @@ router.get("/", checkIsAdmin, async (req, res) => {
 
 router.get("/:bot_id", hasAccessToBot, async (req, res) => {
   try {
-    const bot = await getBot(Number(req.params.bot_id), true, true);
+    const bot = await getBot(Number(req.params.bot_id), true);
     res.send({
       message: "Bot fetched successfully",
       success: true,
