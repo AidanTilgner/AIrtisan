@@ -3,6 +3,7 @@ import { generateMetadata } from "./metadata";
 import { extractAttachments, filterAttachments } from "./attachments";
 import {
   getBotFileLocations,
+  getRunningBots,
   markBotAsRunning,
 } from "../database/functions/bot";
 import { config } from "dotenv";
@@ -97,7 +98,7 @@ export const retrain = async (id: number): Promise<0 | 1> => {
     if (managers[String(id)]) {
       managers[String(id)].bot = null;
       managers[String(id)].running = false;
-      markBotAsRunning(id, false);
+      await markBotAsRunning(id, false);
     }
 
     const dock = await dockStart({
@@ -126,6 +127,24 @@ export const retrain = async (id: number): Promise<0 | 1> => {
   } catch (err) {
     console.error(err);
     return 0;
+  }
+};
+
+export const startupBots = async () => {
+  try {
+    const botsToStartup = await getRunningBots();
+
+    if (!botsToStartup) {
+      console.error("Bots to startup returned null");
+      return false;
+    }
+
+    botsToStartup?.forEach(async (bot) => {
+      await train(bot.id);
+    });
+  } catch (error) {
+    console.error(error);
+    return false;
   }
 };
 

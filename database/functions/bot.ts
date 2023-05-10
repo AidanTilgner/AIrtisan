@@ -14,10 +14,6 @@ interface BotWithLoadedOwner extends Bot {
   owner: Organization | Admin | undefined;
 }
 
-interface BotWithLoadedRunningStatus extends Bot {
-  running: boolean | undefined;
-}
-
 export const getBotOwner = async (owner_id: number, owner_type: OwnerTypes) => {
   try {
     switch (owner_type) {
@@ -467,11 +463,11 @@ export const markBotAsRunning = async (bot_id: number, running: boolean) => {
 
 export const getRunningBots = async () => {
   try {
-    const bots = await dataSource.manager.find(entities.Bot, {
+    const bots = await dataSource.manager.find(Bot, {
       where: { is_running: true },
     });
 
-    return bots;
+    return bots || [];
   } catch (error) {
     console.error(error);
     return null;

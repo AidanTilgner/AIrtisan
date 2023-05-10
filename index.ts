@@ -4,15 +4,16 @@ import ApiRouter from "./routes/api";
 import path from "path";
 import "reflect-metadata";
 import { initializeDatabase } from "./database";
-import { initGPT } from "./utils/gpt4all";
 import cors from "cors";
 import http from "http";
 import { Server } from "socket.io";
 import { initSocketIO } from "./utils/socketio";
+import { startupBots } from "./nlu";
 
 config();
-initializeDatabase();
-initGPT(false);
+initializeDatabase().then(() => {
+  startupBots();
+});
 
 const app = Express();
 
