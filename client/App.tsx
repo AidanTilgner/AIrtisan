@@ -55,8 +55,8 @@ function App() {
           <NotificationsProvider position="bottom-right">
             <div className={styles.main_container}>
               <TopNav alwaysScrolled={topNavScrolled} />
+              <ProfileNav alwaysScrolled={topNavScrolled} />
               <GlobalModal />
-              <ProfileNav />
               <Routes>
                 <Route path="/">
                   <Route index element={<Dashboard />} />

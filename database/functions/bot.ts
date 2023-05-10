@@ -464,3 +464,16 @@ export const markBotAsRunning = async (bot_id: number, running: boolean) => {
     return null;
   }
 };
+
+export const getRunningBots = async () => {
+  try {
+    const bots = await dataSource.manager.find(entities.Bot, {
+      where: { is_running: true },
+    });
+
+    return bots;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};

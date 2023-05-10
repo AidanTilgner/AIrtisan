@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { logout } from "../../../helpers/auth";
 import { useUser } from "../../../contexts/User";
 
-function Profile() {
+function Profile({ alwaysScrolled }: { alwaysScrolled?: boolean }) {
   const navigate = useNavigate();
 
   const { user } = useUser();
@@ -21,6 +21,7 @@ function Profile() {
   const navRef = useRef<HTMLDivElement>(null);
 
   window.addEventListener("scroll", () => {
+    if (alwaysScrolled) return;
     if (window.scrollY > 0 && navRef.current) {
       navRef.current.classList.add(styles.scrolled);
     } else if (navRef.current) {
@@ -29,7 +30,12 @@ function Profile() {
   });
 
   return (
-    <div className={styles.profileContainer} ref={navRef}>
+    <div
+      className={`${styles.profileContainer} ${
+        alwaysScrolled ? styles.scrolled : ""
+      }`}
+      ref={navRef}
+    >
       <Menu
         shadow="md"
         width={200}
