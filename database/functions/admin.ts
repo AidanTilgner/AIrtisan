@@ -247,7 +247,18 @@ export const getAdminOrganizationInvitations = async (admin_id: number) => {
 
 export const getAdminRecentBots = async (admin_id: number) => {
   try {
-    return getRecentBotsByOwner(admin_id, "admin");
+    const adminOwnedBots =
+      (await getRecentBotsByOwner(admin_id, "admin")) || [];
+
+    const adminOrgs = (await getAdminOrganizations(admin_id)) || [];
+
+    const orgOwnedBots = await Promise.all(
+      adminOrgs.map((org) => getRecentBotsByOwner(org.id, "organization") || [])
+    );
+
+    const allBots = [...adminOwnedBots, ...orgOwnedBots.flat()];
+
+    return allBots;
   } catch (error) {
     console.error(error);
     return null;

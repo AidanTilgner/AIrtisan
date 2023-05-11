@@ -8,6 +8,7 @@ import {
   checkUsernameTaken,
   getAdminNotifications,
   getAdminOrganizationInvitations,
+  getAdminRecentBots,
 } from "../database/functions/admin";
 import { Router } from "express";
 import {
@@ -317,6 +318,32 @@ router.get("/me/bots", checkIsAdmin, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).send({ message: "Internal server error." });
+  }
+});
+
+router.get("/me/bots/recent", checkIsAdmin, async (req, res) => {
+  try {
+    const admin = (req as unknown as Record<"admin", Admin>)["admin"];
+
+    if (!admin) {
+      res.status(401).send({ message: "Unauthorized." });
+      return;
+    }
+
+    const bots = await getAdminRecentBots(admin.id);
+
+    if (!bots) {
+      res.status(500).send({ message: "Internal server error." });
+      return;
+    }
+
+    res.status(200).send({
+      message: "Got admin bots from session.",
+      data: bots,
+    });
+  } catch (error) {
+    console.error(error);
+    return null;
   }
 });
 
