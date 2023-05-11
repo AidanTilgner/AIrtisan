@@ -93,14 +93,6 @@ function index() {
       </div>
       <div className={styles.content}>
         <div className={styles.quickActions}>
-          <button
-            className={`${styles.quickAction} ${styles.btnPrimary}`}
-            onClick={() => {
-              updateSearchParams(new Map([["tab", "review"]]));
-            }}
-          >
-            See Conversations
-          </button>
           {isRunning ? (
             <button
               className={`${styles.quickAction} ${styles.btnPause}`}
@@ -118,6 +110,23 @@ function index() {
               Start Bot
             </button>
           )}
+          <button
+            className={`${styles.quickAction} ${styles.btnPrimary}`}
+            onClick={() => {
+              updateSearchParams(new Map([["tab", "review"]]));
+            }}
+          >
+            See Conversations
+          </button>
+
+          <button
+            className={`${styles.quickAction} ${styles.btnPrimary}`}
+            onClick={() => {
+              updateSearchParams(new Map([["tab", "training"]]));
+            }}
+          >
+            Train {bot?.name}
+          </button>
         </div>
         <div className={styles.recentConversations}>
           <h2>Here are some recent user conversations...</h2>
