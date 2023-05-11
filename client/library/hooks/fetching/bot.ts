@@ -125,3 +125,20 @@ export const usePauseBot = (
     success,
   };
 };
+
+export const useGetMyRecentBots = (
+  config?: Partial<UseFetchConfig<undefined, Bot[]>>
+) => {
+  const { load, data, success } = useFetch<undefined, Bot[]>({
+    useBotId: false,
+    ...config,
+    url: `/auth/me/bots/recent`,
+    method: "GET",
+  });
+
+  return {
+    getMyRecentBots: load,
+    data: data,
+    success,
+  };
+};

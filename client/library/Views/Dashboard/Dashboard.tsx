@@ -1,9 +1,18 @@
 import React from "react";
 import styles from "./Dashboard.module.scss";
-import { MoonStars, Sun, SunHorizon } from "@phosphor-icons/react";
+import {
+  ArrowRight,
+  Buildings,
+  MoonStars,
+  Sun,
+  SunHorizon,
+  User,
+} from "@phosphor-icons/react";
 import { useUser } from "../../contexts/User";
-import SVG from "../../components/Utils/SVG";
 import { useNavigate } from "react-router-dom";
+import { Grid } from "@mantine/core";
+import Widget from "../../components/Cards/Widget/Widget";
+import { useGetMyRecentBots } from "../../hooks/fetching/bot";
 
 function Dashboard() {
   const getWelcomeMessage = () => {
@@ -45,6 +54,10 @@ function Dashboard() {
     return `${first}`;
   };
 
+  const { data: myRecentBots } = useGetMyRecentBots({
+    runOnMount: true,
+  });
+
   return (
     <div className={styles.Dashboard}>
       <div className={styles.top}>
@@ -82,8 +95,35 @@ function Dashboard() {
         </div>
       </div>
       <div className={styles.content}>
-        <SVG.UnderConstruction width="35%" height="35%" />
-        <h2>This page is under construction. More is coming soon!</h2>
+        <Grid>
+          <Grid.Col sm={12} md={6}>
+            <Widget title="Jump to Bot">
+              <div className={styles.jumpbots}>
+                {myRecentBots && myRecentBots.length ? (
+                  myRecentBots.map((b) => {
+                    return (
+                      <button
+                        className={styles.jumpbot}
+                        key={b.id}
+                        onClick={() => {
+                          navigate(`/bots/${b.id}`);
+                        }}
+                      >
+                        <span>
+                          {b.owner_type === "admin" ? <User /> : <Buildings />}
+                          {b.name}
+                        </span>
+                        <ArrowRight />
+                      </button>
+                    );
+                  })
+                ) : (
+                  <p>No bots</p>
+                )}
+              </div>
+            </Widget>
+          </Grid.Col>
+        </Grid>
       </div>
     </div>
   );

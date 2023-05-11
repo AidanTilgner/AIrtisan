@@ -73,12 +73,8 @@
 }
 
 .content {
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  justify-content: center;
   padding: 36px 24px;
-  background-color: var(--background);
+  background-color: var(--background-color);
 
   @media (min-width: 768px) {
     padding: 36px 56px;
@@ -87,5 +83,46 @@
   h2 {
     font-size: 20px;
     font-weight: 500;
+  }
+}
+
+.jumpbots {
+  // on mobile 1 column, on tablet 2 columns
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+
+  @media (min-width: 768px) {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.jumpbot {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  display: flex;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    opacity: 0.6;
+  }
+
+  span {
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    svg {
+      font-size: 14px;
+      position: relative;
+      bottom: 1px;
+      opacity: 0.5;
+    }
   }
 }
