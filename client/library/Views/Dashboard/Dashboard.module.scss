@@ -110,6 +110,10 @@
 
   &:hover {
     opacity: 0.6;
+
+    span {
+      border-bottom: 1px solid var(--text-color-light);
+    }
   }
 
   span {
