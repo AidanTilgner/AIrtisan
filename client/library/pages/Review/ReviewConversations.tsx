@@ -200,6 +200,14 @@ function ReviewConversations() {
     }
   }, [conversationsToView]);
 
+  const updateSearchParams = useSearchParamsUpdate();
+
+  useEffect(() => {
+    if (!openedConversation) {
+      updateSearchParams(new Map([["load_conversation", ""]]));
+    }
+  }, [openedConversation]);
+
   return (
     <div className={styles.ReviewConversations}>
       <div className={styles.header}>
@@ -436,10 +444,13 @@ function Conversation({
   };
 
   const handleOpenInTraining = async () => {
-    const urlSearchParams = new URLSearchParams(searchParams.toString());
-    urlSearchParams.set("load_conversation", `${conversation.id}`);
-
-    setSearchParams(urlSearchParams);
+    if (!user) return;
+    updateSearchParams(
+      new Map([
+        ["load_conversation", `${conversation.id}`],
+        ["tab", "training"],
+      ])
+    );
   };
 
   const chatWasEnhanced = !!conversation.chats.find((c) => c.enhanced === true);

@@ -508,7 +508,9 @@ const ChatPair = ({
                     <span
                       style={{
                         color:
-                          assistant.intent === "None" ? "#ff0000" : "#000000",
+                          assistant.intent === "None"
+                            ? "var(--danger-color)"
+                            : "var(--text-color)",
                       }}
                     >
                       {assistant.intent}
