@@ -86,14 +86,14 @@ function Profile({ alwaysScrolled }: { alwaysScrolled?: boolean }) {
           >
             Organizations
           </Menu.Item>
-          <Menu.Item
+          {/* <Menu.Item
             icon={<GearSix />}
             onClick={() => {
               navigate("/settings");
             }}
           >
             Settings
-          </Menu.Item>
+          </Menu.Item> */}
 
           <Menu.Divider />
 

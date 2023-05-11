@@ -1,7 +1,11 @@
 import React from "react";
 
 function Settings() {
-  return <div>Settings</div>;
+  return (
+    <div>
+      <p>This page is coming soon.</p>
+    </div>
+  );
 }
 
 export default Settings;

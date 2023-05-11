@@ -9,11 +9,17 @@ import {
 import { Conversation } from "./conversation";
 import { OwnerTypes } from "../../types/lib";
 import { ApiKey } from "./apiKey";
+import { getRandomID } from "../../utils/crypto";
 
 @Entity()
 export class Bot {
   @PrimaryGeneratedColumn()
   id!: number;
+
+  // @Column("text", {
+  //   default: getRandomID(),
+  // })
+  // slug!: string;
 
   @Column("text")
   name!: string;

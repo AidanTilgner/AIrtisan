@@ -7,7 +7,7 @@ export const getGeneratedNameBasedOnContent = async (
   }[]
 ) => {
   try {
-    const prompt = `Write a short sentence in past tense that describes the users intent in this conversation: : ${chats
+    const prompt = `Write a short sentence in past tense that describes the users intent in this conversation: ${chats
       .map((chat) => `${chat.role}:"${chat.message}"`)
       .join(", ")}-`;
     const response = await openai.createCompletion({

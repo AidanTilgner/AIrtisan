@@ -24,8 +24,10 @@ export const entities = {
 export const dataSource = new DataSource({
   type: "sqlite",
   database: "datastore/database.sqlite",
-  synchronize: true,
+  synchronize: false,
   entities: Object.values(entities),
+  migrations: ["database/migrations/*.ts"],
+  migrationsTableName: "migrations",
 });
 
 export const initializeDatabase = async () => {
