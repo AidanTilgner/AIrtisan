@@ -203,10 +203,16 @@ function ReviewConversations() {
   const updateSearchParams = useSearchParamsUpdate();
 
   useEffect(() => {
-    if (!openedConversation) {
+    if (
+      openedConversation &&
+      openedConversation.id &&
+      openedConversation?.id !== Number(searchParams.get("load_conversation"))
+    ) {
       updateSearchParams(new Map([["load_conversation", ""]]));
     }
   }, [openedConversation]);
+
+  //localhost:3050/bots/2?tab=review&load_conversation=4
 
   return (
     <div className={styles.ReviewConversations}>
@@ -345,8 +351,6 @@ function Conversation({
 
   const { createTrainingCopyOfConversation } =
     useCreateTrainingCopyOfConversation(conversation.id as number);
-
-  const [searchParams, setSearchParams] = useSearchParams();
 
   const updateSearchParams = useSearchParamsUpdate();
 
