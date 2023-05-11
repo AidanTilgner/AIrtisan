@@ -41,7 +41,6 @@ function Converse() {
   const [conversation, setConversation] = React.useState<Conversation>();
   const [loading, setLoading] = React.useState(false);
   const [initialLoad, setInitialLoad] = React.useState(true);
-  const { setQuery } = useSearch();
 
   const { bot } = useBot();
   const conversationId =
@@ -232,9 +231,6 @@ function Converse() {
           {urlSearchParams.get("load_conversation") && (
             <button
               onClick={() => {
-                setQuery(
-                  conversation?.generated_name || String(conversation?.id)
-                );
                 searchParamsUpdate(
                   new Map([
                     ["tab", "review"],
@@ -508,7 +504,9 @@ const ChatPair = ({
                     <span
                       style={{
                         color:
-                          assistant.intent === "None" ? "#ff0000" : "#000000",
+                          assistant.intent === "None"
+                            ? "var(--danger-color)"
+                            : "var(--text-color)",
                       }}
                     >
                       {assistant.intent}

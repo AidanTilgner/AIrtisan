@@ -200,6 +200,20 @@ function ReviewConversations() {
     }
   }, [conversationsToView]);
 
+  const updateSearchParams = useSearchParamsUpdate();
+
+  useEffect(() => {
+    if (
+      openedConversation &&
+      openedConversation.id &&
+      openedConversation?.id !== Number(searchParams.get("load_conversation"))
+    ) {
+      updateSearchParams(new Map([["load_conversation", ""]]));
+    }
+  }, [openedConversation]);
+
+  //localhost:3050/bots/2?tab=review&load_conversation=4
+
   return (
     <div className={styles.ReviewConversations}>
       <div className={styles.header}>
@@ -338,8 +352,6 @@ function Conversation({
   const { createTrainingCopyOfConversation } =
     useCreateTrainingCopyOfConversation(conversation.id as number);
 
-  const [searchParams, setSearchParams] = useSearchParams();
-
   const updateSearchParams = useSearchParamsUpdate();
 
   const handleCreateTrainingCopy = async () => {
@@ -436,10 +448,13 @@ function Conversation({
   };
 
   const handleOpenInTraining = async () => {
-    const urlSearchParams = new URLSearchParams(searchParams.toString());
-    urlSearchParams.set("load_conversation", `${conversation.id}`);
-
-    setSearchParams(urlSearchParams);
+    if (!user) return;
+    updateSearchParams(
+      new Map([
+        ["load_conversation", `${conversation.id}`],
+        ["tab", "training"],
+      ])
+    );
   };
 
   const chatWasEnhanced = !!conversation.chats.find((c) => c.enhanced === true);
