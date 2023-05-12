@@ -22,7 +22,7 @@ import {
   useGetMyNotifications,
 } from "../../hooks/fetching/admin";
 import Loaders from "../../components/Utils/Loaders";
-import { TextInput } from "@mantine/core";
+import { Button, TextInput } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { Bot } from "../../../documentation/main";
 import NotificationCard from "../../components/Cards/Notification/Notification";
@@ -366,6 +366,14 @@ function BotsTab({
       <div className={styles.botsTab}>
         <div className={styles.searchContainer}>
           <Search />
+          <Button
+            onClick={() => {
+              navigate("/bots/create");
+            }}
+            title="Create new bot"
+          >
+            New
+          </Button>
         </div>
         <div className={styles.bots}>
           {filteredBots && filteredBots?.length > 0 ? (

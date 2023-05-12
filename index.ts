@@ -42,6 +42,12 @@ app.use(
 app.use(Express.json());
 app.use(Express.urlencoded({ extended: true }));
 
+app.get("/documentation", (req, res) => {
+  res.send(
+    `<p>This page is coming soon. For now, contact us directly <a href="mailto:aidan.tilgner@vvibrant.dev">here</a></p>`
+  );
+});
+
 app.use("/api", ApiRouter);
 
 app.get("/login", (req, res) => {
@@ -62,10 +68,10 @@ if (process.env.NODE_ENV === "development") {
   });
 }
 
-app.use(
-  "/documentation",
-  Express.static(path.join(__dirname, "public", "documentation"))
-);
+// app.use(
+//   "/documentation",
+//   Express.static(path.join(__dirname, "public", "documentation"))
+// );
 
 app.get("/help/support", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "help", "support.html"));

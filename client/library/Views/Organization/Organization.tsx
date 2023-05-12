@@ -374,6 +374,14 @@ function BotsTab() {
       <div className={styles.tab}>
         <div className={styles.searchContainer}>
           <Search />
+          <Button
+            onClick={() => {
+              navigate("/bots/create");
+            }}
+            title="Create new bot"
+          >
+            New
+          </Button>
         </div>
         <div className={styles.list}>
           {bots && bots?.length > 0 ? (

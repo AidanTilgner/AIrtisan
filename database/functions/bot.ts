@@ -9,6 +9,7 @@ import { getManagerIsAlive } from "../../nlu";
 import { getAdminOrganizations } from "./admin";
 import { Organization } from "../models/organization";
 import { Admin } from "../models/admin";
+import { getRandomID } from "../../utils/crypto";
 
 interface BotWithLoadedOwner extends Bot {
   owner: Organization | Admin | undefined;
@@ -62,6 +63,7 @@ export const createBot = async ({
     if (!foundOwner) return null;
     bot.owner_id = foundOwner.id;
     bot.owner_type = owner_type;
+    bot.slug = getRandomID();
     const files = await generateBotFiles(bot);
     if (!files) return null;
     bot.context_file = files.context_file;
