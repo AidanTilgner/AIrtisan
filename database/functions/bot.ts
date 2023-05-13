@@ -228,7 +228,7 @@ export const getBotContext = async (id: Bot["id"]) => {
       "utf8"
     ).toString();
     const contents = JSON.parse(file);
-    return contents;
+    return contents as Context;
   } catch (error) {
     console.error(error);
     return null;
@@ -246,7 +246,7 @@ export const getBotModel = async (id: Bot["id"]) => {
       "utf8"
     ).toString();
     const contents = JSON.parse(file);
-    return contents;
+    return contents as Model;
   } catch (error) {
     console.error(error);
     return null;

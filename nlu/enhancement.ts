@@ -2,39 +2,55 @@ import { openai } from "../utils/openai";
 import { getModelResponse } from "../utils/gpt4all";
 import { getConversationChatsFromSessionId } from "../database/functions/conversations";
 import { getDataForIntent } from "./metadata";
-import chatGPTConfif from "./documents/chatgpt_config.json";
+import { getBot, getBotModel } from "../database/functions/bot";
 import { config } from "dotenv";
+import { Model } from "../types/lib";
 
 config();
 
-const getInitialPrompt = () => `
-  You are a chatbot named ${chatGPTConfif.personality.name}. You work for ${
-  chatGPTConfif.works_for.name
-}, which is a company described "${chatGPTConfif.works_for.description}".
+const getInitialPrompt = async (bot_id: number, model: Model) => {
+  if (!model) {
+    const bot = await getBot(bot_id, true);
+
+    if (!bot) {
+      return `
+        You are a chatbot.
+      `;
+    }
+
+    return `
+      You are a chatbot named ${bot.name}.
+    `;
+  }
+
+  return `
+  You are a chatbot named ${model.personality.name}. You work for ${
+    model.works_for.name
+  }, which is a company described "${model.works_for.description}".
   
   Utilizing the tagline "${
-    chatGPTConfif.works_for.tagline
+    model.works_for.tagline
   }", you are tasked with conversing with users on behalf of ${
-  chatGPTConfif.works_for.name
-}.
+    model.works_for.name
+  }.
   
   You should highlight their following services:
-  ${chatGPTConfif.works_for.metadata.services
+  ${model.works_for.metadata.services
     .map((service) => `- ${service}`)
     .join("\n")}
 
   Keep in mind the following information about the company:
-  It is located at ${chatGPTConfif.works_for.metadata.location}
+  It is located at ${model.works_for.metadata.location}
 
   The current people to mention are:
-  ${chatGPTConfif.works_for.metadata.people
+  ${model.works_for.metadata.people
     .map(
       (person) =>
         `- ${person.name}, ${person.role} | email: ${person.contact.email}`
     )
     .join("\n")}
 
-  You live on the company website at ${chatGPTConfif.works_for.site_url}.
+  You live on the company website at ${model.works_for.site_url}.
 
   You should act as a normal assistant, but not hide that you are a robot.
   
@@ -64,6 +80,7 @@ const getInitialPrompt = () => `
   - Never conceal that you are a digital assistant called Onyx
   - Have fun!
   `;
+};
 const confidenceMapper = (conf: number) => {
   if (conf < 0.5) {
     return "low";
@@ -107,6 +124,7 @@ const getFormattedPrompt = (
 
 export const getSpicedUpAnswer = async (
   message: string,
+  bot_id: number,
   {
     intent,
     response,
@@ -120,6 +138,11 @@ export const getSpicedUpAnswer = async (
   }
 ): Promise<string> => {
   try {
+    const modelFile = await getBotModel(bot_id);
+    if (!modelFile) {
+      return message;
+    }
+
     const proompt = getFormattedPrompt(message, intent, response, confidence);
 
     const conversationChats = await getConversationChatsFromSessionId(
@@ -141,7 +164,7 @@ export const getSpicedUpAnswer = async (
 
     const messages = [
       {
-        content: getInitialPrompt(),
+        content: await getInitialPrompt(bot_id, modelFile),
         role: "system" as const,
       },
       ...previousChats,
@@ -152,7 +175,7 @@ export const getSpicedUpAnswer = async (
     ];
 
     const { data } = await openai.createChatCompletion({
-      model: chatGPTConfif.model || "gpt-3.5-turbo",
+      model: modelFile.specification.model || "gpt-3.5-turbo",
       messages,
       presence_penalty: 0.5,
     });
@@ -207,7 +230,7 @@ export const enhanceChatIfNecessary = async ({
     }
 
     if (intentData.enhance) {
-      const newAnswer = await getSpicedUpAnswer(message, {
+      const newAnswer = await getSpicedUpAnswer(message, botId, {
         intent,
         response: answer,
         session_id,

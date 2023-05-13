@@ -130,7 +130,10 @@ function Converse() {
   );
 
   React.useEffect(() => {
-    if (conversation?.chats.length !== previousChatLength.current) {
+    if (
+      conversation?.chats.length &&
+      conversation?.chats.length !== previousChatLength.current
+    ) {
       endRef.current?.scrollIntoView({ behavior: "smooth" });
       previousChatLength.current = conversation?.chats.length || 0;
     }

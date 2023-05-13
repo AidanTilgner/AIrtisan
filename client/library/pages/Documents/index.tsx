@@ -2,13 +2,19 @@ import React from "react";
 import styles from "./index.module.scss";
 import Corpus from "./Corpus/Corpus";
 import Context from "./Context/Context";
-import ModelData from "./Context/ModelData/ModelData";
+import ModelData from "./ModelData/ModelData";
 import { SegmentedControl } from "@mantine/core";
+import { useSearchParams } from "react-router-dom";
+import { useSearchParamsUpdate } from "../../hooks/navigation";
 
 function index() {
+  const [searchParams] = useSearchParams();
   const [tab, setTab] = React.useState<"corpus" | "context" | "model">(
-    "corpus"
+    (searchParams.get("document_type") as "corpus" | "context" | "model") ||
+      "corpus"
   );
+
+  const updateSearchParams = useSearchParamsUpdate();
 
   const CurrentTab = () => {
     switch (tab) {
@@ -20,6 +26,15 @@ function index() {
         return <ModelData />;
     }
   };
+
+  React.useEffect(() => {
+    if (
+      !searchParams.get("document_type") ||
+      searchParams.get("document_type") !== tab
+    ) {
+      updateSearchParams(new Map([["document_type", tab]]));
+    }
+  }, [tab]);
 
   return (
     <div className={styles.documents}>
