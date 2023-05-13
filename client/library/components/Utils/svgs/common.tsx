@@ -38,6 +38,7 @@ export const NotFoundBackdrop = ({
         />
         <polygon
           points="385.16196 70.18643 394.16196 43.18643 411.70447 43.18643 412.62653 70.18643 385.16196 70.18643"
+          // eslint-disable-next-line react/no-unknown-property
           isolation="isolate"
           opacity=".1"
         />

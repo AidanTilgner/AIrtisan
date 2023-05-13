@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "./Context.module.scss";
 import { Context } from "../../../../documentation/main";
-import { Button, Grid, Group, TextInput } from "@mantine/core";
+import { Autocomplete, Button, Grid, Group, TextInput } from "@mantine/core";
 import useFetch from "../../../hooks/useFetch";
 import { showNotification } from "@mantine/notifications";
 
@@ -28,6 +28,13 @@ function ContextForm({ afterSubmit, onClose }: ContextFormProps) {
     dependencies: [formState],
   });
 
+  const { data: contextFile, load: reload } = useFetch<undefined, Context>({
+    url: "/training/context",
+    runOnMount: true,
+  });
+
+  const formattedContext = contextFile ? Object.keys(contextFile) : [];
+
   const handleSubmit = async () => {
     const res = await addContext();
     if (!res || !res.data) {
@@ -41,7 +48,10 @@ function ContextForm({ afterSubmit, onClose }: ContextFormProps) {
 
     if (afterSubmit) {
       afterSubmit(formState);
+      onClose && onClose();
     }
+
+    reload();
   };
 
   return (
@@ -55,20 +65,21 @@ function ContextForm({ afterSubmit, onClose }: ContextFormProps) {
       </p>
       <Grid>
         <Grid.Col span={12}>
-          <h2>Context Form</h2>
+          <h2>Add or Update Context Object</h2>
         </Grid.Col>
         <Grid.Col span={12}>
-          <TextInput
+          <Autocomplete
             label="Label"
             placeholder="Label"
             value={formState.label}
             description="The name of the context"
-            onChange={(e) => {
+            onChange={(v) => {
               setFormState({
                 ...formState,
-                label: e.currentTarget.value.toLowerCase(),
+                label: v.toLowerCase(),
               });
             }}
+            data={formattedContext}
           />
         </Grid.Col>
         <Grid.Col span={12}>

@@ -3,7 +3,7 @@ import { Context } from "../../../../documentation/main";
 import useFetch from "../../../hooks/useFetch";
 import { useBot } from "../../../contexts/Bot";
 import styles from "./Context.module.scss";
-import { Button } from "@mantine/core";
+import { Button, Tooltip } from "@mantine/core";
 import ContextForm from "../../../components/Forms/Context/ContextForm";
 
 function Context() {
@@ -59,11 +59,7 @@ function Context() {
       <div className={styles.content}>
         {formattedContext?.length ? (
           formattedContext.map((c) => {
-            return (
-              <div key={c[0]} className={styles.contextPairContainer}>
-                <ContextPair label={c[0]} value={c[1]} />
-              </div>
-            );
+            return <ContextPair key={c[0]} label={c[0]} value={c[1]} />;
           })
         ) : (
           <p>No context found.</p>
@@ -82,10 +78,24 @@ export const ContextPair = ({
   label: string;
   value: unknown;
 }) => {
+  const [selected, setSelected] = useState(false);
+
   return (
-    <div className={styles.contextPair}>
-      <p className={styles.label}>{label}</p>
-      <p className={styles.value}>{String(value)}</p>
+    <div
+      className={`${styles.contextPair} ${selected ? styles.selected : ""}`}
+      onClick={() => {
+        setSelected(!selected);
+      }}
+      onBlur={() => {
+        setSelected(false);
+      }}
+    >
+      <Tooltip label={label} multiline position="left-start">
+        <p className={styles.label} title={label}>
+          {label}
+        </p>
+      </Tooltip>
+      <p className={`${styles.value}`}>{String(value)}</p>
     </div>
   );
 };
