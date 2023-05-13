@@ -532,7 +532,7 @@ const ChatPair = ({
                   className={`${styles.edit_button} ${styles.metadataOption}`}
                   onClick={() => {
                     setQuery(user.message);
-                    searchParamsUpdate(new Map([["tab", "corpus"]]));
+                    searchParamsUpdate(new Map([["tab", "documents"]]));
                   }}
                   title="Modify the corpus"
                 >
