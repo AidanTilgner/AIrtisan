@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styles from "./index.module.scss";
 import Corpus from "./Corpus/Corpus";
 import Context from "./Context/Context";
@@ -27,13 +27,15 @@ function index() {
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (
       !searchParams.get("document_type") ||
       searchParams.get("document_type") !== tab
     ) {
       updateSearchParams(new Map([["document_type", tab]]));
     }
+
+    return () => updateSearchParams(new Map([["document_type", ""]]));
   }, [tab]);
 
   return (

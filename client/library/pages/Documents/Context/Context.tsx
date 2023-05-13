@@ -28,6 +28,9 @@ function Context() {
       <div className={styles.header}>
         <h1>{bot?.name} Context</h1>
       </div>
+      <div>
+        <p>Coming soon.</p>
+      </div>
     </div>
   );
 }
