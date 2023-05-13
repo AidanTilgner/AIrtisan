@@ -19,3 +19,25 @@
     opacity: 0.75;
   }
 }
+
+.resources {
+  font-size: 14px;
+  margin: 0;
+  opacity: 0.75;
+  color: var(--text-color-light);
+  transition: all 0.2s ease-in-out;
+  margin-bottom: 24px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--background-contrast);
+
+  &:hover {
+    opacity: 1;
+  }
+
+  a {
+    text-decoration: underline;
+    color: var(--text-color-light);
+    opacity: 1;
+    font-weight: 500;
+  }
+}

@@ -1,10 +1,9 @@
 import React, { useState } from "react";
-import { Context, Model } from "../../../../documentation/main";
+import { Context } from "../../../../documentation/main";
 import useFetch from "../../../hooks/useFetch";
 import { useBot } from "../../../contexts/Bot";
 import styles from "./Context.module.scss";
 import { Button } from "@mantine/core";
-import { showNotification } from "@mantine/notifications";
 import ContextForm from "../../../components/Forms/Context/ContextForm";
 
 function Context() {
@@ -22,49 +21,6 @@ function Context() {
 
   const reloadData = async () => {
     load();
-  };
-
-  const [newContext, setNewContext] = useState<{ label: string; data: string }>(
-    {
-      label: "",
-      data: "",
-    }
-  );
-
-  const { load: addNewContext } = useFetch<Context, Context>({
-    url: "/training/context",
-    method: "PUT",
-    body: {
-      ...contextFile,
-      [newContext.label]: newContext?.data,
-    },
-  });
-
-  const handleAddNewContext = async () => {
-    try {
-      const res = await addNewContext();
-      if (!res || !res.data) {
-        showNotification({
-          title: "Error",
-          message: "Something went wrong",
-          color: "red",
-        });
-        return;
-      }
-
-      setNewContext({
-        label: "",
-        data: "",
-      });
-      reloadData();
-    } catch (error) {
-      console.error(error);
-      showNotification({
-        title: "Error",
-        message: "Something went wrong",
-        color: "red",
-      });
-    }
   };
 
   const { bot } = useBot();
@@ -91,11 +47,8 @@ function Context() {
       {addingNewContext && (
         <div className={styles.contextFormContainer}>
           <ContextForm
-            onUpdate={(data) => {
-              setNewContext({
-                label: data.label,
-                data: data.data,
-              });
+            afterSubmit={() => {
+              reloadData();
             }}
             onClose={() => {
               setAddingNewContext(false);
