@@ -228,7 +228,7 @@ export const getBotContext = async (id: Bot["id"]) => {
       "utf8"
     ).toString();
     const contents = JSON.parse(file);
-    return contents;
+    return contents as Context;
   } catch (error) {
     console.error(error);
     return null;
@@ -246,7 +246,7 @@ export const getBotModel = async (id: Bot["id"]) => {
       "utf8"
     ).toString();
     const contents = JSON.parse(file);
-    return contents;
+    return contents as Model;
   } catch (error) {
     console.error(error);
     return null;
@@ -287,12 +287,20 @@ export const updateBotContext = async (id: Bot["id"], context: Context) => {
       where: { id },
     });
     if (!bot) return null;
+    const formattedContext = Object.entries(context).reduce(
+      (acc, [key, value]) => {
+        // the key is lowercase in the context file
+        acc[key.toLowerCase()] = value;
+        return acc;
+      },
+      {} as Context
+    );
     const file = readFileSync(
       path.join(storageLocation, bot.context_file),
       "utf8"
     ).toString();
     const contents = JSON.parse(file);
-    const updatedContents = Object.assign(contents, context);
+    const updatedContents = Object.assign(contents, formattedContext);
     writeFileSync(
       path.join(storageLocation, bot.context_file),
       format(JSON.stringify(updatedContents), {

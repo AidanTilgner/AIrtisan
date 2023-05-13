@@ -9,10 +9,10 @@ import {
   ButtonType,
   CorpusDataPoint,
   Corpus as CorpusType,
-} from "../../../documentation/main";
+} from "../../../../documentation/main";
 import { showNotification } from "@mantine/notifications";
-import Search from "../../components/Search/Search";
-import { useSearch } from "../../contexts/Search";
+import Search from "../../../components/Search/Search";
+import { useSearch } from "../../../contexts/Search";
 import { Autocomplete, Button, Checkbox, Highlight } from "@mantine/core";
 import {
   Check,
@@ -22,9 +22,9 @@ import {
   X,
 } from "@phosphor-icons/react";
 import { useMediaQuery } from "@mantine/hooks";
-import { useModal } from "../../contexts/Modals";
-import IntentForm from "../../components/Forms/Intent/Intent";
-import useFetch from "../../hooks/useFetch";
+import { useModal } from "../../../contexts/Modals";
+import IntentForm from "../../../components/Forms/Intent/Intent";
+import useFetch from "../../../hooks/useFetch";
 import {
   useAddAnswerToIntent,
   useAddUtteranceToIntent,
@@ -36,7 +36,7 @@ import {
   useRenameIntent,
   useUpdateButtonsOnIntent,
   useUpdateEnhanceForIntent,
-} from "../../hooks/fetching/common";
+} from "../../../hooks/fetching/common";
 
 function Corpus() {
   const { query, setQuery } = useSearch();

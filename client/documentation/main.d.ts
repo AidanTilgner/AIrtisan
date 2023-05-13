@@ -1,5 +1,6 @@
 export type AdminRoles = "admin" | "superadmin";
 export type OwnerTypes = "organization" | "admin";
+export type AllowedChatModels = "gpt-3.5-turbo" | "gpt-4";
 
 export interface Admin {
   id?: number | null;
@@ -72,6 +73,35 @@ export interface Corpus {
   locale: string;
   data: CorpusData;
 }
+
+export type Context = Record<string, unknown>;
+
+export type Model = {
+  personality: {
+    name: string;
+    description: string;
+  };
+  works_for: {
+    name: string;
+    description: string;
+    site_url: string;
+    tagline: string;
+    metadata: {
+      services: string[];
+      location: string;
+      founded: string;
+      people: {
+        name: string;
+        role: string;
+        contact: {
+          email: string;
+          phone: string;
+        };
+      }[];
+    };
+  };
+  specification: { model: AllowedChatModels; version: string };
+};
 
 export interface Bot {
   id?: number | null;

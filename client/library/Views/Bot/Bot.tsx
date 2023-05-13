@@ -5,7 +5,7 @@ import Preview from "../../pages/Preview/Preview";
 import Auth from "../../pages/Auth/Auth";
 import ReviewConversations from "../../pages/Review/ReviewConversations";
 import Training from "../../pages/Training/";
-import Corpus from "../../pages/Corpus/Corpus";
+import Documents from "../../pages/Documents";
 import Overview from "../../pages/Overview";
 import Flows from "../../pages/Flows";
 import { useUser } from "../../contexts/User";
@@ -26,7 +26,7 @@ type Tab =
   | "overview"
   | "flows"
   | "training"
-  | "corpus"
+  | "documents"
   | "review"
   | "preview"
   | "auth";
@@ -85,8 +85,8 @@ function Bot() {
               visible: true,
             },
             {
-              name: "Corpus",
-              id: "corpus",
+              name: "Documents",
+              id: "documents",
               icon: <TextColumns />,
               visible: true,
             },
@@ -124,8 +124,8 @@ function DisplayCurrentTab({ currentTab }: { currentTab: Tab }) {
       return <Flows />;
     case "training":
       return <Training />;
-    case "corpus":
-      return <Corpus />;
+    case "documents":
+      return <Documents />;
     case "review":
       return <ReviewConversations />;
     case "preview":

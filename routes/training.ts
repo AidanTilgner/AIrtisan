@@ -27,14 +27,19 @@ import {
   getConversations,
   createTrainingCopyOfConversation,
 } from "../database/functions/conversations";
-import { checkIsAdmin } from "../middleware/auth";
+import { checkIsAdmin, hasAccessToBot } from "../middleware/auth";
 import { handleRetryChat } from "../nlu/chats";
+import {
+  getBotContext,
+  getBotModel,
+  updateBotContext,
+} from "../database/functions/bot";
 
 const router = Router();
 
 router.use(checkIsAdmin);
 
-router.post("/say", async (req, res) => {
+router.post("/say", hasAccessToBot, async (req, res) => {
   const text = req.body.text || req.query.text;
   const botId = req.body.bot_id || req.query.bot_id;
   if (!text || !botId) {
@@ -57,10 +62,10 @@ router.post("/say", async (req, res) => {
     data: { ...response, intent_data: intentData },
   };
 
-  res.json(toSend);
+  res.send(toSend);
 });
 
-router.get("/corpus", async (req, res) => {
+router.get("/corpus", hasAccessToBot, async (req, res) => {
   try {
     const botId = req.query.bot_id;
     if (!botId) {
@@ -73,14 +78,93 @@ router.get("/corpus", async (req, res) => {
       success: true,
       data: corpus,
     };
-    res.json(toSend);
+    res.send(toSend);
   } catch (err) {
     console.error(err);
     res.status(500).send({ message: "Error getting default corpus" });
   }
 });
 
-router.post("/datapoint", async (req, res) => {
+router.get("/context", hasAccessToBot, async (req, res) => {
+  try {
+    const botId = req.query.bot_id;
+
+    if (!botId) {
+      res.status(400).send({ message: "Missing botId." });
+      return;
+    }
+
+    const context = await getBotContext(Number(botId));
+
+    const toSend = {
+      message: "Got context",
+      success: true,
+      data: context,
+    };
+
+    res.send(toSend);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error });
+  }
+});
+
+router.put("/context", hasAccessToBot, async (req, res) => {
+  try {
+    const botId = req.body.bot_id || req.query.bot_id;
+
+    if (!botId) {
+      res.status(400).send({ message: "Missing botId." });
+      return;
+    }
+
+    const update = req.body.context;
+
+    if (!update) {
+      res.status(400).send({ message: "Missing update." });
+      return;
+    }
+
+    const context = await updateBotContext(Number(botId), update);
+
+    const toSend = {
+      message: "Updated context",
+      success: true,
+      data: context,
+    };
+
+    res.send(toSend);
+  } catch (error) {
+    console.error(error);
+    res.send({ error });
+  }
+});
+
+router.get("/model", hasAccessToBot, async (req, res) => {
+  try {
+    const botId = req.query.bot_id;
+
+    if (!botId) {
+      res.status(400).send({ message: "Missing botId." });
+      return;
+    }
+
+    const model = await getBotModel(Number(botId));
+
+    const toSend = {
+      message: "Got model",
+      success: true,
+      data: model,
+    };
+
+    res.send(toSend);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error });
+  }
+});
+
+router.post("/datapoint", hasAccessToBot, async (req, res) => {
   try {
     const body = req.body;
     const { bot_id, ...rest } = body;
@@ -110,7 +194,7 @@ router.post("/datapoint", async (req, res) => {
   }
 });
 
-router.delete("/datapoint", async (req, res) => {
+router.delete("/datapoint", hasAccessToBot, async (req, res) => {
   try {
     const { intent, bot_id } = req.body;
 
@@ -141,7 +225,7 @@ router.delete("/datapoint", async (req, res) => {
   }
 });
 
-router.post("/retrain", async (req, res) => {
+router.post("/retrain", hasAccessToBot, async (req, res) => {
   try {
     const botId = req.body.bot_id || req.query.bot_id;
     const result = await retrain(Number(botId));
@@ -157,7 +241,7 @@ router.post("/retrain", async (req, res) => {
   }
 });
 
-router.get("/intent/:intent", async (req, res) => {
+router.get("/intent/:intent", hasAccessToBot, async (req, res) => {
   try {
     const botId = req.query.bot_id;
     const intent = req.params.intent;
@@ -175,7 +259,7 @@ router.get("/intent/:intent", async (req, res) => {
   }
 });
 
-router.put("/intent", async (req, res) => {
+router.put("/intent", hasAccessToBot, async (req, res) => {
   try {
     const { old_intent, new_intent, utterance, bot_id } = req.body;
     const data = await addOrUpdateUtteranceOnIntent(
@@ -202,7 +286,7 @@ router.put("/intent", async (req, res) => {
   }
 });
 
-router.put("/intent/rename", async (req, res) => {
+router.put("/intent/rename", hasAccessToBot, async (req, res) => {
   try {
     const { bot_id, old_intent, new_intent } = req.body;
 
@@ -225,7 +309,7 @@ router.put("/intent/rename", async (req, res) => {
   }
 });
 
-router.get("/intents", async (req, res) => {
+router.get("/intents", hasAccessToBot, async (req, res) => {
   try {
     const botId = req.query.bot_id;
     const intents = getIntents(Number(botId));
@@ -241,7 +325,7 @@ router.get("/intents", async (req, res) => {
   }
 });
 
-router.get("/intents/full", async (req, res) => {
+router.get("/intents/full", hasAccessToBot, async (req, res) => {
   try {
     const botId = req.query.bot_id;
     const intents = getIntentsFull(Number(botId));
@@ -257,7 +341,7 @@ router.get("/intents/full", async (req, res) => {
   }
 });
 
-router.delete("/response", async (req, res) => {
+router.delete("/response", hasAccessToBot, async (req, res) => {
   const { intent, answer, bot_id } = req.body;
   const data = await removeResponseFromIntent(Number(bot_id), intent, answer);
   const shouldRetrain = req.body.retrain || req.query.retrain;
@@ -272,7 +356,7 @@ router.delete("/response", async (req, res) => {
   res.send(toSend);
 });
 
-router.put("/response", async (req, res) => {
+router.put("/response", hasAccessToBot, async (req, res) => {
   const { intent, answer, bot_id } = req.body;
   const data = await addResponseToIntent(Number(bot_id), intent, answer);
   const shouldRetrain = req.body.retrain || req.query.retrain;
@@ -287,7 +371,7 @@ router.put("/response", async (req, res) => {
   res.send(toSend);
 });
 
-router.delete("/utterance", async (req, res) => {
+router.delete("/utterance", hasAccessToBot, async (req, res) => {
   const { intent, utterance, bot_id } = req.body;
   const data = await removeUtteranceFromIntent(
     Number(bot_id),
@@ -305,7 +389,7 @@ router.delete("/utterance", async (req, res) => {
   res.send(toSend);
 });
 
-router.put("/utterance", async (req, res) => {
+router.put("/utterance", hasAccessToBot, async (req, res) => {
   const { intent, utterance, bot_id } = req.body;
   const data = await addUtteranceToIntent(Number(bot_id), intent, utterance);
   const shouldRetrain = req.body.retrain || req.query.retrain;
@@ -319,7 +403,7 @@ router.put("/utterance", async (req, res) => {
   res.send(toSend);
 });
 
-router.put("/intent/:intent/enhance", async (req, res) => {
+router.put("/intent/:intent/enhance", hasAccessToBot, async (req, res) => {
   try {
     const { intent } = req.params;
     const { enhance, bot_id } = req.body as {
@@ -347,7 +431,7 @@ router.put("/intent/:intent/enhance", async (req, res) => {
   }
 });
 
-router.put("/intent/:intent/buttons", async (req, res) => {
+router.put("/intent/:intent/buttons", hasAccessToBot, async (req, res) => {
   const { intent } = req.params;
   const { buttons, bot_id } = req.body as {
     buttons: { type: string }[];
@@ -370,7 +454,7 @@ router.put("/intent/:intent/buttons", async (req, res) => {
   res.send(toSend);
 });
 
-router.delete("/intent/:intent/button", async (req, res) => {
+router.delete("/intent/:intent/button", hasAccessToBot, async (req, res) => {
   const { intent } = req.params;
   const { button, bot_id } = req.body as {
     button: { type: string };
@@ -397,7 +481,7 @@ router.delete("/intent/:intent/button", async (req, res) => {
   res.send(toSend);
 });
 
-router.get("/buttons", async (req, res) => {
+router.get("/buttons", hasAccessToBot, async (req, res) => {
   try {
     const botId = req.query.bot_id;
     const buttons = await getButtons(Number(botId));
@@ -415,7 +499,7 @@ router.get("/buttons", async (req, res) => {
   }
 });
 
-router.get("/chats/need_review", async (req, res) => {
+router.get("/chats/need_review", hasAccessToBot, async (req, res) => {
   const data = await getChatsThatNeedReview();
 
   const toSend = {
@@ -427,7 +511,7 @@ router.get("/chats/need_review", async (req, res) => {
   res.send(toSend);
 });
 
-router.get("/conversations/need_review", async (req, res) => {
+router.get("/conversations/need_review", hasAccessToBot, async (req, res) => {
   const data = await getConversationsThatNeedReview();
 
   const toSend = {
@@ -439,7 +523,7 @@ router.get("/conversations/need_review", async (req, res) => {
   res.send(toSend);
 });
 
-router.post("/chats/reviewed/:chat_id", async (req, res) => {
+router.post("/chats/reviewed/:chat_id", hasAccessToBot, async (req, res) => {
   const { chat_id } = req.params;
   const { username } = req.body;
 
@@ -462,7 +546,7 @@ router.post("/chats/reviewed/:chat_id", async (req, res) => {
   res.send(toSend);
 });
 
-router.get("/conversations/all", async (req, res) => {
+router.get("/conversations/all", hasAccessToBot, async (req, res) => {
   const data = await getConversations();
 
   if (!data) {
@@ -484,6 +568,7 @@ router.get("/conversations/all", async (req, res) => {
 
 router.post(
   "/conversations/:conversation_id/training_copy/",
+  hasAccessToBot,
   async (req, res) => {
     try {
       const bot_id = req.body.bot_id || req.query.bot_id;
@@ -530,39 +615,44 @@ router.post(
   }
 );
 
-router.post("/chats/retry/:chat_id", checkIsAdmin, async (req, res) => {
-  try {
-    const { chat_id, bot_id } = req.params;
+router.post(
+  "/chats/retry/:chat_id",
+  checkIsAdmin,
+  hasAccessToBot,
+  async (req, res) => {
+    try {
+      const { chat_id, bot_id } = req.params;
 
-    const newChatInfo = await handleRetryChat({
-      chat_id: Number(chat_id),
-      bot_id: Number(bot_id),
-    });
+      const newChatInfo = await handleRetryChat({
+        chat_id: Number(chat_id),
+        bot_id: Number(bot_id),
+      });
 
-    if (!newChatInfo) {
+      if (!newChatInfo) {
+        res.status(500).send({
+          message: "Error getting response",
+          answer:
+            "Sorry, I've encountered an error. It has been reported. Please try again later.",
+        });
+        return;
+      }
+
+      const toSend = {
+        data: {
+          ...newChatInfo,
+        },
+      };
+
+      res.send(toSend);
+    } catch (err) {
+      console.error(err);
       res.status(500).send({
         message: "Error getting response",
         answer:
           "Sorry, I've encountered an error. It has been reported. Please try again later.",
       });
-      return;
     }
-
-    const toSend = {
-      data: {
-        ...newChatInfo,
-      },
-    };
-
-    res.send(toSend);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send({
-      message: "Error getting response",
-      answer:
-        "Sorry, I've encountered an error. It has been reported. Please try again later.",
-    });
   }
-});
+);
 
 export default router;

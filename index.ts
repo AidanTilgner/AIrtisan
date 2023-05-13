@@ -43,9 +43,7 @@ app.use(Express.json());
 app.use(Express.urlencoded({ extended: true }));
 
 app.get("/documentation", (req, res) => {
-  res.send(
-    `<p>This page is coming soon. For now, contact us directly <a href="mailto:aidan.tilgner@vvibrant.dev">here</a></p>`
-  );
+  res.redirect("https://docs.airtisan.app");
 });
 
 app.use("/api", ApiRouter);
