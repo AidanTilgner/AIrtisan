@@ -81,21 +81,22 @@ export const ContextPair = ({
   const [selected, setSelected] = useState(false);
 
   return (
-    <div
-      className={`${styles.contextPair} ${selected ? styles.selected : ""}`}
-      onClick={() => {
-        setSelected(!selected);
-      }}
-      onBlur={() => {
-        setSelected(false);
-      }}
-    >
-      <Tooltip label={label} multiline position="left-start">
+    <Tooltip label={"Click to expand."} multiline position="top-start">
+      <div
+        className={`${styles.contextPair} ${selected ? styles.selected : ""}`}
+        onClick={() => {
+          setSelected(!selected);
+        }}
+        onBlur={() => {
+          setSelected(false);
+        }}
+        title="Click to expand"
+      >
         <p className={styles.label} title={label}>
           {label}
         </p>
-      </Tooltip>
-      <p className={`${styles.value}`}>{String(value)}</p>
-    </div>
+        <p className={`${styles.value}`}>{String(value)}</p>
+      </div>
+    </Tooltip>
   );
 };
