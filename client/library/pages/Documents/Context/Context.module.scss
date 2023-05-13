@@ -15,6 +15,7 @@
   justify-content: space-between;
   margin-inline: auto;
   flex-direction: column;
+  gap: 24px;
 
   @media screen and (min-width: 768px) {
     padding-bottom: 18px;
@@ -38,5 +39,53 @@
       margin-left: 14px;
       vertical-align: text-bottom;
     }
+  }
+}
+
+.contextFormContainer {
+  margin: 36px 0;
+}
+
+.content {
+}
+
+.contextPairContainer {
+}
+
+.contextPair {
+  border-left: 1px solid var(--background-contrast);
+  display: flex;
+  align-items: center;
+  padding-left: 14px;
+  gap: 14px;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+
+  &:hover {
+    border-left: 2px solid var(--primary-color);
+    padding-left: 18px;
+  }
+
+  @media (min-width: 768px) {
+    padding-left: 18px;
+    gap: 24px;
+
+    &:hover {
+      padding-left: 24px;
+    }
+  }
+
+  .label {
+    font-weight: 500;
+    font-size: 18px;
+    padding: 0;
+    margin: 0;
+  }
+
+  .value {
+    font-size: 16px;
+    opacity: 0.6;
+    padding: 0;
+    margin: 0;
   }
 }

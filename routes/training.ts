@@ -29,7 +29,11 @@ import {
 } from "../database/functions/conversations";
 import { checkIsAdmin, hasAccessToBot } from "../middleware/auth";
 import { handleRetryChat } from "../nlu/chats";
-import { getBotContext, getBotModel } from "../database/functions/bot";
+import {
+  getBotContext,
+  getBotModel,
+  updateBotContext,
+} from "../database/functions/bot";
 
 const router = Router();
 
@@ -102,6 +106,37 @@ router.get("/context", hasAccessToBot, async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send({ error });
+  }
+});
+
+router.put("/context", hasAccessToBot, async (req, res) => {
+  try {
+    const botId = req.body.bot_id || req.query.bot_id;
+
+    if (!botId) {
+      res.status(400).send({ message: "Missing botId." });
+      return;
+    }
+
+    const update = req.body.context;
+
+    if (!update) {
+      res.status(400).send({ message: "Missing update." });
+      return;
+    }
+
+    const context = await updateBotContext(Number(botId), update);
+
+    const toSend = {
+      message: "Updated context",
+      success: true,
+      data: context,
+    };
+
+    res.send(toSend);
+  } catch (error) {
+    console.error(error);
+    res.send({ error });
   }
 });
 
