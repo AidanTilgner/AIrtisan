@@ -23,25 +23,14 @@ export type Model = {
   personality: {
     name: string;
     description: string;
+    initial_prompt: string;
   };
   works_for: {
     name: string;
     description: string;
     site_url: string;
     tagline: string;
-    metadata: {
-      services: string[];
-      location: string;
-      founded: string;
-      people: {
-        name: string;
-        role: string;
-        contact: {
-          email: string;
-          phone: string;
-        };
-      }[];
-    };
+    metadata: Record<string, unknown>;
   };
   specification: { model: AllowedChatModels; version: string };
 };

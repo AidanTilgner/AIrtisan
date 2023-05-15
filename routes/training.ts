@@ -34,6 +34,7 @@ import {
   getBotModel,
   updateBotContext,
   deleteBotContextItem,
+  updateBotModel,
 } from "../database/functions/bot";
 
 const router = Router();
@@ -193,6 +194,36 @@ router.get("/model", hasAccessToBot, async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send({ error });
+  }
+});
+
+router.put("/model", hasAccessToBot, async (req, res) => {
+  try {
+    const botId = req.body.bot_id || req.query.bot_id;
+
+    if (!botId) {
+      res.status(400).send({ message: "Missing botId." });
+    }
+
+    const update = req.body.model;
+
+    if (!update) {
+      res.status(400).send({ message: "Missing update." });
+      return;
+    }
+
+    const model = await updateBotModel(Number(botId), update);
+
+    const toSend = {
+      message: "Updated model",
+      success: true,
+      data: model,
+    };
+
+    res.send(toSend);
+  } catch (error) {
+    console.error(error);
+    res.send({ error });
   }
 });
 

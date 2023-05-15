@@ -215,7 +215,8 @@ function Converse() {
       <div className={styles.header}>
         <h3>
           {conversation
-            ? conversation.generated_name || "Unnamed Conversation"
+            ? conversation.generated_name ||
+              `Unnamed Conversation (${conversation.id})`
             : "New Conversation"}
         </h3>
         <div className={styles.menu_options}>
@@ -250,6 +251,11 @@ function Converse() {
           )}
         </div>
       </div>
+      {!conversation?.training_copy && (
+        <p className={styles.disclaimer}>
+          This conversation is readonly because it is not a training copy.
+        </p>
+      )}
       {isRunning ? (
         <div className={styles.content}>
           {groupedChats?.length ? (
@@ -260,6 +266,7 @@ function Converse() {
                   assistant={assistant}
                   initialLoad={initialLoad}
                   reloadConversation={reloadConversation}
+                  conversation={conversation}
                 />
               </div>
             ))
@@ -300,6 +307,7 @@ function Converse() {
           sendChat={sendChat}
           message={newMessage}
           setMessage={setNewMessage}
+          conversation={conversation}
         />
       </div>
     </div>
@@ -313,11 +321,13 @@ const ChatPair = ({
   assistant,
   initialLoad,
   reloadConversation,
+  conversation,
 }: {
   user: ChatType;
   assistant: ChatType;
   initialLoad: boolean;
   reloadConversation: () => void;
+  conversation: Conversation | undefined;
 }) => {
   const { setQuery } = useSearch();
 
@@ -467,6 +477,8 @@ const ChatPair = ({
 
   const searchParamsUpdate = useSearchParamsUpdate();
 
+  const optionsDisabled = !conversation?.training_copy || assistantLoading;
+
   return (
     <div
       className={`${styles.chatPair}`}
@@ -547,6 +559,7 @@ const ChatPair = ({
                     handleEditIntent();
                   }}
                   title="Edit the intent in place"
+                  disabled={optionsDisabled}
                 >
                   <PencilSimple weight="regular" />
                 </button>
@@ -556,6 +569,7 @@ const ChatPair = ({
                     handleRetryChat();
                   }}
                   title="Rerun this chat response"
+                  disabled={optionsDisabled}
                 >
                   <ArrowCounterClockwise weight="regular" />
                 </button>
@@ -651,10 +665,12 @@ const TextBox = ({
   sendChat,
   setMessage,
   message,
+  conversation,
 }: {
   sendChat: () => void;
   setMessage: (message: string) => void;
   message: string;
+  conversation: Conversation | undefined;
 }) => {
   const sendMessage = () => {
     sendChat();
@@ -672,7 +688,7 @@ const TextBox = ({
   return (
     <div className={styles.textbox}>
       <textarea
-        disabled={!isRunning}
+        disabled={!isRunning || !conversation?.training_copy}
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         placeholder="Say something..."
