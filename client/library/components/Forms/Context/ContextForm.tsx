@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "./Context.module.scss";
 import { Context } from "../../../../documentation/main";
-import { Autocomplete, Button, Grid, Group, TextInput } from "@mantine/core";
+import { Autocomplete, Button, Grid, Group, Textarea } from "@mantine/core";
 import useFetch from "../../../hooks/useFetch";
 import { showNotification } from "@mantine/notifications";
 
@@ -70,9 +70,9 @@ function ContextForm({ afterSubmit, onClose }: ContextFormProps) {
         <Grid.Col span={12}>
           <Autocomplete
             label="Label"
-            placeholder="Label"
+            placeholder="The name of the context"
             value={formState.label}
-            description="The name of the context"
+            description="How you will reference this context"
             onChange={(v) => {
               setFormState({
                 ...formState,
@@ -83,11 +83,11 @@ function ContextForm({ afterSubmit, onClose }: ContextFormProps) {
           />
         </Grid.Col>
         <Grid.Col span={12}>
-          <TextInput
+          <Textarea
             label="Data"
-            placeholder="Data"
+            placeholder="The data of the context"
             value={formState.data}
-            description="The data of the context"
+            description="The data, as if you were telling the bot something important"
             onChange={(e) => {
               setFormState({
                 ...formState,

@@ -64,6 +64,7 @@ export interface CorpusDataPoint {
   }[];
   buttons?: ButtonType[];
   enhance: boolean;
+  context?: string[];
 }
 
 export type CorpusData = CorpusDataPoint[];

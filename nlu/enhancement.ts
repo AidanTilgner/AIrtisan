@@ -1,7 +1,7 @@
 import { openai } from "../utils/openai";
 import { getModelResponse } from "../utils/gpt4all";
 import { getConversationChatsFromSessionId } from "../database/functions/conversations";
-import { getDataForIntent } from "./metadata";
+import { getDataForIntent, getIntentContextLoaded } from "./metadata";
 import { getBot, getBotModel } from "../database/functions/bot";
 import { config } from "dotenv";
 import { Model } from "../types/lib";
@@ -77,11 +77,12 @@ const intructionsStatement = (conf: number) => {
   return "Instructions: Please provide a variation on the original response, keeping in mind the intent.";
 };
 
-const getFormattedPrompt = (
+const getFormattedPrompt = async (
   message: string,
   intent: string,
   response: string,
-  confidence: number
+  confidence: number,
+  botId: number
 ) => {
   const userStatement = `A user said: "${message}"`;
   const intentStatement = `The intent was classified as "${intent}" with a confidence of ${confidence}%, which is ${confidenceMapper(
@@ -89,9 +90,13 @@ const getFormattedPrompt = (
   )}`;
   const responseStatement = `The original response was "${response}"`;
 
+  const contextLoaded = await getIntentContextLoaded(botId, intent);
+
   return `${userStatement}. ${intentStatement}. ${responseStatement}. ${intructionsStatement(
     confidence
-  )}`;
+  )}. Here is some additional context that might be helpful in formulating your answer: ${contextLoaded.join(
+    ", "
+  )}.`;
 };
 
 export const getSpicedUpAnswer = async (
@@ -115,7 +120,13 @@ export const getSpicedUpAnswer = async (
       return message;
     }
 
-    const proompt = getFormattedPrompt(message, intent, response, confidence);
+    const proompt = await getFormattedPrompt(
+      message,
+      intent,
+      response,
+      confidence,
+      bot_id
+    );
 
     const conversationChats = await getConversationChatsFromSessionId(
       session_id

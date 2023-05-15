@@ -1,4 +1,5 @@
 import {
+  addContextToDatapoint,
   addData,
   addOrUpdateUtteranceOnIntent,
   addResponseToIntent,
@@ -10,6 +11,7 @@ import {
   removeUtteranceFromIntent,
   renameIntent,
   updateButtonsOnIntent,
+  removeContextFromDatapoint,
 } from "../nlu/training";
 import { Router } from "express";
 import { retrain, getNLUResponse } from "../nlu";
@@ -20,15 +22,7 @@ import {
   getDefaultCorpus,
   getButtons,
 } from "../nlu/metadata";
-import {
-  getChatsThatNeedReview,
-  getConversationsThatNeedReview,
-  markChatAsReviewed,
-  getConversations,
-  createTrainingCopyOfConversation,
-} from "../database/functions/conversations";
 import { checkIsAdmin, hasAccessToBot } from "../middleware/auth";
-import { handleRetryChat } from "../nlu/chats";
 import {
   getBotContext,
   getBotModel,
@@ -494,6 +488,63 @@ router.put("/intent/:intent/enhance", hasAccessToBot, async (req, res) => {
   }
 });
 
+router.put("/intent/:intent/context", hasAccessToBot, async (req, res) => {
+  try {
+    const { intent } = req.params;
+    const { context, bot_id } = req.body as {
+      context: string;
+      bot_id: number;
+    };
+
+    const data = addContextToDatapoint(Number(bot_id), intent, context);
+
+    const shouldRetrain = req.body.retrain || req.query.retrain;
+
+    const retrained = shouldRetrain ? await retrain(Number(bot_id)) : false;
+
+    const toSend = {
+      message: "Intent context added",
+      success: true,
+      data,
+      retrained,
+    };
+
+    res.send(toSend);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error });
+  }
+});
+
+router.delete("/intent/:intent/context", hasAccessToBot, async (req, res) => {
+  try {
+    const { intent } = req.params;
+
+    const { context, bot_id } = req.body as {
+      context: string;
+      bot_id: number;
+    };
+
+    const data = removeContextFromDatapoint(Number(bot_id), intent, context);
+
+    const shouldRetrain = req.body.retrain || req.query.retrain;
+
+    const retrained = shouldRetrain ? await retrain(Number(bot_id)) : false;
+
+    const toSend = {
+      message: "Intent context removed",
+      success: true,
+      data,
+      retrained,
+    };
+
+    res.send(toSend);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error });
+  }
+});
+
 router.put("/intent/:intent/buttons", hasAccessToBot, async (req, res) => {
   const { intent } = req.params;
   const { buttons, bot_id } = req.body as {
@@ -561,161 +612,5 @@ router.get("/buttons", hasAccessToBot, async (req, res) => {
     res.status(500).send({ message: "Error getting buttons" });
   }
 });
-
-router.get("/chats/need_review", hasAccessToBot, async (req, res) => {
-  const data = await getChatsThatNeedReview();
-
-  const toSend = {
-    message: "Got need review",
-    success: true,
-    data,
-  };
-
-  res.send(toSend);
-});
-
-router.get("/conversations/need_review", hasAccessToBot, async (req, res) => {
-  const data = await getConversationsThatNeedReview();
-
-  const toSend = {
-    message: "Got need review",
-    success: true,
-    data,
-  };
-
-  res.send(toSend);
-});
-
-router.post("/chats/reviewed/:chat_id", hasAccessToBot, async (req, res) => {
-  const { chat_id } = req.params;
-  const { username } = req.body;
-
-  const data = await markChatAsReviewed(Number(chat_id), username);
-
-  if (!data) {
-    res.send({
-      message: "Chat not found",
-      success: false,
-    });
-    return;
-  }
-
-  const toSend = {
-    message: "Chat marked as reviewed",
-    success: true,
-    data,
-  };
-
-  res.send(toSend);
-});
-
-router.get("/conversations/all", hasAccessToBot, async (req, res) => {
-  const data = await getConversations();
-
-  if (!data) {
-    res.send({
-      message: "Conversations not found",
-      success: false,
-    });
-    return;
-  }
-
-  const toSend = {
-    message: "Got all conversations",
-    success: true,
-    data,
-  };
-
-  res.send(toSend);
-});
-
-router.post(
-  "/conversations/:conversation_id/training_copy/",
-  hasAccessToBot,
-  async (req, res) => {
-    try {
-      const bot_id = req.body.bot_id || req.query.bot_id;
-
-      if (!bot_id) {
-        res.send({
-          message: "Bot ID not provided",
-          success: false,
-        });
-        return;
-      }
-
-      const { conversation_id } = req.params;
-
-      const formattedID = Number(conversation_id);
-
-      const data = await createTrainingCopyOfConversation(
-        Number(bot_id),
-        formattedID
-      );
-
-      if (!data) {
-        res.send({
-          message: "Conversation not found",
-          success: false,
-        });
-        return;
-      }
-
-      const toSend = {
-        message: "Training copy created",
-        success: true,
-        data,
-      };
-
-      res.send(toSend);
-    } catch (err) {
-      console.error(err);
-      res.send({
-        message: "Error getting training copy",
-        success: false,
-      });
-    }
-  }
-);
-
-router.post(
-  "/chats/retry/:chat_id",
-  checkIsAdmin,
-  hasAccessToBot,
-  async (req, res) => {
-    try {
-      const { chat_id, bot_id } = req.params;
-
-      const newChatInfo = await handleRetryChat({
-        chat_id: Number(chat_id),
-        bot_id: Number(bot_id),
-      });
-
-      if (!newChatInfo) {
-        res.status(500).send({
-          message: "Error getting response",
-          answer:
-            "Sorry, I've encountered an error. It has been reported. Please try again later.",
-        });
-        return;
-      }
-
-      const toSend = {
-        data: {
-          ...newChatInfo,
-        },
-      };
-
-      res.send(toSend);
-    } catch (err) {
-      console.error(err);
-      res.status(500).send({
-        message: "Error getting response",
-        answer:
-          "Sorry, I've encountered an error. It has been reported. Please try again later.",
-      });
-    }
-  }
-);
 
 export default router;

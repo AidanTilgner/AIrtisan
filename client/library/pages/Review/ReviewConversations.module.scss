@@ -197,6 +197,7 @@
 
 .opened_conversation {
   // outline: 1px solid rgb(34, 86, 242, 0.8);
+  border: 1px solid var(--background-contrast);
   height: 70vh;
   overflow-y: scroll;
   box-sizing: border-box;
@@ -210,10 +211,8 @@
   animation-timing-function: ease-in-out;
   position: relative;
   // a thin scrollbar
-  &::-webkit-scrollbar {
-    width: 4px;
-  }
   scrollbar-width: thin;
+  scrollbar-color: var(--background-contrast) transparent;
 
   @media (min-width: 768px) {
     position: absolute;

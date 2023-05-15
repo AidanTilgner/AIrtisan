@@ -596,3 +596,91 @@ export const renameIntent = async (
     return null;
   }
 };
+
+export const addContextToDatapoint = async (
+  id: number,
+  intent: string,
+  context: string
+) => {
+  try {
+    const corpusData = (await getDefaultCorpus(id))?.data;
+
+    if (!corpusData) {
+      console.error("Corpus data not found");
+      return null;
+    }
+
+    const existingIntent = corpusData.find((item) => item.intent === intent);
+    if (existingIntent) {
+      existingIntent.context = [
+        ...(existingIntent.context || []),
+        context,
+      ].filter((item) => item.indexOf(context) !== -1);
+    }
+
+    const sortedCorpusData = getObjectsAlphabetically(corpusData, "intent");
+
+    const corpus = await getDefaultCorpus(id);
+
+    if (!corpus) {
+      console.error("Corpus not found");
+      return null;
+    }
+
+    await updateBotCorpus(id, {
+      ...corpus,
+      data: sortedCorpusData,
+    });
+
+    const newDataPoint = corpus.data.find(
+      (item: any) => item.intent === intent
+    );
+    return newDataPoint;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+export const removeContextFromDatapoint = async (
+  id: number,
+  intent: string,
+  context: string
+) => {
+  try {
+    const corpusData = (await getDefaultCorpus(id))?.data;
+
+    if (!corpusData) {
+      console.error("Corpus data not found");
+      return null;
+    }
+
+    const existingIntent = corpusData.find((item) => item.intent === intent);
+    if (existingIntent) {
+      existingIntent.context = existingIntent.context?.filter(
+        (item) => item !== context
+      );
+    }
+
+    const sortedCorpusData = getObjectsAlphabetically(corpusData, "intent");
+
+    const corpus = await getDefaultCorpus(id);
+
+    if (!corpus) {
+      console.error("Corpus not found");
+      return null;
+    }
+    await updateBotCorpus(id, {
+      ...corpus,
+      data: sortedCorpusData,
+    });
+
+    const newDataPoint = corpus.data.find(
+      (item: any) => item.intent === intent
+    );
+    return newDataPoint;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};

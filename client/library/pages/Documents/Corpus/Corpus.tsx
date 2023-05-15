@@ -7,6 +7,7 @@ import React, {
 import styles from "./Corpus.module.scss";
 import {
   ButtonType,
+  Context as ContextType,
   CorpusDataPoint,
   Corpus as CorpusType,
 } from "../../../../documentation/main";
@@ -36,7 +37,9 @@ import {
   useRenameIntent,
   useUpdateButtonsOnIntent,
   useUpdateEnhanceForIntent,
+  useRemoveContextFromIntent,
 } from "../../../hooks/fetching/common";
+import { useAddContextToIntent } from "../../../hooks/fetching/common";
 
 function Corpus() {
   const { query, setQuery } = useSearch();
@@ -108,6 +111,13 @@ function Corpus() {
 
   const [addingIntent, setAddingIntent] = useState(false);
 
+  const { data: contextFile } = useFetch<undefined, ContextType>({
+    url: "/training/context",
+    runOnMount: true,
+  });
+
+  const allContext = contextFile ? Object.keys(contextFile) : [];
+
   return (
     <div className={styles.Corpus}>
       <div className={styles.header}>
@@ -165,11 +175,13 @@ function Corpus() {
                 answers={dataPoint.answers}
                 buttons={dataPoint.buttons}
                 enhance={dataPoint.enhance}
+                context={dataPoint.context}
                 setOpenIntent={setOpenIntent}
                 openIntent={openIntent}
                 key={dataPoint.intent + dataPoint.utterances.join("")}
                 reloadData={reloadData}
                 allButtons={allButtons}
+                allContext={allContext}
               />
             ))
           ) : (
@@ -190,6 +202,7 @@ interface IntentProps extends CorpusDataPoint {
   openIntent: string | null;
   reloadData: () => void;
   allButtons: ButtonType[];
+  allContext: string[];
 }
 
 export const Intent = ({
@@ -202,6 +215,8 @@ export const Intent = ({
   openIntent,
   reloadData,
   allButtons,
+  context,
+  allContext,
 }: IntentProps) => {
   const { query } = useSearch();
 
@@ -433,6 +448,39 @@ export const Intent = ({
     }
   };
 
+  const [newContext, setNewContext] = React.useState<string>("");
+
+  const { addContextToIntent } = useAddContextToIntent(
+    {
+      intent,
+      context: newContext,
+    },
+    {
+      dependencies: [newContext],
+    }
+  );
+
+  const handleAddContext = async () => {
+    const response = await addContextToIntent();
+
+    if (!response || !response.success || !response.data) {
+      showNotification({
+        title: "Error",
+        message: "Error while adding context",
+        color: "red",
+      });
+      return;
+    }
+
+    const { success } = response;
+
+    if (success) {
+      reloadData();
+    }
+
+    setNewContext("");
+  };
+
   return (
     <div
       className={`${styles.intentContainer} ${
@@ -516,7 +564,7 @@ export const Intent = ({
               </div>
             </div>
           </div>
-          <div className={styles.enhance}>
+          <section className={styles.enhance}>
             <Checkbox
               label="Enable enhancement"
               checked={enhance}
@@ -524,8 +572,8 @@ export const Intent = ({
                 handleSetEnhanced();
               }}
             />
-          </div>
-          <div className={styles.utterances}>
+          </section>
+          <section className={styles.utterances}>
             <h3>Utterances</h3>
             <ul className={styles.utterancesList}>
               {utterances.map((utterance, index) => (
@@ -553,8 +601,8 @@ export const Intent = ({
                 <Plus weight="bold" />
               </button>
             </div>
-          </div>
-          <div className={styles.answers}>
+          </section>
+          <section className={styles.answers}>
             <h3>Answers</h3>
             <ul className={styles.answersList}>
               {answers.map((answer, index) => (
@@ -582,8 +630,8 @@ export const Intent = ({
                 <Plus weight="bold" />
               </button>
             </div>
-          </div>
-          <div className={styles.intentButtons}>
+          </section>
+          <section className={styles.intentButtons}>
             <h3>Buttons</h3>
             <div className={styles.buttonsList}>
               <ul className={styles.button}>
@@ -627,7 +675,49 @@ export const Intent = ({
                 </button>
               </div>
             </div>
-          </div>
+          </section>
+          <section className={styles.intentContext}>
+            <h3>Context</h3>
+            {context?.length ? (
+              <ul className={styles.contextList}>
+                {context?.map((context, index) => (
+                  <li key={index}>
+                    <Context
+                      context={context}
+                      intent={intent}
+                      reloadData={reloadData}
+                    />
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>No context added.</p>
+            )}
+            <div className={styles.addNew}>
+              <Autocomplete
+                value={newContext}
+                onChange={(e) => setNewContext(e)}
+                placeholder="Add new context"
+                data={allContext.filter((ctx) => !context?.includes(ctx))}
+                style={{
+                  width: "85%",
+                }}
+                styles={{
+                  input: {
+                    width: "100% !important",
+                    fontSize: "16px",
+                  },
+                }}
+              />
+              <button
+                className={styles.addNewButton}
+                onClick={handleAddContext}
+                title="Add new context"
+              >
+                <Plus weight="bold" />
+              </button>
+            </div>
+          </section>
         </div>
       )}
     </div>
@@ -790,6 +880,59 @@ export const ButtonItem = ({
             handleRemoveButton();
           }}
           title="Remove this button"
+        >
+          <X />
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export const Context = ({
+  intent,
+  context,
+  reloadData,
+}: {
+  intent: string;
+  context: string;
+  reloadData: () => void;
+}) => {
+  const { query } = useSearch();
+
+  const { removeContextFromIntent } = useRemoveContextFromIntent({
+    intent,
+    context,
+  });
+
+  const handleRemoveContext = async () => {
+    const response = await removeContextFromIntent();
+
+    if (!response || !response.success || !response.data) {
+      showNotification({
+        title: "Error",
+        message: "Failed to remove context",
+        color: "red",
+      });
+      return;
+    }
+
+    const { success } = response;
+
+    if (success) {
+      reloadData();
+    }
+  };
+
+  return (
+    <div className={styles.context}>
+      <Highlight highlight={query}>{context}</Highlight>
+      <div className={styles.buttons}>
+        <button
+          className={`${styles.button} ${styles.cancel}`}
+          onClick={() => {
+            handleRemoveContext();
+          }}
+          title="Remove this context"
         >
           <X />
         </button>
