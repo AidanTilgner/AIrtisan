@@ -5,6 +5,8 @@ import { useBot } from "../../../contexts/Bot";
 import styles from "./Context.module.scss";
 import { Button, Tooltip } from "@mantine/core";
 import ContextForm from "../../../components/Forms/Context/ContextForm";
+import { TrashSimple } from "@phosphor-icons/react";
+import { showNotification } from "@mantine/notifications";
 
 function Context() {
   const [contextFile, setcontextFile] = useState<Context>();
@@ -28,7 +30,6 @@ function Context() {
   const formattedContext = contextFile ? Object.entries(contextFile) : [];
 
   const [addingNewContext, setAddingNewContext] = useState(false);
-
   return (
     <div className={styles.Context}>
       <div className={styles.header}>
@@ -59,7 +60,14 @@ function Context() {
       <div className={styles.content}>
         {formattedContext?.length ? (
           formattedContext.map((c) => {
-            return <ContextPair key={c[0]} label={c[0]} value={c[1]} />;
+            return (
+              <ContextPair
+                key={c[0]}
+                label={c[0]}
+                value={c[1]}
+                reloadData={reloadData}
+              />
+            );
           })
         ) : (
           <p>No context found.</p>
@@ -74,14 +82,42 @@ export default Context;
 export const ContextPair = ({
   label,
   value,
+  reloadData,
 }: {
   label: string;
   value: unknown;
+  reloadData: () => Promise<void>;
 }) => {
   const [selected, setSelected] = useState(false);
 
+  const { load: deleteContextItem } = useFetch<{ key: string }, Context>({
+    url: "/training/context",
+    method: "DELETE",
+  });
+
+  const deleteContext = async (key: string) => {
+    const res = await deleteContextItem({
+      updatedBody: {
+        key,
+      },
+    });
+
+    if (!res || !res.data) {
+      showNotification({
+        title: "Error",
+        message: "Something went wrong deleting the context.",
+      });
+    }
+
+    await reloadData();
+    showNotification({
+      title: "Success",
+      message: "Context deleted successfully.",
+    });
+  };
+
   return (
-    <Tooltip label={"Click to expand."} multiline position="top-start">
+    <Tooltip label={"Click to select."} multiline position="top-start">
       <div
         className={`${styles.contextPair} ${selected ? styles.selected : ""}`}
         onClick={() => {
@@ -93,7 +129,19 @@ export const ContextPair = ({
         title="Click to expand"
       >
         <p className={styles.label} title={label}>
-          {label}
+          <span>{label}</span>
+          {selected && (
+            <div className={styles.buttons}>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  deleteContext(label);
+                }}
+              >
+                <TrashSimple />
+              </button>
+            </div>
+          )}
         </p>
         <p className={`${styles.value}`}>{String(value)}</p>
       </div>

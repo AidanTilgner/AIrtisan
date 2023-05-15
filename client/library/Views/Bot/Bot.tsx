@@ -17,7 +17,6 @@ import {
   MonitorPlay,
   SquaresFour,
   TextColumns,
-  TreeStructure,
 } from "@phosphor-icons/react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { useSearchParamsUpdate } from "../../hooks/navigation";
@@ -66,12 +65,12 @@ function Bot() {
               icon: <SquaresFour />,
               visible: true,
             },
-            {
-              name: "Flows",
-              id: "flows",
-              icon: <TreeStructure />,
-              visible: true,
-            },
+            // {
+            //   name: "Flows",
+            //   id: "flows",
+            //   icon: <TreeStructure />,
+            //   visible: false,
+            // },
             {
               name: "Training",
               id: "training",
