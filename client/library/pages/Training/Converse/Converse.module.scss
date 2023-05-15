@@ -396,7 +396,7 @@
 .user {
   margin-left: auto;
   border: 1px solid var(--background-contrast);
-  background-color: var(--background-alt);
+  background-color: var(--background-color);
 }
 
 .assistant {
@@ -405,7 +405,7 @@
   background-color: var(--background-alt);
 
   a {
-    color: var(--primary-color);
+    color: var(--text-link);
     text-decoration: underline;
     font-weight: 600;
   }

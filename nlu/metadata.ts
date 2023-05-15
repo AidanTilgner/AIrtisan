@@ -1,5 +1,6 @@
 import { writeFileSync, readFileSync } from "fs";
 import { getBotFileLocations } from "../database/functions/bot";
+import { getBotContext } from "../database/functions/bot";
 
 export const generateMetadata = async (id: number) => {
   writeIntentsToFile(id);
@@ -171,5 +172,39 @@ export const writeButtonsToFile = async (id: number) => {
     );
   } catch (err) {
     console.error(err);
+  }
+};
+
+export const getIntentContextName = async (id: number, intent: string) => {
+  try {
+    const data = await getDataForIntent(id, intent);
+    if (!data) return [];
+
+    return data.context;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+};
+
+export const getIntentContextLoaded = async (id: number, intent: string) => {
+  try {
+    const data = await getDataForIntent(id, intent);
+    if (!data) return [];
+
+    const contextFile = await getBotContext(id);
+
+    if (!contextFile) return [];
+
+    const context = data.context;
+
+    const contextLoaded: string[] = context.map((item: string) => {
+      return contextFile[item];
+    });
+
+    return contextLoaded;
+  } catch (error) {
+    console.error(error);
+    return [];
   }
 };

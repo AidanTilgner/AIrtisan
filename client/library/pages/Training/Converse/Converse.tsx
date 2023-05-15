@@ -251,7 +251,7 @@ function Converse() {
           )}
         </div>
       </div>
-      {!conversation?.training_copy && (
+      {conversation && !conversation?.training_copy && (
         <p className={styles.disclaimer}>
           This conversation is readonly because it is not a training copy.
         </p>
@@ -477,7 +477,8 @@ const ChatPair = ({
 
   const searchParamsUpdate = useSearchParamsUpdate();
 
-  const optionsDisabled = !conversation?.training_copy || assistantLoading;
+  const optionsDisabled =
+    (conversation && !conversation?.training_copy) || assistantLoading;
 
   return (
     <div
@@ -688,7 +689,7 @@ const TextBox = ({
   return (
     <div className={styles.textbox}>
       <textarea
-        disabled={!isRunning || !conversation?.training_copy}
+        disabled={!isRunning || (conversation && !conversation?.training_copy)}
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         placeholder="Say something..."
