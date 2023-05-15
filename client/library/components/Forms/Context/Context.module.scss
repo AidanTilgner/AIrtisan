@@ -4,6 +4,8 @@
   text-align: left;
   height: 100%;
   overflow-y: scroll;
+  scrollbar-width: thin;
+  scrollbar-color: var(--background-contrast) transparent;
 
   h2 {
     font-weight: 500;

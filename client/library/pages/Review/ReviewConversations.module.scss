@@ -211,10 +211,8 @@
   animation-timing-function: ease-in-out;
   position: relative;
   // a thin scrollbar
-  &::-webkit-scrollbar {
-    width: 4px;
-  }
   scrollbar-width: thin;
+  scrollbar-color: var(--background-contrast) transparent;
 
   @media (min-width: 768px) {
     position: absolute;

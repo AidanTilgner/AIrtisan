@@ -280,12 +280,8 @@
   padding: 24px;
   padding-bottom: 124px;
   box-sizing: border-box;
-  // make scrollbar transparent
-  &::-webkit-scrollbar {
-    width: none;
-  }
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+  scrollbar-width: thin;
+  scrollbar-color: var(--background-contrast) transparent;
 
   @media screen and (min-width: 768px) {
     padding: 24px 82px 82px 82px;

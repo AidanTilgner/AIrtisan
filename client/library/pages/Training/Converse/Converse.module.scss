@@ -83,6 +83,8 @@
 .content {
   border: 1px solid var(--background-contrast);
   overflow-y: scroll;
+  scrollbar-width: thin;
+  scrollbar-color: var(--background-contrast) transparent;
   min-height: 30vh;
   max-height: 50vh;
   margin-bottom: 20vh;
