@@ -90,7 +90,11 @@ export type Model = {
     tagline: string;
     metadata: Record<string, unknown>;
   };
-  specification: { model: AllowedChatModels; version: string };
+  specification: {
+    model: AllowedChatModels;
+    version: string;
+    none_fallback: boolean;
+  };
 };
 
 export interface Bot {

@@ -3,7 +3,15 @@ import { Model } from "../../../../documentation/main";
 import useFetch from "../../../hooks/useFetch";
 import styles from "./ModelData.module.scss";
 import { useBot } from "../../../contexts/Bot";
-import { Button, Flex, Grid, TextInput, Textarea, Title } from "@mantine/core";
+import {
+  Button,
+  Checkbox,
+  Flex,
+  Grid,
+  TextInput,
+  Textarea,
+  Title,
+} from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 
 function ModelData() {
@@ -41,6 +49,7 @@ function ModelData() {
     specification: {
       model: "gpt-3.5-turbo",
       version: "0.1.0",
+      none_fallback: false,
     },
   });
 
@@ -254,7 +263,26 @@ function ModelData() {
                   : "Your bot will be given this tagline before sending any message."
               }
             />
-          </Grid.Col>{" "}
+          </Grid.Col>
+          <Grid.Col span={12} />
+          <Grid.Col span={12}>
+            <Title order={2}>Specification</Title>
+          </Grid.Col>
+          <Grid.Col sm={12} md={6}>
+            <Checkbox
+              label="None Fallback"
+              checked={formData.specification.none_fallback}
+              onChange={(event) => {
+                setFormData({
+                  ...formData,
+                  specification: {
+                    ...formData.specification,
+                    none_fallback: event.currentTarget.checked,
+                  },
+                });
+              }}
+            />
+          </Grid.Col>
           <Grid.Col span={12} />
           <Grid.Col span={12} />
           <Grid.Col span={12}>

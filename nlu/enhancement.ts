@@ -53,7 +53,15 @@ const getInitialPrompt = async (bot_id: number, model: Model) => {
   Be sure to carefully follow the instructions, and follow them carefully. They will tell you how much to adhere to the original response, and how much creative liberty you may take.
   `;
 };
-const confidenceMapper = (conf: number) => {
+const confidenceMapper = (
+  conf: number,
+  none_fallback: boolean,
+  intent: string
+) => {
+  if (none_fallback && intent.toLowerCase() === "none") {
+    return "extremely low";
+  }
+
   if (conf < 0.5) {
     return "low";
   }
@@ -82,19 +90,27 @@ const getFormattedPrompt = async (
   intent: string,
   response: string,
   confidence: number,
-  botId: number
+  botId: number,
+  none_fallback: boolean
 ) => {
   const userStatement = `A user said: "${message}"`;
   const intentStatement = `The intent was classified as "${intent}" with a confidence of ${confidence}%, which is ${confidenceMapper(
-    confidence
+    confidence,
+    none_fallback,
+    intent
   )}`;
   const responseStatement = `The original response was "${response}"`;
 
   const contextLoaded = await getIntentContextLoaded(botId, intent);
 
+  const noneFallbackDisclaimer =
+    none_fallback && intent.toLowerCase() === "none"
+      ? "This is a fallback 'none' intent, so you have free range to respond accordingly."
+      : "";
+
   return `${userStatement}. ${intentStatement}. ${responseStatement}. ${intructionsStatement(
     confidence
-  )}. Here is some additional context that might be helpful in formulating your answer: ${contextLoaded.join(
+  )}. ${noneFallbackDisclaimer}. Here is some additional context that might be helpful in formulating your answer: ${contextLoaded.join(
     ", "
   )}.`;
 };
@@ -107,11 +123,13 @@ export const getSpicedUpAnswer = async (
     response,
     session_id,
     confidence,
+    none_fallback,
   }: {
     intent: string;
     response: string;
     session_id: string;
     confidence: number;
+    none_fallback: boolean;
   }
 ): Promise<string> => {
   try {
@@ -125,7 +143,8 @@ export const getSpicedUpAnswer = async (
       intent,
       response,
       confidence,
-      bot_id
+      bot_id,
+      none_fallback
     );
 
     const conversationChats = await getConversationChatsFromSessionId(
@@ -195,17 +214,46 @@ export const enhanceChatIfNecessary = async ({
   enhanced: boolean;
 }> => {
   try {
-    const intentData = await getDataForIntent(botId, intent);
-    if (!intentData || !intentData.enhance) {
+    const { ALLOW_CHAT_ENHANCEMENT } = process.env;
+
+    if (ALLOW_CHAT_ENHANCEMENT !== "true") {
       return {
         answer,
         enhanced: false,
       };
     }
 
-    const { ALLOW_CHAT_ENHANCEMENT } = process.env;
+    const modelFile = await getBotModel(botId);
 
-    if (ALLOW_CHAT_ENHANCEMENT !== "true") {
+    if (!modelFile) {
+      return {
+        answer,
+        enhanced: false,
+      };
+    }
+
+    const {
+      specification: { none_fallback },
+    } = modelFile;
+
+    const intentData = await getDataForIntent(botId, intent);
+
+    if (!intentData && none_fallback) {
+      const newAnswer = await getSpicedUpAnswer(message, botId, {
+        intent,
+        response: answer,
+        session_id,
+        confidence,
+        none_fallback,
+      });
+
+      return {
+        answer: newAnswer,
+        enhanced: true,
+      };
+    }
+
+    if (!intentData.enhance) {
       return {
         answer,
         enhanced: false,
@@ -218,6 +266,7 @@ export const enhanceChatIfNecessary = async ({
         response: answer,
         session_id,
         confidence,
+        none_fallback,
       });
 
       return {
