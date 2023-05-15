@@ -314,6 +314,37 @@ export const updateBotContext = async (id: Bot["id"], context: Context) => {
   }
 };
 
+export const deleteBotContextItem = async (id: Bot["id"], key: string) => {
+  try {
+    const bot = await dataSource.manager.findOne(entities.Bot, {
+      where: { id },
+    });
+
+    if (!bot) return null;
+
+    const file = readFileSync(
+      path.join(storageLocation, bot.context_file),
+      "utf8"
+    ).toString();
+
+    const contents = JSON.parse(file);
+
+    delete contents[key];
+
+    writeFileSync(
+      path.join(storageLocation, bot.context_file),
+      format(JSON.stringify(contents), {
+        parser: "json",
+      })
+    );
+
+    return contents;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
 export const updateBotModel = async (id: Bot["id"], model: Model) => {
   try {
     const bot = await dataSource.manager.findOne(entities.Bot, {

@@ -98,9 +98,33 @@
     white-space: nowrap;
     text-transform: lowercase;
     box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    gap: 14px;
 
     @media (min-width: 768px) {
       width: 20%;
+    }
+
+    .buttons {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      button {
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease-in-out;
+        font-size: 14px;
+
+        &:hover {
+          opacity: 0.6;
+        }
+      }
     }
   }
 
@@ -140,7 +164,7 @@
 
 .selected {
   max-height: initial;
-  border-left: 1.5px solid var(--primary-color);
+  border: 1.5px solid var(--primary-color);
   padding-left: 18px;
   background-color: var(--background-alt);
 

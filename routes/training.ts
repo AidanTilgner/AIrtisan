@@ -33,6 +33,7 @@ import {
   getBotContext,
   getBotModel,
   updateBotContext,
+  deleteBotContextItem,
 } from "../database/functions/bot";
 
 const router = Router();
@@ -129,6 +130,37 @@ router.put("/context", hasAccessToBot, async (req, res) => {
 
     const toSend = {
       message: "Updated context",
+      success: true,
+      data: context,
+    };
+
+    res.send(toSend);
+  } catch (error) {
+    console.error(error);
+    res.send({ error });
+  }
+});
+
+router.delete("/context", hasAccessToBot, async (req, res) => {
+  try {
+    const botId = req.body.bot_id || req.query.bot_id;
+
+    if (!botId) {
+      res.status(400).send({ message: "Missing botId." });
+      return;
+    }
+
+    const key = req.body.key;
+
+    if (!key) {
+      res.status(400).send({ message: "Missing key." });
+      return;
+    }
+
+    const context = await deleteBotContextItem(Number(botId), key);
+
+    const toSend = {
+      message: "Deleted context piece",
       success: true,
       data: context,
     };
