@@ -197,6 +197,7 @@
 
 .opened_conversation {
   // outline: 1px solid rgb(34, 86, 242, 0.8);
+  border: 1px solid var(--background-contrast);
   height: 70vh;
   overflow-y: scroll;
   box-sizing: border-box;

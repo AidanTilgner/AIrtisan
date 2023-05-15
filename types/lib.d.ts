@@ -11,6 +11,7 @@ export interface CorpusDataPoint {
   answers: string[];
   buttons: Button[];
   enhance?: boolean;
+  context?: string[];
 }
 
 export interface Corpus {

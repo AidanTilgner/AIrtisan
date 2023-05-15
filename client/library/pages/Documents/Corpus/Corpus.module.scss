@@ -221,6 +221,7 @@
 
 .intentOpen {
   // outline: 1px solid rgb(34, 86, 242, 0.8);
+  border: 1px solid var(--background-contrast);
   background-color: var(--background);
   height: 70vh;
   overflow-y: scroll;
@@ -690,3 +691,70 @@
 
 // .buttonItem {
 // }
+
+section {
+  margin-bottom: 24px;
+}
+
+.contextList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  li {
+    padding-left: 14px;
+    position: relative;
+    border-left: 1px solid var(--background-contrast);
+    transition: all 0.2s ease-in-out;
+
+    &:hover {
+      padding-left: 18px;
+      border-left: 2px solid var(--primary-color);
+    }
+  }
+}
+
+.context {
+  cursor: pointer;
+  position: relative;
+
+  &:hover {
+    .buttons {
+      opacity: 1;
+    }
+  }
+
+  p {
+    margin: 0;
+  }
+
+  .buttons {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    right: 14px;
+    top: 0;
+    bottom: 0;
+    opacity: 0;
+    left: initial;
+    transition: all 0.2s ease-in-out;
+
+    .button {
+      border: none;
+      background-color: transparent;
+      cursor: pointer;
+      font-size: 14px;
+      opacity: 0.5;
+      transition: all 0.2s ease-in-out;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+}

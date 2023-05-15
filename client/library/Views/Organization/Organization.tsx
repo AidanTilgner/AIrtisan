@@ -58,7 +58,7 @@ function Organization() {
   const [searchParams] = useSearchParams();
 
   const [currentTab, setCurrentTab] = useState<Tab>(
-    (searchParams.get("tab") as Tab) || "admins"
+    (searchParams.get("tab") as Tab) || "bots"
   );
 
   useEffect(() => {
@@ -310,13 +310,13 @@ function Organization() {
           <Tabs
             tabs={[
               {
-                name: "Users",
-                id: "admins",
+                name: "Bots",
+                id: "bots",
                 visible: true,
               },
               {
-                name: "Bots",
-                id: "bots",
+                name: "Users",
+                id: "admins",
                 visible: true,
               },
               {

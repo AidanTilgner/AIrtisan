@@ -568,3 +568,49 @@ export const useRefreshAccessToken = (
     success,
   };
 };
+
+export const useAddContextToIntent = (
+  { intent, context }: { intent: string; context: string },
+  config?: Partial<
+    UseFetchConfig<{ intent: string; context: string }, CorpusDataPoint>
+  >
+) => {
+  const { load, data, success } = useFetch<
+    { intent: string; context: string; retrain: boolean },
+    CorpusDataPoint
+  >({
+    ...config,
+    url: `/training/intent/${intent}/context`,
+    method: "PUT",
+    body: { intent, context, retrain: true },
+  });
+
+  return {
+    addContextToIntent: load,
+    data: data,
+    success,
+  };
+};
+
+export const useRemoveContextFromIntent = (
+  { intent, context }: { intent: string; context: string },
+  config?: Partial<
+    UseFetchConfig<{ intent: string; context: string }, CorpusDataPoint>
+  >
+) => {
+  const { load, data, success } = useFetch<
+    { intent: string; context: string; retrain: boolean },
+    CorpusDataPoint
+  >({
+    ...config,
+    url: `/training/intent/${intent}/context`,
+    method: "DELETE",
+    body: { intent, context, retrain: true },
+  });
+
+  return {
+    removeContextFromIntent: load,
+    data: data,
+    success,
+  };
+};
