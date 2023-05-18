@@ -34,8 +34,6 @@ function index() {
     ) {
       updateSearchParams(new Map([["document_type", tab]]));
     }
-
-    return () => updateSearchParams(new Map([["document_type", ""]]));
   }, [tab]);
 
   return (
