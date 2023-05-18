@@ -47,12 +47,12 @@ function useFetch<B, D>({
         ...query,
       };
 
-  const readyToRun = () => {
-    if (useBotId) {
-      return !!bot_id;
+  const readyToRun = useCallback(() => {
+    if (useBotId && !bot_id) {
+      return false;
     }
     return true;
-  };
+  }, [bot_id, useBotId]);
 
   const queryStr = Object.keys(allQuery)
     .map((key) => (allQuery[key] ? `${key}=${allQuery[key]}` : ""))
