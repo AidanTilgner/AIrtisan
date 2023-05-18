@@ -30,6 +30,7 @@ import {
   createApiKey,
   deleteApiKey,
   getAllApiKeys,
+  getApiKeysForBot,
 } from "../database/functions/apiKey";
 import { Admin } from "../database/models/admin";
 import { config } from "dotenv";
@@ -473,38 +474,51 @@ router.post(
   }
 );
 
-router.delete("/api-key/:id", checkIsAdmin, async (req, res) => {
-  try {
-    const { id } = req.params;
+router.delete(
+  "/api-key/:id",
+  checkIsAdmin,
+  hasAccessToBot,
+  async (req, res) => {
+    try {
+      const { id } = req.params;
 
-    const result = await deleteApiKey(parseInt(id));
+      const result = await deleteApiKey(parseInt(id));
 
-    if (!result) {
+      if (!result) {
+        res.status(500).send({
+          message: "Internal server error.",
+          data: { success: false },
+        });
+        return;
+      }
+
+      res.status(200).send({
+        message: "API key deleted successfully.",
+        data: { success: true },
+      });
+    } catch (err) {
+      console.error(err);
       res
         .status(500)
         .send({ message: "Internal server error.", data: { success: false } });
-      return;
     }
-
-    res.status(200).send({
-      message: "API key deleted successfully.",
-      data: { success: true },
-    });
-  } catch (err) {
-    console.error(err);
-    res
-      .status(500)
-      .send({ message: "Internal server error.", data: { success: false } });
   }
-});
+);
 
 router.get("/api-keys", checkIsAdmin, async (req, res) => {
   try {
-    const apiKeys = await getAllApiKeys();
+    const bot_id = req.body.bot_id || req.query.bot_id;
+
+    if (!bot_id) {
+      res.status(400).send({ message: "Missing bot id." });
+      return;
+    }
+
+    const apiKeys = await getApiKeysForBot(Number(bot_id));
 
     res.status(200).send({
       message: "API keys fetched successfully.",
-      data: { apiKeys },
+      data: apiKeys,
     });
   } catch (err) {
     console.error(err);

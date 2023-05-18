@@ -104,6 +104,35 @@ export const getBot = async (id: Bot["id"], loadOwner = false) => {
   }
 };
 
+export const getBotBySlug = async (slug: Bot["slug"], loadOwner = false) => {
+  try {
+    const bot = await dataSource.manager.findOne(entities.Bot, {
+      where: { slug },
+    });
+
+    if (!bot) return null;
+
+    const botToSend: BotWithLoadedOwner = {
+      ...bot,
+      owner: undefined,
+    };
+
+    if (loadOwner && bot) {
+      const owner = await getBotOwner(bot.owner_id, bot.owner_type);
+      if (owner) {
+        botToSend.owner = owner;
+      }
+
+      return botToSend;
+    }
+
+    return bot;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
 export const getBots = async () => {
   try {
     const bots = await dataSource.manager.find(entities.Bot);

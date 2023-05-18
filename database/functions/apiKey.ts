@@ -64,6 +64,22 @@ export const getAllApiKeys = async () => {
   }
 };
 
+export const getApiKeysForBot = async (bot_id: number) => {
+  try {
+    const result = await dataSource.manager.find(entities.ApiKey, {
+      where: {
+        bot: {
+          id: bot_id,
+        },
+      },
+    });
+    return result;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};
+
 export const deleteApiKey = async (id: number) => {
   try {
     const result = await dataSource.manager.delete(entities.ApiKey, id);
