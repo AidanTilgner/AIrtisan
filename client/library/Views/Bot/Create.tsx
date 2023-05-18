@@ -99,9 +99,18 @@ function Create() {
           <Grid.Col sm={12} md={6}>
             <Select
               label="Owner Type"
+              description="Does it belong to you or an organizaton?"
               data={[
-                { value: "admin", label: "Admin" },
-                { value: "organization", label: "Organization" },
+                { value: "admin", label: "Me" },
+                {
+                  value: "organization",
+                  label: `Organization ${
+                    !organizations || organizations.length < 1
+                      ? "(None found)"
+                      : ""
+                  }`,
+                  disabled: !organizations || organizations.length < 1,
+                },
               ]}
               value={ownerType}
               onChange={(e) => setOwnerType(e as Bot["owner_type"])}
@@ -114,16 +123,21 @@ function Create() {
               <Select
                 label="Organization"
                 data={
-                  organizations
+                  organizations?.length
                     ? organizations.map((org) => {
                         return {
                           label: org.name as string,
                           value: String(org.id),
                         };
                       })
-                    : []
+                    : [
+                        {
+                          label: "No organizations found",
+                          value: "none",
+                        },
+                      ]
                 }
-                value={String(formData.owner_id)}
+                value={String(formData.owner_id) || "none"}
                 onChange={(e) =>
                   setFormData({ ...formData, owner_id: Number(e) })
                 }
@@ -163,16 +177,21 @@ function Create() {
             />
           </Grid.Col>
           <Grid.Col sm={12} md={6}>
-            <TextInput
+            <Select
               label="Bot Language"
               placeholder="The language of your bot..."
               value={formData.bot_language || ""}
-              onChange={(e) =>
+              onChange={(e) => {
+                if (e === null) return;
                 setFormData({
                   ...formData,
-                  bot_language: e.currentTarget.value,
-                })
-              }
+                  bot_language: e as Bot["bot_language"],
+                });
+              }}
+              data={[
+                { value: "en-US", label: "English (United States) <en-US>" },
+                { value: "fr-FR", label: "French (France) <fr-FR>" },
+              ]}
             />
           </Grid.Col>
           <Grid.Col span={12} />

@@ -11,6 +11,7 @@
       rel="stylesheet"
     />
     <title>Log in to Onyx.</title>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <link rel="icon" href="/favicon" />
     <style>
       body {
@@ -118,6 +119,35 @@
       a {
         color: #2256f2;
       }
+
+      .passwordInput {
+        position: relative;
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      .passwordInput input {
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      #togglePassword {
+        position: absolute;
+        top: calc(50% - 9px);
+        right: 24px;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+        font-size: 16px;
+      }
+
+      #togglePassword:hover {
+        transform: scale(1.05);
+        opacity: 0.8;
+      }
+
+      #togglePassword:active {
+        transform: scale(0.95) translateY(2px);
+      }
     </style>
   </head>
   <body>
@@ -155,12 +185,17 @@
         </div>
         <div class="formGroup">
           <label for="password">Password</label>
-          <input
-            type="password"
-            name="password"
-            placeholder="Type your password..."
-            id="password"
-          />
+          <div class="passwordInput">
+            <input
+              type="password"
+              name="password"
+              placeholder="Type your password..."
+              id="password"
+            />
+            <span id="togglePassword" onclick="togglePasswordVisibility()">
+              <i class="ph-bold ph-eye" id="eyeIcon"></i>
+            </span>
+          </div>
         </div>
         <div class="formGroup submit">
           <button id="loginbutton" type="button">Log in.</button>
@@ -171,6 +206,21 @@
       </div>
     </div>
     <script>
+      function togglePasswordVisibility() {
+        const passwordInput = document.getElementById("password");
+        const eyeIcon = document.getElementById("eyeIcon");
+
+        if (passwordInput.type === "password") {
+          passwordInput.type = "text";
+          eyeIcon.classList.remove("ph-eye");
+          eyeIcon.classList.add("ph-eye-slash");
+        } else {
+          passwordInput.type = "password";
+          eyeIcon.classList.remove("ph-eye-slash");
+          eyeIcon.classList.add("ph-eye");
+        }
+      }
+
       const loginButton = document.getElementById("loginbutton");
       loginButton.addEventListener("click", async () => {
         const username = document.getElementById("username").value;

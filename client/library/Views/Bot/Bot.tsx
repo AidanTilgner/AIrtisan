@@ -99,7 +99,7 @@ function Bot() {
               name: "Auth",
               id: "auth",
               icon: <FingerprintSimple />,
-              visible: isSuperAdmin,
+              visible: true,
             },
           ]}
           setTab={setCurrentTab}

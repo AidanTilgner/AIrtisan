@@ -385,7 +385,7 @@ router.get("/intents", hasAccessToBot, async (req, res) => {
 router.get("/intents/full", hasAccessToBot, async (req, res) => {
   try {
     const botId = req.query.bot_id;
-    const intents = getIntentsFull(Number(botId));
+    const intents = await getIntentsFull(Number(botId));
     const toSend = {
       message: "Got intents",
       success: true,
