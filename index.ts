@@ -26,7 +26,7 @@ const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS as string;
 
 app.use(
   cors({
-    origin: ALLOWED_ORIGINS.split(","),
+    origin: "*",
     credentials: true,
   }),
   (req, res, next) => {

@@ -7,6 +7,11 @@ const widgets = [
     entry: "widgets/chatboxes/Rewire/index.tsx",
     output: "public/widgets/chatboxes/rewire-site.js",
   },
+  {
+    name: "floating-chat",
+    entry: "widgets/chatboxes/Floating/index.tsx",
+    output: "public/widgets/chatboxes/floating-chat.js",
+  },
 ];
 
 const buildWidget = async (widget) => {

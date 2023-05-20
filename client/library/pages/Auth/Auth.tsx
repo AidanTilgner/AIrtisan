@@ -1,19 +1,17 @@
-import React, { useEffect } from "react";
+import React from "react";
 import styles from "./Auth.module.scss";
-import { deleteApiKey, getAllApiKeys } from "../../helpers/fetching/admin";
 import { TrashSimple, Copy } from "@phosphor-icons/react";
 import { showNotification } from "@mantine/notifications";
-import { ApiKey } from "../../../documentation/main";
-import { useAddApiKey } from "../../hooks/fetching/bot";
+import {
+  useAddApiKey,
+  useDeleteApiKey,
+  useGetApiKeys,
+} from "../../hooks/fetching/bot";
 
 function Auth() {
-  const [apiKeys, setApiKeys] = React.useState<ApiKey[]>([]);
-
-  useEffect(() => {
-    getAllApiKeys().then(({ api_keys }) => {
-      setApiKeys(api_keys);
-    });
-  }, []);
+  const { data: apiKeys, getApiKeys: reloadApiKeys } = useGetApiKeys({
+    runOnMount: true,
+  });
 
   const [newApiKey, setNewApiKey] = React.useState({
     name: "",
@@ -44,9 +42,7 @@ function Auth() {
         name: res.data.for,
         key: res.data.key,
       });
-      getAllApiKeys().then(({ api_keys }) => {
-        setApiKeys(api_keys);
-      });
+      reloadApiKeys();
     });
   };
 
@@ -58,15 +54,15 @@ function Auth() {
     });
   };
 
+  const { deleteApiKey } = useDeleteApiKey();
+
   const handleDeleteApiKey = (id: number) => {
-    deleteApiKey({ id }).then(() => {
+    deleteApiKey({ updatedUrl: `/auth/api-key/${id}` }).then(() => {
       showNotification({
         title: "Success",
         message: "Key deleted",
       });
-      getAllApiKeys().then(({ api_key }) => {
-        setApiKeys(api_key);
-      });
+      reloadApiKeys();
     });
   };
 
