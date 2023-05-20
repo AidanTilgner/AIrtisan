@@ -1,0 +1,110 @@
+.onyx {
+  position: fixed;
+  right: 24px;
+  z-index: 100;
+  transition: all 0.75s ease-in-out;
+}
+
+.container {
+  height: 56px;
+  width: 56px;
+  border-radius: 50%;
+  background: linear-gradient(90deg, #1614db 0%, #8709e8 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.8;
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+  position: relative;
+
+  &:hover {
+    opacity: 1;
+  }
+
+  &:active {
+    transform: translateY(2px);
+  }
+
+  svg {
+    font-size: 24px;
+  }
+}
+
+.backgroundCircleOne {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+  background: linear-gradient(
+    180deg,
+    rgba(22, 20, 219, 0.4) 0%,
+    rgba(135, 9, 232, 0.425) 100%
+  );
+}
+
+.backgroundCircleTwo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+  background: rgba(135, 9, 232, 0.5);
+}
+
+.backgroundCircleThree {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+  background: rgba(22, 20, 219, 0.5);
+}
+
+.backgroundCircleFour {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+  background: linear-gradient(
+    180deg,
+    rgba(22, 20, 219, 0.425) 0%,
+    rgba(135, 9, 232, 0.4) 100%
+  );
+}
+
+@keyframes circleJump {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  20% {
+    transform: translateY(-45px) rotate(90deg);
+  }
+  40% {
+    transform: translateY(-56px) rotate(180deg);
+  }
+  60% {
+    transform: translateY(-56px) rotate(360deg);
+  }
+  80% {
+    transform: translateY(-45px) rotate(450deg);
+  }
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+}
+
+.clicked {
+  .backgroundCircleOne {
+    animation-name: circleJump;
+    animation-duration: 0.5s;
+    animation-timing-function: ease-in-out;
+    animation-fill-mode: forwards;
+  }
+}
