@@ -10,6 +10,11 @@ import WidgetsRouter from "./widgets";
 import BotRouter from "./bots";
 import AdminRouter from "./admin";
 import ApiVersionOne from "../api/apiVersionOne";
+import { CorsOptions } from "cors";
+import { config } from "dotenv";
+import cors from "cors";
+
+config();
 
 const router = Router();
 
@@ -17,6 +22,25 @@ router.use(Express.json());
 router.use(Express.urlencoded({ extended: true }));
 
 router.use(logIP);
+router.use("/v1", ApiVersionOne);
+
+const CurrentDomain = process.env.CURRENT_DOMAIN as string;
+
+const onlyAllowFromDomain: CorsOptions = {
+  origin: function (origin, callback) {
+    if (origin === CurrentDomain) {
+      callback(null, true);
+    } else {
+      callback(
+        new Error(
+          "The CORS policy for this site does not allow access from the specified Origin."
+        )
+      );
+    }
+  },
+};
+
+router.use(cors(onlyAllowFromDomain));
 
 router.use("/organizations", OrganizationRouter);
 router.use("/nlu", NLURouter);
@@ -27,6 +51,5 @@ router.use("/conversations", ConversationsRouter);
 router.use("/widgets", WidgetsRouter);
 router.use("/bots", BotRouter);
 router.use("/admin", AdminRouter);
-router.use("/v1", ApiVersionOne);
 
 export default router;

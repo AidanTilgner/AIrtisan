@@ -4,7 +4,7 @@ import ApiRouter from "./routes/api";
 import path from "path";
 import "reflect-metadata";
 import { initializeDatabase } from "./database";
-import cors from "cors";
+import cors, { CorsOptions } from "cors";
 import http from "http";
 import { Server } from "socket.io";
 import { initSocketIO } from "./utils/socketio";
@@ -22,15 +22,13 @@ const io = new Server(server);
 
 const connection = initSocketIO(io);
 
-const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS as string;
-
 app.use(
   cors({
     origin: "*",
     credentials: true,
   }),
   (req, res, next) => {
-    res.header("Access-Control-Allow-Origin", ALLOWED_ORIGINS);
+    res.header("Access-Control-Allow-Origin", "*");
     res.header(
       "Access-Control-Allow-Headers",
       "Origin, X-Requested-With, Content-Type, Accept"
