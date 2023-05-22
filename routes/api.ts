@@ -10,6 +10,9 @@ import WidgetsRouter from "./widgets";
 import BotRouter from "./bots";
 import AdminRouter from "./admin";
 import ApiVersionOne from "../api/apiVersionOne";
+import { config } from "dotenv";
+
+config();
 
 const router = Router();
 
@@ -18,6 +21,7 @@ router.use(Express.urlencoded({ extended: true }));
 
 router.use(logIP);
 
+router.use("/v1", ApiVersionOne);
 router.use("/organizations", OrganizationRouter);
 router.use("/nlu", NLURouter);
 router.use("/chat", ChatRouter);
@@ -27,6 +31,5 @@ router.use("/conversations", ConversationsRouter);
 router.use("/widgets", WidgetsRouter);
 router.use("/bots", BotRouter);
 router.use("/admin", AdminRouter);
-router.use("/v1", ApiVersionOne);
 
 export default router;

@@ -94,6 +94,7 @@ export type Model = {
     model: AllowedChatModels;
     version: string;
     none_fallback: boolean;
+    hipaa_compliant: boolean;
   };
 };
 
