@@ -107,30 +107,18 @@ export const getBotModelFileContents = async (bot: {
         description: bot.name + " is a digital assistant.",
       },
       works_for: {
-        name: "Basic Company",
+        name: "Cool Company",
         description:
-          "Basic Company is a company that does basic things. We are a company that does basic things.",
+          "Cool Company is a company that does awesome things. We are a company that does basic things.",
         site_url: "https://google.com",
-        tagline: "Do basic things.",
-        metadata: {
-          services: ["Basic Things", "Basic Things"],
-          location: "Oregon, United States",
-          founded: "2023",
-          people: [
-            {
-              name: "John Doe",
-              role: "Co-Founder, CEO",
-              contact: {
-                email: "johndoe@gmail.com",
-                phone: "+p hon-enu-umbe",
-              },
-            },
-          ],
-        },
+        tagline: "Do awesome things.",
+        metadata: {},
       },
       specification: {
         model: bot.enhancement_model,
         version: bot.bot_version,
+        none_fallback: false,
+        hipaa_compliant: false,
       },
     };
     const fileContents = format(JSON.stringify(fileContentsObject), {
