@@ -174,3 +174,21 @@ export const useDeleteApiKey = (
     success,
   };
 };
+
+export const useDeleteBot = (
+  botId: number | string,
+  config?: Partial<UseFetchConfig<undefined, boolean>>
+) => {
+  const { load, data, success } = useFetch<undefined, boolean>({
+    useBotId: false,
+    ...config,
+    url: `/bots/${botId}`,
+    method: "DELETE",
+  });
+
+  return {
+    deleteBot: load,
+    data: data,
+    success,
+  };
+};

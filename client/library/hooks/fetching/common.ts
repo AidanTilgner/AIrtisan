@@ -104,7 +104,7 @@ export const useRenameIntent = (
     CorpusDataPoint
   >({
     ...config,
-    url: "/training/intent",
+    url: "/training/intent/rename",
     method: "PUT",
     body: { old_intent: intent, new_intent: newIntent, retrain: true },
   });

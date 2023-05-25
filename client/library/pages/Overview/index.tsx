@@ -1,11 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 import styles from "./index.module.scss";
 import { SunHorizon, Sun, MoonStars, HandWaving } from "@phosphor-icons/react";
 import { useGetRecentConversations } from "../../hooks/fetching/common";
 import { useSearchParamsUpdate } from "../../hooks/navigation";
 import ConversationCard from "../../components/Cards/Conversation/ConversationCard";
 import { useBot } from "../../contexts/Bot";
-import { usePauseBot, useStartupBot } from "../../hooks/fetching/bot";
+import {
+  useDeleteBot,
+  usePauseBot,
+  useStartupBot,
+} from "../../hooks/fetching/bot";
+import { useModal } from "../../contexts/Modals";
+import { Button, Flex, TextInput } from "@mantine/core";
+import { showNotification } from "@mantine/notifications";
+import { useNavigate } from "react-router-dom";
+import { useUser } from "../../contexts/User";
 
 function index() {
   const { bot, isRunning, reloadBot, isLoading } = useBot();
@@ -67,6 +76,76 @@ function index() {
     await reloadBot();
   };
 
+  const { setModal, closeModal } = useModal();
+
+  const { deleteBot } = useDeleteBot(bot?.id as number, {
+    dependencies: [bot?.id],
+  });
+
+  const navigate = useNavigate();
+
+  const { user } = useUser();
+
+  const handleDeleteBot = () => {
+    setModal({
+      title: "Delete Bot",
+      content: () => {
+        const [nameConfirmation, setNameConfirmation] = useState("");
+
+        return (
+          <div>
+            <p>
+              Type {'"'}
+              <strong>{bot?.name}</strong>
+              {'"'} to confirm deletion of the bot.
+            </p>
+            <TextInput
+              label="Bot Name"
+              value={nameConfirmation}
+              onChange={(e) => {
+                setNameConfirmation(e.currentTarget.value);
+              }}
+            />
+            <br />
+            <Flex align="center" justify="flex-end" gap="24px">
+              <Button variant="default" onClick={closeModal}>
+                Cancel
+              </Button>
+              <Button
+                variant="filled"
+                color="red"
+                onClick={async () => {
+                  const res = await deleteBot();
+                  if (!res || !res.data || !res.success) {
+                    showNotification({
+                      title: "Error",
+                      message: "Something went wrong",
+                      color: "red",
+                    });
+                    return;
+                  }
+                  showNotification({
+                    title: "Success",
+                    message: `Bot ${bot?.name} deleted successfully`,
+                  });
+                  closeModal();
+                  navigate(`/profile/${user?.username}`);
+                }}
+                disabled={nameConfirmation !== bot?.name}
+              >
+                Delete
+              </Button>
+            </Flex>
+          </div>
+        );
+      },
+      type: "confirmation",
+      buttons: [],
+      onClose: closeModal,
+      size: "md",
+    });
+  };
+
   return (
     <div className={styles.Home}>
       <div className={styles.top}>
@@ -111,6 +190,14 @@ function index() {
             </button>
           )}
           <button
+            className={`${styles.quickAction} ${styles.btnDanger}`}
+            onClick={() => {
+              handleDeleteBot();
+            }}
+          >
+            Delete Bot
+          </button>
+          <button
             className={`${styles.quickAction} ${styles.btnPrimary}`}
             onClick={() => {
               updateSearchParams(new Map([["tab", "review"]]));
@@ -118,7 +205,6 @@ function index() {
           >
             See Conversations
           </button>
-
           <button
             className={`${styles.quickAction} ${styles.btnPrimary}`}
             onClick={() => {
