@@ -1,4 +1,5 @@
 import p, { Browser } from "puppeteer";
+import { extractDomain } from "./formatting";
 
 let browserInstance: Browser | null = null;
 let closeTimeout: NodeJS.Timeout | null = null;
@@ -46,14 +47,6 @@ export const getWebsitePageLinks = async (
     console.error(error);
     return [];
   }
-};
-
-export const extractDomain = (url: string) => {
-  const withoutHttp = url.replace("https://", "").replace("http://", "");
-  const formatted = withoutHttp.split(".").slice(-2).join(".");
-  // remove endpoint
-  const formattedWithoutEndpoint = formatted.split("/")[0];
-  return formattedWithoutEndpoint;
 };
 
 export const isAFile = (url: string) => {

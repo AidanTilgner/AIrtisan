@@ -39,6 +39,9 @@ export type Model = {
     none_fallback: boolean;
     hipaa_compliant: boolean;
   };
+  security: {
+    domain_whitelist: string[];
+  };
 };
 
 export type Context = Record<string, unknown>;
