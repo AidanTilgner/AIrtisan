@@ -1,10 +1,15 @@
 export const previews = [
+  // {
+  //   name: "Rewire",
+  //   widgetJsFile: "/api/widgets/chatboxes/rewire-site.js",
+  //   widgetCssFile: "/api/widgets/chatboxes/rewire-site.css",
+  //   rootId: "onyx-chat-rewire-root",
+  // },
   {
-    name: "Rewire",
-    hostedLocation: "https://vvibrant.dev",
-    widgetJsFile: "/api/widgets/chatboxes/rewire-site.js",
-    widgetCssFile: "/api/widgets/chatboxes/rewire-site.css",
-    rootId: "onyx-chat-rewire-root",
+    name: "Updated Rewire",
+    widgetJsFile: "/api/widgets/chatboxes/rewire-site-updated.js",
+    widgetCssFile: "/api/widgets/chatboxes/rewire-site-updated.css",
+    rootId: "onyx-chat-rewire-root-updated",
   },
 ];
 

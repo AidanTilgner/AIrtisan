@@ -103,10 +103,13 @@
   align-items: center;
   justify-content: space-between;
   display: flex;
-  background-color: transparent;
+  background-color: var(--background-color);
   border: none;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
+  border: 1px solid var(--background-contrast);
+  padding: 8px 18px;
+  border-radius: 5px;
 
   &:hover {
     opacity: 0.6;

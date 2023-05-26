@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useMemo } from "react";
+import React, { createContext, useContext, useEffect, useMemo } from "react";
 import { Bot } from "../../documentation/main";
 import { useGetBot } from "../hooks/fetching/bot";
 import { showNotification } from "@mantine/notifications";
@@ -56,6 +56,10 @@ export const BotProvider = ({
     await reloadGetBot();
     setIsLoading(false);
   };
+
+  useEffect(() => {
+    (window as unknown as Record<string, string>).bot_slug = bot?.slug || "";
+  }, [bot]);
 
   const value: BotContext = useMemo(
     () => ({

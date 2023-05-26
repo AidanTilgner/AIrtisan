@@ -7,7 +7,7 @@ import {
   useDeleteApiKey,
   useGetApiKeys,
 } from "../../hooks/fetching/bot";
-import { Button, Code, Flex, SegmentedControl, TextInput } from "@mantine/core";
+import { Button, Flex, SegmentedControl, TextInput } from "@mantine/core";
 import { useBot } from "../../contexts/Bot";
 import { Prism } from "@mantine/prism";
 

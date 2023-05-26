@@ -2,7 +2,7 @@ import * as React from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App";
 
-const domContainer = document.querySelector("#onyx-chat-rewire-root");
+const domContainer = document.querySelector("#onyx-chat-rewire-root-updated");
 
 if (!domContainer) {
   throw new Error("No #onyx-chat-rewire-root element found");

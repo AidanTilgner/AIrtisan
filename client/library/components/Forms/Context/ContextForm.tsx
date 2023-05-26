@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "./Context.module.scss";
 import { Context } from "../../../../documentation/main";
-import { Autocomplete, Button, Grid, Group, Textarea } from "@mantine/core";
+import { Button, Grid, Group, Select, Textarea } from "@mantine/core";
 import useFetch from "../../../hooks/useFetch";
 import { showNotification } from "@mantine/notifications";
 
@@ -68,12 +68,13 @@ function ContextForm({ afterSubmit, onClose }: ContextFormProps) {
           <h2>Add or Update Context Object</h2>
         </Grid.Col>
         <Grid.Col span={12}>
-          <Autocomplete
+          <Select
             label="Label"
             placeholder="The name of the context"
             value={formState.label}
             description="How you will reference this context"
             onChange={(v) => {
+              if (!v) return;
               setFormState({
                 ...formState,
                 label: v.toLowerCase(),
