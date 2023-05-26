@@ -1,15 +1,10 @@
 export const previews = [
-  // {
-  //   name: "Rewire",
-  //   widgetJsFile: "/api/widgets/chatboxes/rewire-site.js",
-  //   widgetCssFile: "/api/widgets/chatboxes/rewire-site.css",
-  //   rootId: "onyx-chat-rewire-root",
-  // },
   {
-    name: "Updated Rewire",
-    widgetJsFile: "/api/widgets/chatboxes/rewire-site-updated.js",
-    widgetCssFile: "/api/widgets/chatboxes/rewire-site-updated.css",
-    rootId: "onyx-chat-rewire-root-updated",
+    name: "Floating Widget",
+    widgetJsFile: "/api/widgets/chatboxes/floating-chat.js",
+    widgetCssFile: "/api/widgets/chatboxes/floating-chat.css",
+    rootId: "floating-airtisan-root",
+    inline: false,
   },
 ];
 

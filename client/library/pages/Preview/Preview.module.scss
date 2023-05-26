@@ -29,8 +29,18 @@
   }
 }
 
+// .inline {
+
+// }
+
+.floating {
+  .chatboxContainer {
+    width: initial;
+    height: initial;
+  }
+}
+
 .chatboxContainer {
-  background-color: black;
   width: 100%;
   height: 70vh;
 
