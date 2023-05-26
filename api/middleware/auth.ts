@@ -97,8 +97,6 @@ export const validateDomainForBot = async (
       req.body.bot_slug || req.query.bot_slug || req.params.bot_slug;
     const domain = req.headers.origin || req.headers.host;
 
-    console.log("DOMAIN", domain);
-
     if (isDev) {
       next();
       return;
@@ -138,11 +136,7 @@ export const validateDomainForBot = async (
 
     const domains = modelFile.security.domain_whitelist || [];
 
-    console.log("DOMAINS", domains);
-
     const extractedDomain = extractDomain(domain);
-
-    console.log("EXTRACTED DOMAIN", extractedDomain);
 
     const domainsMatch = domains.some((d) => {
       return d === extractedDomain;
