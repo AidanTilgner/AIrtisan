@@ -9,6 +9,7 @@ import {
 } from "../../hooks/fetching/bot";
 import { Button, Code, Flex, SegmentedControl, TextInput } from "@mantine/core";
 import { useBot } from "../../contexts/Bot";
+import { Prism } from "@mantine/prism";
 
 function Auth() {
   const { data: apiKeys, getApiKeys: reloadApiKeys } = useGetApiKeys({
@@ -77,7 +78,7 @@ function Auth() {
   const curlCodeSnippet = `curl -H "x-access-token: ${
     addedApiKey.key || "YOUR_API_KEY"
   }"
-  -H "x-service: ${addedApiKey.name || "YOUR_SERVICE_NAME"}"
+  -H "x-service: ${addedApiKey.name || "YOUR_API_KEY_SERVICE_NAME"}"
   -H "Content-Type: application/json"
   -X POST -d '{"message": "Hello"}'
   https://airtisan.app/api/v1/bot/${bot?.slug || "YOUR BOT SLUG"}/chat`;
@@ -88,7 +89,7 @@ function Auth() {
     method: 'POST',
     headers: {
       'x-access-token': ${addedApiKey.key || "YOUR_API_KEY"},
-      'x-service': ${addedApiKey.name || "YOUR_SERVICE_NAME"},
+      'x-service': ${addedApiKey.name || "YOUR_API_KEY_SERVICE_NAME"},
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
@@ -102,8 +103,8 @@ function Auth() {
       <div className={styles.description}>
         <p>
           API keys allow you to access your bot programmatically using the REST
-          API. Just type the name of the service that {`"you'd"`} like to
-          generate a key for, and click {`"Add"`}.
+          API. Just type the name of the service that {`you'd`} like to generate
+          a key for, and click {`"Add"`}.
         </p>
         <p>
           Then, make a request using the key in the header , and the service
@@ -121,8 +122,12 @@ function Auth() {
           />
           <br />
           <br />
-          {codeToShow === "curl" && <Code block>{curlCodeSnippet}</Code>}
-          {codeToShow === "js" && <Code block>{jsCodeSnippet}</Code>}
+          {codeToShow === "curl" && (
+            <Prism language="bash">{curlCodeSnippet}</Prism>
+          )}
+          {codeToShow === "js" && (
+            <Prism language="javascript">{jsCodeSnippet}</Prism>
+          )}
         </div>
       </div>
       <div className={styles.form}>

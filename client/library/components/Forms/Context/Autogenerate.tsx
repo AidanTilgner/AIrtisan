@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import styles from "./Autogenerate.module.scss";
 import { Button, Flex, Grid, Loader, TextInput } from "@mantine/core";
 import {

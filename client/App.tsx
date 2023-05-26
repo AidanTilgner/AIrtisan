@@ -2,7 +2,7 @@ import React from "react";
 import styles from "./App.module.scss";
 import { Routes, Route } from "react-router-dom";
 import { MantineProvider } from "@mantine/core";
-import { NotificationsProvider } from "@mantine/notifications";
+import { Notifications } from "@mantine/notifications";
 import { ModalProvider } from "./library/contexts/Modals";
 import Bot from "./library/Views/Bot/Bot";
 import Dashboard from "./library/Views/Dashboard/Dashboard";
@@ -47,37 +47,36 @@ function App() {
         }}
       >
         <ModalProvider>
-          <NotificationsProvider position="bottom-right">
-            <div className={styles.main_container}>
-              <Routes>
-                <Route path="/" element={<Main />}>
-                  <Route index element={<Dashboard />} />
-                  <Route path="404" element={<Fallback />} />
-                  <Route path="settings">
-                    <Route index element={<Settings />} />
-                  </Route>
-                  <Route path="profile">
-                    <Route path=":username">
-                      <Route index element={<Profile />} />
-                    </Route>
-                  </Route>
-                  <Route path="organizations">
-                    <Route path="create" element={<CreateOrganization />} />
-                    <Route path=":organization_id">
-                      <Route index element={<Organization />} />
-                      <Route path="invite" element={<InviteUser />} />
-                    </Route>
-                  </Route>
-                  <Route path="bots">
-                    <Route path="create" element={<CreateBot />} />
-                    <Route path=":bot_id">
-                      <Route index element={<Bot />} />
-                    </Route>
+          <Notifications position="bottom-right" />
+          <div className={styles.main_container}>
+            <Routes>
+              <Route path="/" element={<Main />}>
+                <Route index element={<Dashboard />} />
+                <Route path="404" element={<Fallback />} />
+                <Route path="settings">
+                  <Route index element={<Settings />} />
+                </Route>
+                <Route path="profile">
+                  <Route path=":username">
+                    <Route index element={<Profile />} />
                   </Route>
                 </Route>
-              </Routes>
-            </div>
-          </NotificationsProvider>
+                <Route path="organizations">
+                  <Route path="create" element={<CreateOrganization />} />
+                  <Route path=":organization_id">
+                    <Route index element={<Organization />} />
+                    <Route path="invite" element={<InviteUser />} />
+                  </Route>
+                </Route>
+                <Route path="bots">
+                  <Route path="create" element={<CreateBot />} />
+                  <Route path=":bot_id">
+                    <Route index element={<Bot />} />
+                  </Route>
+                </Route>
+              </Route>
+            </Routes>
+          </div>
         </ModalProvider>
       </MantineProvider>
     </div>
