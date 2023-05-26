@@ -310,7 +310,10 @@ export const updateBotCorpus = async (
   }
 };
 
-export const updateBotContext = async (id: Bot["id"], context: Context) => {
+export const updateBotContext = async (
+  id: Bot["id"],
+  context: Context
+): Promise<Context | null> => {
   try {
     const bot = await dataSource.manager.findOne(entities.Bot, {
       where: { id },
@@ -336,7 +339,7 @@ export const updateBotContext = async (id: Bot["id"], context: Context) => {
         parser: "json",
       })
     );
-    return updatedContents;
+    return updatedContents as Context;
   } catch (error) {
     console.error(error);
     return null;

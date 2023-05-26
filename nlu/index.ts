@@ -184,6 +184,23 @@ export const pauseManager = async (id: number) => {
   }
 };
 
+export const deleteManager = async (id: number) => {
+  try {
+    const manager = getManager(id);
+    if (!manager) {
+      console.error("No manager found");
+      return null;
+    }
+    manager.running = false;
+    await markBotAsRunning(id, false);
+    delete managers[String(id)];
+    return manager;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};
+
 export const getRawResponse = async (id: number, text: string) => {
   try {
     const manager = getManager(id);

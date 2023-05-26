@@ -1,0 +1,40 @@
+h1 {
+  font-family: var(--font-family-alt);
+  font-weight: 500;
+  font-size: 36px;
+}
+
+a {
+  color: var(--text-link);
+}
+
+button {
+  font-family: var(--font-family);
+}
+
+.beta {
+  font-size: 10px;
+  padding: 4px 8px;
+  border-radius: 3px;
+  color: var(--text-color);
+  background-color: transparent;
+  border: 1px solid var(--text-color);
+  margin: 4px;
+}
+
+.disclaimer {
+  font-size: 14px;
+  margin: 0;
+  color: var(--text-color-light);
+  transition: all 0.2s ease-in-out;
+  margin-bottom: 24px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--background-contrast);
+
+  a {
+    text-decoration: underline;
+    color: var(--text-color-light);
+    opacity: 1;
+    font-weight: 500;
+  }
+}

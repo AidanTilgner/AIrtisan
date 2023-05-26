@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./Navbar.module.scss";
-import { Burger } from "@mantine/core";
+import { Burger, Loader } from "@mantine/core";
 import { useBot } from "../../../contexts/Bot";
 import { useRetrainBot } from "../../../hooks/fetching/common";
 import { showNotification } from "@mantine/notifications";
@@ -20,7 +20,7 @@ function Navbar<Tab>({ tabs, currentTab, setTab }: NavbarProps<Tab>) {
   const [opened, setOpened] = React.useState(false);
 
   const { bot } = useBot();
-  const { retrainBot } = useRetrainBot();
+  const { retrainBot, loading } = useRetrainBot();
 
   const tabElements = React.useMemo(
     () =>
@@ -64,8 +64,14 @@ function Navbar<Tab>({ tabs, currentTab, setTab }: NavbarProps<Tab>) {
                 });
             }}
           >
-            <ArrowsClockwise />
-            Retrain Model
+            {loading ? (
+              <Loader color="var(--text-color)" />
+            ) : (
+              <>
+                <ArrowsClockwise />
+                {"Retrain Model"}
+              </>
+            )}
           </button>
         </li>
       </>

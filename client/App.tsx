@@ -14,6 +14,7 @@ import InviteUser from "./library/Views/Organization/InviteUser";
 import CreateOrganization from "./library/Views/Organization/Create";
 import CreateBot from "./library/Views/Bot/Create";
 import Main from "./library/Views/Wrapper/Main";
+import "./Global.scss";
 
 function App() {
   return (
