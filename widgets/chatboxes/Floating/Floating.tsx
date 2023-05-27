@@ -12,7 +12,7 @@ export const markChatAsShouldReview = async (chat: {
     const bot_slug = (window as unknown as Record<string, string>)
       .airtisan_bot_slug;
     if (!bot_slug) throw new Error("bot_slug not found");
-    const url = `/api/v1/chats/${chat.chat_id}/should_review`;
+    const url = `https://airtisan.app/api/v1/chats/${chat.chat_id}/should_review`;
     const reviewHeaders = {
       "Content-Type": "application/json",
     };
@@ -45,7 +45,7 @@ const postChat = async (chat: {
     const bot_slug = (window as unknown as Record<string, string>)
       .airtisan_bot_slug;
     if (!bot_slug) throw new Error("bot_slug not found");
-    const useUrl = `/api/v1/bots/${bot_slug}/public/chat`;
+    const useUrl = `https://airtisan.app/api/v1/bots/${bot_slug}/public/chat`;
     const useHeaders = {
       "Content-Type": "application/json",
     };
