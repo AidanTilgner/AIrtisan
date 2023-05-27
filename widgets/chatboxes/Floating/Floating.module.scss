@@ -3,6 +3,8 @@
   right: 24px;
   z-index: 100;
   transition: all 0.75s ease-in-out;
+
+  --amountToProtrude: 24px;
 }
 
 .container {
@@ -79,6 +81,102 @@
   );
 }
 
+@keyframes circleLeftOrbit {
+  0% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: rotate(0deg) translateX(calc(var(--amountToProtrude) * -1))
+      rotate(0deg);
+  }
+  80% {
+    transform: rotate(360deg) translateX(calc(var(--amountToProtrude) * -1))
+      rotate(-360deg);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes circleRightOrbit {
+  0% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: rotate(0deg) translateX(var(--amountToProtrude)) rotate(0deg);
+  }
+  80% {
+    transform: rotate(360deg) translateX(var(--amountToProtrude))
+      rotate(-360deg);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes circleTopOrbit {
+  0% {
+    transform: translateY(0);
+  }
+  20% {
+    transform: rotate(0deg) translateY(calc(var(--amountToProtrude) * -1))
+      rotate(0deg);
+  }
+  80% {
+    transform: rotate(360deg) translateY(calc(var(--amountToProtrude) * -1))
+      rotate(-360deg);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes circleBottomOrbit {
+  0% {
+    transform: translateY(0);
+  }
+  20% {
+    transform: rotate(0deg) translateY(var(--amountToProtrude)) rotate(0deg);
+  }
+  80% {
+    transform: rotate(360deg) translateY(var(--amountToProtrude))
+      rotate(-360deg);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.focusTrap {
+  .backgroundCircleOne {
+    animation-name: circleLeftOrbit;
+    animation-duration: 2.5s;
+    animation-timing-function: ease-in-out;
+    animation-fill-mode: forwards;
+  }
+
+  .backgroundCircleTwo {
+    animation-name: circleTopOrbit;
+    animation-duration: 2.5s;
+    animation-timing-function: ease-in-out;
+    animation-fill-mode: forwards;
+  }
+
+  .backgroundCircleThree {
+    animation-name: circleRightOrbit;
+    animation-duration: 2.5s;
+    animation-timing-function: ease-in-out;
+    animation-fill-mode: forwards;
+  }
+
+  .backgroundCircleFour {
+    animation-name: circleBottomOrbit;
+    animation-duration: 2.5s;
+    animation-timing-function: ease-in-out;
+    animation-fill-mode: forwards;
+  }
+}
+
 @keyframes circleJump {
   0% {
     transform: translateY(0) rotate(0deg);
@@ -107,4 +205,20 @@
     animation-timing-function: ease-in-out;
     animation-fill-mode: forwards;
   }
+}
+
+.chatContainer {
+  position: fixed;
+  top: 82px;
+  left: 14px;
+  right: 14px;
+  bottom: 124px;
+  backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  z-index: 101;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease-in-out;
 }
