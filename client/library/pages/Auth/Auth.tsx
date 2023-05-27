@@ -7,6 +7,9 @@ import {
   useDeleteApiKey,
   useGetApiKeys,
 } from "../../hooks/fetching/bot";
+import { Button, Flex, SegmentedControl, TextInput } from "@mantine/core";
+import { useBot } from "../../contexts/Bot";
+import { Prism } from "@mantine/prism";
 
 function Auth() {
   const { data: apiKeys, getApiKeys: reloadApiKeys } = useGetApiKeys({
@@ -66,23 +69,97 @@ function Auth() {
     });
   };
 
+  const { bot } = useBot();
+
+  const [codeToShow, setCodeToShow] = React.useState<"curl" | "js" | "py">(
+    "curl"
+  );
+
+  const curlCodeSnippet = `curl -H "x-access-token: ${
+    addedApiKey.key || "YOUR_API_KEY"
+  }"
+  -H "x-service: ${addedApiKey.name || "YOUR_API_KEY_SERVICE_NAME"}"
+  -H "Content-Type: application/json"
+  -X POST -d '{"message": "Hello"}'
+  https://airtisan.app/api/v1/bot/${bot?.slug || "YOUR BOT SLUG"}/chat`;
+
+  const jsCodeSnippet = `fetch("https://airtisan.app/api/v1/bot/${
+    bot?.slug
+  }/chat", {
+    method: 'POST',
+    headers: {
+      'x-access-token': ${addedApiKey.key || "YOUR_API_KEY"},
+      'x-service': ${addedApiKey.name || "YOUR_API_KEY_SERVICE_NAME"},
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      message: 'Hello'
+    })
+  });`;
+
   return (
     <div className={styles.Auth}>
-      <h1>Api Keys</h1>
-      <h2>New Api Key</h2>
+      <h1>API Keys</h1>
+      <div className={styles.description}>
+        <p>
+          API keys allow you to access your bot programmatically using the REST
+          API. Just type the name of the service that {`you'd`} like to generate
+          a key for, and click {`"Add"`}.
+        </p>
+        <p>
+          Then, make a request using the key in the header , and the service
+          name. For example:
+        </p>
+        <div className={styles.code_explanation}>
+          <SegmentedControl
+            value={codeToShow}
+            onChange={(value) => setCodeToShow(value as "curl" | "js")}
+            data={[
+              { label: "cURL", value: "curl" },
+              { label: "JavaScript", value: "js" },
+            ]}
+            size="xs"
+          />
+          <br />
+          <br />
+          {codeToShow === "curl" && (
+            <Prism language="bash">{curlCodeSnippet}</Prism>
+          )}
+          {codeToShow === "js" && (
+            <Prism language="javascript">{jsCodeSnippet}</Prism>
+          )}
+        </div>
+      </div>
       <div className={styles.form}>
-        <input
-          type="text"
-          placeholder="name"
-          className={styles.input}
-          value={newApiKey.name}
-          onChange={(e) => {
-            setNewApiKey({ ...newApiKey, name: e.target.value });
+        <Flex
+          align={"center"}
+          justify={"space-between"}
+          style={{
+            width: "100%",
           }}
-        />
-        <button className={styles.add_button} onClick={addNewApiKey}>
-          Add
-        </button>
+        >
+          <TextInput
+            label="New API Key"
+            type="text"
+            placeholder="name"
+            value={newApiKey.name}
+            onChange={(e) => {
+              setNewApiKey({ ...newApiKey, name: e.target.value });
+            }}
+            style={{
+              width: "75%",
+            }}
+          />
+          <Button
+            variant="filled"
+            onClick={addNewApiKey}
+            style={{
+              marginTop: "24px",
+            }}
+          >
+            Add
+          </Button>
+        </Flex>
       </div>
       <h2>All Api Keys</h2>
       <div className={styles.apiKeys}>

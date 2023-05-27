@@ -5,6 +5,13 @@
   text-align: center;
 }
 
+.buttons {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 24px;
+}
+
 .header {
   border-bottom: 1px solid var(--background-contrast);
   padding-bottom: 18px;
@@ -57,8 +64,8 @@
   }
 }
 
-.content {
-}
+// .content {
+// }
 
 .contextPair {
   border: 1px solid var(--background-contrast);
@@ -69,6 +76,7 @@
   gap: 14px;
   transition: all 0.2s ease-in-out;
   cursor: pointer;
+  position: relative;
 
   &:hover {
     border-left: 1.5px solid var(--primary-color);
@@ -88,7 +96,7 @@
 
   .label {
     font-weight: 400;
-    font-size: 18px;
+    font-size: 16px;
     padding: 0;
     margin: 0;
     width: 25%;
@@ -106,12 +114,18 @@
       width: 20%;
     }
 
-    .buttons {
+    .contextButtons {
       display: flex;
       align-items: center;
       gap: 8px;
+      position: absolute;
+      left: 8px;
+      top: 8px;
+      background-color: var(--background-color);
 
       button {
+        border-radius: 1.5px;
+        padding: 4px;
         background-color: transparent;
         border: none;
         cursor: pointer;
@@ -119,7 +133,7 @@
         align-items: center;
         justify-content: center;
         transition: all 0.2s ease-in-out;
-        font-size: 14px;
+        font-size: 12px;
 
         &:hover {
           opacity: 0.6;

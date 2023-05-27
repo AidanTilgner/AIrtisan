@@ -53,6 +53,9 @@ function ModelData() {
       none_fallback: false,
       hipaa_compliant: false,
     },
+    security: {
+      domain_whitelist: [],
+    },
   });
 
   useEffect(() => {
@@ -319,6 +322,29 @@ function ModelData() {
                   specification: {
                     ...formData.specification,
                     hipaa_compliant: event.currentTarget.checked,
+                  },
+                });
+              }}
+            />
+          </Grid.Col>
+          <Grid.Col span={12} />
+          <Grid.Col span={12}>
+            <Title order={2}>Security</Title>
+          </Grid.Col>
+          <Grid.Col sm={12} md={6}>
+            <TextInput
+              label="Domains"
+              value={formData.security.domain_whitelist.join(", ")}
+              description="A comma-separated list of domains that are allowed to use your bot."
+              placeholder="example.com, example.org"
+              onChange={(event) => {
+                setFormData({
+                  ...formData,
+                  security: {
+                    ...formData.security,
+                    domain_whitelist: event.currentTarget.value
+                      .split(",")
+                      .map((domain) => domain.trim()),
                   },
                 });
               }}

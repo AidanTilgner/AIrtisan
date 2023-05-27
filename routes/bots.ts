@@ -18,6 +18,7 @@ import {
   hasAccessToBot,
 } from "../middleware/auth";
 import {
+  deleteManager,
   getActiveManagers,
   getManagerIsAlive,
   pauseManager,
@@ -285,9 +286,10 @@ router.put("/:bot_id", hasAccessToBot, async (req, res) => {
 router.delete("/:bot_id", hasAccessToBot, async (req, res) => {
   try {
     const bot = await deleteBot(Number(req.params.bot_id));
+    const managerDeleted = await deleteManager(Number(req.params.bot_id));
     res.send({
       message: "Bot deleted successfully",
-      success: true,
+      success: managerDeleted && bot ? true : false,
       data: bot,
     });
   } catch (error) {

@@ -32,8 +32,6 @@ function InviteUser() {
     runOnDependencies: [organization_id],
   });
 
-  console.log("results", results);
-
   const filteredResults = results?.filter((r) => {
     return !admins?.find((a) => a.id === r.id);
   });
@@ -49,8 +47,6 @@ function InviteUser() {
       dependencies: [selectedAdmin],
     }
   );
-
-  console.log("Selected", selectedAdmin);
 
   const { setModal, closeModal } = useModal();
 

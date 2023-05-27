@@ -1,37 +1,24 @@
-import React, { useEffect, useMemo, useRef } from "react";
-import styles from "./Floating.module.scss";
-import chatStyles from "./Chatbox.module.scss";
-import { Chat as ChatIcon, Warning, X } from "@phosphor-icons/react";
+import React, { useEffect } from "react";
+import { Warning } from "@phosphor-icons/react";
+import chatStyles from "./Chat.module.scss";
 import { buttonMappings } from "./buttons";
 
-export const markChatAsShouldReview = async (chat: {
-  chat_id: string | number;
-  reason: string;
-}) => {
-  try {
-    const bot_slug = (window as unknown as Record<string, string>)
-      .airtisan_bot_slug;
-    if (!bot_slug) throw new Error("bot_slug not found");
-    const url = `https://airtisan.app/api/v1/chats/${chat.chat_id}/should_review`;
-    const reviewHeaders = {
-      "Content-Type": "application/json",
-    };
+interface ChatURL {
+  url: (...args: unknown[]) => string;
+  headers: {
+    "Content-Type": string;
+    "x-access-token": string;
+  };
+}
 
-    const response = await fetch(url, {
-      method: "POST",
-      headers: reviewHeaders,
-      body: JSON.stringify({
-        chat_id: chat.chat_id,
-        review_message: chat.reason,
-      }),
-    });
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error(error);
-    return false;
-  }
-};
+const useChatEndpoint =
+  (
+    window as unknown as {
+      chat_urls: {
+        [key: string]: ChatURL;
+      };
+    }
+  ).chat_urls?.useChatEndpoint || null;
 
 const postChat = async (chat: {
   message: string;
@@ -42,13 +29,13 @@ const postChat = async (chat: {
   buttons: { type: string; metadata: unknown }[];
 }> => {
   try {
-    const bot_slug = (window as unknown as Record<string, string>)
-      .airtisan_bot_slug;
-    if (!bot_slug) throw new Error("bot_slug not found");
-    const useUrl = `https://airtisan.app/api/v1/bots/${bot_slug}/public/chat`;
-    const useHeaders = {
-      "Content-Type": "application/json",
-    };
+    const chatHookExists = !!useChatEndpoint;
+    const useUrl = chatHookExists ? useChatEndpoint.url() : "/api/chat";
+    const useHeaders = chatHookExists
+      ? useChatEndpoint.headers
+      : {
+          "Content-Type": "application/json",
+        };
 
     const response = await fetch(useUrl, {
       method: "POST",
@@ -76,6 +63,46 @@ const postChat = async (chat: {
   }
 };
 
+const customChatReviewHook =
+  (
+    window as unknown as {
+      chat_urls: {
+        [key: string]: ChatURL;
+      };
+    }
+  ).chat_urls?.reviewChatURL || null;
+
+export const markChatAsShouldReview = async (chat: {
+  chat_id: string | number;
+  reason: string;
+}) => {
+  try {
+    const chatReviewHookExists = !!customChatReviewHook;
+    const reviewUrl = chatReviewHookExists
+      ? customChatReviewHook.url(chat.chat_id)
+      : `/api/chat/${chat.chat_id}/review`;
+    const reviewHeaders = chatReviewHookExists
+      ? customChatReviewHook.headers
+      : {
+          "Content-Type": "application/json",
+        };
+
+    const response = await fetch(reviewUrl, {
+      method: "POST",
+      headers: reviewHeaders,
+      body: JSON.stringify({
+        chat_id: chat.chat_id,
+        review_message: chat.reason,
+      }),
+    });
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+};
+
 const generateRandomSessionId = () => {
   const random = Math.random();
   // convert to base 36 and remove the decimal
@@ -83,149 +110,7 @@ const generateRandomSessionId = () => {
   return randomString;
 };
 
-function Index() {
-  const [clicked, setClicked] = React.useState(false);
-  const [mousePosition, setMousePosition] = React.useState({ x: 0, y: 0 });
-  const [timeoutId, setTimeoutId] = React.useState<NodeJS.Timeout>();
-  const [elementPosition, setElementPosition] = React.useState<number>();
-
-  const onyxRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    document.addEventListener("mousemove", (e) => {
-      setMousePosition({
-        x: e.clientX,
-        y: e.clientY,
-      });
-    });
-  }, []);
-
-  useEffect(() => {
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-    }
-    // if the mouse position is more than 100px from the element, then move it
-
-    const distanceFromElement = Math.abs(
-      mousePosition.y - (elementPosition || 0)
-    );
-
-    if (distanceFromElement > 100) {
-      const newTimeout = setTimeout(() => {
-        if (mousePosition.x < window.innerWidth - 100) {
-          setElementPosition(mousePosition.y - 28);
-        }
-      }, 500);
-
-      setTimeoutId(newTimeout);
-    }
-  }, [mousePosition]);
-
-  const [isMobile, setIsMobile] = React.useState(window.innerWidth < 768);
-
-  window.addEventListener("resize", () => {
-    if (window.innerWidth < 768) {
-      setIsMobile(true);
-    } else {
-      setIsMobile(false);
-    }
-  });
-
-  const [opened, setOpened] = React.useState(false);
-
-  const [focusTrap, setFocusTrap] = React.useState(false);
-
-  const getElementPosition = () => {
-    if (opened && isMobile) {
-      return "calc(100vh - 70px)";
-    }
-    if (isMobile || opened) {
-      return "calc(100vh - 92px)";
-    }
-    if (elementPosition) {
-      if (elementPosition < 82 || elementPosition > window.innerHeight - 82) {
-        return "calc(100vh - 92px)";
-      } else {
-        return `${elementPosition}px`;
-      }
-    }
-    return "calc(100vh - 92px)";
-  };
-
-  useEffect(() => {
-    if (opened) {
-      document.body.style.overflow = "hidden";
-      document.body.style.height = "100vh";
-    } else {
-      document.body.style.overflow = "auto";
-      document.body.style.height = "auto";
-    }
-  }, [opened]);
-
-  useEffect(() => {
-    const focusTrapTrue = setTimeout(() => {
-      setFocusTrap(true);
-    }, 500);
-
-    const focusTrapFalse = setTimeout(() => {
-      setFocusTrap(false);
-    }, 3000);
-
-    return () => {
-      clearTimeout(focusTrapTrue);
-      clearTimeout(focusTrapFalse);
-    };
-  }, []);
-
-  return useMemo(
-    () => (
-      <>
-        <div
-          className={`${styles.onyx} ${clicked ? styles.clicked : ""} ${
-            focusTrap ? styles.focusTrap : ""
-          }`}
-          onClick={() => {
-            setClicked(true);
-            setTimeout(() => {
-              setClicked(false);
-              setOpened(!opened);
-            }, 500);
-          }}
-          ref={onyxRef}
-          style={{
-            top: getElementPosition(),
-          }}
-        >
-          <div className={styles.backgroundCircleOne} />
-          <div className={styles.backgroundCircleTwo} />
-          <div className={styles.backgroundCircleThree} />
-          <div className={styles.backgroundCircleFour} />
-          <div className={styles.container}>
-            {opened ? <X /> : <ChatIcon />}
-          </div>
-        </div>
-        {opened && <ChatInterface />}
-      </>
-    ),
-    [clicked, opened, elementPosition, isMobile, focusTrap]
-  );
-}
-
-export default Index;
-
-function ChatInterface() {
-  return (
-    <div className={styles.chatContainer}>
-      <ChatBox />
-    </div>
-  );
-}
-
 function ChatBox() {
-  const name =
-    (window as unknown as Record<string, string>).airtisan_bot_name ||
-    "AIrtisan Bot";
-
   const [messages, setMessages] = React.useState<
     {
       content: string;
@@ -234,13 +119,17 @@ function ChatBox() {
     }[]
   >([
     {
-      content: `Hey there, my name's ${name}. How can I help you?`,
+      content: "Hey there, I’m Onyx. Can I help you with anything?",
       side: "bot",
       chat_id: null,
     },
   ]);
 
   const disclaimers: JSX.Element[] = [
+    <p className={chatStyles.disclaimer} key="disclaimer1">
+      Responses don{"'"}t necessarily represent the views of VVibrant Web
+      Solutions.
+    </p>,
     <p className={chatStyles.disclaimer} key="disclaimer2">
       If you see any weird responses, please hit the <Warning weight="bold" />{" "}
       icon to report it.
@@ -349,7 +238,8 @@ function ChatBox() {
   return (
     <div className={chatStyles.chatBox}>
       <div className={chatStyles.header}>
-        <h3>{name}</h3>
+        <div className={chatStyles.tag}>Experimental</div>
+        <h3>AIrtisan</h3>
       </div>
       <div className={chatStyles.chatBoxMessages} ref={scrollRef}>
         <div className={chatStyles.disclaimers}>{disclaimers}</div>
@@ -438,6 +328,8 @@ function ChatBox() {
     </div>
   );
 }
+
+export default ChatBox;
 
 function Chat({
   content,

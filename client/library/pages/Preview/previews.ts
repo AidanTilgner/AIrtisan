@@ -1,10 +1,10 @@
 export const previews = [
   {
-    name: "Rewire",
-    hostedLocation: "https://vvibrant.dev",
-    widgetJsFile: "/api/widgets/chatboxes/rewire-site.js",
-    widgetCssFile: "/api/widgets/chatboxes/rewire-site.css",
-    rootId: "onyx-chat-rewire-root",
+    name: "Floating Widget",
+    widgetJsFile: "/api/widgets/chatboxes/floating-chat.js",
+    widgetCssFile: "/api/widgets/chatboxes/floating-chat.css",
+    rootId: "floating-airtisan-root",
+    inline: false,
   },
 ];
 

@@ -60,7 +60,7 @@ function useFetch<B, D>({
 
   const urlToUse = queryStr ? `${url}?${queryStr}` : url;
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [data, setData] = useState<D>();
   const [success, setSuccess] = useState(false);
 
