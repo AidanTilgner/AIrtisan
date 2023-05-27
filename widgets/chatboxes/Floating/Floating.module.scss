@@ -221,4 +221,12 @@
   align-items: center;
   justify-content: center;
   transition: all 0.3s ease-in-out;
+
+  @media screen and (min-width: 768px) {
+    left: initial;
+    width: 50vw;
+    top: 124px;
+    right: 24px;
+    bottom: 124px;
+  }
 }
