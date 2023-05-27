@@ -9,9 +9,10 @@ export const markChatAsShouldReview = async (chat: {
   reason: string;
 }) => {
   try {
-    const bot_slug = (window as unknown as Record<string, string>).bot_slug;
+    const bot_slug = (window as unknown as Record<string, string>)
+      .airtisan_bot_slug;
     if (!bot_slug) throw new Error("bot_slug not found");
-    const url = `/api/v1/chats/${chat.chat_id}/review`;
+    const url = `/api/v1/chats/${chat.chat_id}/should_review`;
     const reviewHeaders = {
       "Content-Type": "application/json",
     };
@@ -41,7 +42,8 @@ const postChat = async (chat: {
   buttons: { type: string; metadata: unknown }[];
 }> => {
   try {
-    const bot_slug = (window as unknown as Record<string, string>).bot_slug;
+    const bot_slug = (window as unknown as Record<string, string>)
+      .airtisan_bot_slug;
     if (!bot_slug) throw new Error("bot_slug not found");
     const useUrl = `/api/v1/bots/${bot_slug}/public/chat`;
     const useHeaders = {
@@ -134,6 +136,9 @@ function Index() {
   const [focusTrap, setFocusTrap] = React.useState(false);
 
   const getElementPosition = () => {
+    if (opened && isMobile) {
+      return "calc(100vh - 70px)";
+    }
     if (isMobile || opened) {
       return "calc(100vh - 92px)";
     }
@@ -217,6 +222,10 @@ function ChatInterface() {
 }
 
 function ChatBox() {
+  const name =
+    (window as unknown as Record<string, string>).airtisan_bot_name ||
+    "AIrtisan Bot";
+
   const [messages, setMessages] = React.useState<
     {
       content: string;
@@ -225,17 +234,13 @@ function ChatBox() {
     }[]
   >([
     {
-      content: "Hey there, I’m Onyx. Can I help you with anything?",
+      content: `Hey there, my name's ${name}. How can I help you?`,
       side: "bot",
       chat_id: null,
     },
   ]);
 
   const disclaimers: JSX.Element[] = [
-    <p className={chatStyles.disclaimer} key="disclaimer1">
-      Responses don{"'"}t necessarily represent the views of VVibrant Web
-      Solutions.
-    </p>,
     <p className={chatStyles.disclaimer} key="disclaimer2">
       If you see any weird responses, please hit the <Warning weight="bold" />{" "}
       icon to report it.
@@ -344,8 +349,7 @@ function ChatBox() {
   return (
     <div className={chatStyles.chatBox}>
       <div className={chatStyles.header}>
-        <div className={chatStyles.tag}>Experimental</div>
-        <h3>AIrtisan</h3>
+        <h3>{name}</h3>
       </div>
       <div className={chatStyles.chatBoxMessages} ref={scrollRef}>
         <div className={chatStyles.disclaimers}>{disclaimers}</div>

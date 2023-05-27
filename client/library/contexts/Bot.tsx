@@ -58,7 +58,10 @@ export const BotProvider = ({
   };
 
   useEffect(() => {
-    (window as unknown as Record<string, string>).bot_slug = bot?.slug || "";
+    (window as unknown as Record<string, string>).airtisan_bot_slug =
+      bot?.slug || "";
+    (window as unknown as Record<string, string>).airtisan_bot_name =
+      bot?.name || "";
   }, [bot]);
 
   const value: BotContext = useMemo(
