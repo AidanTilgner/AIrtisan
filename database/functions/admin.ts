@@ -64,7 +64,7 @@ export const getAdminByUsername = async (username: string) => {
 
     if (!admin) return null;
 
-    return getAdmin(admin?.id);
+    return admin;
   } catch (err) {
     console.error(err);
     return null;

@@ -7,17 +7,19 @@ import { useEffect } from "react";
 interface UserContextType {
   user: Admin | null;
   isSuperAdmin: boolean;
+  loading: boolean;
 }
 
 const initialVal: UserContextType = {
   user: null,
   isSuperAdmin: false,
+  loading: false,
 };
 
 const UserContext = createContext(initialVal);
 
 const UserProvider = ({ children }: { children: React.ReactNode }) => {
-  const { data: user = null } = useGetMe({ runOnMount: true });
+  const { data: user = null, loading } = useGetMe({ runOnMount: true });
 
   const { refreshAccessToken } = useRefreshAccessToken();
 
@@ -29,8 +31,9 @@ const UserProvider = ({ children }: { children: React.ReactNode }) => {
     () => ({
       user,
       isSuperAdmin: user?.role === "superadmin",
+      loading,
     }),
-    [user]
+    [user, loading]
   );
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;

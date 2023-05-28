@@ -44,6 +44,7 @@ router.post("/admin/signin", async (req, res) => {
   try {
     const { username, password } = req.body;
     const admin = await getAdminByUsername(username);
+
     if (!admin) {
       res.status(401).send({ message: "Invalid credentials provided." });
       return;

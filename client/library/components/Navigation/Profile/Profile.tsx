@@ -18,7 +18,7 @@ import { useUser } from "../../../contexts/User";
 function Profile({ alwaysScrolled }: { alwaysScrolled?: boolean }) {
   const navigate = useNavigate();
 
-  const { user } = useUser();
+  const { user, isSuperAdmin } = useUser();
 
   const navRef = useRef<HTMLDivElement>(null);
 
@@ -88,14 +88,17 @@ function Profile({ alwaysScrolled }: { alwaysScrolled?: boolean }) {
           >
             Organizations
           </Menu.Item>
-          <Menu.Item
-            icon={<Shield />}
-            onClick={() => {
-              navigate("/admin");
-            }}
-          >
-            Admin
-          </Menu.Item>
+          {isSuperAdmin && (
+            <Menu.Item
+              icon={<Shield />}
+              onClick={() => {
+                navigate("/admin");
+              }}
+            >
+              Admin
+            </Menu.Item>
+          )}
+
           {/* <Menu.Item
             icon={<GearSix />}
             onClick={() => {
