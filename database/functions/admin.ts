@@ -4,6 +4,7 @@ import { hashPassword } from "../../utils/crypto";
 import { Admin } from "../models/admin";
 import { getRecentBotsByOwner } from "./bot";
 import { getOrganizationInvitationsByAdmin } from "./organization";
+import { PublicAdmin } from "../models/admin";
 
 export const createAdmin = async ({
   username,
@@ -32,12 +33,23 @@ export const createAdmin = async ({
   }
 };
 
-export const getAdmin = async (id: number) => {
+export const getAdmin = async (id: number, includePrivateInfo = false) => {
   try {
     const admin = await dataSource.manager.findOne(entities.Admin, {
       where: { id: id },
     });
-    return admin;
+
+    if (!admin) return null;
+
+    if (!includePrivateInfo) {
+      return admin.getPublicInfo() as typeof includePrivateInfo extends true
+        ? PublicAdmin
+        : Admin;
+    }
+
+    return admin as typeof includePrivateInfo extends true
+      ? Admin
+      : PublicAdmin;
   } catch (err) {
     console.error(err);
     return null;
@@ -49,7 +61,10 @@ export const getAdminByUsername = async (username: string) => {
     const admin = await dataSource.manager.findOne(entities.Admin, {
       where: { username },
     });
-    return admin;
+
+    if (!admin) return null;
+
+    return getAdmin(admin?.id);
   } catch (err) {
     console.error(err);
     return null;
@@ -76,15 +91,12 @@ export const checkUsernameTaken = async (
   }
 };
 
-export const getAdmins = async () => {
+export const getAdmins = async (includePrivateInfo = false) => {
   try {
     const admins = await dataSource.manager.find(entities.Admin);
     return admins.map((admin) => {
-      const { password, ...rest } = admin;
-
-      return {
-        ...rest,
-      };
+      if (includePrivateInfo) return admin;
+      return admin.getPublicInfo();
     });
   } catch (err) {
     console.error(err);

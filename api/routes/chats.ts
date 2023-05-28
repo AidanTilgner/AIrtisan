@@ -1,5 +1,8 @@
 import { Router } from "express";
-import { validateDomainForBot } from "../middleware/auth";
+import {
+  validateAllowingWidgetsForBot,
+  validateDomainForBot,
+} from "../middleware/bot";
 import { markChatForReview } from "../../database/functions/conversations";
 
 const router = Router();
@@ -7,6 +10,7 @@ const router = Router();
 router.post(
   "/:chat_id/should_review",
   validateDomainForBot,
+  validateAllowingWidgetsForBot,
   async (req, res) => {
     try {
       const { chat_id } = req.params;

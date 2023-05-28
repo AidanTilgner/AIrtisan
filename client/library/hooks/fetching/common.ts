@@ -288,7 +288,7 @@ export const useSendTrainingChat = (
     }
   >({
     ...config,
-    url: `/chat/as_admin/training`,
+    url: `/chat/training`,
     method: "POST",
     body: { message, session_id },
   });
@@ -311,7 +311,7 @@ export const useRetryChat = (
     { answer: string; conversation: Conversation }
   >({
     ...config,
-    url: `/chat/as_admin/${chatId}/retry/`,
+    url: `/chat/${chatId}/retry/`,
     method: "POST",
   });
 
@@ -334,7 +334,7 @@ export const useMarkChatAsReviewed = (
     Chat
   >({
     ...config,
-    url: `/chat/as_admin/${reviewConfig?.chatId}/reviewed/`,
+    url: `/chat/${reviewConfig?.chatId}/reviewed/`,
     method: "POST",
     body: { username: reviewConfig?.username },
   });
@@ -384,7 +384,7 @@ export const useCreateTrainingCopyOfConversation = (
 ) => {
   const { load, data, success } = useFetch<unknown, Conversation>({
     ...config,
-    url: `/training/conversations/${conversation_id}/training_copy`,
+    url: `/conversations/${conversation_id}/training_copy`,
     method: "POST",
   });
 

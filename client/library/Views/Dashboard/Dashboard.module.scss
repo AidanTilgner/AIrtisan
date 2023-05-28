@@ -112,11 +112,7 @@
   border-radius: 5px;
 
   &:hover {
-    opacity: 0.6;
-
-    span {
-      border-bottom: 1px solid var(--text-color-light);
-    }
+    opacity: 0.8;
   }
 
   span {

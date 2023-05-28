@@ -1,11 +1,17 @@
 import { Router } from "express";
-import { getAdmin, getAdminByUsername } from "../database/functions/admin";
-import { checkIsAdmin } from "../middleware/auth";
+import {
+  getAdmin,
+  getAdminByUsername,
+  getAdmins,
+  updateAdmin,
+} from "../database/functions/admin";
+import { checkIsAdmin, checkIsSuperAdmin } from "../middleware/auth";
 import { getBotsByOwner } from "../database/functions/bot";
 import {
   getAdminOrganizations,
   searchAdmins,
 } from "../database/functions/admin";
+import { Admin } from "../database/models/admin";
 
 const router = Router();
 
@@ -30,9 +36,51 @@ router.get("/search", checkIsAdmin, async (req, res) => {
   }
 });
 
+router.get("/", checkIsSuperAdmin, async (req, res) => {
+  try {
+    const admins = await getAdmins();
+    res.status(200).send({
+      message: "Admins fetched successfully.",
+      data: {
+        admins,
+      },
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ message: "Internal server error." });
+  }
+});
+
+router.put("/:admin_id", checkIsSuperAdmin, async (req, res) => {
+  try {
+    const { admin_id } = req.params;
+    const { username, password, role } = req.body;
+    const admin = await getAdmin(parseInt(admin_id));
+    if (!admin) {
+      res.status(404).send({ message: "Admin not found." });
+      return;
+    }
+    const result = await updateAdmin(parseInt(admin_id), {
+      username,
+      password,
+      role,
+    });
+    if (!result) {
+      res.status(500).send({ message: "Internal server error." });
+      return;
+    }
+    res.status(200).send({ message: "Admin updated successfully." });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ message: "Internal server error." });
+  }
+});
+
 router.get("/:admin_id", checkIsAdmin, async (req, res) => {
   try {
     const { admin_id } = req.params;
+
+    const currentAdmin = req["admin"] as Admin;
 
     if (!admin_id) {
       res.status(400).send({ message: "Admin ID not provided." });
@@ -41,7 +89,10 @@ router.get("/:admin_id", checkIsAdmin, async (req, res) => {
 
     const formattedAdminId = parseInt(admin_id);
 
-    const admin = await getAdmin(formattedAdminId);
+    const admin = await getAdmin(
+      formattedAdminId,
+      currentAdmin.id === Number(admin_id)
+    );
 
     if (!admin) {
       res.status(404).send({ message: "Admin not found." });

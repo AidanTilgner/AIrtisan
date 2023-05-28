@@ -1,7 +1,7 @@
 import { Bot } from "../models/bot";
 import { dataSource, entities } from "..";
 import { generateBotFiles } from "../../utils/bot";
-import { readFileSync, writeFileSync } from "fs";
+import { readFileSync, unlinkSync, writeFileSync } from "fs";
 import { format } from "prettier";
 import { Context, Corpus, Model, OwnerTypes } from "../../types/lib";
 import path from "path";
@@ -164,6 +164,11 @@ export const deleteBot = async (id: Bot["id"]) => {
       where: { id },
     });
     if (!bot) return null;
+    const files = await getBotFileLocations(bot.id);
+    if (!files) return null;
+    Object.values(files).forEach((file) => {
+      unlinkSync(path.join(storageLocation, file));
+    });
     await dataSource.manager.remove(bot);
     return bot;
   } catch (error) {
@@ -175,7 +180,7 @@ export const deleteBot = async (id: Bot["id"]) => {
 export const getBotsByOwner = async (
   owner_id: number,
   owner_type: OwnerTypes,
-  visibility?: Bot["visibility"]
+  visibility: Bot["visibility"] = "public"
 ) => {
   try {
     const bot = await dataSource.manager.find(entities.Bot, {

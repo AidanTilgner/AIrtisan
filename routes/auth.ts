@@ -1,8 +1,6 @@
 import {
   createAdmin,
   getAdminByUsername,
-  getAdmin,
-  getAdmins,
   updateAdmin,
   getAdminOrganizations,
   checkUsernameTaken,
@@ -11,11 +9,7 @@ import {
   getAdminRecentBots,
 } from "../database/functions/admin";
 import { Router } from "express";
-import {
-  checkIsSuperAdmin,
-  checkIsAdmin,
-  hasAccessToBot,
-} from "../middleware/auth";
+import { checkIsAdmin, hasAccessToBot } from "../middleware/auth";
 import {
   generateAccessToken,
   verifyAccessToken,
@@ -29,13 +23,13 @@ import {
 import {
   createApiKey,
   deleteApiKey,
-  getAllApiKeys,
   getApiKeysForBot,
 } from "../database/functions/apiKey";
 import { Admin } from "../database/models/admin";
 import { config } from "dotenv";
 import { getOrganizationInvitationByAdmin } from "../database/functions/organization";
 import { getBotsByOwner } from "../database/functions/bot";
+import { checkAdminIsAdmin } from "../middleware/admin";
 
 config();
 
@@ -136,46 +130,6 @@ router.post("/refresh", async (req, res) => {
         access_token,
       },
     });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send({ message: "Internal server error." });
-  }
-});
-
-router.get("/admins", checkIsSuperAdmin, async (req, res) => {
-  try {
-    const admins = await getAdmins();
-    res.status(200).send({
-      message: "Admins fetched successfully.",
-      data: {
-        admins,
-      },
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send({ message: "Internal server error." });
-  }
-});
-
-router.put("/admin/:id", checkIsSuperAdmin, async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { username, password, role } = req.body;
-    const admin = await getAdmin(parseInt(id));
-    if (!admin) {
-      res.status(404).send({ message: "Admin not found." });
-      return;
-    }
-    const result = await updateAdmin(parseInt(id), {
-      username,
-      password,
-      role,
-    });
-    if (!result) {
-      res.status(500).send({ message: "Internal server error." });
-      return;
-    }
-    res.status(200).send({ message: "Admin updated successfully." });
   } catch (err) {
     console.error(err);
     res.status(500).send({ message: "Internal server error." });
@@ -505,7 +459,7 @@ router.delete(
   }
 );
 
-router.get("/api-keys", checkIsAdmin, async (req, res) => {
+router.get("/api-keys", checkIsAdmin, hasAccessToBot, async (req, res) => {
   try {
     const bot_id = req.body.bot_id || req.query.bot_id;
 
@@ -526,7 +480,7 @@ router.get("/api-keys", checkIsAdmin, async (req, res) => {
   }
 });
 
-router.post("/admin/:admin_id/logout", async (req, res) => {
+router.post("/admin/:admin_id/logout", checkAdminIsAdmin, async (req, res) => {
   try {
     const { admin_id } = req.params;
 

@@ -161,7 +161,7 @@ function Auth() {
           </Button>
         </Flex>
       </div>
-      <h2>All Api Keys</h2>
+      <h2>All API Keys</h2>
       <div className={styles.apiKeys}>
         {apiKeys?.length ? (
           apiKeys?.map((apiKey) => {

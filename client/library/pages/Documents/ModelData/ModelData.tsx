@@ -55,6 +55,7 @@ function ModelData() {
     },
     security: {
       domain_whitelist: [],
+      allow_widgets: false,
     },
   });
 
@@ -345,6 +346,22 @@ function ModelData() {
                     domain_whitelist: event.currentTarget.value
                       .split(",")
                       .map((domain) => domain.trim()),
+                  },
+                });
+              }}
+            />
+          </Grid.Col>
+          <Grid.Col sm={12} md={6}>
+            <Checkbox
+              label="Allow Widgets"
+              checked={formData.security.allow_widgets}
+              description="Allow your bot to be accessed publically. This is required for widgets, otherwise your bot will only be accessible via the API."
+              onChange={(event) => {
+                setFormData({
+                  ...formData,
+                  security: {
+                    ...formData.security,
+                    allow_widgets: event.currentTarget.checked,
                   },
                 });
               }}

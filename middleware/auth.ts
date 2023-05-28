@@ -19,8 +19,7 @@ import { Bot } from "../database/models/bot";
 config();
 
 const logger = new Logger({
-  log_type: "warning",
-  name: "authentication",
+  name: "Authentication Middleware",
 });
 
 export const checkAPIKey = async (
@@ -123,14 +122,14 @@ export const checkIsAdmin = async (
 
     const { id } = verified;
 
-    const admin = await getAdmin(id);
+    const admin = await getAdmin(id, true);
 
     if (!admin) {
       res.status(401).send({ message: "Invalid access token provided." });
       return;
     }
 
-    (req as unknown as Record<"admin", Admin>)["admin"] = admin;
+    (req as unknown as Record<"admin", Admin>)["admin"] = admin as Admin;
 
     next();
   } catch (err) {
@@ -166,7 +165,7 @@ export const checkIsSuperAdmin = async (
 
     const { id } = verified;
 
-    const admin = await getAdmin(id);
+    const admin = await getAdmin(id, true);
 
     if (!admin) {
       res.status(401).send({ message: "Invalid access token provided." });
@@ -214,7 +213,7 @@ export const checkIsAdminAndShowLoginIfNot = async (
 
     const { id } = verified;
 
-    const admin = await getAdmin(id);
+    const admin = await getAdmin(id, true);
 
     if (!admin) {
       res.redirect("/login");
@@ -254,7 +253,7 @@ export const isInOrganization = async (
 
     const { id } = verified;
 
-    const admin = await getAdmin(id);
+    const admin = await getAdmin(id, true);
 
     if (!admin) {
       res.status(401).send({ message: "Invalid access token provided." });
@@ -320,7 +319,7 @@ export const isOwnerOfOrganization = async (
 
     const { id } = verified;
 
-    const admin = await getAdmin(id);
+    const admin = await getAdmin(id, true);
 
     if (!admin) {
       res.status(401).send({ message: "Invalid access token provided." });
@@ -386,7 +385,7 @@ export const hasAccessToBot = async (
 
     const { id } = verified;
 
-    const admin = await getAdmin(id);
+    const admin = await getAdmin(id, true);
 
     if (!admin) {
       res.status(401).send({ message: "Invalid access token provided." });
