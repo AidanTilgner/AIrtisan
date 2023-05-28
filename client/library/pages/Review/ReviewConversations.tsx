@@ -212,8 +212,6 @@ function ReviewConversations() {
     }
   }, [openedConversation]);
 
-  //localhost:3050/bots/2?tab=review&load_conversation=4
-
   return (
     <div className={styles.ReviewConversations}>
       <div className={styles.header}>

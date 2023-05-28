@@ -10,7 +10,6 @@ import {
   getConversations,
   getConversation,
   getBotConversations,
-  getBotConversationsThatNeedReview,
   generateIntentFlow,
   getRecentConversations,
 } from "../database/functions/conversations";
@@ -52,9 +51,7 @@ router.get("/need_review", checkIsAdmin, hasAccessToBot, async (req, res) => {
 
     const formattedBotId = Number(bot_id);
 
-    const conversations = await getBotConversationsThatNeedReview(
-      formattedBotId
-    );
+    const conversations = await getConversationsThatNeedReview(formattedBotId);
 
     res.send({
       message: "Conversations retrieved",
@@ -158,23 +155,6 @@ router.delete(
     }
   }
 );
-
-router.get("/all/need_review", checkIsSuperAdmin, async (req, res) => {
-  try {
-    const conversations = await getConversationsThatNeedReview();
-
-    res.send({
-      message: "Conversations retrieved",
-      success: true,
-      data: {
-        conversations,
-      },
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send({ message: "Error getting conversations" });
-  }
-});
 
 router.get(
   "/:conversation_id",
