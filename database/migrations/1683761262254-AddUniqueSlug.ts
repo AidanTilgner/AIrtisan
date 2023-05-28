@@ -3,6 +3,13 @@ import { getRandomID } from "../../utils/crypto";
 
 export class AddUniqueSlug1683761262254 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
+    // if the slug column already exists, do nothing
+    const hasSlugColumn = await queryRunner.hasColumn("bot", "slug");
+
+    if (hasSlugColumn) {
+      return;
+    }
+
     // create the slug column
     await queryRunner.query(
       `ALTER TABLE "bot" ADD COLUMN "slug" TEXT NOT NULL DEFAULT ''`
@@ -25,6 +32,13 @@ export class AddUniqueSlug1683761262254 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    // if the slug column does not exist, do nothing
+    const hasSlugColumn = await queryRunner.hasColumn("bot", "slug");
+
+    if (!hasSlugColumn) {
+      return;
+    }
+
     // drop the unique index for the slug column
     await queryRunner.query(`DROP INDEX "IDX_bot_slug"`);
 
