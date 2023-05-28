@@ -30,8 +30,13 @@ import { config } from "dotenv";
 import { getOrganizationInvitationByAdmin } from "../database/functions/organization";
 import { getBotsByOwner } from "../database/functions/bot";
 import { checkAdminIsAdmin } from "../middleware/admin";
+import { Logger } from "../utils/logger";
 
 config();
+
+const authLogger = new Logger({
+  name: "Auth Router",
+});
 
 const router = Router();
 
@@ -61,7 +66,7 @@ router.post("/admin/signin", async (req, res) => {
       },
     });
   } catch (err) {
-    console.error(err);
+    authLogger.error("Error signing in admin: ", err);
     res.status(500).send({ message: "Internal server error." });
   }
 });
@@ -105,7 +110,7 @@ router.post("/admin/signup", async (req, res) => {
       },
     });
   } catch (err) {
-    console.error(err);
+    authLogger.error("Error signing up admin: ", err);
     res.status(500).send({ message: "Internal server error." });
   }
 });
@@ -131,7 +136,7 @@ router.post("/refresh", async (req, res) => {
       },
     });
   } catch (err) {
-    console.error(err);
+    authLogger.error("Error refreshing access token: ", err);
     res.status(500).send({ message: "Internal server error." });
   }
 });
@@ -155,7 +160,7 @@ router.post("/check", async (req, res) => {
       data: true,
     });
   } catch (err) {
-    console.error(err);
+    authLogger.error("Error verifying access token: ", err);
     res.status(500).send({ message: "Internal server error." });
   }
 });
@@ -169,7 +174,7 @@ router.get("/is_super_admin", checkIsAdmin, async (req, res) => {
       data: admin.role === "superadmin",
     });
   } catch (err) {
-    console.error(err);
+    authLogger.error("Error verifying access token: ", err);
     res.status(500).send({ message: "Internal server error." });
   }
 });
@@ -186,7 +191,7 @@ router.get("/me", checkIsAdmin, async (req, res) => {
       data: adminWithoutPassword,
     });
   } catch (err) {
-    console.error(err);
+    authLogger.error("Error getting admin from session: ", err);
     res.status(500).send({ message: "Internal server error." });
   }
 });
@@ -229,7 +234,7 @@ router.put("/me", checkIsAdmin, async (req, res) => {
       data: result,
     });
   } catch (err) {
-    console.error(err);
+    authLogger.error("Error updating admin: ", err);
     res.status(500).send({ message: "Internal server error." });
   }
 });
@@ -250,7 +255,7 @@ router.get("/me/organizations", checkIsAdmin, async (req, res) => {
       data: organizations,
     });
   } catch (err) {
-    console.error(err);
+    authLogger.error("Error getting admin organizations from session: ", err);
     res.status(500).send({ message: "Internal server error." });
   }
 });
@@ -271,7 +276,7 @@ router.get("/me/bots", checkIsAdmin, async (req, res) => {
       data: bots,
     });
   } catch (err) {
-    console.error(err);
+    authLogger.error("Error getting admin bots from session: ", err);
     res.status(500).send({ message: "Internal server error." });
   }
 });
@@ -297,7 +302,7 @@ router.get("/me/bots/recent", checkIsAdmin, async (req, res) => {
       data: bots,
     });
   } catch (error) {
-    console.error(error);
+    authLogger.error("Error getting admin bots from session: ", error);
     return null;
   }
 });
@@ -318,7 +323,7 @@ router.get("/me/notifications", checkIsAdmin, async (req, res) => {
       data: notifications,
     });
   } catch (err) {
-    console.error(err);
+    authLogger.error("Error getting admin notifications from session: ", err);
     res.status(500).send({ message: "Internal server error." });
   }
 });
@@ -339,7 +344,10 @@ router.get("/me/organization_invitations", checkIsAdmin, async (req, res) => {
       data: invitations,
     });
   } catch (err) {
-    console.error(err);
+    authLogger.error(
+      "Error getting admin organization invitations from session: ",
+      err
+    );
     res.status(500).send({ message: "Internal server error." });
   }
 });
@@ -375,7 +383,10 @@ router.get(
         data: invitation,
       });
     } catch (err) {
-      console.error(err);
+      authLogger.error(
+        "Error getting admin organization invitation from session: ",
+        err
+      );
       res.status(500).send({ message: "Internal server error." });
     }
   }
@@ -422,7 +433,7 @@ router.post(
         },
       });
     } catch (err) {
-      console.error(err);
+      authLogger.error("Error creating API key: ", err);
       res.status(500).send({ message: "Internal server error." });
     }
   }
@@ -451,7 +462,7 @@ router.delete(
         data: { success: true },
       });
     } catch (err) {
-      console.error(err);
+      authLogger.error("Error deleting API key: ", err);
       res
         .status(500)
         .send({ message: "Internal server error.", data: { success: false } });
@@ -475,7 +486,7 @@ router.get("/api-keys", checkIsAdmin, hasAccessToBot, async (req, res) => {
       data: apiKeys,
     });
   } catch (err) {
-    console.error(err);
+    authLogger.error("Error fetching API keys: ", err);
     res.status(500).send({ message: "Internal server error." });
   }
 });
@@ -505,7 +516,7 @@ router.post("/admin/:admin_id/logout", checkAdminIsAdmin, async (req, res) => {
       data: { success: true },
     });
   } catch (err) {
-    console.error(err);
+    authLogger.error("Error logging out admin: ", err);
     res
       .status(500)
       .send({ message: "Internal server error.", data: { success: false } });

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styles from "./Create.module.scss";
-import { Button, Flex, Grid, Select, TextInput } from "@mantine/core";
+import { Button, Flex, Grid, Select, TextInput, Title } from "@mantine/core";
 import { Bot } from "../../../documentation/main";
 import { useUser } from "../../contexts/User";
 import { useGetMyOrganizations } from "../../hooks/fetching/admin";
@@ -91,6 +91,7 @@ function Create() {
 
   return (
     <div className={styles.create}>
+      <Title order={1}>Create a New Bot</Title>
       <div className={styles.form}>
         <div className="form">
           <Grid>

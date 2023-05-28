@@ -14,6 +14,7 @@ import InviteUser from "./library/Views/Organization/InviteUser";
 import CreateOrganization from "./library/Views/Organization/Create";
 import CreateBot from "./library/Views/Bot/Create";
 import Main from "./library/Views/Wrapper/Main";
+import Feedback from "./library/Views/Feedback/Feedback";
 import "./Global.scss";
 
 function App() {
@@ -55,6 +56,9 @@ function App() {
                 <Route path="404" element={<Fallback />} />
                 <Route path="settings">
                   <Route index element={<Settings />} />
+                </Route>
+                <Route path="feedback">
+                  <Route index element={<Feedback />} />
                 </Route>
                 <Route path="profile">
                   <Route path=":username">

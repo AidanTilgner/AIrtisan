@@ -167,3 +167,12 @@ export interface OrganizationInvitation {
   created_at: Date;
   updated_at: Date;
 }
+
+export interface Feedback {
+  id?: number | null;
+  feedback: string;
+  type: "feedback" | "bug" | "feature";
+  admin: Admin;
+  created_at: Date;
+  updated_at: Date;
+}
