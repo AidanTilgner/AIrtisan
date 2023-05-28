@@ -144,30 +144,25 @@ router.post("/:bot_id/pause", hasAccessToBot, async (req, res) => {
   }
 });
 
-router.get(
-  "/:bot_id/running",
-  checkIsAdmin,
-  hasAccessToBot,
-  async (req, res) => {
-    try {
-      const bot = getBot(Number(req.params.bot_id));
-      if (!bot) {
-        return res.status(400).json({ error: "Bot not found" });
-      }
-
-      const isRunning = await getManagerIsAlive(Number(req.params.bot_id));
-
-      res.send({
-        message: "Bot running status fetched successfully",
-        success: true,
-        data: isRunning,
-      });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error });
+router.get("/:bot_id/running", hasAccessToBot, async (req, res) => {
+  try {
+    const bot = getBot(Number(req.params.bot_id));
+    if (!bot) {
+      return res.status(400).json({ error: "Bot not found" });
     }
+
+    const isRunning = await getManagerIsAlive(Number(req.params.bot_id));
+
+    res.send({
+      message: "Bot running status fetched successfully",
+      success: true,
+      data: isRunning,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error });
   }
-);
+});
 
 router.get("/:bot_id/corpus", hasAccessToBot, async (req, res) => {
   try {

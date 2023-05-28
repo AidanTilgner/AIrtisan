@@ -12,6 +12,18 @@ import { comparePassword as compPass } from "../../utils/crypto";
 import { AdminRoles } from "../../types/lib";
 import { dataSource } from "..";
 
+export type PublicAdmin = Omit<
+  Admin,
+  | "password"
+  | "email"
+  | "role"
+  | "profile_picture_path"
+  | "owned_organizations"
+  | "organizations"
+  | "comparePassword"
+  | "getPublicInfo"
+>;
+
 @Entity()
 export class Admin {
   @PrimaryGeneratedColumn()
@@ -63,5 +75,18 @@ export class Admin {
     });
     if (!selectedPassword) return false;
     return compPass(password, selectedPassword.password);
+  }
+
+  getPublicInfo(): PublicAdmin {
+    const {
+      password,
+      email,
+      organizations,
+      owned_organizations,
+      profile_picture_path,
+      role,
+      ...publicInfo
+    } = this;
+    return publicInfo;
   }
 }

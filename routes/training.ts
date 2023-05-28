@@ -615,7 +615,7 @@ router.get("/buttons", hasAccessToBot, async (req, res) => {
   }
 });
 
-router.post("/context/auto/pagelinks", hasAccessToBot, async (req, res) => {
+router.post("/context/auto/pagelinks", checkIsAdmin, async (req, res) => {
   try {
     const { website_url, exclude = [] } = req.body as {
       website_url: string;

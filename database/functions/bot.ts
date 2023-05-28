@@ -175,7 +175,7 @@ export const deleteBot = async (id: Bot["id"]) => {
 export const getBotsByOwner = async (
   owner_id: number,
   owner_type: OwnerTypes,
-  visibility?: Bot["visibility"]
+  visibility: Bot["visibility"] = "public"
 ) => {
   try {
     const bot = await dataSource.manager.find(entities.Bot, {
