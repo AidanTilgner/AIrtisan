@@ -52,6 +52,7 @@ export const validateDomainForBot = async (
       res.status(401).send({
         message: "Bot not found.",
       });
+      botLogger.log("A request was made with a bot ID that has no bot.");
       return;
     }
 
@@ -61,6 +62,7 @@ export const validateDomainForBot = async (
       res.status(401).send({
         message: "No model file found for the specified bot.",
       });
+      botLogger.log("A request was made with a bot ID that has no model file.");
       return;
     }
 
@@ -107,6 +109,7 @@ export const validateAllowingWidgetsForBot = async (
       res.status(401).send({
         message: "No bot ID or slug provided.",
       });
+
       return;
     }
 
@@ -116,6 +119,7 @@ export const validateAllowingWidgetsForBot = async (
       res.status(401).send({
         message: "Bot not found.",
       });
+      botLogger.log("A request was made with a bot ID that has no bot.");
       return;
     }
 

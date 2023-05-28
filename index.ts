@@ -9,6 +9,7 @@ import http from "http";
 import { Server } from "socket.io";
 import { initSocketIO } from "./utils/socketio";
 import { startupBots } from "./nlu";
+import { logPerformance } from "./middleware/analysis";
 
 config();
 initializeDatabase().then(() => {
@@ -39,6 +40,8 @@ app.use(
 
 app.use(Express.json());
 app.use(Express.urlencoded({ extended: true }));
+
+app.use(logPerformance);
 
 app.get("/documentation", (req, res) => {
   res.redirect("https://docs.airtisan.app");

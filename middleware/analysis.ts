@@ -13,13 +13,26 @@ const anaylisLogger = new Logger({
   name: "analysis",
 });
 
+const performanceLogger = new Logger({
+  log_file_path: "storage/analytics/performance.txt",
+  name: "performance",
+});
+
 export const logIP = (req: Request, res: Response, next: NextFunction) => {
+  if (isDev) {
+    next();
+    return;
+  }
   const ip = getRequesterIp(req);
   anaylisLogger.analytics(`request from ip: ${ip}`);
   next();
 };
 
 export const logSession = (req: Request, res: Response, next: NextFunction) => {
+  if (isDev) {
+    next();
+    return;
+  }
   const session_id = getRequesterSessionId(req);
   anaylisLogger.analytics(`request from session: ${session_id}`);
   next();
@@ -30,6 +43,10 @@ export const addIPToSession = (
   res: Response,
   next: NextFunction
 ) => {
+  if (isDev) {
+    next();
+    return;
+  }
   const session_id = getRequesterSessionId(req);
   const session = getSessionIfExists(session_id);
   if (!session || !session_id) {
@@ -45,5 +62,19 @@ export const addIPToSession = (
   if (reqIp) {
     session.setIpIfNotSet(reqIp);
   }
+  next();
+};
+
+export const logPerformance = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const start = Date.now();
+  res.on("finish", () => {
+    const end = Date.now();
+    const time = end - start;
+    performanceLogger.info(`request to ${req.originalUrl} took ${time}ms`);
+  });
   next();
 };
