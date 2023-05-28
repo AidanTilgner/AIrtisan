@@ -127,10 +127,15 @@ export const createChatInConversation = async ({
     if (confidence) {
       chat.confidence = confidence;
 
-      if (confidence < 50) {
+      if (confidence === 0 || confidence < 60) {
         chat.needs_review = true;
         chat.review_text = "Detected: Low confidence";
       }
+    }
+
+    if (confidence === 0) {
+      chat.needs_review = true;
+      chat.review_text = "Detected: Low confidence";
     }
 
     await dataSource.manager.save(chat);
@@ -304,10 +309,11 @@ export const markChatForReview = async (chatId: number, reviewText: string) => {
   }
 };
 
-export const getChatsThatNeedReview = async () => {
+export const getChatsThatNeedReview = async (botId: number) => {
   try {
+    const bot = await getBot(botId);
     const chats = await dataSource.manager.find(entities.Chat, {
-      where: { needs_review: true },
+      where: { needs_review: true, conversation: { bot: { id: bot?.id } } },
       relations: ["conversation"],
     });
     return chats;
@@ -317,9 +323,9 @@ export const getChatsThatNeedReview = async () => {
   }
 };
 
-export const getConversationsThatNeedReview = async () => {
+export const getConversationsThatNeedReview = async (botId: number) => {
   try {
-    const chats = await getChatsThatNeedReview();
+    const chats = await getChatsThatNeedReview(botId);
     if (!chats) {
       return null;
     }
@@ -378,6 +384,7 @@ export const markChatAsReviewed = async (chatId: number, username: string) => {
   try {
     const chat = await dataSource.manager.findOne(entities.Chat, {
       where: { id: chatId },
+      relations: ["conversation"],
     });
 
     if (!chat) {
@@ -387,6 +394,28 @@ export const markChatAsReviewed = async (chatId: number, username: string) => {
     chat.needs_review = false;
     chat.reviewer = username;
     await dataSource.manager.save(chat);
+
+    const originalConversation = await dataSource.manager.findOne(
+      entities.Conversation,
+      {
+        where: {
+          session_id: chat.conversation.session_id,
+          training_copy: false,
+        },
+      }
+    );
+
+    if (originalConversation) {
+      const originalChat = originalConversation.chats.find(
+        (o) => o.order === chat.order
+      );
+      if (originalChat) {
+        originalChat.needs_review = false;
+        originalChat.reviewer = username;
+        await dataSource.manager.save(originalChat);
+      }
+    }
+
     return chat;
   } catch (err) {
     console.error(err);

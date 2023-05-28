@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
-import { useBot } from "../contexts/Bot";
 import { api } from "../helpers/axios";
 import { DefaultResponse } from "../../documentation/server";
+import { useParams } from "react-router-dom";
 
 export interface UseFetchConfig<B, D> {
   url: string;
@@ -36,18 +36,23 @@ function useFetch<B, D>({
   dependencies = [],
   runOnDependencies = [],
 }: UseFetchConfig<B, D>) {
-  const { bot } = useBot();
+  const { bot_id = "" } = useParams();
 
   const allQuery: Record<string, string> = useBotId
     ? {
         ...query,
-        bot_id: bot?.id?.toString() || "",
+        bot_id,
       }
     : {
         ...query,
       };
 
-  const readyToRun = useBotId ? !!bot?.id : true;
+  const readyToRun = useCallback(() => {
+    if (useBotId && !bot_id) {
+      return false;
+    }
+    return true;
+  }, [bot_id, useBotId]);
 
   const queryStr = Object.keys(allQuery)
     .map((key) => (allQuery[key] ? `${key}=${allQuery[key]}` : ""))
@@ -55,20 +60,20 @@ function useFetch<B, D>({
 
   const urlToUse = queryStr ? `${url}?${queryStr}` : url;
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [data, setData] = useState<D>();
   const [success, setSuccess] = useState(false);
 
   const load = useCallback(
     async (loadConfig?: { updatedUrl?: string; updatedBody?: B }) => {
-      if (!readyToRun) return;
+      if (!readyToRun()) return;
       onBefore && onBefore();
       setLoading(true);
       return api<DefaultResponse<D>>(loadConfig?.updatedUrl || urlToUse, {
         method,
         data: {
           ...(loadConfig?.updatedBody || body),
-          bot_id: bot?.id,
+          bot_id,
         },
         headers,
         cache: bustCache ? false : undefined,
@@ -100,11 +105,21 @@ function useFetch<B, D>({
   );
 
   useEffect(() => {
-    if (!readyToRun) return;
+    if (!readyToRun()) {
+      return;
+    }
+
     if (
       runOnMount ||
       (runOnDependencies.length > 0 && runOnDependencies.every((dep) => !!dep))
     ) {
+      if (!readyToRun()) {
+        console.error(
+          "Tried to run on mount when wasn't ready to run",
+          `${method} ${urlToUse}`
+        );
+        return;
+      }
       load({
         updatedUrl: urlToUse,
         updatedBody: body,
@@ -127,7 +142,7 @@ function useFetch<B, D>({
         method,
         data: {
           ...body,
-          bot_id: bot?.id,
+          bot_id,
         },
         headers,
         cache: bustCache ? false : undefined,

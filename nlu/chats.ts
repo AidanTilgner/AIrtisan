@@ -7,6 +7,8 @@ import {
 } from "../database/functions/conversations";
 import { enhanceChatIfNecessary } from "./enhancement";
 import { detectAndActivateTriggers } from "./triggers";
+import { getBotModel } from "../database/functions/bot";
+import { getHIPAACompliantMessage } from "../utils/sanitization";
 
 export const handleNewChat = async ({
   botId,
@@ -26,14 +28,34 @@ export const handleNewChat = async ({
     if (!response) {
       return null;
     }
+    const modelFile = await getBotModel(botId);
+
+    if (!modelFile) {
+      return null;
+    }
+
+    const {
+      specification: { hipaa_compliant },
+    } = modelFile;
+
     const { intent, answer, confidence, initial_text } = response;
+
     if (allowTriggers) {
       detectAndActivateTriggers(botId, intent, session_id);
     }
+
+    const userMessageToUse = hipaa_compliant
+      ? (await getHIPAACompliantMessage(message)).message
+      : message;
+
+    if (!userMessageToUse) {
+      return null;
+    }
+
     const userChatResponse = await addChatToConversationAndCreateIfNotExists({
       botId,
       sessionId: session_id,
-      message,
+      message: userMessageToUse,
       intent,
       role: "user",
       enhanced: false,
@@ -55,10 +77,18 @@ export const handleNewChat = async ({
       session_id,
     });
 
+    const botMessageToUse = hipaa_compliant
+      ? (await getHIPAACompliantMessage(botAnswer)).message
+      : botAnswer;
+
+    if (!botMessageToUse) {
+      return null;
+    }
+
     const botChatResponse = await addChatToConversationAndCreateIfNotExists({
       botId,
       sessionId: session_id,
-      message: botAnswer,
+      message: botMessageToUse,
       intent,
       role: "assistant",
       enhanced,

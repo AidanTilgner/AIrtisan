@@ -2,6 +2,7 @@ import React, { useRef } from "react";
 import styles from "./TopNav.module.scss";
 import SVG from "../../Utils/SVG";
 import { useNavigate } from "react-router-dom";
+import { useSearchParamsUpdate } from "../../../hooks/navigation";
 
 function TopNav({ alwaysScrolled }: { alwaysScrolled?: boolean }) {
   const navigate = useNavigate();
@@ -16,6 +17,8 @@ function TopNav({ alwaysScrolled }: { alwaysScrolled?: boolean }) {
     }
   });
 
+  const updateParams = useSearchParamsUpdate();
+
   return (
     <div
       className={`${styles.TopNav} ${alwaysScrolled ? styles.scrolled : ""}`}
@@ -24,6 +27,7 @@ function TopNav({ alwaysScrolled }: { alwaysScrolled?: boolean }) {
       <button
         className={styles.logo}
         onClick={() => {
+          updateParams(null);
           navigate("/");
         }}
         tabIndex={0}

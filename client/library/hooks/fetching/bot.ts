@@ -142,3 +142,53 @@ export const useGetMyRecentBots = (
     success,
   };
 };
+
+export const useGetApiKeys = (
+  config?: Partial<UseFetchConfig<undefined, ApiKey[]>>
+) => {
+  const { load, data, success } = useFetch<undefined, ApiKey[]>({
+    ...config,
+    url: `/auth/api-keys`,
+    method: "GET",
+  });
+
+  return {
+    getApiKeys: load,
+    data: data,
+    success,
+  };
+};
+
+export const useDeleteApiKey = (
+  config?: Partial<UseFetchConfig<undefined, boolean>>
+) => {
+  const { load, data, success } = useFetch<undefined, boolean>({
+    ...config,
+    url: `/auth/api-key`,
+    method: "DELETE",
+  });
+
+  return {
+    deleteApiKey: load,
+    data: data,
+    success,
+  };
+};
+
+export const useDeleteBot = (
+  botId: number | string,
+  config?: Partial<UseFetchConfig<undefined, boolean>>
+) => {
+  const { load, data, success } = useFetch<undefined, boolean>({
+    useBotId: false,
+    ...config,
+    url: `/bots/${botId}`,
+    method: "DELETE",
+  });
+
+  return {
+    deleteBot: load,
+    data: data,
+    success,
+  };
+};

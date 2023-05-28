@@ -7,57 +7,6 @@ import {
   previews,
 } from "./previews";
 
-interface ChatURL {
-  url: (...args: unknown[]) => string;
-  headers: {
-    "Content-Type": string;
-    "x-access-token": string;
-  };
-}
-
-(
-  window as unknown as {
-    chat_urls: {
-      [key: string]: ChatURL;
-    };
-  }
-).chat_urls = {};
-
-const useChatURL: ChatURL = {
-  url: () =>
-    `/api/chat/as_admin?bot_id=${localStorage.getItem("lastUsedBotID")}`,
-  headers: {
-    "Content-Type": "application/json",
-    "x-access-token": localStorage.getItem("accessToken") || "",
-  },
-};
-
-(
-  window as unknown as {
-    chat_urls: {
-      [key: string]: ChatURL;
-    };
-  }
-).chat_urls.useChatEndpoint = useChatURL;
-
-const reviewChatURL: ChatURL = {
-  url: (chat_id) => {
-    return `/api/chat/as_admin/${chat_id}/should_review`;
-  },
-  headers: {
-    "Content-Type": "application/json",
-    "x-access-token": localStorage.getItem("accessToken") || "",
-  },
-};
-
-(
-  window as unknown as {
-    chat_urls: {
-      [key: string]: ChatURL;
-    };
-  }
-).chat_urls.reviewChatURL = reviewChatURL;
-
 function Preview() {
   useLayoutEffect(() => {
     const promises = previews.map(async (p) => {
@@ -94,8 +43,15 @@ function Preview() {
       <br />
       {previews.map((p) => {
         return (
-          <div className={styles.preview} key={p.name + p.rootId}>
-            <h2>{p.name}</h2>
+          <div
+            className={`${styles.preview} ${
+              p.inline ? styles.inline : styles.floating
+            }`}
+            key={p.name + p.rootId}
+          >
+            <h2>
+              {p.name} {!p.inline ? "(Floating)" : ""}
+            </h2>
             <div className={styles.chatboxContainer} id={p.rootId}></div>
           </div>
         );

@@ -1,7 +1,7 @@
 import { Bot } from "../models/bot";
 import { dataSource, entities } from "..";
 import { generateBotFiles } from "../../utils/bot";
-import { readFileSync, writeFileSync } from "fs";
+import { readFileSync, unlinkSync, writeFileSync } from "fs";
 import { format } from "prettier";
 import { Context, Corpus, Model, OwnerTypes } from "../../types/lib";
 import path from "path";
@@ -104,6 +104,35 @@ export const getBot = async (id: Bot["id"], loadOwner = false) => {
   }
 };
 
+export const getBotBySlug = async (slug: Bot["slug"], loadOwner = false) => {
+  try {
+    const bot = await dataSource.manager.findOne(entities.Bot, {
+      where: { slug },
+    });
+
+    if (!bot) return null;
+
+    const botToSend: BotWithLoadedOwner = {
+      ...bot,
+      owner: undefined,
+    };
+
+    if (loadOwner && bot) {
+      const owner = await getBotOwner(bot.owner_id, bot.owner_type);
+      if (owner) {
+        botToSend.owner = owner;
+      }
+
+      return botToSend;
+    }
+
+    return bot;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
 export const getBots = async () => {
   try {
     const bots = await dataSource.manager.find(entities.Bot);
@@ -135,6 +164,11 @@ export const deleteBot = async (id: Bot["id"]) => {
       where: { id },
     });
     if (!bot) return null;
+    const files = await getBotFileLocations(bot.id);
+    if (!files) return null;
+    Object.values(files).forEach((file) => {
+      unlinkSync(path.join(storageLocation, file));
+    });
     await dataSource.manager.remove(bot);
     return bot;
   } catch (error) {
@@ -146,7 +180,7 @@ export const deleteBot = async (id: Bot["id"]) => {
 export const getBotsByOwner = async (
   owner_id: number,
   owner_type: OwnerTypes,
-  visibility?: Bot["visibility"]
+  visibility: Bot["visibility"] = "public"
 ) => {
   try {
     const bot = await dataSource.manager.find(entities.Bot, {
@@ -281,7 +315,10 @@ export const updateBotCorpus = async (
   }
 };
 
-export const updateBotContext = async (id: Bot["id"], context: Context) => {
+export const updateBotContext = async (
+  id: Bot["id"],
+  context: Context
+): Promise<Context | null> => {
   try {
     const bot = await dataSource.manager.findOne(entities.Bot, {
       where: { id },
@@ -307,7 +344,7 @@ export const updateBotContext = async (id: Bot["id"], context: Context) => {
         parser: "json",
       })
     );
-    return updatedContents;
+    return updatedContents as Context;
   } catch (error) {
     console.error(error);
     return null;

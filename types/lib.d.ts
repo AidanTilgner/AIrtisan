@@ -37,6 +37,11 @@ export type Model = {
     model: AllowedChatModels;
     version: string;
     none_fallback: boolean;
+    hipaa_compliant: boolean;
+  };
+  security: {
+    domain_whitelist: string[];
+    allow_widgets: boolean;
   };
 };
 

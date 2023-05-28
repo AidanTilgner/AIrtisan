@@ -170,17 +170,30 @@ function AddIntent({
     enhance: !!formData?.enhance,
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   const handleSubmit = async () => {
-    const formIsFilled =
-      formData?.intent &&
-      formData?.utterances?.length &&
-      formData?.answers?.length;
-
-    if (!formIsFilled || !formData) {
+    if (!formData?.intent) {
       showNotification({
         title: "Validation Error",
-        message: "Please fill out all fields.",
+        message: "Please fill out the intent.",
+        color: "red",
+      });
+      return;
+    }
+
+    if (!formData?.utterances?.length) {
+      showNotification({
+        title: "Validation Error",
+        message: "Please add at least one utterance.",
+        color: "red",
+      });
+      return;
+    }
+
+    if (!formData?.answers?.length) {
+      showNotification({
+        title: "Validation Error",
+        message: "Please add at least one answer.",
+        color: "red",
       });
       return;
     }
@@ -441,15 +454,29 @@ function UpdateIntent({
   });
 
   const handleSubmit = async () => {
-    const formIsFilled =
-      formData?.intent &&
-      formData?.utterances?.length &&
-      formData?.answers?.length;
-
-    if (!formIsFilled || !formData) {
+    if (!formData?.intent) {
       showNotification({
         title: "Validation Error",
-        message: "Please fill out all fields.",
+        message: "Please fill out the intent.",
+        color: "red",
+      });
+      return;
+    }
+
+    if (!formData?.utterances?.length) {
+      showNotification({
+        title: "Validation Error",
+        message: "Please add at least one utterance.",
+        color: "red",
+      });
+      return;
+    }
+
+    if (!formData?.answers?.length) {
+      showNotification({
+        title: "Validation Error",
+        message: "Please add at least one answer.",
+        color: "red",
       });
       return;
     }

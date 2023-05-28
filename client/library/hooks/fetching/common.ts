@@ -104,7 +104,7 @@ export const useRenameIntent = (
     CorpusDataPoint
   >({
     ...config,
-    url: "/training/intent",
+    url: "/training/intent/rename",
     method: "PUT",
     body: { old_intent: intent, new_intent: newIntent, retrain: true },
   });
@@ -288,7 +288,7 @@ export const useSendTrainingChat = (
     }
   >({
     ...config,
-    url: `/chat/as_admin/training`,
+    url: `/chat/training`,
     method: "POST",
     body: { message, session_id },
   });
@@ -311,7 +311,7 @@ export const useRetryChat = (
     { answer: string; conversation: Conversation }
   >({
     ...config,
-    url: `/chat/as_admin/${chatId}/retry/`,
+    url: `/chat/${chatId}/retry/`,
     method: "POST",
   });
 
@@ -334,7 +334,7 @@ export const useMarkChatAsReviewed = (
     Chat
   >({
     ...config,
-    url: `/chat/as_admin/${reviewConfig?.chatId}/reviewed/`,
+    url: `/chat/${reviewConfig?.chatId}/reviewed/`,
     method: "POST",
     body: { username: reviewConfig?.username },
   });
@@ -384,7 +384,7 @@ export const useCreateTrainingCopyOfConversation = (
 ) => {
   const { load, data, success } = useFetch<unknown, Conversation>({
     ...config,
-    url: `/training/conversations/${conversation_id}/training_copy`,
+    url: `/conversations/${conversation_id}/training_copy`,
     method: "POST",
   });
 
@@ -415,7 +415,10 @@ export const useDeleteConversation = (
 export const useRetrainBot = (
   config?: Partial<UseFetchConfig<unknown, { status: string }>>
 ) => {
-  const { load, data, success } = useFetch<unknown, { status: string }>({
+  const { load, data, success, loading } = useFetch<
+    unknown,
+    { status: string }
+  >({
     ...config,
     url: "/training/retrain",
     method: "POST",
@@ -425,6 +428,7 @@ export const useRetrainBot = (
     retrainBot: load,
     data: data,
     success,
+    loading,
   };
 };
 
@@ -612,5 +616,64 @@ export const useRemoveContextFromIntent = (
     removeContextFromIntent: load,
     data: data,
     success,
+  };
+};
+
+export const useGetPageLinks = (
+  {
+    url,
+    exclude,
+  }: {
+    url: string;
+    exclude?: string[];
+  },
+  config?: Partial<
+    UseFetchConfig<
+      { website_url: string; exclude: string[] | undefined },
+      string[]
+    >
+  >
+) => {
+  const { load, data, success, loading } = useFetch<
+    { website_url: string },
+    string[]
+  >({
+    url: `/training/context/auto/pagelinks`,
+    method: "POST",
+    body: { website_url: url, exclude },
+    ...config,
+  });
+
+  return {
+    getPageLinks: load,
+    data: data,
+    success,
+    loading,
+  };
+};
+
+export const useGenerateBotContextForPages = (
+  {
+    pages,
+  }: {
+    pages: string[];
+  },
+  config?: Partial<UseFetchConfig<{ pages: string[] }, string[]>>
+) => {
+  const { load, data, success, loading } = useFetch<
+    { pages: string[] },
+    string[]
+  >({
+    ...config,
+    url: `/training/context/auto/generate`,
+    method: "POST",
+    body: { pages },
+  });
+
+  return {
+    generateBotContextForPages: load,
+    data: data,
+    success,
+    loading,
   };
 };

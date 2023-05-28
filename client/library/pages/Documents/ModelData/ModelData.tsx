@@ -4,6 +4,7 @@ import useFetch from "../../../hooks/useFetch";
 import styles from "./ModelData.module.scss";
 import { useBot } from "../../../contexts/Bot";
 import {
+  Anchor,
   Button,
   Checkbox,
   Flex,
@@ -50,6 +51,11 @@ function ModelData() {
       model: "gpt-3.5-turbo",
       version: "0.1.0",
       none_fallback: false,
+      hipaa_compliant: false,
+    },
+    security: {
+      domain_whitelist: [],
+      allow_widgets: false,
     },
   });
 
@@ -272,12 +278,90 @@ function ModelData() {
             <Checkbox
               label="None Fallback"
               checked={formData.specification.none_fallback}
+              description="If the intent isn't recognized, the bot will rely solely on enhancement."
               onChange={(event) => {
                 setFormData({
                   ...formData,
                   specification: {
                     ...formData.specification,
                     none_fallback: event.currentTarget.checked,
+                  },
+                });
+              }}
+            />
+          </Grid.Col>
+          <Grid.Col sm={12} md={6}>
+            <Checkbox
+              label={
+                <>
+                  HIPAA Friendly *
+                  <Anchor
+                    href="/terms-and-conditions#hipaa-compliance"
+                    target="_blank"
+                  >
+                    disclaimer
+                  </Anchor>
+                </>
+              }
+              checked={formData.specification.hipaa_compliant}
+              description={
+                <>
+                  Sensitive user information will be scrubbed from conversation
+                  history before reaching human eyes. Please note the{" "}
+                  <Anchor
+                    href="/terms-and-conditions#hipaa-compliance"
+                    target="_blank"
+                  >
+                    disclaimer
+                  </Anchor>
+                  , as this feature may not be 100% accurate.
+                </>
+              }
+              onChange={(event) => {
+                setFormData({
+                  ...formData,
+                  specification: {
+                    ...formData.specification,
+                    hipaa_compliant: event.currentTarget.checked,
+                  },
+                });
+              }}
+            />
+          </Grid.Col>
+          <Grid.Col span={12} />
+          <Grid.Col span={12}>
+            <Title order={2}>Security</Title>
+          </Grid.Col>
+          <Grid.Col sm={12} md={6}>
+            <TextInput
+              label="Domains"
+              value={formData.security.domain_whitelist.join(", ")}
+              description="A comma-separated list of domains that are allowed to use your bot."
+              placeholder="example.com, example.org"
+              onChange={(event) => {
+                setFormData({
+                  ...formData,
+                  security: {
+                    ...formData.security,
+                    domain_whitelist: event.currentTarget.value
+                      .split(",")
+                      .map((domain) => domain.trim()),
+                  },
+                });
+              }}
+            />
+          </Grid.Col>
+          <Grid.Col sm={12} md={6}>
+            <Checkbox
+              label="Allow Widgets"
+              checked={formData.security.allow_widgets}
+              description="Allow your bot to be accessed publically. This is required for widgets, otherwise your bot will only be accessible via the API."
+              onChange={(event) => {
+                setFormData({
+                  ...formData,
+                  security: {
+                    ...formData.security,
+                    allow_widgets: event.currentTarget.checked,
                   },
                 });
               }}

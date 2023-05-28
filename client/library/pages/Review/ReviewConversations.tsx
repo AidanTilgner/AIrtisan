@@ -67,6 +67,7 @@ function ReviewConversations() {
   const [allowEnhanced, setAllowEnhanced] = React.useState(true);
   const [allowNoneIntent, setAllowNoneIntent] = React.useState(true);
   const [allowTrainingCopy, setAllowTrainingCopy] = React.useState(true);
+  const [showUnnamed, setShowUnnamed] = React.useState(false);
 
   const conversationContainsNoneIntent = (conversation: ConversationType) => {
     return conversation.chats.find(
@@ -85,9 +86,15 @@ function ReviewConversations() {
       const passesNoneIntent = allowNoneIntent
         ? true
         : !conversationContainsNoneIntent(conv);
+      const passesShowUnnamed = showUnnamed ? true : !!conv.generated_name;
 
       if (!query) {
-        return passesEnhanced && passesTrainingCopy && passesNoneIntent;
+        return (
+          passesEnhanced &&
+          passesTrainingCopy &&
+          passesNoneIntent &&
+          passesShowUnnamed
+        );
       }
 
       const generated_name_contains_query = conv.generated_name
@@ -144,7 +151,11 @@ function ReviewConversations() {
         someChatPassesQuery;
 
       return (
-        passesQuery && passesEnhanced && passesTrainingCopy && passesNoneIntent
+        passesQuery &&
+        passesEnhanced &&
+        passesTrainingCopy &&
+        passesNoneIntent &&
+        passesShowUnnamed
       );
     });
 
@@ -212,8 +223,6 @@ function ReviewConversations() {
     }
   }, [openedConversation]);
 
-  //localhost:3050/bots/2?tab=review&load_conversation=4
-
   return (
     <div className={styles.ReviewConversations}>
       <div className={styles.header}>
@@ -262,6 +271,11 @@ function ReviewConversations() {
             onChange={(v) => setAllowTrainingCopy(v)}
           >
             For Training
+          </Chip>
+        </div>
+        <div className={styles.filter}>
+          <Chip checked={showUnnamed} onChange={(v) => setShowUnnamed(v)}>
+            Show Unnamed
           </Chip>
         </div>
       </div>
@@ -431,7 +445,6 @@ function Conversation({
             showNotification({
               title: "Success",
               message: "Deleted conversation",
-              color: "red",
             });
 
             setOpenedConversation(null);
@@ -461,6 +474,10 @@ function Conversation({
 
   const chatHasNoneIntent = !!conversation.chats.find(
     (c) => c.intent.toLocaleLowerCase() === "none"
+  );
+
+  const chatNeedsReview = !!conversation.chats.find(
+    (c) => c.needs_review === true
   );
 
   const getFormattedTimeStamp = (timestamp: string) => {
@@ -547,6 +564,11 @@ function Conversation({
         tabIndex={0}
       >
         <h3 className={styles.title}>
+          {chatNeedsReview && (
+            <span className={styles.warning_icon} title="Needs review.">
+              <WarningCircle weight="bold" />
+            </span>
+          )}
           <Highlight highlight={query}>
             {getFormattedTitle(conversation)}
           </Highlight>

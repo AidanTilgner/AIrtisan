@@ -48,42 +48,53 @@ function Create() {
 
   return (
     <div className={styles.create}>
-      <div className={styles.header}>
-        <h1>Create Organization</h1>
-      </div>
       <div className={styles.form}>
-        <Grid>
-          <Grid.Col sm={12} md={6}>
-            <TextInput
-              label="Name"
-              placeholder="Your organization's name..."
-              value={formData.name}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.currentTarget.value })
-              }
-              withAsterisk
-            />
-          </Grid.Col>
-          <Grid.Col sm={12} md={6}>
-            <TextInput
-              withAsterisk
-              label="Description"
-              placeholder="Your organization's description..."
-              value={formData.description}
-              onChange={(e) =>
-                setFormData({ ...formData, description: e.currentTarget.value })
-              }
-            />
-          </Grid.Col>
-          <Grid.Col span={12} />
-          <Grid.Col span={12}>
-            <Flex align="center" justify="end">
-              <Button onClick={handleCreateOrganization} disabled={!validated}>
-                Create
-              </Button>
-            </Flex>
-          </Grid.Col>
-        </Grid>
+        <div className="form">
+          <Grid>
+            <Grid.Col span={12}>
+              <h2>New Organization</h2>
+            </Grid.Col>
+            <Grid.Col span={12}>
+              <h3>Tell us about your Organization</h3>
+            </Grid.Col>
+            <Grid.Col sm={12}>
+              <TextInput
+                label="Name"
+                placeholder="The name of your new organization..."
+                value={formData.name}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.currentTarget.value })
+                }
+                withAsterisk
+              />
+            </Grid.Col>
+            <Grid.Col sm={12}>
+              <TextInput
+                withAsterisk
+                label="Description"
+                placeholder="A description of your organization..."
+                value={formData.description}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    description: e.currentTarget.value,
+                  })
+                }
+              />
+            </Grid.Col>
+            <Grid.Col span={12} />
+            <Grid.Col span={12}>
+              <Flex align="center" justify="end">
+                <Button
+                  onClick={handleCreateOrganization}
+                  disabled={!validated}
+                >
+                  Create
+                </Button>
+              </Flex>
+            </Grid.Col>
+          </Grid>
+        </div>
       </div>
     </div>
   );

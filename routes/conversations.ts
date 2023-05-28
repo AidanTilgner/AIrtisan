@@ -10,10 +10,11 @@ import {
   getConversations,
   getConversation,
   getBotConversations,
-  getBotConversationsThatNeedReview,
   generateIntentFlow,
   getRecentConversations,
+  createTrainingCopyOfConversation,
 } from "../database/functions/conversations";
+import { Bot } from "../database/models/bot";
 
 const router = Router();
 
@@ -52,9 +53,7 @@ router.get("/need_review", checkIsAdmin, hasAccessToBot, async (req, res) => {
 
     const formattedBotId = Number(bot_id);
 
-    const conversations = await getBotConversationsThatNeedReview(
-      formattedBotId
-    );
+    const conversations = await getConversationsThatNeedReview(formattedBotId);
 
     res.send({
       message: "Conversations retrieved",
@@ -158,23 +157,6 @@ router.delete(
     }
   }
 );
-
-router.get("/all/need_review", checkIsSuperAdmin, async (req, res) => {
-  try {
-    const conversations = await getConversationsThatNeedReview();
-
-    res.send({
-      message: "Conversations retrieved",
-      success: true,
-      data: {
-        conversations,
-      },
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send({ message: "Error getting conversations" });
-  }
-});
 
 router.get(
   "/:conversation_id",
@@ -317,6 +299,42 @@ router.post(
     } catch (error) {
       console.error(error);
       res.status(500).send({ message: "Error getting conversation flow" });
+    }
+  }
+);
+
+router.post(
+  "/:conversation_id/training_copy",
+  checkIsAdmin,
+  hasAccessToBot,
+  async (req, res) => {
+    try {
+      const { conversation_id } = req.params;
+      const bot = (req as unknown as Record<"bot", Bot>).bot;
+
+      if (!conversation_id) {
+        res.status(402).send({ message: "No conversation id provided" });
+        return;
+      }
+
+      const newConversation = await createTrainingCopyOfConversation(
+        bot.id,
+        Number(conversation_id)
+      );
+
+      if (!newConversation) {
+        res.status(404).send({ message: "Conversation not found" });
+        return;
+      }
+
+      res.send({
+        message: "Conversation copied",
+        success: true,
+        data: newConversation,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send({ message: "Error copying training data" });
     }
   }
 );

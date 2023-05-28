@@ -1,19 +1,20 @@
-import React, { useEffect } from "react";
+import React from "react";
 import styles from "./Auth.module.scss";
-import { deleteApiKey, getAllApiKeys } from "../../helpers/fetching/admin";
 import { TrashSimple, Copy } from "@phosphor-icons/react";
 import { showNotification } from "@mantine/notifications";
-import { ApiKey } from "../../../documentation/main";
-import { useAddApiKey } from "../../hooks/fetching/bot";
+import {
+  useAddApiKey,
+  useDeleteApiKey,
+  useGetApiKeys,
+} from "../../hooks/fetching/bot";
+import { Button, Flex, SegmentedControl, TextInput } from "@mantine/core";
+import { useBot } from "../../contexts/Bot";
+import { Prism } from "@mantine/prism";
 
 function Auth() {
-  const [apiKeys, setApiKeys] = React.useState<ApiKey[]>([]);
-
-  useEffect(() => {
-    getAllApiKeys().then(({ api_keys }) => {
-      setApiKeys(api_keys);
-    });
-  }, []);
+  const { data: apiKeys, getApiKeys: reloadApiKeys } = useGetApiKeys({
+    runOnMount: true,
+  });
 
   const [newApiKey, setNewApiKey] = React.useState({
     name: "",
@@ -44,9 +45,7 @@ function Auth() {
         name: res.data.for,
         key: res.data.key,
       });
-      getAllApiKeys().then(({ api_keys }) => {
-        setApiKeys(api_keys);
-      });
+      reloadApiKeys();
     });
   };
 
@@ -58,37 +57,111 @@ function Auth() {
     });
   };
 
+  const { deleteApiKey } = useDeleteApiKey();
+
   const handleDeleteApiKey = (id: number) => {
-    deleteApiKey({ id }).then(() => {
+    deleteApiKey({ updatedUrl: `/auth/api-key/${id}` }).then(() => {
       showNotification({
         title: "Success",
         message: "Key deleted",
       });
-      getAllApiKeys().then(({ api_key }) => {
-        setApiKeys(api_key);
-      });
+      reloadApiKeys();
     });
   };
 
+  const { bot } = useBot();
+
+  const [codeToShow, setCodeToShow] = React.useState<"curl" | "js" | "py">(
+    "curl"
+  );
+
+  const curlCodeSnippet = `curl -H "x-access-token: ${
+    addedApiKey.key || "YOUR_API_KEY"
+  }"
+  -H "x-service: ${addedApiKey.name || "YOUR_API_KEY_SERVICE_NAME"}"
+  -H "Content-Type: application/json"
+  -X POST -d '{"message": "Hello"}'
+  https://airtisan.app/api/v1/bot/${bot?.slug || "YOUR BOT SLUG"}/chat`;
+
+  const jsCodeSnippet = `fetch("https://airtisan.app/api/v1/bot/${
+    bot?.slug
+  }/chat", {
+    method: 'POST',
+    headers: {
+      'x-access-token': ${addedApiKey.key || "YOUR_API_KEY"},
+      'x-service': ${addedApiKey.name || "YOUR_API_KEY_SERVICE_NAME"},
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      message: 'Hello'
+    })
+  });`;
+
   return (
     <div className={styles.Auth}>
-      <h1>Api Keys</h1>
-      <h2>New Api Key</h2>
-      <div className={styles.form}>
-        <input
-          type="text"
-          placeholder="name"
-          className={styles.input}
-          value={newApiKey.name}
-          onChange={(e) => {
-            setNewApiKey({ ...newApiKey, name: e.target.value });
-          }}
-        />
-        <button className={styles.add_button} onClick={addNewApiKey}>
-          Add
-        </button>
+      <h1>API Keys</h1>
+      <div className={styles.description}>
+        <p>
+          API keys allow you to access your bot programmatically using the REST
+          API. Just type the name of the service that {`you'd`} like to generate
+          a key for, and click {`"Add"`}.
+        </p>
+        <p>
+          Then, make a request using the key in the header , and the service
+          name. For example:
+        </p>
+        <div className={styles.code_explanation}>
+          <SegmentedControl
+            value={codeToShow}
+            onChange={(value) => setCodeToShow(value as "curl" | "js")}
+            data={[
+              { label: "cURL", value: "curl" },
+              { label: "JavaScript", value: "js" },
+            ]}
+            size="xs"
+          />
+          <br />
+          <br />
+          {codeToShow === "curl" && (
+            <Prism language="bash">{curlCodeSnippet}</Prism>
+          )}
+          {codeToShow === "js" && (
+            <Prism language="javascript">{jsCodeSnippet}</Prism>
+          )}
+        </div>
       </div>
-      <h2>All Api Keys</h2>
+      <div className={styles.form}>
+        <Flex
+          align={"center"}
+          justify={"space-between"}
+          style={{
+            width: "100%",
+          }}
+        >
+          <TextInput
+            label="New API Key"
+            type="text"
+            placeholder="name"
+            value={newApiKey.name}
+            onChange={(e) => {
+              setNewApiKey({ ...newApiKey, name: e.target.value });
+            }}
+            style={{
+              width: "75%",
+            }}
+          />
+          <Button
+            variant="filled"
+            onClick={addNewApiKey}
+            style={{
+              marginTop: "24px",
+            }}
+          >
+            Add
+          </Button>
+        </Flex>
+      </div>
+      <h2>All API Keys</h2>
       <div className={styles.apiKeys}>
         {apiKeys?.length ? (
           apiKeys?.map((apiKey) => {

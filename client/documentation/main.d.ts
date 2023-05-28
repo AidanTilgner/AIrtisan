@@ -94,6 +94,11 @@ export type Model = {
     model: AllowedChatModels;
     version: string;
     none_fallback: boolean;
+    hipaa_compliant: boolean;
+  };
+  security: {
+    domain_whitelist: string[];
+    allow_widgets: boolean;
   };
 };
 
@@ -111,6 +116,7 @@ export interface Bot {
   is_running: boolean | null;
   owner?: Organization | Admin;
   enhancement_model: string;
+  slug: string;
   created_at: Date | string;
   updated_at: Date | string;
 }

@@ -30,6 +30,8 @@ import {
   deleteBotContextItem,
   updateBotModel,
 } from "../database/functions/bot";
+import { getWebsitePageLinks } from "../utils/puppeteer";
+import { handleBuildContextObjectForPages } from "../utils/context";
 
 const router = Router();
 
@@ -385,7 +387,7 @@ router.get("/intents", hasAccessToBot, async (req, res) => {
 router.get("/intents/full", hasAccessToBot, async (req, res) => {
   try {
     const botId = req.query.bot_id;
-    const intents = getIntentsFull(Number(botId));
+    const intents = await getIntentsFull(Number(botId));
     const toSend = {
       message: "Got intents",
       success: true,
@@ -610,6 +612,72 @@ router.get("/buttons", hasAccessToBot, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).send({ message: "Error getting buttons" });
+  }
+});
+
+router.post("/context/auto/pagelinks", checkIsAdmin, async (req, res) => {
+  try {
+    const { website_url, exclude = [] } = req.body as {
+      website_url: string;
+      exclude: string[];
+    };
+
+    if (!website_url) {
+      res.status(400).send({ message: "Missing website_url" });
+      return;
+    }
+
+    const PAGES_TO_CRAWL = 25;
+    const data = await getWebsitePageLinks(
+      website_url,
+      PAGES_TO_CRAWL,
+      exclude
+    );
+
+    const toSend = {
+      message: "Got page links",
+      success: true,
+      data,
+    };
+
+    res.send(toSend);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: "Error getting links." });
+  }
+});
+
+router.post("/context/auto/generate", hasAccessToBot, async (req, res) => {
+  try {
+    const { pages } = req.body as {
+      pages: string[];
+    };
+    const bot_id = req.query.bot_id || req.body.bot_id;
+
+    if (!bot_id) {
+      res.status(400).send({ message: "Missing bot_id" });
+      return;
+    }
+
+    if (!pages || !Array.isArray(pages) || pages.length === 0) {
+      res.status(400).send({ message: "Missing pages" });
+      return;
+    }
+
+    const data = await handleBuildContextObjectForPages(pages);
+
+    const updatedContext = await updateBotContext(Number(bot_id), data);
+
+    const toSend = {
+      message: "Got context",
+      success: true,
+      data: updatedContext,
+    };
+
+    res.send(toSend);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: "Error generating context." });
   }
 });
 

@@ -13,7 +13,7 @@ import styles from "./Bot.module.scss";
 import {
   Chat,
   Chats,
-  FingerprintSimple,
+  Cloud,
   MonitorPlay,
   SquaresFour,
   TextColumns,
@@ -28,7 +28,7 @@ type Tab =
   | "documents"
   | "review"
   | "preview"
-  | "auth";
+  | "api";
 
 function Bot() {
   const { bot_id } = useParams();
@@ -96,10 +96,10 @@ function Bot() {
               visible: isSuperAdmin,
             },
             {
-              name: "Auth",
-              id: "auth",
-              icon: <FingerprintSimple />,
-              visible: isSuperAdmin,
+              name: "API",
+              id: "api",
+              icon: <Cloud />,
+              visible: true,
             },
           ]}
           setTab={setCurrentTab}
@@ -129,7 +129,7 @@ function DisplayCurrentTab({ currentTab }: { currentTab: Tab }) {
       return <ReviewConversations />;
     case "preview":
       return <Preview />;
-    case "auth":
+    case "api":
       return <Auth />;
   }
 }

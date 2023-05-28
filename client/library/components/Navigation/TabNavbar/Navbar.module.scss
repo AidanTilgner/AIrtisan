@@ -112,6 +112,7 @@
   box-sizing: border-box;
 
   li {
+    background-color: var(--background-alt);
     display: flex;
     align-items: center;
     justify-content: flex-start;
@@ -123,18 +124,16 @@
     transition: all 0.2s ease-in-out;
     text-align: center;
     margin: 0;
-    // border: 1px solid #eaeaea;
     width: 100%;
     box-sizing: border-box;
     padding: 14px 24px;
-    // border-radius: 5px;
     transition: all 0.2s ease-in-out;
     cursor: pointer;
     font-size: 16px;
     text-align: center;
 
     &:hover {
-      background-color: var(--background-alt);
+      background-color: var(--background-contrast);
     }
 
     &:active {

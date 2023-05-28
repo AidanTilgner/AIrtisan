@@ -213,11 +213,12 @@
 }
 
 .openMetadata {
-  border: 1px solid var(--background-contrast);
+  border: 1px solid var(--primary-color);
   padding: 24px;
   animation-name: openMetadataIn;
   animation-duration: 0.25s;
   animation-timing-function: ease-in-out;
+  border-radius: 5px;
 }
 
 .warningChatPair {

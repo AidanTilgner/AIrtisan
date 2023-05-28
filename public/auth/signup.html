@@ -11,6 +11,8 @@
       rel="stylesheet"
     />
     <title>Sign up for Onyx</title>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
     <link rel="icon" href="/favicon" />
     <style>
       body {
@@ -124,6 +126,53 @@
         font-size: 12px;
         margin-top: 8px;
       }
+
+      .passwordInput {
+        position: relative;
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      .passwordInput input {
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      #togglePassword {
+        position: absolute;
+        top: calc(50% - 9px);
+        right: 24px;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+        font-size: 16px;
+      }
+
+      #togglePassword:hover {
+        transform: scale(1.05);
+        opacity: 0.8;
+      }
+
+      #togglePassword:active {
+        transform: scale(0.95) translateY(2px);
+      }
+
+      #toggleConfirmPassword {
+        position: absolute;
+        top: calc(50% - 9px);
+        right: 24px;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+        font-size: 16px;
+      }
+
+      #toggleConfirmPassword:hover {
+        transform: scale(1.05);
+        opacity: 0.8;
+      }
+
+      #toggleConfirmPassword:active {
+        transform: scale(0.95) translateY(2px);
+      }
     </style>
   </head>
   <body>
@@ -161,22 +210,35 @@
         </div>
         <div class="formGroup">
           <label for="password">Password</label>
-          <input
-            type="password"
-            name="password"
-            placeholder="Type your new password..."
-            id="password"
-          />
+          <div class="passwordInput">
+            <input
+              type="password"
+              name="password"
+              placeholder="Type your password..."
+              id="password"
+            />
+            <span id="togglePassword" onclick="togglePasswordVisibility()">
+              <i class="ph-bold ph-eye" id="eyeIcon"></i>
+            </span>
+          </div>
         </div>
         <div class="formGroup">
           <label for="confirm_password">Confirm Password</label>
-          <input
-            type="password"
-            name="confirm_password"
-            placeholder="Type your new password again..."
-            id="confirm_password"
-          />
-          <span class="validation" id="confirm_password_text"></span>
+          <div class="passwordInput">
+            <input
+              type="password"
+              name="confirm_password"
+              placeholder="Confirm your password..."
+              id="confirm_password"
+            />
+            <span
+              id="toggleConfirmPassword"
+              onclick="toggleConfirmPasswordVisibility()"
+            >
+              <i class="ph-bold ph-eye" id="confirmEyeIcon"></i>
+            </span>
+          </div>
+          <span class="validation" id="confirm_password_text"></span> 
         </div>
         <div class="formGroup submit">
           <button id="signupButton" type="button">Sign up.</button>
@@ -187,6 +249,36 @@
       </div>
     </div>
     <script>
+      function togglePasswordVisibility() {
+        const passwordInput = document.getElementById("password");
+        const eyeIcon = document.getElementById("eyeIcon");
+
+        if (passwordInput.type === "password") {
+          passwordInput.type = "text";
+          eyeIcon.classList.remove("ph-eye");
+          eyeIcon.classList.add("ph-eye-slash");
+        } else {
+          passwordInput.type = "password";
+          eyeIcon.classList.remove("ph-eye-slash");
+          eyeIcon.classList.add("ph-eye");
+        }
+      }
+
+      function toggleConfirmPasswordVisibility() {
+        const passwordInput = document.getElementById("confirm_password");
+        const eyeIcon = document.getElementById("confirmEyeIcon");
+
+        if (passwordInput.type === "password") {
+          passwordInput.type = "text";
+          eyeIcon.classList.remove("ph-eye");
+          eyeIcon.classList.add("ph-eye-slash");
+        } else {
+          passwordInput.type = "password";
+          eyeIcon.classList.remove("ph-eye-slash");
+          eyeIcon.classList.add("ph-eye");
+        }
+      }
+
       let passwordConfirmed = false;
       const confirm_password = document.getElementById("confirm_password");
       const confirm_password_text = document.getElementById(

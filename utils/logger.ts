@@ -21,7 +21,7 @@ export class Logger {
     this.log_file_path = log_file_path || this.log_file_path;
   }
 
-  public log(message: string, ...args: any) {
+  public log(message: string, ...args: unknown[]) {
     const date = new Date();
     const log_message = `[${
       this.log_type
@@ -31,30 +31,31 @@ export class Logger {
     writeFileSync(this.log_file_path, log_message + "\n", {
       flag: "a",
     });
+    // eslint-disable-next-line no-console
     console.log("Logged: " + log_message);
   }
 
-  public info(message: string, ...args: any) {
+  public info(message: string, ...args: unknown[]) {
     this.log_type = "info";
     this.log(message, ...args);
   }
 
-  public error(message: string, ...args: any) {
+  public error(message: string, ...args: unknown[]) {
     this.log_type = "error";
     this.log(message, ...args);
   }
 
-  public warning(message: string, ...args: any) {
+  public warning(message: string, ...args: unknown[]) {
     this.log_type = "warning";
     this.log(message, ...args);
   }
 
-  public debug(message: string, ...args: any) {
+  public debug(message: string, ...args: unknown[]) {
     this.log_type = "debug";
     this.log(message, ...args);
   }
 
-  public analytics(message: string, ...args: any) {
+  public analytics(message: string, ...args: unknown[]) {
     this.log_type = "analytics";
     this.log(message, ...args);
   }

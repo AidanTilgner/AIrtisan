@@ -1,27 +1,22 @@
 import React from "react";
 import styles from "./App.module.scss";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { MantineProvider } from "@mantine/core";
-import { NotificationsProvider } from "@mantine/notifications";
+import { Notifications } from "@mantine/notifications";
 import { ModalProvider } from "./library/contexts/Modals";
-import GlobalModal from "./library/components/Utils/Modal";
 import Bot from "./library/Views/Bot/Bot";
 import Dashboard from "./library/Views/Dashboard/Dashboard";
-import ProfileNav from "./library/components/Navigation/Profile/Profile";
 import Profile from "./library/Views/Profile/Profile";
-import TopNav from "./library/components/Navigation/Navbar/TopNav";
 import Organization from "./library/Views/Organization/Organization";
 import Settings from "./library/Views/Settings/Settings";
 import Fallback from "./library/Views/ErrorPages/Fallback";
 import InviteUser from "./library/Views/Organization/InviteUser";
 import CreateOrganization from "./library/Views/Organization/Create";
 import CreateBot from "./library/Views/Bot/Create";
+import Main from "./library/Views/Wrapper/Main";
+import "./Global.scss";
 
 function App() {
-  const location = useLocation();
-
-  const topNavScrolled = location.pathname.includes("/bots/");
-
   return (
     <div className={styles.App}>
       <MantineProvider
@@ -52,16 +47,12 @@ function App() {
         }}
       >
         <ModalProvider>
-          <NotificationsProvider position="bottom-right">
-            <div className={styles.main_container}>
-              <TopNav alwaysScrolled={topNavScrolled} />
-              <ProfileNav alwaysScrolled={topNavScrolled} />
-              <GlobalModal />
-              <Routes>
-                <Route path="/">
-                  <Route index element={<Dashboard />} />
-                  <Route path="404" element={<Fallback />} />
-                </Route>
+          <Notifications position="bottom-right" />
+          <div className={styles.main_container}>
+            <Routes>
+              <Route path="/" element={<Main />}>
+                <Route index element={<Dashboard />} />
+                <Route path="404" element={<Fallback />} />
                 <Route path="settings">
                   <Route index element={<Settings />} />
                 </Route>
@@ -83,9 +74,9 @@ function App() {
                     <Route index element={<Bot />} />
                   </Route>
                 </Route>
-              </Routes>
-            </div>
-          </NotificationsProvider>
+              </Route>
+            </Routes>
+          </div>
         </ModalProvider>
       </MantineProvider>
     </div>

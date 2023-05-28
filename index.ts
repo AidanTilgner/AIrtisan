@@ -9,6 +9,7 @@ import http from "http";
 import { Server } from "socket.io";
 import { initSocketIO } from "./utils/socketio";
 import { startupBots } from "./nlu";
+import { logPerformance } from "./middleware/analysis";
 
 config();
 initializeDatabase().then(() => {
@@ -22,15 +23,13 @@ const io = new Server(server);
 
 const connection = initSocketIO(io);
 
-const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS as string;
-
 app.use(
   cors({
-    origin: ALLOWED_ORIGINS.split(","),
+    origin: "*",
     credentials: true,
   }),
   (req, res, next) => {
-    res.header("Access-Control-Allow-Origin", ALLOWED_ORIGINS);
+    res.header("Access-Control-Allow-Origin", "*");
     res.header(
       "Access-Control-Allow-Headers",
       "Origin, X-Requested-With, Content-Type, Accept"
@@ -41,6 +40,8 @@ app.use(
 
 app.use(Express.json());
 app.use(Express.urlencoded({ extended: true }));
+
+app.use(logPerformance);
 
 app.get("/documentation", (req, res) => {
   res.redirect("https://docs.airtisan.app");

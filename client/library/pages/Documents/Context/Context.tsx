@@ -5,6 +5,7 @@ import { useBot } from "../../../contexts/Bot";
 import styles from "./Context.module.scss";
 import { Button, Tooltip } from "@mantine/core";
 import ContextForm from "../../../components/Forms/Context/ContextForm";
+import AutogenerateContext from "../../../components/Forms/Context/Autogenerate";
 import { TrashSimple } from "@phosphor-icons/react";
 import { showNotification } from "@mantine/notifications";
 
@@ -30,6 +31,8 @@ function Context() {
   const formattedContext = contextFile ? Object.entries(contextFile) : [];
 
   const [addingNewContext, setAddingNewContext] = useState(false);
+  const [autogenerateForm, setAutogenerateForm] = useState(false);
+
   return (
     <div className={styles.Context}>
       <div className={styles.header}>
@@ -38,10 +41,26 @@ function Context() {
           <Button
             onClick={() => {
               setAddingNewContext(!addingNewContext);
+              setAutogenerateForm(false);
             }}
             variant={addingNewContext ? "outline" : "filled"}
           >
             {addingNewContext ? "Cancel" : "Add New Context"}
+          </Button>
+          <Button
+            onClick={() => {
+              setAutogenerateForm(!autogenerateForm);
+              setAddingNewContext(false);
+            }}
+            variant={autogenerateForm ? "outline" : "filled"}
+          >
+            {autogenerateForm ? (
+              "Cancel"
+            ) : (
+              <span>
+                Autogenerate <span className="beta">Beta</span>
+              </span>
+            )}
           </Button>
         </div>
       </div>
@@ -53,6 +72,18 @@ function Context() {
             }}
             onClose={() => {
               setAddingNewContext(false);
+            }}
+          />
+        </div>
+      )}
+      {autogenerateForm && (
+        <div className={styles.contextFormContainer}>
+          <AutogenerateContext
+            afterSubmit={() => {
+              reloadData();
+            }}
+            onClose={() => {
+              setAutogenerateForm(false);
             }}
           />
         </div>
@@ -131,7 +162,7 @@ export const ContextPair = ({
         <p className={styles.label} title={label}>
           <span>{label}</span>
           {selected && (
-            <div className={styles.buttons}>
+            <div className={styles.contextButtons}>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
