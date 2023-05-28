@@ -461,6 +461,10 @@ function Conversation({
     (c) => c.intent.toLocaleLowerCase() === "none"
   );
 
+  const chatNeedsReview = !!conversation.chats.find(
+    (c) => c.needs_review === true
+  );
+
   const getFormattedTimeStamp = (timestamp: string) => {
     const date = new Date(timestamp);
 
@@ -545,6 +549,11 @@ function Conversation({
         tabIndex={0}
       >
         <h3 className={styles.title}>
+          {chatNeedsReview && (
+            <span className={styles.warning_icon} title="Needs review.">
+              <WarningCircle weight="bold" />
+            </span>
+          )}
           <Highlight highlight={query}>
             {getFormattedTitle(conversation)}
           </Highlight>

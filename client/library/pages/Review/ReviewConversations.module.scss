@@ -134,6 +134,16 @@
     font-size: 20px;
     margin-bottom: 8px;
     font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .warning_icon {
+      font-size: 16px;
+      color: var(--danger-color);
+      position: relative;
+      top: 2px;
+    }
   }
 
   .bottomtext {

@@ -384,7 +384,7 @@ export const useCreateTrainingCopyOfConversation = (
 ) => {
   const { load, data, success } = useFetch<unknown, Conversation>({
     ...config,
-    url: `/training/conversations/${conversation_id}/training_copy`,
+    url: `/conversations/${conversation_id}/training_copy`,
     method: "POST",
   });
 
