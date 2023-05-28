@@ -91,118 +91,132 @@ function Create() {
 
   return (
     <div className={styles.create}>
-      <div className={styles.header}>
-        <h1>Create a bot</h1>
-      </div>
       <div className={styles.form}>
-        <Grid>
-          <Grid.Col sm={12} md={6}>
-            <Select
-              label="Owner Type"
-              description="Does it belong to you or an organizaton?"
-              data={[
-                { value: "admin", label: "Me" },
-                {
-                  value: "organization",
-                  label: `Organization ${
-                    !organizations || organizations.length < 1
-                      ? "(None found)"
-                      : ""
-                  }`,
-                  disabled: !organizations || organizations.length < 1,
-                },
-              ]}
-              value={ownerType}
-              onChange={(e) => setOwnerType(e as Bot["owner_type"])}
-            />
-          </Grid.Col>
-          {ownerType === "admin" ? (
-            <Grid.Col sm={12} md={6} />
-          ) : (
-            <Grid.Col sm={12} md={6}>
+        <div className="form">
+          <Grid>
+            <Grid.Col span={12}>
+              <h2>New Bot</h2>
+            </Grid.Col>
+            <Grid.Col span={12}>
+              <h3>Who does this bot belong to?</h3>
+            </Grid.Col>
+            <Grid.Col sm={12}>
               <Select
-                label="Organization"
-                data={
-                  organizations?.length
-                    ? organizations.map((org) => {
-                        return {
-                          label: org.name as string,
-                          value: String(org.id),
-                        };
-                      })
-                    : [
-                        {
-                          label: "No organizations found",
-                          value: "none",
-                        },
-                      ]
-                }
-                value={String(formData.owner_id) || "none"}
-                onChange={(e) =>
-                  setFormData({ ...formData, owner_id: Number(e) })
-                }
-                searchable
+                label="Owner"
+                data={[
+                  { value: "admin", label: "Me" },
+                  {
+                    value: "organization",
+                    label: `An Organization ${
+                      !organizations || organizations.length < 1
+                        ? "(None found)"
+                        : ""
+                    }`,
+                    disabled: !organizations || organizations.length < 1,
+                  },
+                ]}
+                value={ownerType}
+                onChange={(e) => setOwnerType(e as Bot["owner_type"])}
               />
             </Grid.Col>
-          )}
-
-          <Grid.Col sm={12} md={6}>
-            <TextInput
-              label="Name"
-              placeholder="The name of your bot..."
-              value={formData.name || ""}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.currentTarget.value })
-              }
-            />
-          </Grid.Col>
-          <Grid.Col sm={12} md={6}>
-            <TextInput
-              label="Description"
-              placeholder="A short description of your bot..."
-              value={formData.description || ""}
-              onChange={(e) =>
-                setFormData({ ...formData, description: e.currentTarget.value })
-              }
-            />
-          </Grid.Col>
-          <Grid.Col sm={12} md={6}>
-            <TextInput
-              label="Bot Version"
-              placeholder="The version of your bot..."
-              value={formData.bot_version || ""}
-              onChange={(e) =>
-                setFormData({ ...formData, bot_version: e.currentTarget.value })
-              }
-            />
-          </Grid.Col>
-          <Grid.Col sm={12} md={6}>
-            <Select
-              label="Bot Language"
-              placeholder="The language of your bot..."
-              value={formData.bot_language || ""}
-              onChange={(e) => {
-                if (e === null) return;
-                setFormData({
-                  ...formData,
-                  bot_language: e as Bot["bot_language"],
-                });
-              }}
-              data={[
-                { value: "en-US", label: "English (United States) <en-US>" },
-                { value: "fr-FR", label: "French (France) <fr-FR>" },
-              ]}
-            />
-          </Grid.Col>
-          <Grid.Col span={12} />
-          <Grid.Col span={12}>
-            <Flex align="center" justify="end">
-              <Button onClick={handleSubmitNewBot} disabled={!isValid()}>
-                Create
-              </Button>
-            </Flex>
-          </Grid.Col>
-        </Grid>
+            {ownerType === "admin" ? (
+              <Grid.Col sm={12} />
+            ) : (
+              <Grid.Col sm={12}>
+                <Select
+                  label="Organization"
+                  data={
+                    organizations?.length
+                      ? organizations.map((org) => {
+                          return {
+                            label: org.name as string,
+                            value: String(org.id),
+                          };
+                        })
+                      : [
+                          {
+                            label: "No organizations found",
+                            value: "none",
+                          },
+                        ]
+                  }
+                  value={String(formData.owner_id) || "none"}
+                  onChange={(e) =>
+                    setFormData({ ...formData, owner_id: Number(e) })
+                  }
+                  searchable
+                />
+              </Grid.Col>
+            )}
+            <Grid.Col span={12}>
+              <h3>Bot Details</h3>
+            </Grid.Col>
+            <Grid.Col sm={12}>
+              <TextInput
+                label="Bot Name"
+                placeholder="The name of your bot..."
+                value={formData.name || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.currentTarget.value })
+                }
+              />
+            </Grid.Col>
+            <Grid.Col sm={12}>
+              <TextInput
+                label="Bot Description"
+                placeholder="A short description of your bot..."
+                value={formData.description || ""}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    description: e.currentTarget.value,
+                  })
+                }
+              />
+            </Grid.Col>
+            <Grid.Col sm={12}>
+              <TextInput
+                label="Initial Bot Version"
+                description="This will be used in the future to track changes to your bot"
+                placeholder="The version of your bot..."
+                value={formData.bot_version || ""}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    bot_version: e.currentTarget.value,
+                  })
+                }
+              />
+            </Grid.Col>
+            <Grid.Col sm={12}>
+              <Select
+                label="Bot Language"
+                description="This helps us pick the model to use for your bot"
+                placeholder="The language of your bot..."
+                value={formData.bot_language || ""}
+                onChange={(e) => {
+                  if (e === null) return;
+                  setFormData({
+                    ...formData,
+                    bot_language: e as Bot["bot_language"],
+                  });
+                }}
+                data={[
+                  { value: "en-US", label: "English (United States) <en-US>" },
+                  { value: "fr-FR", label: "French (France) <fr-FR>" },
+                ]}
+              />
+            </Grid.Col>
+            <Grid.Col span={12} />
+            <Grid.Col span={12}>
+              <Flex align="center" justify="end">
+                <Button onClick={handleSubmitNewBot} disabled={!isValid()}>
+                  Create
+                </Button>
+              </Flex>
+            </Grid.Col>
+          </Grid>
+        </div>
       </div>
     </div>
   );
