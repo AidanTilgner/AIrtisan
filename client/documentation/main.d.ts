@@ -173,6 +173,8 @@ export interface Feedback {
   feedback: string;
   type: "feedback" | "bug" | "feature";
   admin: Admin;
+  reviewer: string;
+  review_message: string;
   created_at: Date;
   updated_at: Date;
 }

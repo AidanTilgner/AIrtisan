@@ -56,7 +56,7 @@ router.post("/feedback", checkIsAdmin, async (req, res) => {
   }
 });
 
-router.get("/all/feedback", checkIsSuperAdmin, async (req, res) => {
+router.get("/feedback/all", checkIsSuperAdmin, async (req, res) => {
   try {
     const feedback = await getAllFeedback();
 
