@@ -12,7 +12,9 @@ import {
   getBotConversations,
   generateIntentFlow,
   getRecentConversations,
+  createTrainingCopyOfConversation,
 } from "../database/functions/conversations";
+import { Bot } from "../database/models/bot";
 
 const router = Router();
 
@@ -297,6 +299,42 @@ router.post(
     } catch (error) {
       console.error(error);
       res.status(500).send({ message: "Error getting conversation flow" });
+    }
+  }
+);
+
+router.post(
+  "/:conversation_id/training_copy",
+  checkIsAdmin,
+  hasAccessToBot,
+  async (req, res) => {
+    try {
+      const { conversation_id } = req.params;
+      const bot = (req as unknown as Record<"bot", Bot>).bot;
+
+      if (!conversation_id) {
+        res.status(402).send({ message: "No conversation id provided" });
+        return;
+      }
+
+      const newConversation = await createTrainingCopyOfConversation(
+        bot.id,
+        Number(conversation_id)
+      );
+
+      if (!newConversation) {
+        res.status(404).send({ message: "Conversation not found" });
+        return;
+      }
+
+      res.send({
+        message: "Conversation copied",
+        success: true,
+        data: newConversation,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send({ message: "Error copying training data" });
     }
   }
 );

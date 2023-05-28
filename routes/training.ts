@@ -29,7 +29,6 @@ import {
   updateBotContext,
   deleteBotContextItem,
   updateBotModel,
-  getBot,
 } from "../database/functions/bot";
 import { getWebsitePageLinks } from "../utils/puppeteer";
 import { handleBuildContextObjectForPages } from "../utils/context";
