@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styles from "./Create.module.scss";
-import { Button, Flex, Grid, TextInput } from "@mantine/core";
+import { Button, Flex, Grid, TextInput, Title } from "@mantine/core";
 import { Organization } from "../../../documentation/main";
 import { useUser } from "../../contexts/User";
 import { useCreateOrganization } from "../../hooks/fetching/organization";
@@ -48,6 +48,7 @@ function Create() {
 
   return (
     <div className={styles.create}>
+      <Title order={1}>Create a New Organization</Title>
       <div className={styles.form}>
         <div className="form">
           <Grid>

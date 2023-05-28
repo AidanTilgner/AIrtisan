@@ -7,6 +7,7 @@ import {
   Robot,
   SignOut,
   User,
+  MegaphoneSimple,
 } from "@phosphor-icons/react";
 import { Menu } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
@@ -106,6 +107,14 @@ function Profile({ alwaysScrolled }: { alwaysScrolled?: boolean }) {
             }}
           >
             Logout
+          </Menu.Item>
+          <Menu.Item
+            icon={<MegaphoneSimple />}
+            onClick={() => {
+              navigate("/feedback");
+            }}
+          >
+            Leave Feedback
           </Menu.Item>
 
           {/* <Menu.Label>Danger zone</Menu.Label>
