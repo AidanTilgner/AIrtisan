@@ -21,6 +21,11 @@ export class Organization {
   @Column("text")
   description!: string;
 
+  @Column("text", {
+    nullable: true,
+  })
+  profile_picture_path!: string;
+
   @ManyToOne(() => Admin, (admin) => admin.owned_organizations, {
     eager: true,
     nullable: false,

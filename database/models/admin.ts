@@ -38,6 +38,11 @@ export class Admin {
   @Column("text")
   role: AdminRoles = "admin";
 
+  @Column("text", {
+    nullable: true,
+  })
+  profile_picture_path!: string;
+
   @OneToMany(() => Organization, (organization) => organization.owner)
   owned_organizations!: Organization[];
 
