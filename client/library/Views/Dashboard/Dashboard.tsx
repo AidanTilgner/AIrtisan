@@ -1,7 +1,6 @@
 import React from "react";
 import styles from "./Dashboard.module.scss";
 import {
-  ArrowRight,
   Buildings,
   MoonStars,
   Sun,
@@ -10,9 +9,10 @@ import {
 } from "@phosphor-icons/react";
 import { useUser } from "../../contexts/User";
 import { useNavigate } from "react-router-dom";
-import { Grid } from "@mantine/core";
+import { Button, Grid } from "@mantine/core";
 import Widget from "../../components/Cards/Widget/Widget";
 import { useGetMyRecentBots } from "../../hooks/fetching/bot";
+import { useGetAdminOrganizations } from "../../hooks/fetching/admin";
 
 function Dashboard() {
   const getWelcomeMessage = () => {
@@ -54,9 +54,16 @@ function Dashboard() {
     return `${first}`;
   };
 
-  const { data: myRecentBots } = useGetMyRecentBots({
+  const { data: myRecentBots = [] } = useGetMyRecentBots({
     runOnMount: true,
   });
+
+  const { data: organizations = [] } = useGetAdminOrganizations(
+    user?.id as unknown as string,
+    {
+      runOnDependencies: [user?.id],
+    }
+  );
 
   return (
     <div className={styles.Dashboard}>
@@ -95,32 +102,60 @@ function Dashboard() {
         </div>
       </div>
       <div className={styles.content}>
-        <Grid>
+        <Grid gutter={36}>
           <Grid.Col sm={12} md={6}>
-            <Widget title="Jump to Bot">
-              <div className={styles.jumpbots}>
-                {myRecentBots && myRecentBots.length ? (
-                  myRecentBots.map((b) => {
-                    return (
-                      <button
-                        className={styles.jumpbot}
-                        key={b.id}
-                        onClick={() => {
-                          navigate(`/bots/${b.id}`);
-                        }}
-                      >
-                        <span>
-                          {b.owner_type === "admin" ? <User /> : <Buildings />}
-                          {b.name}
-                        </span>
-                        <ArrowRight />
-                      </button>
-                    );
-                  })
-                ) : (
-                  <p>No bots</p>
-                )}
-              </div>
+            <Widget
+              title="Jump to Bot"
+              buttons={[
+                <Button
+                  onClick={() => {
+                    navigate("/bots/create");
+                  }}
+                  key="new-bot"
+                >
+                  New
+                </Button>,
+              ]}
+            >
+              <Widget.Grid
+                items={myRecentBots?.map((b) => {
+                  return {
+                    label: b.name,
+                    icon: b.owner_type === "admin" ? <User /> : <Buildings />,
+                    onClick: () => {
+                      navigate(`/bots/${b.id}`);
+                    },
+                    tooltip: "Click to view bot",
+                  };
+                })}
+              />
+            </Widget>
+          </Grid.Col>
+          <Grid.Col sm={12} md={6}>
+            <Widget
+              title="Your Organizations"
+              buttons={[
+                <Button
+                  onClick={() => {
+                    navigate("/organizations/create");
+                  }}
+                  key="new-org"
+                >
+                  New
+                </Button>,
+              ]}
+            >
+              <Widget.Grid
+                items={organizations.map((o) => {
+                  return {
+                    label: o.name,
+                    icon: <Buildings />,
+                    onClick: () => {
+                      navigate(`/organizations/${o.id}`);
+                    },
+                  };
+                })}
+              />
             </Widget>
           </Grid.Col>
         </Grid>
