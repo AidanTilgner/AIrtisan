@@ -3,7 +3,7 @@ import styles from "./Profile.module.scss";
 import {
   BellSimple,
   Buildings,
-  GearSix,
+  // GearSix,
   Robot,
   SignOut,
   User,

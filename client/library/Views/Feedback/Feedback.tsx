@@ -4,6 +4,7 @@ import { Button, Flex, Grid, Select, Textarea, Title } from "@mantine/core";
 import { useSubmitFeedback } from "../../hooks/fetching/operations";
 import { Feedback } from "../../../documentation/main";
 import { showNotification } from "@mantine/notifications";
+import { useNavigate } from "react-router-dom";
 
 function Feedback() {
   const [formData, setFormData] = useState({
@@ -21,6 +22,8 @@ function Feedback() {
     }
   );
 
+  const navigate = useNavigate();
+
   const handleSubmit = async () => {
     try {
       await submitFeedback();
@@ -28,6 +31,11 @@ function Feedback() {
         title: "Success",
         message: "Your feedback has been submitted!",
       });
+      setFormData({
+        feedback: "",
+        type: "",
+      });
+      navigate("/");
     } catch (error) {
       console.error(error);
       showNotification({
