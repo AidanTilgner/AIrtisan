@@ -21,6 +21,12 @@ export class Feedback {
   @Column("text")
   type!: FeedbackType;
 
+  @Column("text", { nullable: true })
+  reviewer!: string;
+
+  @Column("text", { nullable: true })
+  review_message!: string;
+
   @ManyToOne(() => Admin, (admin) => admin.feedbacks, { eager: true })
   admin!: Admin;
 

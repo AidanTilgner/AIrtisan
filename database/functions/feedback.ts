@@ -70,3 +70,32 @@ export const getAllFeedback = async () => {
     return null;
   }
 };
+
+export const markFeedbackAsReviewed = async (
+  id: Feedback["id"],
+  review_message: Feedback["review_message"],
+  reviewer: Feedback["reviewer"]
+) => {
+  try {
+    const feedback = await feedbackRepository().findOne({
+      where: {
+        id: id,
+      },
+    });
+
+    if (!feedback) {
+      feedbackLogger.error("Feedback not found.");
+      return null;
+    }
+
+    feedback.review_message = review_message;
+    feedback.reviewer = reviewer;
+
+    await feedbackRepository().save(feedback);
+
+    return feedback;
+  } catch (error) {
+    feedbackLogger.error("Error updating feedback: ", error);
+    return null;
+  }
+};

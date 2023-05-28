@@ -16,6 +16,7 @@ import CreateBot from "./library/Views/Bot/Create";
 import Main from "./library/Views/Wrapper/Main";
 import Feedback from "./library/Views/Feedback/Feedback";
 import "./Global.scss";
+import Admin from "./library/Views/Admin/Admin";
 
 function App() {
   return (
@@ -59,6 +60,9 @@ function App() {
                 </Route>
                 <Route path="feedback">
                   <Route index element={<Feedback />} />
+                </Route>
+                <Route path="admin">
+                  <Route index element={<Admin />} />
                 </Route>
                 <Route path="profile">
                   <Route path=":username">

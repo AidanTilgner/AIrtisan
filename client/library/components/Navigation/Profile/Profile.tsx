@@ -8,6 +8,7 @@ import {
   SignOut,
   User,
   MegaphoneSimple,
+  Shield,
 } from "@phosphor-icons/react";
 import { Menu } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
@@ -86,6 +87,14 @@ function Profile({ alwaysScrolled }: { alwaysScrolled?: boolean }) {
             }}
           >
             Organizations
+          </Menu.Item>
+          <Menu.Item
+            icon={<Shield />}
+            onClick={() => {
+              navigate("/admin");
+            }}
+          >
+            Admin
           </Menu.Item>
           {/* <Menu.Item
             icon={<GearSix />}
