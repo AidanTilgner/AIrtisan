@@ -98,6 +98,7 @@ export type Model = {
   };
   security: {
     domain_whitelist: string[];
+    allow_widgets: boolean;
   };
 };
 

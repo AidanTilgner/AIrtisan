@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { checkAPIKeyForBot, validateDomainForBot } from "../middleware/auth";
+import { checkAPIKeyForBot } from "../middleware/auth";
 import { getBotBySlug } from "../../database/functions/bot";
 import { Bot } from "../../database/models/bot";
 import { getManagerIsAlive } from "../../nlu";
@@ -7,6 +7,10 @@ import { handleNewChat } from "../../nlu/chats";
 import { getRequesterSessionId } from "../../utils/analysis";
 import { createSession } from "../../sessions";
 import { Logger } from "../../utils/logger";
+import {
+  validateAllowingWidgetsForBot,
+  validateDomainForBot,
+} from "../middleware/bot";
 
 const router = Router();
 
@@ -30,6 +34,7 @@ router.get("/", async (req, res) => {
 router.post(
   "/:bot_slug/public/chat",
   validateDomainForBot,
+  validateAllowingWidgetsForBot,
   async (req, res) => {
     try {
       const bot = await getBotBySlug(req.params.bot_slug);

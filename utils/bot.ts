@@ -2,6 +2,7 @@ import { writeFileSync } from "fs";
 import path from "path";
 import { getRandomString } from "./crypto";
 import { format } from "prettier";
+import { AllowedChatModels, Model } from "../types/lib";
 
 const outputLocation = "datastore/bots/documents";
 
@@ -101,10 +102,11 @@ export const getBotModelFileContents = async (bot: {
   enhancement_model: string;
 }): Promise<string | null> => {
   try {
-    const fileContentsObject = {
+    const fileContentsObject: Model = {
       personality: {
         name: bot.name,
         description: bot.name + " is a digital assistant.",
+        initial_prompt: "You are a chatbot on a website.",
       },
       works_for: {
         name: "Cool Company",
@@ -115,10 +117,14 @@ export const getBotModelFileContents = async (bot: {
         metadata: {},
       },
       specification: {
-        model: bot.enhancement_model,
+        model: bot.enhancement_model as AllowedChatModels,
         version: bot.bot_version,
         none_fallback: false,
         hipaa_compliant: false,
+      },
+      security: {
+        domain_whitelist: [],
+        allow_widgets: true,
       },
     };
     const fileContents = format(JSON.stringify(fileContentsObject), {
