@@ -7,9 +7,10 @@ import Search from "../../../components/Search/Search";
 import { useSearch } from "../../../contexts/Search";
 
 function Feedback() {
-  const { data: allFeedback } = useGetAllFeedback({
-    runOnMount: true,
-  });
+  const { data: allFeedback, getAllFeedback: reloadAllFeedback } =
+    useGetAllFeedback({
+      runOnMount: true,
+    });
 
   const { query } = useSearch();
 
@@ -18,11 +19,13 @@ function Feedback() {
   const filteredFeedback = allFeedback?.filter((feedback) => {
     const passedShowReviewed = showReviewed ? true : !feedback.reviewer;
 
-    const passesQuery =
+    const passesQuery = () => {
+      if (!query) return true;
       feedback.feedback.toLowerCase().includes(query.toLowerCase()) ||
-      feedback.type.toLowerCase().includes(query.toLowerCase()) ||
-      feedback.admin.email.toLowerCase().includes(query.toLowerCase());
-    return passedShowReviewed && passesQuery;
+        feedback.type.toLowerCase().includes(query.toLowerCase()) ||
+        feedback.admin.email.toLowerCase().includes(query.toLowerCase());
+    };
+    return passedShowReviewed && passesQuery();
   });
 
   return (
@@ -54,7 +57,15 @@ function Feedback() {
           {filteredFeedback && filteredFeedback?.length > 0 ? (
             <div className={styles.Feedback__container}>
               {filteredFeedback.map((feedback) => {
-                return <FeedbackCard feedback={feedback} key={feedback.id} />;
+                return (
+                  <FeedbackCard
+                    feedback={feedback}
+                    key={feedback.id}
+                    onSubmit={() => {
+                      reloadAllFeedback();
+                    }}
+                  />
+                );
               })}
             </div>
           ) : (

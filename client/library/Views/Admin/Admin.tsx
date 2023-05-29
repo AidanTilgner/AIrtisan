@@ -14,9 +14,11 @@ function Admin() {
 
   const navigate = useNavigate();
 
-  const { data: allFeedback } = useGetAllFeedback({
+  const { data: allFeedbackRaw } = useGetAllFeedback({
     runOnMount: true,
   });
+
+  const allFeedback = allFeedbackRaw?.filter((feedback) => !feedback.reviewer);
 
   const { data: allUsers } = useGetAllAdmins({
     runOnMount: true,

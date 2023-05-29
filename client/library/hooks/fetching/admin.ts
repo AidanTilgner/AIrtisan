@@ -79,7 +79,9 @@ export const useUpdateMe = (
 
   return {
     updateMe: async () => {
-      return load().then(() => reload());
+      const data = await load();
+      reload();
+      return data;
     },
     data: data,
     success,

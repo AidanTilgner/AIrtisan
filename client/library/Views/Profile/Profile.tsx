@@ -231,33 +231,39 @@ function Profile() {
             )}
           </div>
         )}
-        <div className={styles.organizationsContainer}>
-          <h3>Organizations</h3>
-          <div className={styles.organizations}>
-            {organizations?.map((organization) => (
-              <OrganizationCard
-                key={organization.id}
-                organization={organization}
-                onClick={() => {
-                  navigate("/organizations/" + organization.id);
-                }}
-              />
-            ))}
-            {isCurrentUser && (
-              <div className={styles.addOrgContainer}>
-                <button
-                  title="Create new organization"
-                  className={styles.newOrganization}
-                  onClick={() => {
-                    navigate("/organizations/create");
-                  }}
-                >
-                  <Plus weight="regular" />
-                </button>
-              </div>
-            )}
+        {organizations.length > 1 && (
+          <div className={styles.organizationsContainer}>
+            <h3>Organizations</h3>
+            <div className={styles.organizations}>
+              {organizations.length > 0 ? (
+                organizations?.map((organization) => (
+                  <OrganizationCard
+                    key={organization.id}
+                    organization={organization}
+                    onClick={() => {
+                      navigate("/organizations/" + organization.id);
+                    }}
+                  />
+                ))
+              ) : (
+                <p>No organizations.</p>
+              )}
+              {isCurrentUser && (
+                <div className={styles.addOrgContainer}>
+                  <button
+                    title="Create new organization"
+                    className={styles.newOrganization}
+                    onClick={() => {
+                      navigate("/organizations/create");
+                    }}
+                  >
+                    <Plus weight="regular" />
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </div>
       <div className={styles.right}>
         <div className={styles.tabsContainer}>

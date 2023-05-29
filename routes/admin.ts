@@ -38,7 +38,7 @@ router.get("/search", checkIsAdmin, async (req, res) => {
 
 router.get("/", checkIsSuperAdmin, async (req, res) => {
   try {
-    const admins = await getAdmins();
+    const admins = await getAdmins(true);
     res.status(200).send({
       message: "Admins fetched successfully.",
       data: admins,
