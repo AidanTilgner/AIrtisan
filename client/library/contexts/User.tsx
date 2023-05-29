@@ -8,18 +8,25 @@ interface UserContextType {
   user: Admin | null;
   isSuperAdmin: boolean;
   loading: boolean;
+  reload: () => void;
 }
 
 const initialVal: UserContextType = {
   user: null,
   isSuperAdmin: false,
   loading: false,
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  reload: () => {},
 };
 
 const UserContext = createContext(initialVal);
 
 const UserProvider = ({ children }: { children: React.ReactNode }) => {
-  const { data: user = null, loading } = useGetMe({ runOnMount: true });
+  const {
+    data: user = null,
+    loading,
+    getMe: reload,
+  } = useGetMe({ runOnMount: true });
 
   const { refreshAccessToken } = useRefreshAccessToken();
 
@@ -32,6 +39,7 @@ const UserProvider = ({ children }: { children: React.ReactNode }) => {
       user,
       isSuperAdmin: user?.role === "superadmin",
       loading,
+      reload,
     }),
     [user, loading]
   );

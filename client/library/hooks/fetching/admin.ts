@@ -6,6 +6,7 @@ import {
   Organization,
   OrganizationInvitation,
 } from "../../../documentation/main";
+import { useUser } from "../../contexts/User";
 
 export const useGetMe = (
   config?: Partial<UseFetchConfig<unknown, Omit<Admin, "password">>>
@@ -66,6 +67,8 @@ export const useUpdateMe = (
   update: Partial<Admin>,
   config?: Partial<UseFetchConfig<Admin, Admin>>
 ) => {
+  const { reload } = useUser();
+
   const { load, data, success } = useFetch<Partial<Admin>, Admin>({
     useBotId: false,
     ...config,
@@ -75,7 +78,9 @@ export const useUpdateMe = (
   });
 
   return {
-    updateMe: load,
+    updateMe: async () => {
+      return load().then(() => reload());
+    },
     data: data,
     success,
   };
