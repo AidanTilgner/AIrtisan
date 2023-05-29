@@ -234,3 +234,20 @@ export const useCreateOrganization = (
     success,
   };
 };
+
+export const useGetAllOrganizations = (
+  config?: Partial<UseFetchConfig<unknown, Organization[]>>
+) => {
+  const { load, data, success } = useFetch<unknown, Organization[]>({
+    useBotId: false,
+    ...config,
+    url: `/organizations/all`,
+    method: "GET",
+  });
+
+  return {
+    getAllOrganizations: load,
+    data: data,
+    success,
+  };
+};

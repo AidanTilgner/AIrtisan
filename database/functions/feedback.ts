@@ -62,7 +62,7 @@ export const getFeedback = async (id: Feedback["id"]) => {
 
 export const getAllFeedback = async () => {
   try {
-    const feedback = await feedbackRepository().find();
+    const feedback = await dataSource.manager.find(Feedback);
 
     return feedback;
   } catch (error) {

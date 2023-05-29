@@ -41,9 +41,7 @@ router.get("/", checkIsSuperAdmin, async (req, res) => {
     const admins = await getAdmins();
     res.status(200).send({
       message: "Admins fetched successfully.",
-      data: {
-        admins,
-      },
+      data: admins,
     });
   } catch (err) {
     console.error(err);

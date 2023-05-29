@@ -165,7 +165,7 @@ export const checkIsSuperAdmin = async (
 
     const { id } = verified;
 
-    const admin = await getAdmin(id, true);
+    const admin = await getAdmin(Number(id), true);
 
     if (!admin) {
       res.status(401).send({ message: "Invalid access token provided." });
