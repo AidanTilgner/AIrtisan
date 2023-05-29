@@ -20,6 +20,8 @@ function TopNav({ alwaysScrolled }: { alwaysScrolled?: boolean }) {
 
   const updateParams = useSearchParamsUpdate();
 
+  const isMobile = window.innerWidth < 768;
+
   return (
     <div
       className={`${styles.TopNav} ${alwaysScrolled ? styles.scrolled : ""}`}
@@ -35,9 +37,11 @@ function TopNav({ alwaysScrolled }: { alwaysScrolled?: boolean }) {
       >
         <SVG.OnyxLogo width="36" height="36" />
       </button>
-      <div className={styles.breadcrumbsContainer}>
-        <Breadcrumbs />
-      </div>
+      {isMobile ? null : (
+        <div className={styles.breadcrumbsContainer}>
+          <Breadcrumbs />
+        </div>
+      )}
     </div>
   );
 }
