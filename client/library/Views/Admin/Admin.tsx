@@ -2,13 +2,33 @@ import React from "react";
 import styles from "./Admin.module.scss";
 import { useUser } from "../../contexts/User";
 import Loaders from "../../components/Utils/Loaders";
-import { Button, Flex, Grid, Title } from "@mantine/core";
+import { Button, Card, Flex, Grid, Title } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
+import { useGetAllFeedback } from "../../hooks/fetching/operations";
+import { useGetAllAdmins } from "../../hooks/fetching/admin";
+import { useGetAllBots } from "../../hooks/fetching/bot";
+import { useGetAllOrganizations } from "../../hooks/fetching/organization";
 
 function Admin() {
   const { loading } = useUser();
 
   const navigate = useNavigate();
+
+  const { data: allFeedback } = useGetAllFeedback({
+    runOnMount: true,
+  });
+
+  const { data: allUsers } = useGetAllAdmins({
+    runOnMount: true,
+  });
+
+  const { data: allBots } = useGetAllBots({
+    runOnMount: true,
+  });
+
+  const { data: allOrgs } = useGetAllOrganizations({
+    runOnMount: true,
+  });
 
   if (loading) {
     return (
@@ -37,6 +57,17 @@ function Admin() {
             </Button>
           </Flex>
         </Grid.Col>
+        <Grid.Col span={12}>
+          <Card>
+            <p>
+              There {allFeedback && allFeedback.length !== 1 ? "are" : "is"}{" "}
+              <strong>{allFeedback?.length || 0}</strong> new feedback{" "}
+              {allFeedback && allFeedback.length === 0 ? "messages" : "message"}
+              .
+            </p>
+          </Card>
+        </Grid.Col>
+        <Grid.Col span={12} />
         <Grid.Col span={12} />
 
         <Grid.Col span={12}>
@@ -51,6 +82,15 @@ function Admin() {
             </Button>
           </Flex>
         </Grid.Col>
+        <Grid.Col span={12}>
+          <Card>
+            <p>
+              There {allUsers && allUsers.length !== 1 ? "are" : "is"}{" "}
+              <strong>{allUsers?.length || 0}</strong> users.
+            </p>
+          </Card>
+        </Grid.Col>
+        <Grid.Col span={12} />
         <Grid.Col span={12} />
 
         <Grid.Col span={12}>
@@ -65,6 +105,15 @@ function Admin() {
             </Button>
           </Flex>
         </Grid.Col>
+        <Grid.Col span={12}>
+          <Card>
+            <p>
+              There {allBots && allBots.length !== 1 ? "are" : "is"} currently{" "}
+              <strong>{allBots?.length || 0}</strong> bots.
+            </p>
+          </Card>
+        </Grid.Col>
+        <Grid.Col span={12} />
         <Grid.Col span={12} />
 
         <Grid.Col span={12}>
@@ -79,6 +128,15 @@ function Admin() {
             </Button>
           </Flex>
         </Grid.Col>
+        <Grid.Col span={12}>
+          <Card>
+            <p>
+              There {allOrgs && allOrgs.length !== 1 ? "are" : "is"} currently{" "}
+              <strong>{allOrgs?.length || 0}</strong> organizations.
+            </p>
+          </Card>
+        </Grid.Col>
+        <Grid.Col span={12} />
         <Grid.Col span={12} />
       </Grid>
     </div>

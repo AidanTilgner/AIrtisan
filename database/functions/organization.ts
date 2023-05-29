@@ -49,6 +49,7 @@ export const getOrganization = async (id: number) => {
 export const getOrganizations = async () => {
   try {
     const organizations = await dataSource.manager.find(entities.Organization);
+
     return organizations;
   } catch (err) {
     console.error(err);

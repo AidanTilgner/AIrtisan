@@ -14,25 +14,29 @@ import {
   getOrganizationInvitationByToken,
   markOrganizationInviteAsAcceptedOrRejectedByToken,
 } from "../database/functions/organization";
-import { checkIsAdmin, isOwnerOfOrganization } from "../middleware/auth";
+import {
+  checkIsAdmin,
+  checkIsSuperAdmin,
+  isOwnerOfOrganization,
+} from "../middleware/auth";
 import { Admin } from "../database/models/admin";
 
 const router = Router();
 
-router.get("/", checkIsAdmin, async (req, res) => {
+router.get("/all", checkIsSuperAdmin, async (req, res) => {
   try {
     const organizations = await getOrganizations();
+
     res.send({
       message: "success",
       success: true,
       data: organizations,
     });
-  } catch (err) {
-    console.error(err);
+  } catch (error) {
+    console.error(error);
     res.status(500).send({ error: "Internal server error" });
   }
 });
-
 router.get("/:id", checkIsAdmin, async (req, res) => {
   try {
     const id = Number(req.params.id);

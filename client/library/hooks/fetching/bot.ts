@@ -192,3 +192,20 @@ export const useDeleteBot = (
     success,
   };
 };
+
+export const useGetAllBots = (
+  config?: Partial<UseFetchConfig<undefined, Bot[]>>
+) => {
+  const { load, data, success } = useFetch<undefined, Bot[]>({
+    useBotId: false,
+    ...config,
+    url: `/bots/as_admin/all`,
+    method: "GET",
+  });
+
+  return {
+    getAllBots: load,
+    data: data,
+    success,
+  };
+};

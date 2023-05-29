@@ -256,3 +256,22 @@ export const useGetMyOrganizationInvitation = (
     loading: loading,
   };
 };
+
+export const useGetAllAdmins = (
+  config?: Partial<UseFetchConfig<undefined, Admin[]>>
+) => {
+  const { data, load, loading } = useFetch<undefined, Admin[]>({
+    useBotId: false,
+    ...config,
+    url: `/admin`,
+    method: "GET",
+  });
+
+  return {
+    getAllAdmins: () => {
+      load();
+    },
+    data: data,
+    loading: loading,
+  };
+};
