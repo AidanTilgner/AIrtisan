@@ -10,7 +10,10 @@ import {
 export const useGetMe = (
   config?: Partial<UseFetchConfig<unknown, Omit<Admin, "password">>>
 ) => {
-  const { load, data, success } = useFetch<unknown, Omit<Admin, "password">>({
+  const { load, data, success, loading } = useFetch<
+    unknown,
+    Omit<Admin, "password">
+  >({
     useBotId: false,
     ...config,
     url: "/auth/me",
@@ -21,6 +24,7 @@ export const useGetMe = (
     getMe: load,
     data: data,
     success,
+    loading,
   };
 };
 

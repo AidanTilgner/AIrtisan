@@ -45,7 +45,7 @@ function Dashboard() {
   const welcomeMessage = getWelcomeMessage();
   const WelcomeIcon = () => welcomeMessage.icon;
 
-  const { user } = useUser();
+  const { user, isSuperAdmin } = useUser();
 
   const navigate = useNavigate();
 
@@ -99,6 +99,14 @@ function Dashboard() {
           >
             Read the Docs
           </button>
+          {isSuperAdmin && (
+            <button
+              className={`${styles.quickAction} ${styles.btnSecondary}`}
+              onClick={() => navigate("/admin")}
+            >
+              Admin
+            </button>
+          )}
         </div>
       </div>
       <div className={styles.content}>

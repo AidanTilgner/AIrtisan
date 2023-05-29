@@ -44,6 +44,7 @@ router.post("/admin/signin", async (req, res) => {
   try {
     const { username, password } = req.body;
     const admin = await getAdminByUsername(username);
+
     if (!admin) {
       res.status(401).send({ message: "Invalid credentials provided." });
       return;
@@ -264,7 +265,7 @@ router.get("/me/bots", checkIsAdmin, async (req, res) => {
   try {
     const admin = (req as unknown as Record<"admin", Admin>)["admin"];
 
-    const bots = await getBotsByOwner(admin.id, "admin");
+    const bots = await getBotsByOwner(admin.id, "admin", "private", false);
 
     if (!bots) {
       res.status(500).send({ message: "Internal server error." });

@@ -1,5 +1,5 @@
 import React from "react";
-import { Outlet, useParams } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import GlobalModal from "../../components/Utils/Modal";
 import TopNav from "../../components/Navigation/Navbar/TopNav";
 import ProfileNav from "../../components/Navigation/Profile/Profile";

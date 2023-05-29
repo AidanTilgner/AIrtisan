@@ -177,16 +177,43 @@ export const deleteBot = async (id: Bot["id"]) => {
   }
 };
 
+export const filterBotsByVisibility = async (
+  bots: Bot[],
+  visibility: Bot["visibility"] = "public",
+  specific = true
+) => {
+  try {
+    switch (visibility) {
+      case "public":
+        return bots.filter((bot) => bot.visibility === "public");
+      case "private":
+        if (!specific) return bots;
+        return bots.filter((bot) => bot.visibility === "private");
+      case "unlisted":
+        return bots.filter((bot) => bot.visibility === "unlisted");
+      default:
+        return bots.filter((bot) => bot.visibility === "public");
+    }
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
 export const getBotsByOwner = async (
   owner_id: number,
   owner_type: OwnerTypes,
-  visibility: Bot["visibility"] = "public"
+  visibility: Bot["visibility"] = "public",
+  specific = true
 ) => {
   try {
-    const bot = await dataSource.manager.find(entities.Bot, {
-      where: { owner_id, owner_type, visibility },
+    const bots = await dataSource.manager.find(entities.Bot, {
+      where: { owner_id, owner_type },
     });
-    return bot;
+
+    const filtered = await filterBotsByVisibility(bots, visibility, specific);
+
+    return filtered;
   } catch (error) {
     console.error(error);
     return null;
