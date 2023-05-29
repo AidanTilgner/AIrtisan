@@ -50,6 +50,37 @@
   }
 }
 
-.breadcrumbsContainer {
+.navigation {
   margin-left: 24px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.backbutton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: transparent;
+  border: none;
+  font-family: var(--font-family);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    svg {
+      transform: translateX(-2px);
+    }
+  }
+
+  &:active {
+    transform: scale(0.99) translateY(1px);
+  }
+
+  svg {
+    transition: all 0.2s ease-in-out;
+    position: relative;
+    font-size: 14px;
+  }
 }

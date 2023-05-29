@@ -4,6 +4,7 @@ import SVG from "../../Utils/SVG";
 import { useNavigate } from "react-router-dom";
 import { useSearchParamsUpdate } from "../../../hooks/navigation";
 import Breadcrumbs from "../Breadcrumbs/Breadcrumbs";
+import { ArrowLeft } from "@phosphor-icons/react";
 
 function TopNav({ alwaysScrolled }: { alwaysScrolled?: boolean }) {
   const navigate = useNavigate();
@@ -38,8 +39,19 @@ function TopNav({ alwaysScrolled }: { alwaysScrolled?: boolean }) {
         <SVG.OnyxLogo width="36" height="36" />
       </button>
       {isMobile ? null : (
-        <div className={styles.breadcrumbsContainer}>
-          <Breadcrumbs />
+        <div className={styles.navigation}>
+          <button
+            className={styles.backbutton}
+            onClick={() => {
+              navigate(-1);
+            }}
+          >
+            <ArrowLeft weight="bold" />
+            Back
+          </button>
+          <div className={styles.breadcrumbsContainer}>
+            <Breadcrumbs />
+          </div>
         </div>
       )}
     </div>
