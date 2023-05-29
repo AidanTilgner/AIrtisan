@@ -55,8 +55,15 @@ function Breadcrumbs() {
 
   const ignoreParams: string[] = [];
 
+  const homePath = {
+    name: "Home",
+    endpoint: "/",
+    type: "home",
+    moduleName: "Home",
+  };
+
   const getDrilldown = () => {
-    const drilldown: ResolvedBreadcrumbModule[] = [];
+    const drilldown: ResolvedBreadcrumbModule[] = [homePath];
     Object.keys(params).forEach((key) => {
       if (ignoreParams.includes(key)) {
         return;
@@ -100,13 +107,6 @@ function Breadcrumbs() {
   const [fullPath, setFullPath] = useState<ResolvedBreadcrumbModule[]>([]);
 
   const showFullPath = false;
-
-  const homePath = {
-    name: "Home",
-    endpoint: "/",
-    type: "home",
-    moduleName: "Home",
-  };
 
   const getFullPath = () => {
     if (!showFullPath) {
@@ -153,8 +153,6 @@ function Breadcrumbs() {
     setFullPath(getFullPath());
   }, [drilldown]);
 
-  console.log("fullPath", fullPath, getFullPath());
-
   if (!fullPath.length) {
     return null;
   }
@@ -168,10 +166,11 @@ function Breadcrumbs() {
             key={breadcrumb.name}
             style={{
               position: "relative",
+              fontWeight: 500,
             }}
           >
             {breadcrumb.name}{" "}
-            <div
+            {/* <div
               style={{
                 position: "absolute",
                 top: "17px",
@@ -191,7 +190,7 @@ function Breadcrumbs() {
               >
                 {breadcrumb.moduleName}
               </span>
-            </div>
+            </div> */}
           </Anchor>
         ))}
       </MantineBreadcrumbs>
