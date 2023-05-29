@@ -133,10 +133,22 @@ export const getBotBySlug = async (slug: Bot["slug"], loadOwner = false) => {
   }
 };
 
-export const getBots = async () => {
+export const getBots = async (withOwner = false) => {
   try {
     const bots = await dataSource.manager.find(entities.Bot);
-    return bots;
+    if (!withOwner) return bots;
+
+    const botsWithOwner = await Promise.all(
+      bots.map(async (bot) => {
+        const owner = await getBotOwner(bot.owner_id, bot.owner_type);
+        return {
+          ...bot,
+          owner,
+        };
+      })
+    );
+
+    return botsWithOwner;
   } catch (error) {
     console.error(error);
     return null;
@@ -207,13 +219,29 @@ export const getBotsByOwner = async (
   specific = true
 ) => {
   try {
+    const owner = await getBotOwner(owner_id, owner_type);
+
+    if (!owner) return null;
+
     const bots = await dataSource.manager.find(entities.Bot, {
       where: { owner_id, owner_type },
     });
 
     const filtered = await filterBotsByVisibility(bots, visibility, specific);
 
-    return filtered;
+    if (!filtered) return null;
+
+    const botsWithOwner = await Promise.all(
+      filtered.map(async (bot) => {
+        const owner = await getBotOwner(bot.owner_id, bot.owner_type);
+        return {
+          ...bot,
+          owner,
+        };
+      })
+    );
+
+    return botsWithOwner;
   } catch (error) {
     console.error(error);
     return null;

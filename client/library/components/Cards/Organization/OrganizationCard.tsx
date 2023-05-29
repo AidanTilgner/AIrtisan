@@ -6,7 +6,7 @@ import { Buildings } from "@phosphor-icons/react";
 interface OrganizationCardProps {
   organization: Organization;
   onClick?: () => void;
-  size?: "small";
+  size?: "small" | "medium" | "large";
 }
 
 function OrganizationCard({

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { Breadcrumbs as MantineBreadcrumbs, Anchor } from "@mantine/core";
 import styles from "./Breadcrumbs.module.scss";
+import { ArrowLeft } from "@phosphor-icons/react";
 
 type AvailableParams = "username" | "organization_id" | "bot_id";
 
@@ -154,7 +155,11 @@ function Breadcrumbs() {
   }, [drilldown]);
 
   if (!fullPath.length) {
-    return null;
+    return (
+      <button>
+        <ArrowLeft />
+      </button>
+    );
   }
 
   return (

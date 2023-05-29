@@ -11,9 +11,10 @@ import { useUser } from "../../../contexts/User";
 
 interface FeedbackCardProps {
   feedback: Feedback;
+  onSubmit?: () => void;
 }
 
-function FeedbackCard({ feedback }: FeedbackCardProps) {
+function FeedbackCard({ feedback, onSubmit }: FeedbackCardProps) {
   const { setModal, closeModal } = useModal();
   const { isSuperAdmin } = useUser();
 
@@ -61,6 +62,7 @@ function FeedbackCard({ feedback }: FeedbackCardProps) {
                     message: `Feedback reviewed`,
                   });
                   closeModal();
+                  onSubmit && onSubmit();
                 }}
                 disabled={
                   reviewMessage.length < 1 || reviewMessage.length > 255

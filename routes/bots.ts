@@ -29,7 +29,7 @@ import { Admin } from "../database/models/admin";
 
 router.get("/as_admin/all", checkIsSuperAdmin, async (req, res) => {
   try {
-    const bots = await getBots();
+    const bots = await getBots(true);
     res.send({
       message: "Bots fetched successfully",
       success: true,
