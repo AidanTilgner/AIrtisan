@@ -1,10 +1,20 @@
 import React, { useState } from "react";
 import styles from "./Feedback.module.scss";
-import { Button, Flex, Grid, Select, Textarea, Title } from "@mantine/core";
+import {
+  Button,
+  Flex,
+  Grid,
+  Select,
+  TextInput,
+  Textarea,
+  Title,
+} from "@mantine/core";
 import { useSubmitFeedback } from "../../hooks/fetching/operations";
 import { Feedback } from "../../../documentation/main";
 import { showNotification } from "@mantine/notifications";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../../contexts/User";
+import { useUpdateMe } from "../../hooks/fetching/admin";
 
 function Feedback() {
   const [formData, setFormData] = useState({
@@ -46,6 +56,66 @@ function Feedback() {
       });
     }
   };
+
+  const { user } = useUser();
+
+  const [email, setEmail] = useState("");
+
+  const { updateMe } = useUpdateMe(
+    {
+      email,
+    },
+    {
+      dependencies: [email],
+    }
+  );
+
+  if (!user?.email) {
+    return (
+      <div className={styles.feedback}>
+        <Grid>
+          <Grid.Col span={12}>
+            <p>
+              It looks like you {`don't`} have an email saved to your account.
+              In order to leave feedback, please add an email to your account.
+            </p>
+          </Grid.Col>
+        </Grid>
+        <div className={styles.form}>
+          <div className="form">
+            <Grid>
+              <Grid.Col>
+                <TextInput
+                  label="Email"
+                  description="This email will be used to contact you about your feedback."
+                  placeholder="Your email here..."
+                  value={email}
+                  onChange={(e) => setEmail(e.currentTarget.value)}
+                  required
+                />
+              </Grid.Col>
+              <Grid.Col>
+                <Flex align="center" justify="flex-end">
+                  <Button
+                    onClick={() => {
+                      updateMe().then(() => {
+                        showNotification({
+                          title: "Success",
+                          message: "Your email has been saved!",
+                        });
+                      });
+                    }}
+                  >
+                    Submit
+                  </Button>
+                </Flex>
+              </Grid.Col>
+            </Grid>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.feedback}>

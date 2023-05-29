@@ -132,7 +132,8 @@ function Admin() {
           <Card>
             <p>
               There {allOrgs && allOrgs.length !== 1 ? "are" : "is"} currently{" "}
-              <strong>{allOrgs?.length || 0}</strong> organizations.
+              <strong>{allOrgs?.length || 0}</strong>{" "}
+              {allOrgs?.length !== 1 ? "organizations" : "organization"}.
             </p>
           </Card>
         </Grid.Col>

@@ -1,0 +1,7 @@
+.Feedback {
+  padding: 24px 24px;
+
+  @media screen and (min-width: 768px) {
+    padding: 24px 56px;
+  }
+}
