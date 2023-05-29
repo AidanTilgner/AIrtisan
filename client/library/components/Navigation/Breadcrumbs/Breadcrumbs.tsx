@@ -101,6 +101,13 @@ function Breadcrumbs() {
 
   const showFullPath = false;
 
+  const homePath = {
+    name: "Home",
+    endpoint: "/",
+    type: "home",
+    moduleName: "Home",
+  };
+
   const getFullPath = () => {
     if (!showFullPath) {
       return drilldown;
@@ -139,12 +146,14 @@ function Breadcrumbs() {
       }
     }
 
-    return fullpath;
+    return fullPath;
   };
 
   useEffect(() => {
     setFullPath(getFullPath());
   }, [drilldown]);
+
+  console.log("fullPath", fullPath, getFullPath());
 
   if (!fullPath.length) {
     return null;

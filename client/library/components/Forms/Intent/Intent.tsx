@@ -12,7 +12,7 @@ import {
   Select,
   TextInput,
 } from "@mantine/core";
-import { Plus } from "@phosphor-icons/react";
+import { Plus, X } from "@phosphor-icons/react";
 import { showNotification } from "@mantine/notifications";
 import { filterDuplicatesForStrings } from "../../../helpers/methods";
 import { useAddDataPoint } from "../../../hooks/fetching/common";
@@ -237,19 +237,23 @@ function AddIntent({
             {formData?.utterances?.length ? (
               formData.utterances.map((utterance, index) => {
                 return (
-                  <li
-                    key={index}
-                    onClick={() => {
-                      setFormData({
-                        ...formData,
-                        utterances: formData?.utterances?.filter(
-                          (u) => u !== utterance
-                        ),
-                      });
-                    }}
-                    title="Click to remove"
-                  >
+                  <li key={index}>
                     {utterance}
+                    <div className={styles.list_buttons}>
+                      <button
+                        onClick={() => {
+                          setFormData({
+                            ...formData,
+                            utterances: formData?.utterances?.filter(
+                              (u) => u !== utterance
+                            ),
+                          });
+                        }}
+                        className={styles.delete_button}
+                      >
+                        <X />
+                      </button>
+                    </div>
                   </li>
                 );
               })
@@ -320,7 +324,6 @@ function AddIntent({
               formData.answers.map((answer, index) => {
                 return (
                   <li
-                    key={index}
                     onClick={() => {
                       setFormData({
                         ...formData,
@@ -328,8 +331,24 @@ function AddIntent({
                       });
                     }}
                     title="Click to remove"
+                    key={index}
                   >
                     {answer}
+                    <div className={styles.list_buttons}>
+                      <button
+                        onClick={() => {
+                          setFormData({
+                            ...formData,
+                            answers: formData?.answers?.filter(
+                              (u) => u !== answer
+                            ),
+                          });
+                        }}
+                        className={styles.delete_button}
+                      >
+                        <X />
+                      </button>
+                    </div>
                   </li>
                 );
               })
@@ -585,6 +604,21 @@ function UpdateIntent({
                     title="Click to remove"
                   >
                     {utterance}
+                    <div className={styles.list_buttons}>
+                      <button
+                        onClick={() => {
+                          setFormData({
+                            ...formData,
+                            utterances: formData?.utterances?.filter(
+                              (u) => u !== utterance
+                            ),
+                          });
+                        }}
+                        className={styles.delete_button}
+                      >
+                        <X />
+                      </button>
+                    </div>
                   </li>
                 );
               })
@@ -650,6 +684,21 @@ function UpdateIntent({
                     title="Click to remove"
                   >
                     {answer}
+                    <div className={styles.list_buttons}>
+                      <button
+                        onClick={() => {
+                          setFormData({
+                            ...formData,
+                            answers: formData?.answers?.filter(
+                              (u) => u !== answer
+                            ),
+                          });
+                        }}
+                        className={styles.delete_button}
+                      >
+                        <X />
+                      </button>
+                    </div>
                   </li>
                 );
               })
