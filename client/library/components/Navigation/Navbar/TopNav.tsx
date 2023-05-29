@@ -3,6 +3,7 @@ import styles from "./TopNav.module.scss";
 import SVG from "../../Utils/SVG";
 import { useNavigate } from "react-router-dom";
 import { useSearchParamsUpdate } from "../../../hooks/navigation";
+import Breadcrumbs from "../Breadcrumbs/Breadcrumbs";
 
 function TopNav({ alwaysScrolled }: { alwaysScrolled?: boolean }) {
   const navigate = useNavigate();
@@ -34,6 +35,9 @@ function TopNav({ alwaysScrolled }: { alwaysScrolled?: boolean }) {
       >
         <SVG.OnyxLogo width="36" height="36" />
       </button>
+      <div className={styles.breadcrumbsContainer}>
+        <Breadcrumbs />
+      </div>
     </div>
   );
 }
