@@ -406,6 +406,15 @@ export const hasAccessToBot = async (
       return;
     }
 
+    const isSuperAdmin = admin.role === "superadmin";
+
+    if (isSuperAdmin) {
+      (req as unknown as Record<"admin", Admin>)["admin"] = admin;
+      (req as unknown as Record<"bot", Bot>)["bot"] = bot;
+      next();
+      return;
+    }
+
     const hasAccess = await checkAdminHasAccessToBot(admin.id, bot_id);
 
     if (!hasAccess) {

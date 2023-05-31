@@ -57,7 +57,7 @@ function Bots() {
                   <BotCard
                     bot={bot}
                     key={bot.id}
-                    onClick={() => navigate(`/bot/${bot.id}`)}
+                    onClick={() => navigate(`/bots/${bot.id}`)}
                   />
                 );
               })}
