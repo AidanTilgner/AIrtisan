@@ -38,6 +38,8 @@
   justify-content: center;
   height: 50vw;
   width: 50vw;
+  margin-inline: auto;
+  box-sizing: border-box;
   overflow: hidden;
   border-radius: 50%;
 
@@ -45,6 +47,7 @@
     justify-content: flex-start;
     height: 200px;
     width: 200px;
+    margin-inline: initial;
   }
 
   .icon {

@@ -293,7 +293,7 @@ function Profile() {
             )}
           </div>
         )}
-        {organizations.length > 1 && (
+        {organizations.length > 0 && (
           <div className={styles.organizationsContainer}>
             <h3>Organizations</h3>
             <div className={styles.organizations}>
