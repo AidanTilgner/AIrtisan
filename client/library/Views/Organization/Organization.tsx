@@ -9,6 +9,7 @@ import {
   useGetOrganizationAdmins,
   useGetOrganizationBots,
   useUpdateOrganization,
+  useUpdateOrganizationProfilePicture,
 } from "../../hooks/fetching/organization";
 import {
   Link,
@@ -25,7 +26,15 @@ import AdminCard from "../../components/Cards/Admin/AdminCard";
 import { Organization as OrganizationType } from "../../../documentation/main";
 import Loaders from "../../components/Utils/Loaders";
 import { useUser } from "../../contexts/User";
-import { Button, Flex, TextInput, Textarea } from "@mantine/core";
+import {
+  Button,
+  FileButton,
+  Flex,
+  Group,
+  Text,
+  TextInput,
+  Textarea,
+} from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { useModal } from "../../contexts/Modals";
 import { useGetMyOrganizationInvitation } from "../../hooks/fetching/admin";
@@ -100,6 +109,14 @@ function Organization() {
     }
   );
 
+  const [newProfilePicture, setNewProfilePicture] = useState<File | null>(null);
+
+  const { updateOrganizationProfilePicture } =
+    useUpdateOrganizationProfilePicture({
+      file: newProfilePicture as File,
+      organization_id: organization_id as string,
+    });
+
   const handleUpdateOrganization = async () => {
     const res = await updateOrganization();
     if (!res || !res.data || !res.success) {
@@ -116,6 +133,24 @@ function Organization() {
       message: "Organization updated successfully",
     });
     reloadOrganization();
+
+    if (newProfilePicture) {
+      const res = await updateOrganizationProfilePicture();
+      if (!res || !res.data) {
+        showNotification({
+          title: "Error",
+          message:
+            "Something went wrong while updating your organization profile picture",
+          color: "red",
+        });
+        return;
+      }
+      showNotification({
+        title: "Success",
+        message: "Organization profile picture updated successfully",
+      });
+      window.location.reload();
+    }
   };
 
   const { data: myInvitation, getMyOrganizationInvitation: reloadInvitation } =
@@ -207,14 +242,41 @@ function Organization() {
     <div className={styles.Organization}>
       <div className={styles.left}>
         <div className={styles.iconContainer}>
-          <div className={styles.icon}>
-            <Buildings weight="thin" />
-          </div>
+          {organization?.profile_picture_path ? (
+            <img
+              className={styles.profilePicture}
+              src={`/data/org-data/profile_pictures/${organization.profile_picture_path}`}
+              alt="User Profile Picture"
+            />
+          ) : (
+            <div className={styles.icon}>
+              <Buildings weight="thin" />
+            </div>
+          )}
         </div>
       </div>
       <div className={styles.right}>
         {editing ? (
           <div className={styles.organizationEdit}>
+            <div>
+              <Group position="left">
+                <FileButton
+                  onChange={setNewProfilePicture}
+                  accept="image/png,image/jpeg"
+                >
+                  {(props) => (
+                    <Button {...props}>Change Profile Picture</Button>
+                  )}
+                </FileButton>
+              </Group>
+
+              {newProfilePicture && (
+                <Text size="sm" align="center" mt="sm">
+                  Picked file: {newProfilePicture.name}
+                </Text>
+              )}
+            </div>
+            <br />
             <div className={styles.form}>
               <TextInput
                 label="Name"
