@@ -46,7 +46,12 @@ function Profile({ alwaysScrolled }: { alwaysScrolled?: boolean }) {
         position="bottom-end"
       >
         <Menu.Target>
-          <div className={styles.Profile}>
+          <div
+            className={styles.Profile}
+            onDoubleClick={() => {
+              navigate(`/profile/${user?.username}`);
+            }}
+          >
             <User />
           </div>
         </Menu.Target>
