@@ -406,7 +406,7 @@ const upload = multer.diskStorage({
 
 router.put(
   "/me/profile_picture",
-  checkAdminIsAdmin,
+  checkIsAdmin,
   multer({ storage: upload }).single("profile_picture"),
   async (req, res) => {
     try {

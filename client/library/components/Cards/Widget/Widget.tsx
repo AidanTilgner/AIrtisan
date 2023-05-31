@@ -51,24 +51,26 @@ Widget.Grid = function WidgetGrid({
   return (
     <div className={styles.widget_grid}>
       {items.length > 0 ? (
-        items.map((item) => {
-          return (
-            <button
-              key={item.label}
-              className={styles.widget_grid_item}
-              onClick={item.onClick}
-              title={item.tooltip || item.label}
-            >
-              <div className={styles.widget_grid_info}>
-                <span className={styles.widget_grid_icon}>{item.icon}</span>
-                <span className={styles.widget_grid_label}>{item.label}</span>
-              </div>
-              <ArrowRight />
-            </button>
-          );
-        })
+        <div className={styles.items}>
+          {items.map((item) => {
+            return (
+              <button
+                key={item.label}
+                className={styles.widget_grid_item}
+                onClick={item.onClick}
+                title={item.tooltip || item.label}
+              >
+                <div className={styles.widget_grid_info}>
+                  <span className={styles.widget_grid_icon}>{item.icon}</span>
+                  <span className={styles.widget_grid_label}>{item.label}</span>
+                </div>
+                <ArrowRight />
+              </button>
+            );
+          })}
+        </div>
       ) : (
-        <div>{fallback}</div>
+        <div className={styles.fallback}>{fallback}</div>
       )}
     </div>
   );
