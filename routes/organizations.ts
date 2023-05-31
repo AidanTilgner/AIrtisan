@@ -20,6 +20,8 @@ import {
   isOwnerOfOrganization,
 } from "../middleware/auth";
 import { Admin } from "../database/models/admin";
+import multer from "multer";
+import { deleteFile } from "../utils/files";
 
 const router = Router();
 
@@ -327,5 +329,61 @@ router.post("/invitation/complete", checkIsAdmin, async (req, res) => {
     res.status(500).send({ error: "Internal server error" });
   }
 });
+
+const upload = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "public/data/org-data/profile_pictures");
+  },
+  filename: function (req, file, cb) {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  },
+});
+
+router.put(
+  "/:id/profile_picture",
+  isOwnerOfOrganization,
+  multer({ storage: upload }).single("profile_picture"),
+  async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+      const { file } = req;
+
+      if (!file) {
+        res.status(400).send({ message: "Profile picture not provided." });
+        return;
+      }
+
+      const organization = await getOrganization(id);
+
+      if (!id || !organization) {
+        res.status(404).send({ message: "Organization not found." });
+        return;
+      }
+
+      if (organization.profile_picture_path) {
+        deleteFile(
+          `public/data/org-data/profile_pictures/${organization.profile_picture_path}`
+        );
+      }
+
+      const result = await updateOrganization(organization.id, {
+        profile_picture_path: file.filename,
+      });
+
+      if (!result) {
+        res.status(500).send({ message: "Internal server error." });
+        return;
+      }
+
+      res.status(200).send({
+        message: "Admin profile picture updated successfully.",
+        data: file.filename,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send({ message: "Internal server error." });
+    }
+  }
+);
 
 export default router;

@@ -1,6 +1,7 @@
 import Express from "express";
 import { config } from "dotenv";
 import ApiRouter from "./routes/api";
+import DataRouter from "./routes/data";
 import path from "path";
 import "reflect-metadata";
 import { initializeDatabase } from "./database";
@@ -48,6 +49,7 @@ app.get("/documentation", (req, res) => {
 });
 
 app.use("/api", ApiRouter);
+app.use("/data", DataRouter);
 
 app.get("/login", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "auth", "login.html"));

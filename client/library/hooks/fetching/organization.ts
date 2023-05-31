@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Admin, Bot, Organization } from "../../../documentation/main";
 import useFetch, { UseFetchConfig } from "../useFetch";
 
@@ -247,6 +248,41 @@ export const useGetAllOrganizations = (
 
   return {
     getAllOrganizations: load,
+    data: data,
+    success,
+  };
+};
+
+export const useUpdateOrganizationProfilePicture = (
+  {
+    organization_id,
+    file,
+  }: {
+    organization_id: number | string;
+    file: File;
+  },
+  config?: Partial<UseFetchConfig<FormData, string>>
+) => {
+  const [formData, setFormData] = useState<FormData>(new FormData());
+
+  useEffect(() => {
+    setFormData(() => {
+      const newFormData = new FormData();
+      newFormData.append("profile_picture", file);
+      return newFormData;
+    });
+  }, [file]);
+
+  const { load, data, success } = useFetch<FormData, string>({
+    useBotId: false,
+    ...config,
+    url: `/organizations/${organization_id}/profile_picture`,
+    method: "PUT",
+    body: formData,
+  });
+
+  return {
+    updateOrganizationProfilePicture: load,
     data: data,
     success,
   };

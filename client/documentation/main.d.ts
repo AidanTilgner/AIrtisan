@@ -9,6 +9,7 @@ export interface Admin {
   password?: string;
   role: AdminRoles;
   email: string;
+  profile_picture_path: string;
   created_at: Date;
   updated_at: Date;
 }
@@ -139,6 +140,7 @@ export interface Organization {
   owner: Admin;
   admins: Admin[];
   bots: Bot[];
+  profile_picture_path: string;
   created_at: Date;
   updated_at: Date;
 }

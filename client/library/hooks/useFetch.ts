@@ -64,6 +64,21 @@ function useFetch<B, D>({
   const [data, setData] = useState<D>();
   const [success, setSuccess] = useState(false);
 
+  const useBody = () => {
+    if (body instanceof FormData) {
+      return body;
+    }
+    if (useBotId) {
+      return {
+        ...body,
+        bot_id,
+      };
+    }
+    return {
+      ...body,
+    };
+  };
+
   const load = useCallback(
     async (loadConfig?: { updatedUrl?: string; updatedBody?: B }) => {
       if (!readyToRun()) return;
@@ -71,10 +86,7 @@ function useFetch<B, D>({
       setLoading(true);
       return api<DefaultResponse<D>>(loadConfig?.updatedUrl || urlToUse, {
         method,
-        data: {
-          ...(loadConfig?.updatedBody || body),
-          bot_id,
-        },
+        data: useBody(),
         headers,
         cache: bustCache ? false : undefined,
       })

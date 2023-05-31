@@ -136,6 +136,7 @@ function Dashboard() {
                     tooltip: "Click to view bot",
                   };
                 })}
+                fallback={"You don't have any bots yet!"}
               />
             </Widget>
           </Grid.Col>
@@ -163,6 +164,7 @@ function Dashboard() {
                     },
                   };
                 })}
+                fallback={"You don't have any organizations yet!"}
               />
             </Widget>
           </Grid.Col>
