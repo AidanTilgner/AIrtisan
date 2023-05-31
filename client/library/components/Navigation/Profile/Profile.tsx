@@ -52,7 +52,15 @@ function Profile({ alwaysScrolled }: { alwaysScrolled?: boolean }) {
               navigate(`/profile/${user?.username}`);
             }}
           >
-            <User />
+            {user?.profile_picture_path ? (
+              <img
+                className={styles.profilePicture}
+                src={`/data/user-data/profiles/profile_pictures/${user.profile_picture_path}`}
+                alt="User Profile Picture"
+              />
+            ) : (
+              <User />
+            )}
           </div>
         </Menu.Target>
 

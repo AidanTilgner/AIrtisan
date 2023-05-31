@@ -9,6 +9,7 @@ export interface Admin {
   password?: string;
   role: AdminRoles;
   email: string;
+  profile_picture_path: string;
   created_at: Date;
   updated_at: Date;
 }

@@ -20,9 +20,10 @@ import {
   useUpdateMe,
   useGetMyBots,
   useGetMyNotifications,
+  useUpdateMyProfilePicture,
 } from "../../hooks/fetching/admin";
 import Loaders from "../../components/Utils/Loaders";
-import { Button, TextInput } from "@mantine/core";
+import { Button, FileButton, Group, Text, TextInput } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { Bot } from "../../../documentation/main";
 import NotificationCard from "../../components/Cards/Notification/Notification";
@@ -108,6 +109,15 @@ function Profile() {
     dependencies: [newProfile],
   });
 
+  const [newProfilePicture, setNewProfilePicture] = useState<File | null>(null);
+
+  const { updateMyProfilePicture } = useUpdateMyProfilePicture(
+    newProfilePicture as File,
+    {
+      dependencies: [newProfilePicture],
+    }
+  );
+
   const handleUpdateProfile = async () => {
     if (!(user?.username === username)) {
       return;
@@ -130,7 +140,32 @@ function Profile() {
       message: "Your profile has been updated",
     });
     reloadAdmin();
+
+    if (!(user?.username === newProfile.username)) {
+      navigate(`/profile/${newProfile.username}`);
+    }
+
+    if (newProfilePicture) {
+      const res = await updateMyProfilePicture();
+
+      if (!res || res.error) {
+        showNotification({
+          title: "Error",
+          message:
+            res?.message || "Something went wrong while updating your profile",
+          color: "red",
+        });
+        return;
+      }
+
+      showNotification({
+        title: "Success",
+        message: "Your profile picture has been updated",
+      });
+      window.location.reload();
+    }
   };
+
   if (loading) {
     return (
       <div
@@ -151,12 +186,39 @@ function Profile() {
     <div className={styles.Profile}>
       <div className={styles.left}>
         <div className={styles.iconContainer}>
-          <div className={styles.icon}>
-            <User weight="thin" />
-          </div>
+          {user?.profile_picture_path ? (
+            <img
+              className={styles.profilePicture}
+              src={`/data/user-data/profiles/profile_pictures/${user.profile_picture_path}`}
+              alt="User Profile Picture"
+            />
+          ) : (
+            <div className={styles.icon}>
+              <User weight="thin" />
+            </div>
+          )}
         </div>
         {isEditing ? (
           <div className={styles.profileEdit}>
+            <div>
+              <Group position="left">
+                <FileButton
+                  onChange={setNewProfilePicture}
+                  accept="image/png,image/jpeg"
+                >
+                  {(props) => (
+                    <Button {...props}>Change Profile Picture</Button>
+                  )}
+                </FileButton>
+              </Group>
+
+              {newProfilePicture && (
+                <Text size="sm" align="center" mt="sm">
+                  Picked file: {newProfilePicture.name}
+                </Text>
+              )}
+            </div>
+            <br />
             <div className={styles.form}>
               <TextInput
                 label="Username"

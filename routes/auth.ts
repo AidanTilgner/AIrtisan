@@ -31,6 +31,8 @@ import { getOrganizationInvitationByAdmin } from "../database/functions/organiza
 import { getBotsByOwner } from "../database/functions/bot";
 import { checkAdminIsAdmin } from "../middleware/admin";
 import { Logger } from "../utils/logger";
+import multer from "multer";
+import { deleteFile } from "../utils/files";
 
 config();
 
@@ -388,6 +390,60 @@ router.get(
         "Error getting admin organization invitation from session: ",
         err
       );
+      res.status(500).send({ message: "Internal server error." });
+    }
+  }
+);
+
+const upload = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "public/data/user-data/profiles/profile_pictures");
+  },
+  filename: function (req, file, cb) {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  },
+});
+
+router.put(
+  "/me/profile_picture",
+  checkAdminIsAdmin,
+  multer({ storage: upload }).single("profile_picture"),
+  async (req, res) => {
+    try {
+      const admin = (req as unknown as Record<"admin", Admin>)["admin"];
+      const { file } = req;
+
+      if (!file) {
+        res.status(400).send({ message: "Profile picture not provided." });
+        return;
+      }
+
+      if (!admin) {
+        res.status(404).send({ message: "Admin not found." });
+        return;
+      }
+
+      if (admin.profile_picture_path) {
+        deleteFile(
+          `public/data/user-data/profiles/profile_pictures/${admin.profile_picture_path}`
+        );
+      }
+
+      const result = await updateAdmin(admin.id, {
+        profile_picture_path: file.filename,
+      });
+
+      if (!result) {
+        res.status(500).send({ message: "Internal server error." });
+        return;
+      }
+
+      res.status(200).send({
+        message: "Admin profile picture updated successfully.",
+        data: file.filename,
+      });
+    } catch (error) {
+      console.error(error);
       res.status(500).send({ message: "Internal server error." });
     }
   }

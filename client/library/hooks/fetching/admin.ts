@@ -7,6 +7,7 @@ import {
   OrganizationInvitation,
 } from "../../../documentation/main";
 import { useUser } from "../../contexts/User";
+import { useEffect, useState } from "react";
 
 export const useGetMe = (
   config?: Partial<UseFetchConfig<unknown, Omit<Admin, "password">>>
@@ -280,5 +281,36 @@ export const useGetAllAdmins = (
     },
     data: data,
     loading: loading,
+  };
+};
+
+export const useUpdateMyProfilePicture = (
+  file: File,
+  config?: Partial<UseFetchConfig<FormData, string>>
+) => {
+  // send the profile picture as "profile_picture" to /auth/me/profile_picture
+  const [formData, setFormData] = useState<FormData>(new FormData());
+
+  useEffect(() => {
+    setFormData(() => {
+      const newFormData = new FormData();
+      newFormData.append("profile_picture", file);
+      return newFormData;
+    });
+  }, [file]);
+
+  const { load, data, success, loading } = useFetch<FormData, string>({
+    useBotId: false,
+    ...config,
+    url: `/auth/me/profile_picture`,
+    method: "PUT",
+    body: formData,
+  });
+
+  return {
+    updateMyProfilePicture: load,
+    data: data,
+    success,
+    loading,
   };
 };
