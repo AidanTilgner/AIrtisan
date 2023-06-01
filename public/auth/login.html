@@ -148,9 +148,25 @@
       #togglePassword:active {
         transform: scale(0.95) translateY(2px);
       }
+
+      #reason {
+        position: fixed;
+        top: 14px;
+        right: 24px;
+        left: 24px;
+        padding: 14px 24px;
+        font-size: 12px;
+        text-align: center;
+      }
+
+      #reason.error {
+        background-color: rgba(255, 0, 0, 0.25);
+        color: #fff;
+      }
     </style>
   </head>
   <body>
+    <div id="reason"></div>
     <div class="formContainer">
       <div class="header">
         <div class="icon">
@@ -206,6 +222,27 @@
       </div>
     </div>
     <script>
+      const urlReason = new URLSearchParams(window.location.search).get(
+        "reason"
+      );
+      const reasonElement = document.getElementById("reason");
+
+      const reasonMapping = {
+        unauthorized: {
+          type: "error",
+          message:
+            "You were logged out due to attempting to access a page you don't have access to.",
+        },
+      };
+
+      if (!urlReason) {
+        reasonElement.style.display = "none";
+      } else {
+        reasonElement.style.display = "block";
+        reasonElement.classList.add(reasonMapping[urlReason].type);
+        reasonElement.innerHTML = `<p>${reasonMapping[urlReason].message}</p>`;
+      }
+
       function togglePasswordVisibility() {
         const passwordInput = document.getElementById("password");
         const eyeIcon = document.getElementById("eyeIcon");

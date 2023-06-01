@@ -496,7 +496,7 @@ export const checkAdminHasAccessToBot = async (
   bot_id: number
 ) => {
   try {
-    const bots = await getBotsByOwner(admin_id, "admin");
+    const bots = await getBotsByOwner(admin_id, "admin", "private", false);
 
     const bot = bots?.find((bot) => bot.id === bot_id);
 
@@ -504,13 +504,15 @@ export const checkAdminHasAccessToBot = async (
 
     const organizations = await getAdminOrganizations(admin_id);
 
-    if (!organizations) return false;
+    if (!organizations || organizations.length < 1) return false;
 
-    const foundBotInOrganization = await Promise.all(
+    const checkedBots = await Promise.all(
       organizations.map(async (organization) => {
         return await checkBotIsInOrganization(bot_id, organization.id);
       })
     );
+
+    const foundBotInOrganization = checkedBots.some((bot) => bot === true);
 
     if (foundBotInOrganization) return true;
 

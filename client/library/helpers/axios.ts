@@ -23,7 +23,7 @@ api.interceptors.response.use(
   async (error: AxiosError) => {
     // Check for 401 Unauthorized error
     if (error.response?.status === 401) {
-      logout();
+      logout("unauthorized");
     }
     // Pass the error along to the caller
     return Promise.reject(error);
