@@ -27,12 +27,11 @@ export const validateDomainForBot = async (
       req.body.bot_slug || req.query.bot_slug || req.params.bot_slug;
     const domain = req.headers.origin || req.headers.host;
 
-    if (isDev) {
-      next();
-      return;
-    }
-
-    if (domain === process.env.CURRENT_DOMAIN) {
+    if (
+      (process.env.CURRENT_DOMAIN &&
+        domain === extractDomain(process.env.CURRENT_DOMAIN)) ||
+      domain === process.env.CURRENT_DOMAIN
+    ) {
       next();
       return;
     }

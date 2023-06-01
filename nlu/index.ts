@@ -219,7 +219,6 @@ export const getRawResponse = async (id: number, text: string) => {
       console.error("No manager found");
       return null;
     }
-    console.log("Current manager: ", JSON.stringify(manager, null, 2));
     const response = await manager?.bot?.process("en", text);
     return response;
   } catch (err) {
