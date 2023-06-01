@@ -17,7 +17,7 @@ const router = Router();
 router.use(logSession);
 router.use(addIPToSession);
 
-router.post("", checkIsAdmin, hasAccessToBot, async (req, res) => {
+router.post("/", checkIsAdmin, hasAccessToBot, async (req, res) => {
   try {
     const message = req.body.message || req.query.message;
     const bot_id = req.body.bot_id || req.query.bot_id;

@@ -1,4 +1,4 @@
-import { dockStart } from "@nlpjs/basic";
+import { dock, containerBootstrap, Nlp } from "@nlpjs/basic";
 import { generateMetadata } from "./metadata";
 import { extractAttachments, filterAttachments } from "./attachments";
 import {
@@ -59,26 +59,33 @@ export const getManagerIsAlive = (id: number) => {
   return managers[String(id)]?.running;
 };
 
+const botFilesLocation = "datastore/bots/models/";
+
 export const train = async (id: number, forceRetrain = false) => {
   try {
+    const container = containerBootstrap();
+    container.use(Nlp);
+    const nlp = container.get("nlp");
+    nlp.settings.autoSave = false;
+    nlp.settings.autoLoad = false;
+    nlp.settings.log = false;
     if (!forceRetrain && managers[String(id)]) {
       managers[String(id)].running = true;
       await markBotAsRunning(id, true);
+      const bot = nlp.load(botFilesLocation + "bot-" + String(id) + ".json");
+      managers[String(id)].bot = bot;
       return managers[String(id)];
     }
-    const dock = await dockStart({
-      use: ["Basic"],
-    });
-    // Add the NLU here
     const useBot = await getBotFileLocations(id);
     if (!useBot) {
       console.error("Bot not found");
       return;
     }
     const { corpus_file } = useBot;
-    const nlp = dock.get("nlp");
+
     await nlp.addCorpus(corpus_file);
     await nlp.train();
+    await nlp.save(botFilesLocation + "bot-" + String(id) + ".json");
     managers[String(id)] = {
       id: id,
       bot: nlp,
@@ -101,10 +108,13 @@ export const retrain = async (id: number): Promise<0 | 1> => {
       await markBotAsRunning(id, false);
     }
 
-    const dock = await dockStart({
-      use: ["Basic"],
-    });
-    // Add the NLU here
+    const container = containerBootstrap();
+    container.use(Nlp);
+    const nlp = container.get("nlp");
+    nlp.settings.autoSave = false;
+    nlp.settings.autoLoad = false;
+    nlp.settings.log = false;
+
     const useBot = await getBotFileLocations(id);
     if (!useBot) {
       console.error("Bot not found");
@@ -112,9 +122,10 @@ export const retrain = async (id: number): Promise<0 | 1> => {
     }
 
     const { corpus_file } = useBot;
-    const nlp = dock.get("nlp");
+
     await nlp.addCorpus(corpus_file);
     await nlp.train();
+    await nlp.save(botFilesLocation + "bot-" + String(id) + ".json");
     managers[String(id)] = {
       id: id,
       bot: nlp,
@@ -208,6 +219,7 @@ export const getRawResponse = async (id: number, text: string) => {
       console.error("No manager found");
       return null;
     }
+    console.log("Current manager: ", JSON.stringify(manager, null, 2));
     const response = await manager?.bot?.process("en", text);
     return response;
   } catch (err) {
