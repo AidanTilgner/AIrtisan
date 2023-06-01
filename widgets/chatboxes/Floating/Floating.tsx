@@ -134,6 +134,18 @@ function Index() {
 
   const [opened, setOpened] = React.useState(false);
 
+  useEffect(() => {
+    if (opened && isMobile) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [isMobile, opened]);
+
   const [focusTrap, setFocusTrap] = React.useState(false);
 
   const getElementPosition = () => {
