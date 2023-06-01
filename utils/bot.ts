@@ -3,6 +3,10 @@ import path from "path";
 import { getRandomString } from "./crypto";
 import { format } from "prettier";
 import { AllowedChatModels, Model } from "../types/lib";
+import { getBotOwner } from "../database/functions/bot";
+import { Bot } from "../database/models/bot";
+import { Organization } from "../database/models/organization";
+import { Admin } from "../database/models/admin";
 
 const outputLocation = "datastore/bots/documents";
 
@@ -11,6 +15,9 @@ export const generateBotFiles = async (bot: {
   bot_version: string;
   bot_language: string;
   enhancement_model: string;
+  owner_type: Bot["owner_type"];
+  owner_id: Bot["owner_id"];
+  description: string;
 }): Promise<{
   context_file: string;
   corpus_file: string;
@@ -100,20 +107,30 @@ export const getBotModelFileContents = async (bot: {
   name: string;
   bot_version: string;
   enhancement_model: string;
+  owner_type: Bot["owner_type"];
+  owner_id: Bot["owner_id"];
+  description: string;
 }): Promise<string | null> => {
   try {
+    const botOwner = await getBotOwner(bot.owner_id, bot.owner_type);
+
     const fileContentsObject: Model = {
       personality: {
         name: bot.name,
-        description: bot.name + " is a digital assistant.",
-        initial_prompt: "You are a chatbot on a website.",
+        description: bot.description,
+        initial_prompt: "",
       },
       works_for: {
-        name: "Cool Company",
+        name:
+          bot.owner_type === "organization"
+            ? (botOwner as Organization).name
+            : (botOwner as Admin).display_name || (botOwner as Admin).username,
         description:
-          "Cool Company is a company that does awesome things. We are a company that does basic things.",
-        site_url: "https://google.com",
-        tagline: "Do awesome things.",
+          bot.owner_type === "organization"
+            ? (botOwner as Organization).description
+            : "",
+        site_url: "",
+        tagline: "",
         metadata: {},
       },
       specification: {

@@ -8,12 +8,14 @@ import Training from "../../pages/Training/";
 import Documents from "../../pages/Documents";
 import Overview from "../../pages/Overview";
 import Flows from "../../pages/Flows";
+import Settings from "../../pages/Settings";
 import { useUser } from "../../contexts/User";
 import styles from "./Bot.module.scss";
 import {
   Chat,
   Chats,
   Cloud,
+  GearSix,
   MonitorPlay,
   SquaresFour,
   TextColumns,
@@ -26,6 +28,7 @@ type Tab =
   | "flows"
   | "training"
   | "documents"
+  | "settings"
   | "review"
   | "preview"
   | "api";
@@ -101,6 +104,12 @@ function Bot() {
               icon: <Cloud />,
               visible: true,
             },
+            {
+              name: "Settings",
+              id: "settings",
+              icon: <GearSix />,
+              visible: true,
+            },
           ]}
           setTab={setCurrentTab}
           currentTab={currentTab}
@@ -131,5 +140,7 @@ function DisplayCurrentTab({ currentTab }: { currentTab: Tab }) {
       return <Preview />;
     case "api":
       return <Auth />;
+    case "settings":
+      return <Settings />;
   }
 }

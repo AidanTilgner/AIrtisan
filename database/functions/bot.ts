@@ -15,17 +15,20 @@ interface BotWithLoadedOwner extends Bot {
   owner: Organization | Admin | undefined;
 }
 
-export const getBotOwner = async (owner_id: number, owner_type: OwnerTypes) => {
+export const getBotOwner = async (
+  owner_id: number,
+  owner_type: OwnerTypes
+): Promise<Admin | Organization | null> => {
   try {
     switch (owner_type) {
       case "organization":
-        return await dataSource.manager.findOne(entities.Organization, {
+        return (await dataSource.manager.findOne(entities.Organization, {
           where: { id: owner_id },
-        });
+        })) as Organization;
       case "admin":
-        return await dataSource.manager.findOne(entities.Admin, {
+        return (await dataSource.manager.findOne(entities.Admin, {
           where: { id: owner_id },
-        });
+        })) as Admin;
       default:
         return null;
     }
