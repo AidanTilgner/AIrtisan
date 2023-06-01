@@ -131,7 +131,7 @@ export const recursivelyTravelPageLinks = async (
 
 export const getPageTextContent = async (url: string) => {
   try {
-    const browser = await p.launch({ headless: "new" });
+    const browser = await getBrowserInstance();
     const page = await browser.newPage();
     await page.goto(url);
     const textContent = await page.$eval("body", (el) => el.textContent);
@@ -145,7 +145,7 @@ export const getPageTextContent = async (url: string) => {
 
 export const getMultiplePageTextContent = async (urls: string[]) => {
   try {
-    const browser = await p.launch({ headless: "new" });
+    const browser = await getBrowserInstance();
     const page = await browser.newPage();
     const textContentArray: {
       url: string;
