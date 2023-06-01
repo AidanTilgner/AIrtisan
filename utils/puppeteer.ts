@@ -14,7 +14,10 @@ export const closeBrowserInstance = async () => {
 
 export const getBrowserInstance = async () => {
   if (browserInstance === null) {
-    browserInstance = await p.launch({ headless: "new" });
+    browserInstance = await p.launch({
+      headless: "new",
+      args: ["--no-sandbox"],
+    });
   }
   if (closeTimeout !== null) {
     clearTimeout(closeTimeout);
