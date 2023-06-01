@@ -138,7 +138,7 @@ function Index() {
 
   const getElementPosition = () => {
     if (opened && isMobile) {
-      return "calc(100vh - 70px)";
+      return "calc(100vh - 140px)";
     }
     if (isMobile || opened) {
       return "calc(100vh - 92px)";
@@ -152,16 +152,6 @@ function Index() {
     }
     return "calc(100vh - 92px)";
   };
-
-  useEffect(() => {
-    if (opened) {
-      document.body.style.overflow = "hidden";
-      document.body.style.height = "100vh";
-    } else {
-      document.body.style.overflow = "auto";
-      document.body.style.height = "auto";
-    }
-  }, [opened]);
 
   useEffect(() => {
     const focusTrapTrue = setTimeout(() => {
@@ -184,7 +174,7 @@ function Index() {
         <div
           className={`${styles.onyx} ${clicked ? styles.clicked : ""} ${
             focusTrap ? styles.focusTrap : ""
-          }`}
+          } ${opened ? styles.opened : ""}`}
           onClick={() => {
             setClicked(true);
             setTimeout(() => {

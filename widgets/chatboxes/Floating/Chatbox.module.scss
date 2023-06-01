@@ -156,7 +156,7 @@
 
 .chatBoxInput {
   position: absolute;
-  bottom: 84px;
+  bottom: 24px;
   box-sizing: border-box;
   left: 14px;
   right: 14px;
@@ -254,9 +254,9 @@
   .buttons {
     display: flex;
     flex-direction: row;
-    justify-content: flex-end;
+    justify-content: flex-start;
     position: absolute;
-    right: 0;
+    left: 0;
     bottom: calc(100% + 14px);
     gap: 14px;
 

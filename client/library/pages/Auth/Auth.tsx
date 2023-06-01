@@ -107,7 +107,7 @@ function Auth() {
           a key for, and click {`"Add"`}.
         </p>
         <p>
-          Then, make a request using the key in the header , and the service
+          Then, make a request using the key in the header, and the service
           name. For example:
         </p>
         <div className={styles.code_explanation}>

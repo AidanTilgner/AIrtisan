@@ -9,6 +9,14 @@
   --amountToProtrude: 24px;
 }
 
+.opened {
+  right: 14px;
+
+  @media screen and (min-width: 768px) {
+    right: 24px;
+  }
+}
+
 .container {
   height: 56px;
   width: 56px;
@@ -31,7 +39,7 @@
   }
 
   &:active {
-    transform: translateY(2px);
+    transform: translateY(4px);
   }
 
   svg {
