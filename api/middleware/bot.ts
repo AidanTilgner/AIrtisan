@@ -32,6 +32,11 @@ export const validateDomainForBot = async (
       return;
     }
 
+    if (domain === process.env.CURRENT_DOMAIN) {
+      next();
+      return;
+    }
+
     if (!domain) {
       res.status(401).send({
         message: "No domain provided.",
