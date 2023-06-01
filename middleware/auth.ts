@@ -392,7 +392,9 @@ export const hasAccessToBot = async (
       return;
     }
 
-    const bot_id = req.params.bot_id || req.body.bot_id || req.query.bot_id;
+    const bot_id = Number(
+      req.params.bot_id || req.body.bot_id || req.query.bot_id
+    );
 
     if (!bot_id) {
       res.status(400).send({ message: "No bot id provided." });
