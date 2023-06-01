@@ -271,6 +271,7 @@ function ModelData() {
             />
           </Grid.Col>
           <Grid.Col span={12} />
+          <Grid.Col span={12} />
           <Grid.Col span={12}>
             <Title order={2}>Specification</Title>
           </Grid.Col>
