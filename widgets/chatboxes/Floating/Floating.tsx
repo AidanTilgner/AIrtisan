@@ -150,7 +150,7 @@ function Index() {
 
   const getElementPosition = () => {
     if (opened && isMobile) {
-      return "calc(100vh - 140px)";
+      return "14px";
     }
     if (isMobile || opened) {
       return "calc(100vh - 92px)";
