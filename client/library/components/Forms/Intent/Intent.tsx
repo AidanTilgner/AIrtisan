@@ -74,7 +74,7 @@ function Intent({
       <p className={styles.resources}>
         If you have questions, consider reading up on{" "}
         <a
-          href="https://docs.airtisan.app/basics/understanding-intents"
+          href="https://docs.airtisan.app/docs/basics/understanding-intents"
           target="_blank"
           rel="noreferrer"
         >
