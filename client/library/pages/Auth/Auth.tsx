@@ -7,7 +7,13 @@ import {
   useDeleteApiKey,
   useGetApiKeys,
 } from "../../hooks/fetching/bot";
-import { Button, Flex, SegmentedControl, TextInput } from "@mantine/core";
+import {
+  Button,
+  CopyButton,
+  Flex,
+  SegmentedControl,
+  TextInput,
+} from "@mantine/core";
 import { useBot } from "../../contexts/Bot";
 import { Prism } from "@mantine/prism";
 
@@ -75,7 +81,7 @@ function Auth() {
     "curl"
   );
 
-  const curlCodeSnippet = `curl -H "x-access-token: ${
+  const curlCodeSnippet = `curl -H "x-api-key: ${
     addedApiKey.key || "YOUR_API_KEY"
   }"
   -H "x-service: ${addedApiKey.name || "YOUR_API_KEY_SERVICE_NAME"}"
@@ -88,7 +94,7 @@ function Auth() {
   }/chat", {
     method: 'POST',
     headers: {
-      'x-access-token': ${addedApiKey.key || "YOUR_API_KEY"},
+      'x-api-key': ${addedApiKey.key || "YOUR_API_KEY"},
       'x-service': ${addedApiKey.name || "YOUR_API_KEY_SERVICE_NAME"},
       'Content-Type': 'application/json'
     },
@@ -129,6 +135,16 @@ function Auth() {
             <Prism language="javascript">{jsCodeSnippet}</Prism>
           )}
         </div>
+        <br />
+        <div>
+          <CopyButton value={bot?.slug ? bot.slug : ""}>
+            {({ copied, copy }) => (
+              <Button variant={copied ? "outline" : "filled"} onClick={copy}>
+                {copied ? "Copied url" : "Copy Bot ID"}
+              </Button>
+            )}
+          </CopyButton>
+        </div>
       </div>
       <div className={styles.form}>
         <Flex
@@ -160,6 +176,7 @@ function Auth() {
             Add
           </Button>
         </Flex>
+        <br />
       </div>
       <h2>All API Keys</h2>
       <div className={styles.apiKeys}>
