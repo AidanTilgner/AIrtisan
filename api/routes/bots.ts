@@ -11,6 +11,7 @@ import {
   validateAllowingWidgetsForBot,
   validateDomainForBot,
 } from "../middleware/bot";
+import { markChatForReview } from "../../database/functions/conversations";
 
 const router = Router();
 
@@ -202,5 +203,37 @@ router.post("/:bot_slug/chat", checkAPIKeyForBot, async (req, res) => {
     });
   }
 });
+
+router.post(
+  "/:bot_slug/chat/:chat_id/should_review",
+  checkAPIKeyForBot,
+  async (req, res) => {
+    try {
+      const bot = (req as unknown as Record<"bot", Bot>)["bot"];
+
+      if (!bot) {
+        res
+          .status(500)
+          .send({ message: "There was an error identifying the bot." });
+        return;
+      }
+
+      const { chat_id } = req.params;
+      const { review_message } = req.body;
+
+      const marked = await markChatForReview(Number(chat_id), review_message);
+
+      if (!marked) {
+        res.status(404).send({ message: "Chat not found" });
+        return;
+      }
+
+      res.send({ message: "Chat marked for review", data: marked });
+    } catch (err) {
+      console.error(err);
+      res.status(500).send({ message: "Error updating chat" });
+    }
+  }
+);
 
 export default router;
