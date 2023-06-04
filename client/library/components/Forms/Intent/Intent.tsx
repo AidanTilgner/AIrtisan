@@ -73,7 +73,11 @@ function Intent({
     <div className={styles.intentForm}>
       <p className={styles.resources}>
         If you have questions, consider reading up on{" "}
-        <a href="https://docs.airtisan.app" target="_blank" rel="noreferrer">
+        <a
+          href="https://docs.airtisan.app/basics/understanding-intents"
+          target="_blank"
+          rel="noreferrer"
+        >
           the documentation
         </a>
         .

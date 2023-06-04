@@ -11,7 +11,7 @@ router.use("/chats", ChatRouter);
 
 router.get("/", (req, res) => {
   res.send(
-    `You have reached the AIrtisan API. Refer to the <a href="https://docs.airtisan.app">documentation</a> for more information.`
+    `You have reached the AIrtisan API. Refer to the <a href="https://docs.airtisan.app/docs/using-the-api/intro/">documentation</a> for more information.`
   );
 });
 
