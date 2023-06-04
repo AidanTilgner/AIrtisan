@@ -281,10 +281,10 @@ router.put("/:bot_id", hasAccessToBot, async (req, res) => {
 router.delete("/:bot_id", hasAccessToBot, async (req, res) => {
   try {
     const bot = await deleteBot(Number(req.params.bot_id));
-    const managerDeleted = await deleteManager(Number(req.params.bot_id));
+    await deleteManager(Number(req.params.bot_id));
     res.send({
       message: "Bot deleted successfully",
-      success: managerDeleted && bot ? true : false,
+      success: bot ? true : false,
       data: bot,
     });
   } catch (error) {

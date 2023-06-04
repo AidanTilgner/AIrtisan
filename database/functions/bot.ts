@@ -182,7 +182,7 @@ export const deleteBot = async (id: Bot["id"]) => {
     const files = await getBotFileLocations(bot.id);
     if (!files) return null;
     Object.values(files).forEach((file) => {
-      unlinkSync(path.join(storageLocation, file));
+      unlinkSync(file);
     });
     await dataSource.manager.remove(bot);
     return bot;

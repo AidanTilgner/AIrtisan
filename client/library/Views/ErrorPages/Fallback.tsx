@@ -39,6 +39,14 @@ function NotFound() {
         </Link>
       </Flex>
     ),
+    "Bot not found": () => (
+      <Flex align={"center"} direction={"column"}>
+        <p>Interested in a bot?</p>
+        <Link to="/bots/create">
+          <Button variant="outline">Create a Bot</Button>
+        </Link>
+      </Flex>
+    ),
   };
 
   const reasonToIcon: {

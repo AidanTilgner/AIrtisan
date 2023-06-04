@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useMemo } from "react";
 import { Bot } from "../../documentation/main";
 import { useGetBot } from "../hooks/fetching/bot";
 import { showNotification } from "@mantine/notifications";
+import { Navigate } from "react-router-dom";
 
 interface BotContext {
   bot: Bot | null;
@@ -74,6 +75,10 @@ export const BotProvider = ({
     }),
     [bot, reload, isLoading]
   );
+
+  if (botId && !bot && !isLoading) {
+    return <Navigate to={`/404?reason="Bot not found"`} />;
+  }
 
   return <BotContext.Provider value={value}>{children}</BotContext.Provider>;
 };

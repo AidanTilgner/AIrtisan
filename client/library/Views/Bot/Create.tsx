@@ -20,6 +20,8 @@ function Create() {
     bot_language: "en-US",
   });
 
+  console.log("formData", formData);
+
   const [ownerType, setOwnerType] = useState<Bot["owner_type"]>("admin");
 
   const { data: organizations } = useGetMyOrganizations({
@@ -32,6 +34,7 @@ function Create() {
     } else {
       setFormData({ ...formData, owner_id: undefined });
     }
+    setFormData({ ...formData, owner_type: ownerType });
   }, [ownerType, user]);
 
   const isValid = () => {
@@ -117,7 +120,10 @@ function Create() {
                   },
                 ]}
                 value={ownerType}
-                onChange={(e) => setOwnerType(e as Bot["owner_type"])}
+                onChange={(e) => {
+                  console.log("E", e);
+                  setOwnerType(e as Bot["owner_type"]);
+                }}
               />
             </Grid.Col>
             {ownerType === "admin" ? (
