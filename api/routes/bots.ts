@@ -91,7 +91,7 @@ router.post(
       }
 
       const toSend = {
-        message,
+        message: "Chat processed successfully.",
         data: {
           ...newChatInfo,
         },
@@ -186,7 +186,7 @@ router.post("/:bot_slug/chat", checkAPIKeyForBot, async (req, res) => {
     }
 
     const toSend = {
-      message,
+      message: "Chat processed successfully.",
       data: {
         ...newChatInfo,
       },
