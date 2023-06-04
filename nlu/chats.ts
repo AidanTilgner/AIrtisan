@@ -102,13 +102,10 @@ export const handleNewChat = async ({
 
     const { chat: botChat, conversation } = botChatResponse;
 
-    const chats = conversation?.chats;
-
     return {
       session_id,
       ...response,
       answer: botAnswer,
-      chats,
       enhanced: enhanced || false,
       botChat: botChat?.id,
       userChat: userChat?.id,
