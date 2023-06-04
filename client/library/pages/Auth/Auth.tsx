@@ -87,9 +87,9 @@ function Auth() {
   -H "x-service: ${addedApiKey.name || "YOUR_API_KEY_SERVICE_NAME"}"
   -H "Content-Type: application/json"
   -X POST -d '{"message": "Hello"}'
-  https://airtisan.app/api/v1/bot/${bot?.slug || "YOUR BOT SLUG"}/chat`;
+  https://airtisan.app/api/v1/bots/${bot?.slug || "YOUR BOT SLUG"}/chat`;
 
-  const jsCodeSnippet = `fetch("https://airtisan.app/api/v1/bot/${
+  const jsCodeSnippet = `fetch("https://airtisan.app/api/v1/bots/${
     bot?.slug
   }/chat", {
     method: 'POST',
