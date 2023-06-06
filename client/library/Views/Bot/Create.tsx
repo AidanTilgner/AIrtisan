@@ -20,8 +20,6 @@ function Create() {
     bot_language: "en-US",
   });
 
-  console.log("formData", formData);
-
   const [ownerType, setOwnerType] = useState<Bot["owner_type"]>("admin");
 
   const { data: organizations } = useGetMyOrganizations({
@@ -121,7 +119,6 @@ function Create() {
                 ]}
                 value={ownerType}
                 onChange={(e) => {
-                  console.log("E", e);
                   setOwnerType(e as Bot["owner_type"]);
                 }}
               />
@@ -170,27 +167,14 @@ function Create() {
             </Grid.Col>
             <Grid.Col sm={12}>
               <TextInput
-                label="Bot Description"
-                placeholder="A short description of your bot..."
+                label="Bot Identity"
+                description="How would you describe to your bot it's purpose and identity?"
+                placeholder="Describe your bot's purpose and identity..."
                 value={formData.description || ""}
                 onChange={(e) =>
                   setFormData({
                     ...formData,
                     description: e.currentTarget.value,
-                  })
-                }
-              />
-            </Grid.Col>
-            <Grid.Col sm={12}>
-              <TextInput
-                label="Initial Bot Version"
-                description="This will be used in the future to track changes to your bot"
-                placeholder="The version of your bot..."
-                value={formData.bot_version || ""}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    bot_version: e.currentTarget.value,
                   })
                 }
               />

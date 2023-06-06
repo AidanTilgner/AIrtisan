@@ -134,8 +134,10 @@ function ModelData() {
           </Grid.Col>
           <Grid.Col sm={12} md={6}>
             <Textarea
-              label="Description"
+              label="Bot Identity"
               value={formData.personality.description}
+              description="How would you describe to your bot it's purpose and identity?"
+              placeholder="Describe your bot's purpose and identity..."
               onChange={(event) => {
                 setFormData({
                   ...formData,
@@ -145,8 +147,6 @@ function ModelData() {
                   },
                 });
               }}
-              placeholder="A description of your bot"
-              description="This description will be used to enhance your bot's responses in context."
             />
           </Grid.Col>
           {/* <Grid.Col sm={12} md={6}>
