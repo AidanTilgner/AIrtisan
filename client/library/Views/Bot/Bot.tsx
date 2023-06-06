@@ -1,22 +1,20 @@
 import React, { useEffect } from "react";
 import Navbar from "../../components/Navigation/TabNavbar/Navbar";
 import { BotProvider } from "../../contexts/Bot";
-import Preview from "../../pages/Preview/Preview";
-import Auth from "../../pages/Auth/Auth";
 import ReviewConversations from "../../pages/Review/ReviewConversations";
 import Training from "../../pages/Training/";
 import Documents from "../../pages/Documents";
 import Overview from "../../pages/Overview";
 import Flows from "../../pages/Flows";
 import Settings from "../../pages/Settings";
+import Integrations from "../../pages/Integrations";
 import { useUser } from "../../contexts/User";
 import styles from "./Bot.module.scss";
 import {
   Chat,
   Chats,
-  Cloud,
   GearSix,
-  MonitorPlay,
+  PuzzlePiece,
   SquaresFour,
   TextColumns,
 } from "@phosphor-icons/react";
@@ -30,8 +28,7 @@ type Tab =
   | "documents"
   | "settings"
   | "review"
-  | "preview"
-  | "api";
+  | "integrations";
 
 function Bot() {
   const { bot_id } = useParams();
@@ -93,15 +90,9 @@ function Bot() {
               visible: true,
             },
             {
-              name: "Preview",
-              id: "preview",
-              icon: <MonitorPlay />,
-              visible: isSuperAdmin,
-            },
-            {
-              name: "API",
-              id: "api",
-              icon: <Cloud />,
+              name: "Integrations",
+              id: "integrations",
+              icon: <PuzzlePiece />,
               visible: true,
             },
             {
@@ -136,10 +127,8 @@ function DisplayCurrentTab({ currentTab }: { currentTab: Tab }) {
       return <Documents />;
     case "review":
       return <ReviewConversations />;
-    case "preview":
-      return <Preview />;
-    case "api":
-      return <Auth />;
+    case "integrations":
+      return <Integrations />;
     case "settings":
       return <Settings />;
   }

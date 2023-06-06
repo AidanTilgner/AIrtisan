@@ -2,12 +2,6 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding-inline: 24px;
-  padding-block-end: 56px;
-
-  @media (min-width: 768px) {
-    padding-inline: 82px;
-  }
 
   h2 {
     font-weight: 400;
