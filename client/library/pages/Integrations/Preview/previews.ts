@@ -5,6 +5,8 @@ export const previews = [
     widgetCssFile: "/api/widgets/chatboxes/floating-chat.css",
     rootId: "floating-airtisan-root",
     inline: false,
+    disclaimer:
+      "This is a preview of the floating widget, a fully supported version is coming soon.",
   },
 ];
 

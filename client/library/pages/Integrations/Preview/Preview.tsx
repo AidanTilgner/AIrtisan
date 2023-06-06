@@ -49,9 +49,8 @@ function Preview() {
             }`}
             key={p.name + p.rootId}
           >
-            <h2>
-              {p.name} {!p.inline ? "(Floating)" : ""}
-            </h2>
+            <h2>{p.name}</h2>
+            <p className="disclaimer">{p.disclaimer}</p>
             <div className={styles.chatboxContainer} id={p.rootId}></div>
           </div>
         );

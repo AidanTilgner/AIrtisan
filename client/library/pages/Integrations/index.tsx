@@ -7,19 +7,19 @@ import { useSearchParams } from "react-router-dom";
 import { useSearchParamsUpdate } from "../../hooks/navigation";
 import { Cloud, MonitorPlay } from "@phosphor-icons/react";
 
-type Tabs = "preview" | "api";
+type Tabs = "widgets" | "api";
 
 function index() {
   const [searchParams] = useSearchParams();
   const [tab, setTab] = React.useState<Tabs>(
-    (searchParams.get("integration_type") as Tabs) || "preview"
+    (searchParams.get("integration_type") as Tabs) || "widgets"
   );
 
   const updateSearchParams = useSearchParamsUpdate();
 
   const CurrentTab = () => {
     switch (tab) {
-      case "preview":
+      case "widgets":
         return <Preview />;
       case "api":
         return <Auth />;
@@ -46,10 +46,10 @@ function index() {
               label: (
                 <Flex align="center" gap={8}>
                   <MonitorPlay size={20} />
-                  <span>Preview</span>
+                  <span>Widgets</span>
                 </Flex>
               ),
-              value: "preview",
+              value: "widgets",
             },
             {
               label: (

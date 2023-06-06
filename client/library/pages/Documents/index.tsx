@@ -2,9 +2,10 @@ import React, { useEffect } from "react";
 import styles from "./index.module.scss";
 import Corpus from "./Corpus/Corpus";
 import Context from "./Context/Context";
-import { SegmentedControl } from "@mantine/core";
+import { Flex, SegmentedControl } from "@mantine/core";
 import { useSearchParams } from "react-router-dom";
 import { useSearchParamsUpdate } from "../../hooks/navigation";
+import { ChatCircle, Table } from "@phosphor-icons/react";
 
 function index() {
   const [searchParams] = useSearchParams();
@@ -39,8 +40,24 @@ function index() {
           value={tab}
           onChange={(value) => setTab(value as "corpus" | "context")}
           data={[
-            { label: "Corpus", value: "corpus" },
-            { label: "Context", value: "context" },
+            {
+              label: (
+                <Flex align="center" gap={8}>
+                  <ChatCircle size={20} />
+                  <span>Corpus</span>
+                </Flex>
+              ),
+              value: "corpus",
+            },
+            {
+              label: (
+                <Flex align="center" gap={8}>
+                  <Table size={20} />
+                  <span>Context</span>
+                </Flex>
+              ),
+              value: "context",
+            },
           ]}
         />
       </div>
