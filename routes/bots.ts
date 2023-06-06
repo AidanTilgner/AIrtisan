@@ -222,12 +222,13 @@ router.post("/", checkIsAdmin, async (req, res) => {
       bot_version = "0.1.0 Beta",
       enhancement_model = "gpt-3.5-turbo",
       bot_language = "en-US",
+      template_id,
     } = req.body;
 
     if (admin.id !== owner_id && owner_type === "admin") {
       return res
         .status(401)
-        .json({ error: "Admin can only create bots for themselves" });
+        .json({ error: "Users can only create bots for themselves" });
     }
 
     if (owner_type === "organization") {
@@ -244,6 +245,10 @@ router.post("/", checkIsAdmin, async (req, res) => {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
+    if (template_id && !Number(template_id)) {
+      return res.status(400).json({ error: "Template id must be a number" });
+    }
+
     const bot = await createBot({
       name,
       description,
@@ -252,6 +257,7 @@ router.post("/", checkIsAdmin, async (req, res) => {
       bot_version,
       enhancement_model,
       bot_language,
+      template_id: template_id ? Number(template_id) : undefined,
     });
     res.send({
       message: "Bot created successfully",

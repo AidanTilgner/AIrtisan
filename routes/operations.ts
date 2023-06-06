@@ -16,6 +16,7 @@ import {
 import { createTemplateFromBot } from "../database/functions/templates";
 import { Bot } from "../database/models/bot";
 import { OwnerTypes } from "../types/lib";
+import { checkAdminIsInOrganization } from "../database/functions/organization";
 
 const router = Router();
 
@@ -158,9 +159,28 @@ router.post("/template", checkIsAdmin, hasAccessToBot, async (req, res) => {
       return;
     }
 
+    if (
+      admin.id !== templateFields.owner_id &&
+      templateFields.owner_type === "admin"
+    ) {
+      return res
+        .status(401)
+        .json({ error: "Users can only create bots for themselves" });
+    }
+
     if (!bot || (templateFields.bot_id && templateFields.bot_id !== bot.id)) {
       res.status(400).send({ message: "Unauthorized." });
       return;
+    }
+
+    if (templateFields.owner_type === "organization") {
+      const belongs = await checkAdminIsInOrganization(admin.id, admin.id);
+      if (!belongs) {
+        res.status(401).send({
+          message: "Admin does not belong to organization",
+          success: false,
+        });
+      }
     }
 
     [

@@ -1,6 +1,9 @@
 import { Bot } from "../models/bot";
 import { dataSource, entities } from "..";
-import { generateBotFiles } from "../../utils/bot";
+import {
+  generateBotFiles,
+  generateBotFilesFromTemplate,
+} from "../../utils/bot";
 import { readFileSync, unlinkSync, writeFileSync } from "fs";
 import { format } from "prettier";
 import { Context, Corpus, Model, OwnerTypes } from "../../types/lib";
@@ -46,6 +49,7 @@ export const createBot = async ({
   owner_type,
   enhancement_model,
   bot_language,
+  template_id,
 }: {
   name: Bot["name"];
   description: Bot["description"];
@@ -54,6 +58,7 @@ export const createBot = async ({
   owner_type: Bot["owner_type"];
   enhancement_model: Bot["enhancement_model"];
   bot_language: Bot["bot_language"];
+  template_id?: number;
 }) => {
   try {
     const bot = new entities.Bot();
@@ -67,7 +72,9 @@ export const createBot = async ({
     bot.owner_id = foundOwner.id;
     bot.owner_type = owner_type;
     bot.slug = getRandomID();
-    const files = await generateBotFiles(bot);
+    const files = template_id
+      ? await generateBotFilesFromTemplate(bot, template_id)
+      : await generateBotFiles(bot);
     if (!files) return null;
     bot.context_file = files.context_file;
     bot.corpus_file = files.corpus_file;
