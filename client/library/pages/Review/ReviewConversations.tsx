@@ -40,24 +40,39 @@ function ReviewConversations() {
   //   ConversationType[]
   // >([]);
 
-  const { data: allConversations, getConversations } = useGetConversations({
+  const {
+    data: allConversations,
+    getConversations,
+    loading: loadingAllConversations,
+  } = useGetConversations({
     runOnMount: true,
   });
-  const { data: conversations, getConversationsThatNeedReview } =
-    useGetConversationsThatNeedReview({
-      runOnMount: true,
-    });
-
-  const { data: recentConversations } = useGetRecentConversations({
+  const {
+    data: conversationsToReview,
+    getConversationsThatNeedReview,
+    loading: loadingConverationsToReview,
+  } = useGetConversationsThatNeedReview({
     runOnMount: true,
   });
 
-  const [openedConversation, setOpenedConversation] =
-    React.useState<ConversationToReview | null>(null);
+  const {
+    data: recentConversations,
+    getRecentConversations,
+    loading: loadingRecentConversations,
+  } = useGetRecentConversations({
+    runOnMount: true,
+  });
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const conversationsLoading =
+    loadingAllConversations ||
+    loadingConverationsToReview ||
+    loadingRecentConversations;
 
   const reloadConversations = async () => {
     await getConversationsThatNeedReview();
     await getConversations();
+    await getRecentConversations();
   };
 
   const [viewMode, setViewMode] = React.useState<"all" | "review" | "recent">(
@@ -162,32 +177,34 @@ function ReviewConversations() {
     return filtered;
   };
 
-  const conversationsToView =
-    viewMode === "all"
-      ? filterConversations(allConversations || [])
-      : viewMode === "review"
-      ? filterConversations(conversations || [])
-      : viewMode === "recent"
-      ? filterConversations(recentConversations || [])
-      : [];
-
-  useEffect(() => {
-    if (searchParams.get("load_conversation")) {
-      setViewMode("all");
-      const foundConversation = conversationsToView?.find((conv) => {
-        const is = conv.id === Number(searchParams.get("load_conversation"));
-        return is;
-      });
-
-      if (openedConversation && openedConversation.id === foundConversation?.id)
-        return;
-      setOpenedConversation(
-        {
-          ...(foundConversation as ConversationToReview),
-        } || null
-      );
+  const conversationsToView = (overRide?: string) => {
+    switch (overRide || viewMode) {
+      case "all":
+        return filterConversations(allConversations || []);
+      case "review":
+        return filterConversations(conversationsToReview || []);
+      case "recent":
+        return filterConversations(recentConversations || []);
+      default:
+        return [];
     }
-  }, [searchParams, conversationsToView]);
+  };
+
+  const openedConversation =
+    conversationsToView().find(
+      (c) => c.id === Number(searchParams.get("load_conversation"))
+    ) || null;
+
+  const updateSearchParams = useSearchParamsUpdate();
+
+  const setOpenedConversation = (conversation: ConversationToReview | null) => {
+    if (openedConversation && conversation?.id === openedConversation.id) {
+      return;
+    }
+    updateSearchParams(
+      new Map([["load_conversation", String(conversation?.id) || ""]])
+    );
+  };
 
   useLayoutEffect(() => {
     (
@@ -195,10 +212,10 @@ function ReviewConversations() {
     ).forEach((c, i) => {
       c.style.animationDelay = `${i * 0.1}s`;
     });
-  }, [conversationsToView]);
+  }, [conversationsToView()]);
 
   const conversationNoLongerExists = (id: number) => {
-    return !conversationsToView.find((c) => c.id === id);
+    return !conversationsToView().find((c) => c.id === id);
   };
 
   useEffect(() => {
@@ -209,19 +226,7 @@ function ReviewConversations() {
     ) {
       setOpenedConversation(null);
     }
-  }, [conversationsToView]);
-
-  const updateSearchParams = useSearchParamsUpdate();
-
-  useEffect(() => {
-    if (
-      openedConversation &&
-      openedConversation.id &&
-      openedConversation?.id !== Number(searchParams.get("load_conversation"))
-    ) {
-      updateSearchParams(new Map([["load_conversation", ""]]));
-    }
-  }, [openedConversation]);
+  }, [conversationsToView()]);
 
   return (
     <div className={styles.ReviewConversations}>
@@ -281,8 +286,8 @@ function ReviewConversations() {
       </div>
       <div className={styles.interface_container}>
         <div className={styles.conversations}>
-          {conversationsToView.length ? (
-            conversationsToView.map((conversation) => (
+          {conversationsToView().length ? (
+            conversationsToView().map((conversation) => (
               <Conversation
                 key={conversation.id}
                 conversation={conversation}

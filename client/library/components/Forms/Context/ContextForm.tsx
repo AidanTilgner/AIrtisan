@@ -1,16 +1,23 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styles from "./Context.module.scss";
 import { Context } from "../../../../documentation/main";
-import { Button, Grid, Group, Select, Textarea } from "@mantine/core";
+import { Autocomplete, Button, Grid, Group, Textarea } from "@mantine/core";
 import useFetch from "../../../hooks/useFetch";
 import { showNotification } from "@mantine/notifications";
 
 interface ContextFormProps {
   afterSubmit: (data: Context) => void;
   onClose?: () => void;
+  loadContextItem?: string;
+  currentContext?: Context;
 }
 
-function ContextForm({ afterSubmit, onClose }: ContextFormProps) {
+function ContextForm({
+  afterSubmit,
+  onClose,
+  loadContextItem,
+  currentContext,
+}: ContextFormProps) {
   const [formState, setFormState] = React.useState<{
     label: string;
     data: string;
@@ -19,7 +26,28 @@ function ContextForm({ afterSubmit, onClose }: ContextFormProps) {
     data: "",
   });
 
-  const { load: addContext } = useFetch<Context, Context>({
+  useEffect(() => {
+    if (currentContext && loadContextItem) {
+      setFormState({
+        label: loadContextItem,
+        data: currentContext[loadContextItem],
+      });
+      return;
+    }
+    if (loadContextItem) {
+      setFormState({
+        ...formState,
+        label: loadContextItem,
+      });
+    }
+  }, [loadContextItem, currentContext]);
+
+  const { load: addContext } = useFetch<
+    {
+      context: Context;
+    },
+    Context
+  >({
     url: "/training/context",
     method: "PUT",
     body: {
@@ -68,13 +96,12 @@ function ContextForm({ afterSubmit, onClose }: ContextFormProps) {
           <h2>Add or Update Context Object</h2>
         </Grid.Col>
         <Grid.Col span={12}>
-          <Select
+          <Autocomplete
             label="Label"
             placeholder="The name of the context"
             value={formState.label}
             description="How you will reference this context"
             onChange={(v) => {
-              if (!v) return;
               setFormState({
                 ...formState,
                 label: v.toLowerCase(),
@@ -95,6 +122,7 @@ function ContextForm({ afterSubmit, onClose }: ContextFormProps) {
                 data: e.currentTarget.value,
               });
             }}
+            autosize
           />
         </Grid.Col>
         <Grid.Col sm={12}>
