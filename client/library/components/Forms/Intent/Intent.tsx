@@ -749,17 +749,6 @@ function UpdateIntent({
             </Button>
           </Flex>
         </Grid.Col>
-        <Grid.Col span={12}>
-          <Checkbox
-            label="Should these responses be enhanced?"
-            name="enhanced"
-            id="enhanced"
-            onChange={(e) => {
-              setFormData({ ...formData, enhance: e.target.checked });
-            }}
-            checked={!!formData?.enhance}
-          />
-        </Grid.Col>
         <Grid.Col sm={12} />
         <Grid.Col sm={12}>
           <Group position="right">
