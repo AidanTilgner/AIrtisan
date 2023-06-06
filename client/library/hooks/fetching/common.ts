@@ -349,7 +349,7 @@ export const useMarkChatAsReviewed = (
 export const useGetConversations = (
   config?: Partial<UseFetchConfig<unknown, Conversation[]>>
 ) => {
-  const { load, data, success } = useFetch<unknown, Conversation[]>({
+  const { load, data, success, loading } = useFetch<unknown, Conversation[]>({
     ...config,
     url: "/conversations",
     method: "GET",
@@ -359,13 +359,14 @@ export const useGetConversations = (
     getConversations: load,
     data: data,
     success,
+    loading,
   };
 };
 
 export const useGetConversationsThatNeedReview = (
   config?: Partial<UseFetchConfig<unknown, Conversation[]>>
 ) => {
-  const { load, data, success } = useFetch<unknown, Conversation[]>({
+  const { load, data, success, loading } = useFetch<unknown, Conversation[]>({
     ...config,
     url: "/conversations/need_review",
     method: "GET",
@@ -375,6 +376,7 @@ export const useGetConversationsThatNeedReview = (
     getConversationsThatNeedReview: load,
     data: data,
     success,
+    loading,
   };
 };
 
@@ -485,7 +487,7 @@ export const useGetRecentConversations = (
   config?: Partial<UseFetchConfig<unknown, Conversation[]>>,
   n?: number
 ) => {
-  const { load, data, success } = useFetch<unknown, Conversation[]>({
+  const { load, data, success, loading } = useFetch<unknown, Conversation[]>({
     ...config,
     url: n ? `/conversations/recent/${n}` : "/conversations/recent",
     method: "GET",
@@ -495,6 +497,7 @@ export const useGetRecentConversations = (
     getRecentConversations: load,
     data: data,
     success,
+    loading,
   };
 };
 
