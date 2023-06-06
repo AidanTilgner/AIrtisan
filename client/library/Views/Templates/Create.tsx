@@ -1,26 +1,33 @@
 import React, { useEffect, useState } from "react";
 import styles from "./Create.module.scss";
 import { Button, Flex, Grid, Select, TextInput, Title } from "@mantine/core";
-import { Bot } from "../../../documentation/main";
 import { useUser } from "../../contexts/User";
 import { useGetMyOrganizations } from "../../hooks/fetching/admin";
-import { useCreateBot } from "../../hooks/fetching/bot";
 import { showNotification } from "@mantine/notifications";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { Template } from "../../../documentation/main";
+import { useCreateTemplate } from "../../hooks/fetching/operations";
+import { useGetAllBotsAdminHasAccessTo } from "../../hooks/fetching/bot";
 
 function Create() {
   const { user } = useUser();
+  const [searchParams] = useSearchParams();
 
-  const [formData, setFormData] = useState<Partial<Bot>>({
-    name: "",
-    description: "",
-    bot_version: "0.1.0 Beta",
-    owner_id: user?.id as number,
-    owner_type: "admin",
-    bot_language: "en-US",
+  const { data: allAdminBots } = useGetAllBotsAdminHasAccessTo({
+    runOnMount: true,
   });
 
-  const [ownerType, setOwnerType] = useState<Bot["owner_type"]>("admin");
+  const [formData, setFormData] = useState<
+    Partial<Omit<Template, "visibility"> & { bot_id: number }>
+  >({
+    bot_id: Number(searchParams.get("from_bot")) || undefined,
+    name: "",
+    description: "",
+    owner_id: user?.id as number,
+    owner_type: "admin",
+  });
+
+  const [ownerType, setOwnerType] = useState<Template["owner_type"]>("admin");
 
   const { data: organizations } = useGetMyOrganizations({
     runOnMount: true,
@@ -42,52 +49,49 @@ function Create() {
     return (
       formData.name !== "" &&
       formData.description !== "" &&
-      formData.bot_version !== "" &&
-      formData.bot_language !== "" &&
-      formData.owner_id !== undefined
+      formData.owner_id !== undefined &&
+      formData.owner_type !== undefined &&
+      formData.bot_id !== undefined
     );
   };
 
-  const { createBot } = useCreateBot(
-    {
-      name: formData.name as string,
-      description: formData.description as string,
-      bot_version: formData.bot_version as string,
-      bot_language: formData.bot_language as string,
-      owner_id: formData.owner_id as number,
-      owner_type: formData.owner_type as Bot["owner_type"],
-    },
-    {
-      dependencies: [formData],
-    }
-  );
+  console.log("formData", formData);
+  console.log("IsValid", isValid());
+
+  const { createTemplate } = useCreateTemplate({
+    bot_id: formData.bot_id as number,
+    name: formData.name as string,
+    description: formData.description as string,
+    owner_id: formData.owner_id as number,
+    owner_type: formData.owner_type as Template["owner_type"],
+  });
 
   const navigate = useNavigate();
 
-  const handleSubmitNewBot = async () => {
+  const handleSubmitNewTemplate = async () => {
     try {
-      const res = await createBot();
+      const res = await createTemplate();
       if (!res || !res.data) {
         showNotification({
           title: "Error",
           message:
-            "There was an error creating your bot. Please try again later.",
+            "There was an error creating your template. Please try again later.",
           color: "red",
         });
         return;
       }
-      const bot = res.data;
+      const template = res.data;
       showNotification({
         title: "Success",
-        message: "Your bot has been created!",
+        message: "Your template has been created!",
       });
-      navigate(`/bots/${bot.id}`);
+      // navigate(`/templates/${template.id}`);
     } catch (error) {
       console.error(error);
       showNotification({
         title: "Error",
         message:
-          "There was an error creating your bot. Please try again later.",
+          "There was an error creating your template. Please try again later.",
         color: "red",
       });
     }
@@ -95,15 +99,20 @@ function Create() {
 
   return (
     <div className={styles.create}>
-      <Title order={1}>Create a New Bot</Title>
+      <Title order={1}>Create a New Template</Title>
       <div className={styles.form}>
         <div className="form">
+          <p className="resources">
+            Templates allow you to create a base for your bot. You can create
+            templates from existing bots currently, and then have reusable data
+            for future bots.
+          </p>
           <Grid>
             <Grid.Col span={12}>
-              <h2>New Bot</h2>
+              <h2>New Template</h2>
             </Grid.Col>
             <Grid.Col span={12}>
-              <h3>Who does this bot belong to?</h3>
+              <h3>Who does this template belong to?</h3>
             </Grid.Col>
             <Grid.Col sm={12}>
               <Select
@@ -122,7 +131,7 @@ function Create() {
                 ]}
                 value={ownerType}
                 onChange={(e) => {
-                  setOwnerType(e as Bot["owner_type"]);
+                  setOwnerType(e as Template["owner_type"]);
                 }}
               />
             </Grid.Col>
@@ -156,12 +165,41 @@ function Create() {
               </Grid.Col>
             )}
             <Grid.Col span={12}>
-              <h3>Bot Details</h3>
+              <h3>From what bot?</h3>
+            </Grid.Col>
+            <Grid.Col sm={12}>
+              <Select
+                label="Bot"
+                description="The data from this bot will be turned into a template."
+                data={
+                  allAdminBots?.length
+                    ? allAdminBots.map((bot) => {
+                        return {
+                          label: bot.name as string,
+                          value: String(bot.id),
+                        };
+                      })
+                    : [
+                        {
+                          label: "No bots found",
+                          value: "none",
+                        },
+                      ]
+                }
+                value={String(formData.bot_id) || "none"}
+                onChange={(e) =>
+                  setFormData({ ...formData, bot_id: Number(e) })
+                }
+                searchable
+              />
+            </Grid.Col>
+            <Grid.Col span={12}>
+              <h3>Template Details</h3>
             </Grid.Col>
             <Grid.Col sm={12}>
               <TextInput
-                label="Bot Name"
-                placeholder="The name of your bot..."
+                label="Template Name"
+                placeholder="The name of your template..."
                 value={formData.name || ""}
                 onChange={(e) =>
                   setFormData({ ...formData, name: e.currentTarget.value })
@@ -170,9 +208,9 @@ function Create() {
             </Grid.Col>
             <Grid.Col sm={12}>
               <TextInput
-                label="Bot Identity"
-                description="How would you describe to your bot it's purpose and identity?"
-                placeholder="Describe your bot's purpose and identity..."
+                label="Template Description"
+                description="What is this template for and how should it be used?"
+                placeholder="The description of your template..."
                 value={formData.description || ""}
                 onChange={(e) =>
                   setFormData({
@@ -182,29 +220,10 @@ function Create() {
                 }
               />
             </Grid.Col>
-            <Grid.Col sm={12}>
-              <Select
-                label="Bot Language"
-                description="This helps us pick the model to use for your bot"
-                placeholder="The language of your bot..."
-                value={formData.bot_language || ""}
-                onChange={(e) => {
-                  if (e === null) return;
-                  setFormData({
-                    ...formData,
-                    bot_language: e as Bot["bot_language"],
-                  });
-                }}
-                data={[
-                  { value: "en-US", label: "English (United States) <en-US>" },
-                  { value: "fr-FR", label: "French (France) <fr-FR>" },
-                ]}
-              />
-            </Grid.Col>
             <Grid.Col span={12} />
             <Grid.Col span={12}>
               <Flex align="center" justify="end">
-                <Button onClick={handleSubmitNewBot} disabled={!isValid()}>
+                <Button onClick={handleSubmitNewTemplate} disabled={!isValid()}>
                   Create
                 </Button>
               </Flex>

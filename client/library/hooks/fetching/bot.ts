@@ -209,3 +209,20 @@ export const useGetAllBots = (
     success,
   };
 };
+
+export const useGetAllBotsAdminHasAccessTo = (
+  config?: Partial<UseFetchConfig<undefined, Bot[]>>
+) => {
+  const { load, data, success } = useFetch<undefined, Bot[]>({
+    useBotId: false,
+    ...config,
+    url: `/auth/me/bots/all`,
+    method: "GET",
+  });
+
+  return {
+    getAllBotsAdminHasAccessTo: load,
+    data: data,
+    success,
+  };
+};

@@ -9,6 +9,7 @@ import { Bot } from "./models/bot";
 import { Organization } from "./models/organization";
 import { OrganizationInvitation } from "./models/invitation";
 import { Feedback } from "./models/feedback";
+import { Template } from "./models/template";
 import { seedDatabase } from "./seeders";
 
 export const entities = {
@@ -21,6 +22,7 @@ export const entities = {
   Organization,
   OrganizationInvitation,
   Feedback,
+  Template,
 };
 
 export const dataSource = new DataSource({

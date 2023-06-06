@@ -10,9 +10,10 @@ export class CreateTemplateTable1623171800000 implements MigrationInterface {
           columns: [
             {
               name: "id",
-              type: "int",
+              type: "integer",
               isPrimary: true,
               isGenerated: true,
+              generationStrategy: "increment",
             },
             {
               name: "name",
@@ -61,6 +62,7 @@ export class CreateTemplateTable1623171800000 implements MigrationInterface {
               name: "updated_at",
               type: "timestamp",
               default: "CURRENT_TIMESTAMP",
+              onUpdate: "CURRENT_TIMESTAMP",
             },
           ],
         }),

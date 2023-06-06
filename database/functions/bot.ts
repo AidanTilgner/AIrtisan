@@ -611,3 +611,42 @@ export const getRunningBots = async () => {
     return null;
   }
 };
+
+export const getBotsAdminHasAccessTo = async (admin_id: number) => {
+  try {
+    const bots = await getBotsByOwner(admin_id, "admin", "private", false);
+
+    if (!bots) return null;
+
+    const organizations = await getAdminOrganizations(admin_id);
+
+    if (!organizations || organizations.length < 1) return bots;
+
+    const checkedBots = await Promise.all(
+      organizations.map(async (organization) => {
+        return await getBotsByOwner(
+          organization.id,
+          "organization",
+          "private"
+        ).then((bots) => {
+          return bots || [];
+        });
+      })
+    );
+
+    const foundBotsInOrganization = checkedBots.some((bots) => bots.length > 0);
+
+    if (foundBotsInOrganization) {
+      const botsInOrganization = checkedBots.reduce((acc, bots) => {
+        return [...acc, ...bots];
+      }, [] as Bot[]);
+
+      return [...bots, ...botsInOrganization];
+    }
+
+    return bots;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};

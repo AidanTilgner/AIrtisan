@@ -21,6 +21,8 @@ import AdminFeedback from "./library/Views/Admin/Feedback/Feedback";
 import AdminUsers from "./library/Views/Admin/Users/Users";
 import AdminOrganizations from "./library/Views/Admin/Organizations/Organizations";
 import AdminBots from "./library/Views/Admin/Bots/Bots";
+import Templates from "./library/Views/Templates/";
+import TemplateCreate from "./library/Views/Templates/Create";
 
 function App() {
   return (
@@ -92,6 +94,10 @@ function App() {
                   <Route path=":bot_id">
                     <Route index element={<Bot />} />
                   </Route>
+                </Route>
+                <Route path="templates">
+                  <Route index element={<Templates />} />
+                  <Route path="create" element={<TemplateCreate />} />
                 </Route>
               </Route>
             </Routes>
