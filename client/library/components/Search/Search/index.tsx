@@ -42,7 +42,7 @@ function Search({
     setTimeoutState(
       setTimeout(() => {
         setQuery(query);
-      }, typingDelay || 200)
+      }, typingDelay || 120)
     );
 
     return () => {

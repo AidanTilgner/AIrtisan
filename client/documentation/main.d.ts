@@ -76,7 +76,7 @@ export interface Corpus {
   data: CorpusData;
 }
 
-export type Context = Record<string, unknown>;
+export type Context = Record<string, string>;
 
 export type Model = {
   personality: {

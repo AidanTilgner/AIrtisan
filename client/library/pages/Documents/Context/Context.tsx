@@ -6,7 +6,7 @@ import styles from "./Context.module.scss";
 import { Button, Tooltip } from "@mantine/core";
 import ContextForm from "../../../components/Forms/Context/ContextForm";
 import AutogenerateContext from "../../../components/Forms/Context/Autogenerate";
-import { TrashSimple } from "@phosphor-icons/react";
+import { PencilSimple, TrashSimple } from "@phosphor-icons/react";
 import { showNotification } from "@mantine/notifications";
 
 function Context() {
@@ -32,6 +32,8 @@ function Context() {
 
   const [addingNewContext, setAddingNewContext] = useState(false);
   const [autogenerateForm, setAutogenerateForm] = useState(false);
+
+  const [editingContext, setEditingContext] = useState<string>();
 
   return (
     <div className={styles.Context}>
@@ -72,7 +74,10 @@ function Context() {
             }}
             onClose={() => {
               setAddingNewContext(false);
+              setEditingContext(undefined);
             }}
+            loadContextItem={editingContext}
+            currentContext={contextFile}
           />
         </div>
       )}
@@ -97,6 +102,10 @@ function Context() {
                 label={c[0]}
                 value={c[1]}
                 reloadData={reloadData}
+                setEditingContext={(key: string) => {
+                  setEditingContext(key);
+                  setAddingNewContext(true);
+                }}
               />
             );
           })
@@ -114,16 +123,21 @@ export const ContextPair = ({
   label,
   value,
   reloadData,
+  setEditingContext,
 }: {
   label: string;
   value: unknown;
   reloadData: () => Promise<void>;
+  setEditingContext: (key: string) => void;
 }) => {
   const [selected, setSelected] = useState(false);
 
   const { load: deleteContextItem } = useFetch<{ key: string }, Context>({
     url: "/training/context",
     method: "DELETE",
+    body: {
+      key: label,
+    },
   });
 
   const deleteContext = async (key: string) => {
@@ -137,6 +151,7 @@ export const ContextPair = ({
       showNotification({
         title: "Error",
         message: "Something went wrong deleting the context.",
+        color: "red",
       });
     }
 
@@ -162,7 +177,7 @@ export const ContextPair = ({
         <p className={styles.label} title={label}>
           <span>{label}</span>
           {selected && (
-            <div className={styles.contextButtons}>
+            <span className={styles.contextButtons}>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -171,7 +186,15 @@ export const ContextPair = ({
               >
                 <TrashSimple />
               </button>
-            </div>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setEditingContext(label);
+                }}
+              >
+                <PencilSimple />
+              </button>
+            </span>
           )}
         </p>
         <p className={`${styles.value}`}>{String(value)}</p>
