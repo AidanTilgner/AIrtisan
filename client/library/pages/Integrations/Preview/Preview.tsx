@@ -50,12 +50,16 @@ function Preview() {
             }`}
             key={p.name + p.rootId}
           >
-            <h2>{p.name}</h2>
+            <h2>
+              {p.name} {p.beta && <span className="beta">Beta</span>}
+            </h2>
             <p className="disclaimer">{p.disclaimer}</p>
             <div className={styles.chatboxContainer} id={p.rootId}></div>
-            <h3>Add it to your site:</h3>
-            <div className={styles.code}>
-              <Prism language="markup">{p.code}</Prism>
+            <div className={styles.addToSite}>
+              <h3>Add it to your site:</h3>
+              <div className={styles.code}>
+                <Prism language="markup">{p.code}</Prism>
+              </div>
             </div>
           </div>
         );

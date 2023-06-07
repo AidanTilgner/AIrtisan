@@ -1,23 +1,23 @@
 .preview {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   min-height: 100vh;
 }
 
 .header {
-  margin-bottom: 0;
   width: 100%;
+  border-bottom: 1px solid #e5e5e5;
+  margin-bottom: 24px;
 }
 
 .preview {
-  text-align: center;
+  text-align: left;
   width: 100%;
 
   h2 {
     font-weight: 500;
     margin: 0;
-    text-align: center;
     width: 100%;
     margin-bottom: 24px;
   }
@@ -41,6 +41,18 @@
   @media (min-width: 768px) {
     width: 80%;
     height: 50vh;
+  }
+}
+
+.addToSite {
+  display: none;
+
+  @media (min-width: 768px) {
+    display: block;
+  }
+
+  h3 {
+    font-weight: 400;
   }
 }
 

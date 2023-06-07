@@ -4,26 +4,24 @@ import chatStyles from "./Chatbox.module.scss";
 import { Chat as ChatIcon, Warning, X } from "@phosphor-icons/react";
 import { buttonMappings } from "./buttons";
 
+const AIrtisanSettings = (window as unknown as SettingsWindow).AIrtisanSettings;
+
 export const markChatAsShouldReview = async (chat: {
   chat_id: string | number;
   reason: string;
 }) => {
   try {
-    const bot_slug = (
-      window as unknown as Record<
-        string,
-        {
-          airtisan_bot_slug: string;
-        }
-      >
-    ).AIrtisanSettings.airtisan_bot_slug;
-    if (!bot_slug) throw new Error("bot_slug not found");
-    const url = `/api/v1/chats/${chat.chat_id}/should_review`;
+    const bot_slug = AIrtisanSettings.bot_slug;
+    if (!bot_slug) return console.error("Bot slug not found");
+    const foundUrl = AIrtisanSettings.api_url;
+    const foundUrlToUse = foundUrl
+      ? foundUrl + `/chats/${chat.chat_id}/should_review`
+      : `https://airtisan.app/api/v1/chats/${chat.chat_id}/should_review`;
     const reviewHeaders = {
       "Content-Type": "application/json",
     };
 
-    const response = await fetch(url, {
+    const response = await fetch(foundUrlToUse, {
       method: "POST",
       headers: reviewHeaders,
       body: JSON.stringify({
@@ -48,22 +46,17 @@ const postChat = async (chat: {
   buttons: { type: string; metadata: unknown }[];
 }> => {
   try {
-    const bot_slug = (
-      window as unknown as Record<
-        string,
-        {
-          airtisan_bot_slug: string;
-        }
-      >
-    ).AIrtisanSettings.airtisan_bot_slug;
-    if (!bot_slug) throw new Error("bot_slug not found");
-    // https://airtisan.app
-    const useUrl = `/api/v1/bots/${bot_slug}/public/chat`;
+    const bot_slug = AIrtisanSettings.bot_slug;
+    const foundUrl = AIrtisanSettings.api_url;
+    const foundUrlToUse = foundUrl
+      ? foundUrl + `/bots/${bot_slug}/public/chat`
+      : `https://airtisan.app/api/v1/bots/${bot_slug}/public/chat`;
+
     const useHeaders = {
       "Content-Type": "application/json",
     };
 
-    const response = await fetch(useUrl, {
+    const response = await fetch(foundUrlToUse, {
       method: "POST",
       headers: useHeaders,
       body: JSON.stringify(chat),
@@ -237,15 +230,7 @@ function ChatInterface() {
 }
 
 function ChatBox() {
-  const name =
-    (
-      window as unknown as Record<
-        string,
-        {
-          airtisan_bot_name: string;
-        }
-      >
-    ).AIrtisanSettings.airtisan_bot_name || "AIrtisan Bot";
+  const name = AIrtisanSettings?.bot_name || "AIrtisan Bot";
 
   const [messages, setMessages] = React.useState<
     {
