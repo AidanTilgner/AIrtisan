@@ -7,17 +7,25 @@ import { useGetMyOrganizations } from "../../hooks/fetching/admin";
 import { useCreateBot } from "../../hooks/fetching/bot";
 import { showNotification } from "@mantine/notifications";
 import { useNavigate } from "react-router-dom";
+import { useGetAllAdminTemplates } from "../../hooks/fetching/operations";
 
 function Create() {
   const { user } = useUser();
 
-  const [formData, setFormData] = useState<Partial<Bot>>({
+  const { data: templates } = useGetAllAdminTemplates({
+    runOnMount: true,
+  });
+
+  const [formData, setFormData] = useState<
+    Partial<Bot> & { template_id?: number }
+  >({
     name: "",
     description: "",
     bot_version: "0.1.0 Beta",
     owner_id: user?.id as number,
     owner_type: "admin",
     bot_language: "en-US",
+    template_id: undefined,
   });
 
   const [ownerType, setOwnerType] = useState<Bot["owner_type"]>("admin");
@@ -39,12 +47,20 @@ function Create() {
   }, [ownerType, user]);
 
   const isValid = () => {
+    if (formData.template_id) {
+      return (
+        formData.name !== "" &&
+        formData.owner_id !== undefined &&
+        formData.owner_type !== undefined
+      );
+    }
+
     return (
       formData.name !== "" &&
       formData.description !== "" &&
-      formData.bot_version !== "" &&
       formData.bot_language !== "" &&
-      formData.owner_id !== undefined
+      formData.owner_id !== undefined &&
+      formData.owner_type !== undefined
     );
   };
 
@@ -56,6 +72,7 @@ function Create() {
       bot_language: formData.bot_language as string,
       owner_id: formData.owner_id as number,
       owner_type: formData.owner_type as Bot["owner_type"],
+      template_id: formData.template_id as number | undefined,
     },
     {
       dependencies: [formData],
@@ -156,6 +173,42 @@ function Create() {
               </Grid.Col>
             )}
             <Grid.Col span={12}>
+              <h3>Are you using a template?</h3>
+            </Grid.Col>
+            <Grid.Col sm={12}>
+              <Select
+                label="Template"
+                description="Would you like to use a template to create your bot?"
+                placeholder="Select a template..."
+                data={
+                  templates?.length
+                    ? [
+                        ...templates.map((template) => {
+                          return {
+                            label: template.name as string,
+                            value: String(template.id),
+                          };
+                        }),
+                        {
+                          label: "None",
+                          value: "",
+                        },
+                      ]
+                    : [
+                        {
+                          label: "No templates found",
+                          value: "",
+                        },
+                      ]
+                }
+                value={String(formData.template_id) || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, template_id: Number(e) })
+                }
+                searchable
+              />
+            </Grid.Col>
+            <Grid.Col span={12}>
               <h3>Bot Details</h3>
             </Grid.Col>
             <Grid.Col sm={12}>
@@ -180,6 +233,7 @@ function Create() {
                     description: e.currentTarget.value,
                   })
                 }
+                disabled={formData.template_id !== undefined}
               />
             </Grid.Col>
             <Grid.Col sm={12}>
@@ -196,9 +250,13 @@ function Create() {
                   });
                 }}
                 data={[
-                  { value: "en-US", label: "English (United States) <en-US>" },
+                  {
+                    value: "en-US",
+                    label: "English (United States) <en-US>",
+                  },
                   { value: "fr-FR", label: "French (France) <fr-FR>" },
                 ]}
+                disabled={formData.template_id !== undefined}
               />
             </Grid.Col>
             <Grid.Col span={12} />

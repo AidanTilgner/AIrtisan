@@ -241,8 +241,28 @@ router.post("/", checkIsAdmin, async (req, res) => {
       }
     }
 
-    if (!name || !description || !owner_id || !owner_type) {
-      return res.status(400).json({ error: "Missing required fields" });
+    if (template_id && !Number(template_id)) {
+      const invalid = [name, owner_id, owner_type].some((field) => {
+        if (!field) {
+          return true;
+        }
+      });
+      if (invalid) {
+        return res.status(400).json({ error: "Missing required field" });
+      }
+    }
+
+    if (!template_id) {
+      const invalid = [name, description, owner_id, owner_type].some(
+        (field) => {
+          if (!field) {
+            return true;
+          }
+        }
+      );
+      if (invalid) {
+        return res.status(400).json({ error: "Missing required field" });
+      }
     }
 
     if (template_id && !Number(template_id)) {

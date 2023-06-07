@@ -225,15 +225,24 @@ export const generateBotFilesFromTemplate = async (
     const contextFile = await getTemplateContextFile(template_id);
     if (!contextFile) return null;
     const contextFileName = `${bot.name}-${bot.bot_language}-${randomString}-context.json`;
-    writeFileSync(path.join(outputLocation, contextFileName), contextFile);
+    writeFileSync(
+      path.join(outputLocation, contextFileName),
+      format(JSON.stringify(contextFile), { parser: "json" })
+    );
     const corpusFile = await getTemplateCorpusFile(template_id);
     if (!corpusFile) return null;
     const corpusFileName = `${bot.name}-${bot.bot_language}-${randomString}-corpus.json`;
-    writeFileSync(path.join(outputLocation, corpusFileName), corpusFile);
+    writeFileSync(
+      path.join(outputLocation, corpusFileName),
+      format(JSON.stringify(corpusFile), { parser: "json" })
+    );
     const modelFile = await getTemplateModelFile(template_id);
     if (!modelFile) return null;
     const modelFileName = `${bot.name}-${bot.bot_language}-${randomString}-model.json`;
-    writeFileSync(path.join(outputLocation, modelFileName), modelFile);
+    writeFileSync(
+      path.join(outputLocation, modelFileName),
+      format(JSON.stringify(modelFile), { parser: "json" })
+    );
 
     return {
       context_file: contextFileName,

@@ -47,10 +47,14 @@ export const useCreateBot = (
     owner_id,
     owner_type,
     bot_language,
-  } = {} as Partial<Bot>,
-  config?: Partial<UseFetchConfig<Partial<Bot>, Bot>>
+    template_id,
+  } = {} as Partial<Bot> & { template_id?: number },
+  config?: Partial<UseFetchConfig<Partial<Bot> & { template_id?: number }, Bot>>
 ) => {
-  const { load, data, success } = useFetch<Partial<Bot>, Bot>({
+  const { load, data, success } = useFetch<
+    Partial<Bot> & { template_id?: number },
+    Bot
+  >({
     useBotId: false,
     ...config,
     url: `/bots`,
@@ -62,6 +66,7 @@ export const useCreateBot = (
       owner_id,
       owner_type,
       bot_language,
+      template_id,
     },
   });
 

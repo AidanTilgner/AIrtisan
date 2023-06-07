@@ -13,7 +13,10 @@ import {
   getFeedback,
   markFeedbackAsReviewed,
 } from "../database/functions/feedback";
-import { createTemplateFromBot } from "../database/functions/templates";
+import {
+  createTemplateFromBot,
+  getTemplatesAdminHasAccessTo,
+} from "../database/functions/templates";
 import { Bot } from "../database/models/bot";
 import { OwnerTypes } from "../types/lib";
 import { checkAdminIsInOrganization } from "../database/functions/organization";
@@ -216,6 +219,28 @@ router.post("/template", checkIsAdmin, hasAccessToBot, async (req, res) => {
     });
   } catch (error) {
     operationsLogger.error("Error creating template: ", error);
+    res.status(500).send({ message: "Internal server error." });
+  }
+});
+
+router.get("/templates/all", checkIsAdmin, async (req, res) => {
+  try {
+    const admin = req["admin"] as Admin;
+
+    if (!admin) {
+      res.status(400).send({ message: "Unauthorized." });
+      return;
+    }
+
+    const templates = await getTemplatesAdminHasAccessTo(admin.id);
+
+    res.status(200).send({
+      message: "Templates fetched successfully.",
+      success: true,
+      data: templates,
+    });
+  } catch (error) {
+    operationsLogger.error("Error fetching templates: ", error);
     res.status(500).send({ message: "Internal server error." });
   }
 });

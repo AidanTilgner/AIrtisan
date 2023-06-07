@@ -111,3 +111,20 @@ export const useCreateTemplate = (
     success,
   };
 };
+
+export const useGetAllAdminTemplates = (
+  config?: Partial<UseFetchConfig<undefined, Template[]>>
+) => {
+  const { load, data, success } = useFetch<undefined, Template[]>({
+    ...config,
+    url: `/operations/templates/all`,
+    method: "GET",
+    useBotId: false,
+  });
+
+  return {
+    getAllAdminTemplates: load,
+    data: data,
+    success,
+  };
+};
