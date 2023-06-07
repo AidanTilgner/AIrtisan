@@ -43,7 +43,7 @@ function Preview() {
             width: "100%",
           }}
         >
-          <h1>Previews</h1>
+          <h1>Widgets</h1>
           <Button
             variant="outline"
             onClick={() => {
@@ -65,10 +65,12 @@ function Preview() {
             key={p.name + p.rootId}
           >
             <h2>
-              {p.name} {p.beta && <span className="beta">Beta</span>}
+              {p.name} {p.version && <span className="beta">{p.version}</span>}
             </h2>
             <p className="disclaimer">{p.disclaimer}</p>
-            <div className={styles.chatboxContainer} id={p.rootId}></div>
+            {p.rootId && (
+              <div className={styles.chatboxContainer} id={p.rootId}></div>
+            )}
             <div className={styles.addToSite}>
               <h3>Add it to your site:</h3>
               <div className={styles.code}>
