@@ -1,6 +1,5 @@
 import { Organization } from "../models/organization";
 import { entities, dataSource } from "..";
-import { getAdmin } from "./admin";
 import { addRunningStatusToBots, getBotsByOwner } from "./bot";
 import { getRandomID } from "../../utils/crypto";
 
