@@ -78,6 +78,13 @@ router.post("/", checkIsAdmin, async (req, res) => {
       description,
       owner_id: admin.id,
     });
+
+    if (!organization) {
+      return res.status(500).send({
+        message: "Internal server error",
+      });
+    }
+
     res.send({
       message: "success",
       success: true,

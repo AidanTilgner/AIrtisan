@@ -14,7 +14,9 @@ export const createOrganization = async ({
   owner_id: number;
 }) => {
   try {
-    const owner = await getAdmin(owner_id);
+    const owner = await dataSource.manager.findOne(entities.Admin, {
+      where: { id: owner_id },
+    });
 
     if (!owner) return null;
 
@@ -22,6 +24,7 @@ export const createOrganization = async ({
     organization.name = name;
     organization.description = description;
     organization.owner = owner;
+    organization.profile_picture_path = "";
     await dataSource.manager.save(organization);
     await dataSource.manager.save(owner);
     return organization;
