@@ -5,7 +5,7 @@ export const previews = [
     widgetCssFile: "/api/v1/widgets/chatboxes/floating-chat.css",
     rootId: null,
     inline: false,
-    beta: true,
+    version: "Alpha",
     disclaimer:
       "This is a preview of the floating widget, a fully supported version is coming soon.",
     code: `
