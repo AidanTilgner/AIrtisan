@@ -1,11 +1,10 @@
 import React, { useMemo } from "react";
-import Interactive from "./Interactive/Interactive";
 import Converse from "./Converse/Converse";
 import styles from "./index.module.scss";
 import { useBot } from "../../contexts/Bot";
 
 function index() {
-  const [trainingType] = React.useState<"interactive" | "converse">("converse");
+  const [trainingType] = React.useState<"converse">("converse");
 
   const prevTrainingType = React.useRef(trainingType);
 
@@ -14,8 +13,6 @@ function index() {
       prevTrainingType.current = trainingType;
     }
     switch (trainingType) {
-      case "interactive":
-        return <Interactive />;
       case "converse":
         return <Converse />;
     }
@@ -28,19 +25,12 @@ function index() {
       <div className={styles.training}>
         <div className={styles.header}>
           <h2>Training {bot?.name || "Bot"}</h2>
-          {/* <div className={styles.trainingTypeInput}>
-            <SegmentedControl
-              value={trainingType}
-              onChange={(value) =>
-                setTrainingType(value as "interactive" | "converse")
-              }
-              data={[
-                { label: "Converse", value: "converse" },
-                { label: "Interactive", value: "interactive" },
-              ]}
-            />
-          </div> */}
         </div>
+        <p className="resources">
+          If {`you're`} interested in learning more about training bots
+          effectively, check out our{" "}
+          <a href="https://docs.airtisan.app">documentation</a>.
+        </p>
         <div className={styles.training_type}>
           <TrainingComponent />
         </div>

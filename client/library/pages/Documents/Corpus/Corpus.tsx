@@ -631,7 +631,7 @@ export const Intent = ({
               </button>
             </div>
           </section>
-          <section className={styles.intentButtons}>
+          {/* <section className={styles.intentButtons}>
             <h3>Buttons</h3>
             <div className={styles.buttonsList}>
               <ul className={styles.button}>
@@ -675,7 +675,7 @@ export const Intent = ({
                 </button>
               </div>
             </div>
-          </section>
+          </section> */}
           <section className={styles.intentContext}>
             <h3>Context</h3>
             {context?.length ? (

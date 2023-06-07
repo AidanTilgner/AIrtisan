@@ -6,8 +6,6 @@ api-keys.json
 build/*
 bundle.*
 datastore/database.sqlite
-datastore/bots/documents/*
-datastore/bots/models/*
 storage/analytics/*
 storage/metadata/*
 storage/logs/*

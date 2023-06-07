@@ -9,6 +9,7 @@ import {
   User,
   MegaphoneSimple,
   Shield,
+  Clipboard,
 } from "@phosphor-icons/react";
 import { Menu } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
@@ -100,6 +101,14 @@ function Profile({ alwaysScrolled }: { alwaysScrolled?: boolean }) {
             }}
           >
             Organizations
+          </Menu.Item>
+          <Menu.Item
+            icon={<Clipboard />}
+            onClick={() => {
+              navigate("/templates");
+            }}
+          >
+            Templates
           </Menu.Item>
           {isSuperAdmin && (
             <Menu.Item

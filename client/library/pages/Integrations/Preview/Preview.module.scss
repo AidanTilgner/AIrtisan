@@ -3,12 +3,6 @@
   flex-direction: column;
   align-items: center;
   min-height: 100vh;
-  // background-color: black;
-  padding-inline: 24px;
-
-  @media (min-width: 768px) {
-    padding-inline: 56px;
-  }
 }
 
 .header {

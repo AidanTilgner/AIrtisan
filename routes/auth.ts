@@ -28,7 +28,10 @@ import {
 import { Admin } from "../database/models/admin";
 import { config } from "dotenv";
 import { getOrganizationInvitationByAdmin } from "../database/functions/organization";
-import { getBotsByOwner } from "../database/functions/bot";
+import {
+  getBotsAdminHasAccessTo,
+  getBotsByOwner,
+} from "../database/functions/bot";
 import { checkAdminIsAdmin } from "../middleware/admin";
 import { Logger } from "../utils/logger";
 import multer from "multer";
@@ -281,6 +284,32 @@ router.get("/me/bots", checkIsAdmin, async (req, res) => {
   } catch (err) {
     authLogger.error("Error getting admin bots from session: ", err);
     res.status(500).send({ message: "Internal server error." });
+  }
+});
+
+router.get("/me/bots/all", checkIsAdmin, async (req, res) => {
+  try {
+    const admin = (req as unknown as Record<"admin", Admin>)["admin"];
+
+    if (!admin) {
+      res.status(401).send({ message: "Unauthorized." });
+      return;
+    }
+
+    const bots = await getBotsAdminHasAccessTo(admin.id);
+
+    if (!bots) {
+      res.status(500).send({ message: "Internal server error." });
+      return;
+    }
+
+    res.status(200).send({
+      message: "Got all bots admin has access to.",
+      data: bots,
+    });
+  } catch (error) {
+    authLogger.error("Error getting admin bots from session: ", error);
+    return null;
   }
 });
 

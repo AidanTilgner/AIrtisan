@@ -1,5 +1,6 @@
 import { Feedback } from "../../../documentation/main";
 import useFetch, { UseFetchConfig } from "../useFetch";
+import { Template } from "../../../documentation/main";
 
 export const useSubmitFeedback = (
   {
@@ -72,6 +73,57 @@ export const useReviewFeedback = ({
 
   return {
     reviewFeedback: load,
+    data: data,
+    success,
+  };
+};
+
+export const useCreateTemplate = (
+  {
+    name,
+    description,
+    owner_id,
+    owner_type,
+    bot_id,
+  }: Partial<Omit<Template, "visibility"> & { bot_id: number }>,
+  config?: Partial<UseFetchConfig<Template, Template>>
+) => {
+  const { load, data, success } = useFetch<
+    Partial<Omit<Template, "visibility"> & { bot_id: number }>,
+    Template
+  >({
+    useBotId: false,
+    ...config,
+    url: `/operations/template`,
+    method: "POST",
+    body: {
+      bot_id,
+      name,
+      description,
+      owner_id,
+      owner_type,
+    },
+  });
+
+  return {
+    createTemplate: load,
+    data: data,
+    success,
+  };
+};
+
+export const useGetAllAdminTemplates = (
+  config?: Partial<UseFetchConfig<undefined, Template[]>>
+) => {
+  const { load, data, success } = useFetch<undefined, Template[]>({
+    ...config,
+    url: `/operations/templates/all`,
+    method: "GET",
+    useBotId: false,
+  });
+
+  return {
+    getAllAdminTemplates: load,
     data: data,
     success,
   };

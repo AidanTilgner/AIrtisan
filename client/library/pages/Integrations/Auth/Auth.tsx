@@ -6,7 +6,7 @@ import {
   useAddApiKey,
   useDeleteApiKey,
   useGetApiKeys,
-} from "../../hooks/fetching/bot";
+} from "../../../hooks/fetching/bot";
 import {
   Button,
   CopyButton,
@@ -14,7 +14,7 @@ import {
   SegmentedControl,
   TextInput,
 } from "@mantine/core";
-import { useBot } from "../../contexts/Bot";
+import { useBot } from "../../../contexts/Bot";
 import { Prism } from "@mantine/prism";
 
 function Auth() {

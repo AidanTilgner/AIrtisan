@@ -105,3 +105,24 @@ button {
     }
   }
 }
+
+.resources {
+  font-size: 14px;
+  margin: 0;
+  opacity: 0.75;
+  color: var(--text-color-light);
+  transition: all 0.2s ease-in-out;
+  margin-block: 24px;
+  padding-bottom: 14px;
+
+  &:hover {
+    opacity: 1;
+  }
+
+  a {
+    text-decoration: underline;
+    color: var(--text-color-light);
+    opacity: 1;
+    font-weight: 500;
+  }
+}

@@ -1,12 +1,21 @@
 import { writeFileSync } from "fs";
 import path from "path";
-import { getRandomString } from "./crypto";
 import { format } from "prettier";
 import { AllowedChatModels, Model } from "../types/lib";
-import { getBotOwner } from "../database/functions/bot";
+import {
+  getBotContext,
+  getBotCorpus,
+  getBotModel,
+  getBotOwner,
+} from "../database/functions/bot";
 import { Bot } from "../database/models/bot";
 import { Organization } from "../database/models/organization";
 import { Admin } from "../database/models/admin";
+import {
+  getTemplateContextFile,
+  getTemplateCorpusFile,
+  getTemplateModelFile,
+} from "../database/functions/templates";
 
 const outputLocation = "datastore/bots/documents";
 
@@ -18,13 +27,14 @@ export const generateBotFiles = async (bot: {
   owner_type: Bot["owner_type"];
   owner_id: Bot["owner_id"];
   description: string;
+  slug: string;
 }): Promise<{
   context_file: string;
   corpus_file: string;
   model_file: string;
 } | null> => {
   try {
-    const randomString = getRandomString(10);
+    const randomString = bot.slug;
     const contextFile = await getBotContextFileContents(bot);
     if (!contextFile) return null;
     const contextFileName = `${bot.name}-${bot.bot_language}-${randomString}-context.json`;
@@ -148,6 +158,97 @@ export const getBotModelFileContents = async (bot: {
       parser: "json",
     });
     return fileContents;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+const templateOutputLocation = "datastore/templates/documents";
+
+export const generateTemplateFiles = async (bot_id: number, slug: string) => {
+  try {
+    const contextFile = await getBotContext(bot_id);
+    if (!contextFile) return null;
+    const contextFileName = `template-${slug}-context.json`;
+    writeFileSync(
+      path.join(templateOutputLocation, contextFileName),
+      format(JSON.stringify(contextFile), { parser: "json" })
+    );
+
+    const corpusFile = await getBotCorpus(bot_id);
+    if (!corpusFile) return null;
+    const corpusFileName = `template-${slug}-corpus.json`;
+    writeFileSync(
+      path.join(templateOutputLocation, corpusFileName),
+      format(JSON.stringify(corpusFile), { parser: "json" })
+    );
+
+    const modelFile = await getBotModel(bot_id);
+    if (!modelFile) return null;
+    const modelFileName = `template-${slug}-model.json`;
+    writeFileSync(
+      path.join(templateOutputLocation, modelFileName),
+      format(JSON.stringify(modelFile), { parser: "json" })
+    );
+
+    return {
+      context_file: contextFileName,
+      corpus_file: corpusFileName,
+      model_file: modelFileName,
+    };
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+export const generateBotFilesFromTemplate = async (
+  bot: {
+    name: string;
+    bot_version: string;
+    bot_language: string;
+    enhancement_model: string;
+    owner_type: Bot["owner_type"];
+    owner_id: Bot["owner_id"];
+    description: string;
+    slug: string;
+  },
+  template_id: number
+): Promise<{
+  context_file: string;
+  corpus_file: string;
+  model_file: string;
+} | null> => {
+  try {
+    const randomString = bot.slug;
+    const contextFile = await getTemplateContextFile(template_id);
+    if (!contextFile) return null;
+    const contextFileName = `${bot.name}-${bot.bot_language}-${randomString}-context.json`;
+    writeFileSync(
+      path.join(outputLocation, contextFileName),
+      format(JSON.stringify(contextFile), { parser: "json" })
+    );
+    const corpusFile = await getTemplateCorpusFile(template_id);
+    if (!corpusFile) return null;
+    const corpusFileName = `${bot.name}-${bot.bot_language}-${randomString}-corpus.json`;
+    writeFileSync(
+      path.join(outputLocation, corpusFileName),
+      format(JSON.stringify(corpusFile), { parser: "json" })
+    );
+    const modelFile = await getTemplateModelFile(template_id);
+    if (!modelFile) return null;
+    const modelFileName = `${bot.name}-${bot.bot_language}-${randomString}-model.json`;
+    writeFileSync(
+      path.join(outputLocation, modelFileName),
+      format(JSON.stringify(modelFile), { parser: "json" })
+    );
+
+    return {
+      context_file: contextFileName,
+      corpus_file: corpusFileName,
+      model_file: modelFileName,
+    };
   } catch (error) {
     console.error(error);
     return null;

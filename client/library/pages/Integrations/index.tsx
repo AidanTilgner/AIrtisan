@@ -1,62 +1,64 @@
 import React, { useEffect } from "react";
 import styles from "./index.module.scss";
-import Corpus from "./Corpus/Corpus";
-import Context from "./Context/Context";
+import Preview from "./Preview/Preview";
+import Auth from "./Auth/Auth";
 import { Flex, SegmentedControl } from "@mantine/core";
 import { useSearchParams } from "react-router-dom";
 import { useSearchParamsUpdate } from "../../hooks/navigation";
-import { ChatCircle, Table } from "@phosphor-icons/react";
+import { Cloud, MonitorPlay } from "@phosphor-icons/react";
+
+type Tabs = "widgets" | "api";
 
 function index() {
   const [searchParams] = useSearchParams();
-  const [tab, setTab] = React.useState<"corpus" | "context">(
-    (searchParams.get("document_type") as "corpus" | "context") || "corpus"
+  const [tab, setTab] = React.useState<Tabs>(
+    (searchParams.get("integration_type") as Tabs) || "widgets"
   );
 
   const updateSearchParams = useSearchParamsUpdate();
 
   const CurrentTab = () => {
     switch (tab) {
-      case "corpus":
-        return <Corpus />;
-      case "context":
-        return <Context />;
+      case "widgets":
+        return <Preview />;
+      case "api":
+        return <Auth />;
     }
   };
 
   useEffect(() => {
     if (
-      !searchParams.get("document_type") ||
-      searchParams.get("document_type") !== tab
+      !searchParams.get("integration_type") ||
+      searchParams.get("integration_type") !== tab
     ) {
-      updateSearchParams(new Map([["document_type", tab]]));
+      updateSearchParams(new Map([["integration_type", tab]]));
     }
   }, [tab]);
 
   return (
-    <div className={styles.documents}>
+    <div className={styles.integrations}>
       <div className={styles.header}>
         <SegmentedControl
           value={tab}
-          onChange={(value) => setTab(value as "corpus" | "context")}
+          onChange={(value) => setTab(value as Tabs)}
           data={[
             {
               label: (
                 <Flex align="center" gap={8}>
-                  <ChatCircle size={20} />
-                  <span>Corpus</span>
+                  <MonitorPlay size={20} />
+                  <span>Widgets</span>
                 </Flex>
               ),
-              value: "corpus",
+              value: "widgets",
             },
             {
               label: (
                 <Flex align="center" gap={8}>
-                  <Table size={20} />
-                  <span>Context</span>
+                  <Cloud size={20} />
+                  <span>API</span>
                 </Flex>
               ),
-              value: "context",
+              value: "api",
             },
           ]}
         />

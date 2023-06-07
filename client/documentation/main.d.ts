@@ -180,3 +180,18 @@ export interface Feedback {
   created_at: Date;
   updated_at: Date;
 }
+
+export interface Template {
+  id?: number | null;
+  name: string;
+  description: string;
+  owner_id: number;
+  owner_type: OwnerTypes;
+  visibility: "private" | "public" | "unlisted";
+  model_file: string;
+  corpus_file: string;
+  context_file: string;
+  slug: string;
+  created_at: string;
+  updated_at: string;
+}
