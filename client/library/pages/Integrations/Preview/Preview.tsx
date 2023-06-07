@@ -68,7 +68,9 @@ function Preview() {
               {p.name} {p.beta && <span className="beta">Beta</span>}
             </h2>
             <p className="disclaimer">{p.disclaimer}</p>
-            <div className={styles.chatboxContainer} id={p.rootId}></div>
+            {p.rootId && (
+              <div className={styles.chatboxContainer} id={p.rootId}></div>
+            )}
             <div className={styles.addToSite}>
               <h3>Add it to your site:</h3>
               <div className={styles.code}>

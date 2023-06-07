@@ -3,7 +3,7 @@ export const previews = [
     name: "Floating Widget",
     widgetJsFile: "/api/v1/widgets/chatboxes/floating-chat.js",
     widgetCssFile: "/api/v1/widgets/chatboxes/floating-chat.css",
-    rootId: "floating-airtisan-root",
+    rootId: null,
     inline: false,
     beta: true,
     disclaimer:
@@ -16,9 +16,6 @@ export const previews = [
   };
 </script>
 <script src="https://airtisan.app/api/v1/widgets/chatboxes/floating-chat.js"></script>
-
-<!-- This is the root element for the widget, put it somewhere in your html -->
-<div id="floating-airtisan-root"></div>
     `,
   },
 ];

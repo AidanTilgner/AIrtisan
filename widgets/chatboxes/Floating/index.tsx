@@ -2,10 +2,14 @@ import * as React from "react";
 import { createRoot } from "react-dom/client";
 import App from "./Floating";
 
-const domContainer = document.querySelector("#floating-airtisan-root");
+const domContainer = () => {
+  return document.getElementById("floating-airtisan-root");
+};
 
-if (!domContainer) {
-  throw new Error("No #floating-airtisan-root element found");
+if (!domContainer()) {
+  const newDomContainer = document.createElement("div");
+  newDomContainer.id = "floating-airtisan-root";
+  document.body.appendChild(newDomContainer);
 }
 
 const AIrtisanSettings = (window as unknown as SettingsWindow).AIrtisanSettings;
@@ -30,6 +34,6 @@ const addStyles = async () => {
 };
 addStyles();
 
-const root = createRoot(domContainer);
+const root = createRoot(domContainer() as HTMLElement);
 
 root.render(<App />);
