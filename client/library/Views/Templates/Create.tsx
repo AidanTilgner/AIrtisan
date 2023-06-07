@@ -55,9 +55,6 @@ function Create() {
     );
   };
 
-  console.log("formData", formData);
-  console.log("IsValid", isValid());
-
   const { createTemplate } = useCreateTemplate({
     bot_id: formData.bot_id as number,
     name: formData.name as string,

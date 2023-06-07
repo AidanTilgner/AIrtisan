@@ -7,6 +7,7 @@ import {
   previews,
 } from "./previews";
 import { Prism } from "@mantine/prism";
+import { useBot } from "../../../contexts/Bot";
 
 function Preview() {
   useLayoutEffect(() => {
@@ -19,6 +20,19 @@ function Preview() {
     });
     Promise.all(promises);
   }, []);
+
+  const { bot } = useBot();
+
+  const addVariables = (original: string) => {
+    let newString = original;
+
+    newString = newString.replace(/\[your bot slug\]/g, `"${bot?.slug}"` || "");
+
+    newString = newString.replace(/\[your bot name\]/g, `"${bot?.name}"` || "");
+
+    return newString;
+  };
+
   return (
     <div className={styles.preview}>
       <div className={styles.header}>
@@ -58,7 +72,7 @@ function Preview() {
             <div className={styles.addToSite}>
               <h3>Add it to your site:</h3>
               <div className={styles.code}>
-                <Prism language="markup">{p.code}</Prism>
+                <Prism language="markup">{addVariables(p.code)}</Prism>
               </div>
             </div>
           </div>
