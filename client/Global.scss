@@ -37,6 +37,10 @@ button {
     opacity: 1;
     font-weight: 500;
   }
+
+  &.no-border {
+    border-bottom: none;
+  }
 }
 
 .form {

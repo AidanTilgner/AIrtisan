@@ -67,7 +67,7 @@ function Preview() {
             <h2>
               {p.name} {p.version && <span className="beta">{p.version}</span>}
             </h2>
-            <p className="disclaimer">{p.disclaimer}</p>
+            <p className="disclaimer no-border">{p.disclaimer}</p>
             {p.rootId && (
               <div className={styles.chatboxContainer} id={p.rootId}></div>
             )}

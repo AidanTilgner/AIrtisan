@@ -3,7 +3,7 @@ export const previews = [
     name: "Floating Widget",
     widgetJsFile: "/api/v1/widgets/chatboxes/floating-chat.js",
     widgetCssFile: "/api/v1/widgets/chatboxes/floating-chat.css",
-    rootId: null,
+    rootId: "floating-airtisan-root",
     inline: false,
     version: "Alpha",
     disclaimer:
@@ -15,7 +15,10 @@ export const previews = [
     bot_name: [your bot name],
   };
 </script>
-<script src="https://airtisan.app/api/v1/widgets/chatboxes/floating-chat.js"></script>
+<script defer src="https://airtisan.app/api/v1/widgets/chatboxes/floating-chat.js"></script>
+
+<!-- Optional: add this to the body of your html, and the widget will bind to it -->
+<div id="floating-airtisan-root"></div>
     `,
   },
 ];
