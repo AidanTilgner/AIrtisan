@@ -6,6 +6,12 @@ import { BrowserRouter } from "react-router-dom";
 import { UserProvider } from "./library/contexts/User";
 import { SearchProvider } from "./library/contexts/Search.js";
 
+const accessToken = localStorage.getItem("accessToken");
+
+if (!accessToken) {
+  window.location.replace("https://www.airtisan.app");
+}
+
 const domContainer = document.querySelector("#root");
 
 if (!domContainer) {
