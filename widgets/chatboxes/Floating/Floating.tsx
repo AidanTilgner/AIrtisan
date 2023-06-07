@@ -9,8 +9,14 @@ export const markChatAsShouldReview = async (chat: {
   reason: string;
 }) => {
   try {
-    const bot_slug = (window as unknown as Record<string, string>)
-      .airtisan_bot_slug;
+    const bot_slug = (
+      window as unknown as Record<
+        string,
+        {
+          airtisan_bot_slug: string;
+        }
+      >
+    ).AIrtisanSettings.airtisan_bot_slug;
     if (!bot_slug) throw new Error("bot_slug not found");
     const url = `/api/v1/chats/${chat.chat_id}/should_review`;
     const reviewHeaders = {
@@ -42,8 +48,14 @@ const postChat = async (chat: {
   buttons: { type: string; metadata: unknown }[];
 }> => {
   try {
-    const bot_slug = (window as unknown as Record<string, string>)
-      .airtisan_bot_slug;
+    const bot_slug = (
+      window as unknown as Record<
+        string,
+        {
+          airtisan_bot_slug: string;
+        }
+      >
+    ).AIrtisanSettings.airtisan_bot_slug;
     if (!bot_slug) throw new Error("bot_slug not found");
     // https://airtisan.app
     const useUrl = `/api/v1/bots/${bot_slug}/public/chat`;
@@ -226,8 +238,14 @@ function ChatInterface() {
 
 function ChatBox() {
   const name =
-    (window as unknown as Record<string, string>).airtisan_bot_name ||
-    "AIrtisan Bot";
+    (
+      window as unknown as Record<
+        string,
+        {
+          airtisan_bot_name: string;
+        }
+      >
+    ).AIrtisanSettings.airtisan_bot_name || "AIrtisan Bot";
 
   const [messages, setMessages] = React.useState<
     {

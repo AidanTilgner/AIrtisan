@@ -6,6 +6,7 @@ import {
   loadResourcesForPreview,
   previews,
 } from "./previews";
+import { Prism } from "@mantine/prism";
 
 function Preview() {
   useLayoutEffect(() => {
@@ -52,6 +53,10 @@ function Preview() {
             <h2>{p.name}</h2>
             <p className="disclaimer">{p.disclaimer}</p>
             <div className={styles.chatboxContainer} id={p.rootId}></div>
+            <h3>Add it to your site:</h3>
+            <div className={styles.code}>
+              <Prism language="markup">{p.code}</Prism>
+            </div>
           </div>
         );
       })}
