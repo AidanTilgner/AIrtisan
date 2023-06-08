@@ -399,7 +399,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    top: calc(100%);
+    top: calc(100% + 5px);
     // center it
     left: 50%;
     transform: translateX(-50%);
