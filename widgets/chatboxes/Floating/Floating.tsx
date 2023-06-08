@@ -156,7 +156,7 @@ function Index() {
   const getElementPosition = () => {
     if (opened && isMobile) {
       return {
-        top: "14px",
+        top: "8px",
         bottom: null,
       };
     }
