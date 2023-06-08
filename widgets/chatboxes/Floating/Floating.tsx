@@ -155,19 +155,25 @@ function Index() {
 
   const getElementPosition = () => {
     if (opened && isMobile) {
-      return "14px";
+      return {
+        top: "14px",
+        bottom: null,
+      };
     }
-    if (isMobile || opened) {
-      return "calc(100vh - 92px)";
+    if ((isMobile && !opened) || (!isMobile && opened)) {
+      return {
+        bottom: "24px",
+        top: null,
+      };
     }
     if (elementPosition) {
       if (elementPosition < 82 || elementPosition > window.innerHeight - 82) {
-        return "calc(100vh - 92px)";
+        return { top: "calc(100vh - 92px)", bottom: null };
       } else {
-        return `${elementPosition}px`;
+        return { top: `${elementPosition}px`, bottom: null };
       }
     }
-    return "calc(100vh - 92px)";
+    return { top: "calc(100vh - 92px)", bottom: null };
   };
 
   useEffect(() => {
@@ -201,14 +207,19 @@ function Index() {
           }}
           ref={onyxRef}
           style={{
-            top: getElementPosition(),
+            top: getElementPosition().top || "auto",
+            bottom: getElementPosition().bottom || "auto",
           }}
         >
           <div className={styles.backgroundCircleOne} />
           <div className={styles.backgroundCircleTwo} />
           <div className={styles.backgroundCircleThree} />
           <div className={styles.backgroundCircleFour} />
-          <div className={styles.container}>
+          <div
+            className={`${styles.container} ${
+              opened ? styles.containerOpen : ""
+            }`}
+          >
             {opened ? <X /> : <ChatIcon />}
           </div>
         </div>
@@ -355,6 +366,43 @@ function ChatBox() {
   return (
     <div className={chatStyles.chatBox}>
       <div className={chatStyles.header}>
+        <div className={chatStyles.icon}>
+          <svg
+            width="32"
+            height="32"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <g clipPath="url(#clip0_102_10)">
+              <path
+                d="M18.1875 0H5.8125C2.60234 0 0 2.60234 0 5.8125V18.1875C0 21.3977 2.60234 24 5.8125 24H18.1875C21.3977 24 24 21.3977 24 18.1875V5.8125C24 2.60234 21.3977 0 18.1875 0Z"
+                fill="black"
+              />
+              <path
+                d="M9.01636 18.6094L5.39062 12H9.01636V18.6094Z"
+                fill="#1614DB"
+              />
+              <path
+                d="M9.01636 5.39062V12H5.39062L7.20347 8.69531L9.01636 5.39062Z"
+                fill="#1B44BF"
+              />
+              <path
+                d="M18.6094 5.39062H9.01636L14.9459 12L18.6094 5.39062Z"
+                fill="#2256F2"
+              />
+              <path
+                d="M9.01636 12H14.9459L9.01636 5.39062V12Z"
+                fill="#120FA8"
+              />
+            </g>
+            <defs>
+              <clipPath id="clip0_102_10">
+                <rect width="24" height="24" fill="white" />
+              </clipPath>
+            </defs>
+          </svg>
+        </div>
         <h3>{name}</h3>
       </div>
       <div className={chatStyles.chatBoxMessages} ref={scrollRef}>
@@ -440,6 +488,55 @@ function ChatBox() {
         >
           Say it.
         </button>
+
+        <div className={chatStyles.poweredBy}>
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <g clipPath="url(#clip0_102_10)">
+              <path
+                d="M18.1875 0H5.8125C2.60234 0 0 2.60234 0 5.8125V18.1875C0 21.3977 2.60234 24 5.8125 24H18.1875C21.3977 24 24 21.3977 24 18.1875V5.8125C24 2.60234 21.3977 0 18.1875 0Z"
+                fill="black"
+              />
+              <path
+                d="M9.01636 18.6094L5.39062 12H9.01636V18.6094Z"
+                fill="#1614DB"
+              />
+              <path
+                d="M9.01636 5.39062V12H5.39062L7.20347 8.69531L9.01636 5.39062Z"
+                fill="#1B44BF"
+              />
+              <path
+                d="M18.6094 5.39062H9.01636L14.9459 12L18.6094 5.39062Z"
+                fill="#2256F2"
+              />
+              <path
+                d="M9.01636 12H14.9459L9.01636 5.39062V12Z"
+                fill="#120FA8"
+              />
+            </g>
+            <defs>
+              <clipPath id="clip0_102_10">
+                <rect width="24" height="24" fill="white" />
+              </clipPath>
+            </defs>
+          </svg>
+          <p>
+            Powered by{" "}
+            <a
+              href="https://www.airtisan.app"
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              AIrtisan
+            </a>
+            .
+          </p>
+        </div>
       </div>
     </div>
   );

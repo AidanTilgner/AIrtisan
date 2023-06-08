@@ -10,32 +10,28 @@
 }
 
 .opened {
-  right: 14px;
-
   @media screen and (min-width: 768px) {
     right: 24px;
   }
 }
 
 .container {
-  height: 56px;
-  width: 56px;
+  height: 57px;
+  width: 57px;
   border-radius: 50%;
-  background: linear-gradient(
-    90deg,
-    rgb(22, 20, 219, 0.8) 0%,
-    rgb(135, 9, 232, 0.8) 100%
-  );
+  background: rgba($color: #000, $alpha: 1);
   display: flex;
   align-items: center;
   justify-content: center;
-  opacity: 0.8;
+  opacity: 1;
   transition: all 0.3s ease-in-out;
   cursor: pointer;
   position: relative;
+  color: white;
+  border: 1px solid rgba($color: #eaeaea, $alpha: 0.35);
 
   &:hover {
-    opacity: 1;
+    border-color: #eaeaea;
   }
 
   &:active {
@@ -47,6 +43,10 @@
   }
 }
 
+.containerOpen {
+  border: 1px solid white;
+}
+
 .backgroundCircleOne {
   position: absolute;
   top: 0;
@@ -54,11 +54,7 @@
   height: 100%;
   width: 100%;
   border-radius: 50%;
-  background: linear-gradient(
-    180deg,
-    rgba(22, 20, 219, 0.4) 0%,
-    rgba(135, 9, 232, 0.425) 100%
-  );
+  background: #2256f2;
 }
 
 .backgroundCircleTwo {
@@ -68,7 +64,7 @@
   height: 100%;
   width: 100%;
   border-radius: 50%;
-  background: rgba(135, 9, 232, 0.5);
+  background: #242424;
 }
 
 .backgroundCircleThree {
@@ -78,7 +74,7 @@
   height: 100%;
   width: 100%;
   border-radius: 50%;
-  background: rgba(22, 20, 219, 0.5);
+  background: #f4f4f4;
 }
 
 .backgroundCircleFour {
@@ -88,11 +84,7 @@
   height: 100%;
   width: 100%;
   border-radius: 50%;
-  background: linear-gradient(
-    180deg,
-    rgba(22, 20, 219, 0.425) 0%,
-    rgba(135, 9, 232, 0.4) 100%
-  );
+  background: #1614db;
 }
 
 @keyframes circleLeftOrbit {
@@ -236,12 +228,6 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(
-    90deg,
-    rgb(22, 20, 219, 0.25) 0%,
-    rgb(135, 9, 232, 0.65) 100%
-  );
-  backdrop-filter: blur(6px) brightness(0.5);
   z-index: 170;
   display: flex;
   align-items: center;
@@ -255,7 +241,7 @@
 
   @media screen and (min-width: 768px) {
     left: initial;
-    width: 50vw;
+    width: 35vw;
     top: 124px;
     right: 24px;
     bottom: 124px;
