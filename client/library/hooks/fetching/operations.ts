@@ -1,4 +1,4 @@
-import { Feedback } from "../../../documentation/main";
+import { Context, Corpus, Feedback, Model } from "../../../documentation/main";
 import useFetch, { UseFetchConfig } from "../useFetch";
 import { Template } from "../../../documentation/main";
 
@@ -94,7 +94,7 @@ export const useCreateTemplate = (
   >({
     useBotId: false,
     ...config,
-    url: `/operations/template`,
+    url: `/operations/templates`,
     method: "POST",
     body: {
       bot_id,
@@ -124,6 +124,82 @@ export const useGetAllAdminTemplates = (
 
   return {
     getAllAdminTemplates: load,
+    data: data,
+    success,
+    loading,
+  };
+};
+
+export const useGetTemplate = (
+  id: Template["id"],
+  config?: Partial<UseFetchConfig<undefined, Template>>
+) => {
+  const { load, data, success, loading } = useFetch<undefined, Template>({
+    ...config,
+    url: `/operations/templates/${id}`,
+    method: "GET",
+    useBotId: false,
+  });
+
+  return {
+    getTemplate: load,
+    data: data,
+    success,
+    loading,
+  };
+};
+
+export const useGetTemplateCorpus = (
+  id: Template["id"],
+  config?: Partial<UseFetchConfig<undefined, Corpus>>
+) => {
+  const { load, data, success, loading } = useFetch<undefined, Corpus>({
+    ...config,
+    url: `/operations/templates/${id}/corpus`,
+    method: "GET",
+    useBotId: false,
+  });
+
+  return {
+    getTemplateCorpus: load,
+    data: data,
+    success,
+    loading,
+  };
+};
+
+export const useGetTemplateContext = (
+  id: Template["id"],
+  config?: Partial<UseFetchConfig<undefined, Context>>
+) => {
+  const { load, data, success, loading } = useFetch<undefined, Context>({
+    ...config,
+    url: `/operations/templates/${id}/context`,
+    method: "GET",
+    useBotId: false,
+  });
+
+  return {
+    getTemplateContext: load,
+    data: data,
+    success,
+    loading,
+  };
+};
+
+export const useGetTemplateModelFile = (
+  id: Template["id"],
+  config?: Partial<UseFetchConfig<undefined, Model>>
+) => {
+  const { load, data, success, loading } = useFetch<undefined, Model>({
+    ...config,
+    url: `/operations/templates/${id}/model`,
+    method: "GET",
+    useBotId: false,
+  });
+
+  return {
+    getTemplateModelFile: load,
     data: data,
     success,
     loading,

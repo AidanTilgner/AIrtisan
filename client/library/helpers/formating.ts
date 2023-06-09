@@ -38,3 +38,12 @@ export const getFormattedAdminName = (admin: Admin) => {
     return "Unknown";
   }
 };
+
+export const getFormattedDate = (date: string | Date) => {
+  const newDate = new Date(date);
+  return newDate.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+};

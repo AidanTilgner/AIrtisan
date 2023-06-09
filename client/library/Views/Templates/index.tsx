@@ -3,11 +3,12 @@ import { useGetAllAdminTemplates } from "../../hooks/fetching/operations";
 import Loaders from "../../components/Utils/Loaders";
 import styles from "./index.module.scss";
 import TemplateCard from "../../components/Cards/Template/TemplateCard";
-import { Chip, Grid, Title } from "@mantine/core";
+import { Button, Chip, Flex, Grid, Title } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
 import Search from "../../components/Search/Search";
 import { useSearch } from "../../contexts/Search";
 
+// should probably abstract this list view structure
 function index() {
   const { data: allTemplates, loading } = useGetAllAdminTemplates({
     runOnMount: true,
@@ -56,8 +57,18 @@ function index() {
       <div className={styles.templateList}></div>
       <Grid>
         <Grid.Col span={12}>
-          <Title order={2}>Templates</Title>
+          <Flex align="center" justify="space-between">
+            <Title order={2}>Templates</Title>
+            <Button
+              onClick={() => {
+                navigate("/templates/create");
+              }}
+            >
+              New
+            </Button>
+          </Flex>
         </Grid.Col>
+        <Grid.Col span={12} />
         <Grid.Col span={12}>
           <Search />
         </Grid.Col>
@@ -70,7 +81,7 @@ function index() {
                 }}
                 checked={onlyAdminTemplates}
               >
-                Only Admin Templates
+                Only My Templates
               </Chip>
             </div>
           </div>

@@ -26,6 +26,7 @@ import {
 } from "../nlu";
 import { checkAdminIsInOrganization } from "../database/functions/organization";
 import { Admin } from "../database/models/admin";
+import { checkAdminHasAccessToTemplate } from "../database/functions/templates";
 
 router.get("/as_admin/all", checkIsSuperAdmin, async (req, res) => {
   try {
@@ -249,6 +250,18 @@ router.post("/", checkIsAdmin, async (req, res) => {
       });
       if (invalid) {
         return res.status(400).json({ error: "Missing required field" });
+      }
+    }
+
+    if (template_id) {
+      const hasAccess = await checkAdminHasAccessToTemplate(
+        admin.id,
+        template_id
+      );
+      if (!hasAccess) {
+        return res
+          .status(401)
+          .json({ error: "Admin does not have access to template" });
       }
     }
 

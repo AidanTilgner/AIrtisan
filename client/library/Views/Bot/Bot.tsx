@@ -1,13 +1,13 @@
 import React, { useEffect } from "react";
 import Navbar from "../../components/Navigation/TabNavbar/Navbar";
 import { BotProvider } from "../../contexts/Bot";
-import ReviewConversations from "../../pages/Review/ReviewConversations";
-import Training from "../../pages/Training/";
-import Documents from "../../pages/Documents";
-import Overview from "../../pages/Overview";
-import Flows from "../../pages/Flows";
-import Settings from "../../pages/Settings";
-import Integrations from "../../pages/Integrations";
+import ReviewConversations from "./pages/Review/ReviewConversations";
+import Training from "./pages/Training";
+import Documents from "./pages/Documents";
+import Overview from "./pages/Overview";
+import Flows from "./pages/Flows";
+import Settings from "./pages/Settings";
+import Integrations from "./pages/Integrations";
 import { useUser } from "../../contexts/User";
 import styles from "./Bot.module.scss";
 import {

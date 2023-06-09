@@ -23,6 +23,7 @@ import AdminOrganizations from "./library/Views/Admin/Organizations/Organization
 import AdminBots from "./library/Views/Admin/Bots/Bots";
 import Templates from "./library/Views/Templates/";
 import TemplateCreate from "./library/Views/Templates/Create";
+import Template from "./library/Views/Templates/Template";
 
 function App() {
   return (
@@ -98,6 +99,9 @@ function App() {
                 <Route path="templates">
                   <Route index element={<Templates />} />
                   <Route path="create" element={<TemplateCreate />} />
+                  <Route path=":template_id">
+                    <Route index element={<Template />} />
+                  </Route>
                 </Route>
               </Route>
             </Routes>

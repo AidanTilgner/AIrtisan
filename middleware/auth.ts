@@ -15,6 +15,11 @@ import { checkAdminHasAccessToBot, getBot } from "../database/functions/bot";
 import { Admin } from "../database/models/admin";
 import { Organization } from "../database/models/organization";
 import { Bot } from "../database/models/bot";
+import {
+  checkAdminHasAccessToTemplate,
+  getTemplateById,
+} from "../database/functions/templates";
+import { Template } from "../database/models/template";
 
 config();
 
@@ -426,6 +431,85 @@ export const hasAccessToBot = async (
 
     (req as unknown as Record<"admin", Admin>)["admin"] = admin;
     (req as unknown as Record<"bot", Bot>)["bot"] = bot;
+
+    next();
+  } catch (err) {
+    res.status(500).send({ message: "Internal server error." });
+    logger.log(String(err));
+  }
+};
+
+export const hasAccessToTemplate = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const access_token =
+      (req.headers["x-access-token"] as string) ||
+      (req.query["x-access-token"] as string) ||
+      req.headers["authorization"]?.split(" ")?.[1];
+
+    if (!access_token) {
+      res.status(401).send({ message: "No access token provided." });
+      return;
+    }
+
+    const verified = (await verifyAccessToken(access_token)) as
+      | { id: number }
+      | false;
+
+    if (!verified) {
+      res.status(401).send({ message: "Invalid access token provided." });
+      return;
+    }
+
+    const { id } = verified;
+
+    const admin = await getAdmin(id, true);
+
+    if (!admin) {
+      res.status(401).send({ message: "Invalid access token provided." });
+      return;
+    }
+
+    const template_id = Number(
+      req.params.template_id || req.body.template_id || req.query.template_id
+    );
+
+    if (!template_id) {
+      res.status(400).send({ message: "No template id provided." });
+      return;
+    }
+
+    const template = await getTemplateById(template_id);
+
+    if (!template) {
+      res.status(400).send({ message: "Invalid template id provided." });
+      return;
+    }
+
+    const isSuperAdmin = admin.role === "superadmin";
+
+    if (isSuperAdmin) {
+      (req as unknown as Record<"admin", Admin>)["admin"] = admin;
+      (req as unknown as Record<"template", Template>)["template"] = template;
+      next();
+      return;
+    }
+
+    const hasAccess = await checkAdminHasAccessToTemplate(
+      admin.id,
+      template_id
+    );
+
+    if (!hasAccess) {
+      res.status(401).send({ message: "Unauthorized." });
+      return;
+    }
+
+    (req as unknown as Record<"admin", Admin>)["admin"] = admin;
+    (req as unknown as Record<"template", Template>)["template"] = template;
 
     next();
   } catch (err) {
