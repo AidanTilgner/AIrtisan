@@ -10,6 +10,7 @@
   // 1 column on mobile, 2 columns on tablet and up
   display: grid;
   grid-template-columns: 1fr;
+  grid-gap: 14px;
 
   @media screen and (min-width: 768px) {
     grid-template-columns: 1fr 1fr;

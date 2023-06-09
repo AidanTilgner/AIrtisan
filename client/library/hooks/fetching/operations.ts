@@ -115,7 +115,7 @@ export const useCreateTemplate = (
 export const useGetAllAdminTemplates = (
   config?: Partial<UseFetchConfig<undefined, Template[]>>
 ) => {
-  const { load, data, success } = useFetch<undefined, Template[]>({
+  const { load, data, success, loading } = useFetch<undefined, Template[]>({
     ...config,
     url: `/operations/templates/all`,
     method: "GET",
@@ -126,5 +126,6 @@ export const useGetAllAdminTemplates = (
     getAllAdminTemplates: load,
     data: data,
     success,
+    loading,
   };
 };
