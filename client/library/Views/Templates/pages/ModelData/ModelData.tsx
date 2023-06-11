@@ -31,14 +31,11 @@ function ModelData() {
     {
       dependencies: [template_id],
       onSuccess: (data) => {
-        console.log("ModelData", data);
         setModelFile(data);
       },
       runOnMount: true,
     }
   );
-
-  console.log("ModelData", modelFile);
 
   const reloadData = async () => {
     getTemplateModelFile();

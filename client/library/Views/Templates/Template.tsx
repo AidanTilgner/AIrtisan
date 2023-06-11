@@ -2,14 +2,7 @@ import React, { useEffect, useMemo } from "react";
 import styles from "./Template.module.scss";
 import { useParams, useSearchParams } from "react-router-dom";
 import { useGetTemplate } from "../../hooks/fetching/operations";
-import {
-  Flex,
-  Grid,
-  Group,
-  SegmentedControl,
-  Text,
-  Title,
-} from "@mantine/core";
+import { Grid, Group, SegmentedControl, Text, Title } from "@mantine/core";
 import Loaders from "../../components/Utils/Loaders";
 import { useSearchParamsUpdate } from "../../hooks/navigation";
 import ModelData from "./pages/ModelData/ModelData";
@@ -26,8 +19,6 @@ function Template() {
     dependencies: [template_id],
     runOnMount: true,
   });
-
-  console.log("Template", template);
 
   const [searchParams] = useSearchParams();
 
