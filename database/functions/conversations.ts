@@ -5,6 +5,8 @@ import { Chat, ChatRole } from "../models/chat";
 import { Conversation } from "../models/conversation";
 import { getBot } from "./bot";
 
+const CHAT_CONFIDENCE_THRESHOLD = 70;
+
 export const getConversations = async () => {
   try {
     const conversations = await dataSource.manager.find(entities.Conversation);
@@ -127,15 +129,15 @@ export const createChatInConversation = async ({
     if (confidence) {
       chat.confidence = confidence;
 
-      if (confidence === 0 || confidence < 60) {
+      if (confidence === 0 || confidence < CHAT_CONFIDENCE_THRESHOLD) {
         chat.needs_review = true;
-        chat.review_text = "Detected: Low confidence";
+        chat.review_text = "System Detected: Low confidence";
       }
     }
 
-    if (confidence === 0) {
+    if (!confidence) {
       chat.needs_review = true;
-      chat.review_text = "Detected: Low confidence";
+      chat.review_text = "System Detected: Low confidence";
     }
 
     await dataSource.manager.save(chat);

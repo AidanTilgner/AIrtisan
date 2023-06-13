@@ -1,5 +1,4 @@
 import { openai } from "../utils/openai";
-import { getModelResponse } from "../utils/gpt4all";
 import { getConversationChatsFromSessionId } from "../database/functions/conversations";
 import { getDataForIntent, getIntentContextLoaded } from "./metadata";
 import { getBot, getBotModel } from "../database/functions/bot";
@@ -93,17 +92,17 @@ const intructionsStatement = (
   none_fallback: boolean
 ) => {
   if (none_fallback && intent.toLowerCase() === "none") {
-    return "Instructions: Please provide a response that makes sense in context, and sounds natural.";
+    return "Instructions: Please provide a response that makes sense in context, and sounds natural";
   }
   if (conf < 0.5) {
-    return "Instructions: Please provide a response that makes sense in context, and sounds natural.";
+    return "Instructions: Please provide a response that makes sense in context, and sounds natural";
   }
 
   if (conf < 0.75) {
-    return "Instructions: Please provide an enhanced, natural response based on the intent and the original response.";
+    return "Instructions: Please provide an enhanced, natural response based on the intent and the original response";
   }
 
-  return "Instructions: Please provide a variation on the original response, keeping in mind the intent.";
+  return "Instructions: Please provide a variation on the original response, keeping in mind the intent";
 };
 
 const getIntentStatement = (
@@ -112,7 +111,7 @@ const getIntentStatement = (
   none_fallback: boolean
 ) => {
   if (none_fallback && intent.toLowerCase() === "none") {
-    return `The intent was classified as "none" with a confidence of ${confidence}%. This is a fallback 'none' intent, so you have free range to respond naturally to their message.`;
+    return `The intent was classified as "none" with a confidence of ${confidence}%. This is a fallback 'none' intent, so you have free range to respond naturally to their message`;
   }
   return `The intent was classified as "${intent}" with a confidence of ${confidence}%, which is ${confidenceMapper(
     confidence,
@@ -127,10 +126,19 @@ const getResponseStatement = (
   none_fallback: boolean
 ) => {
   if (none_fallback && intent.toLowerCase() === "none") {
-    return `The original response was "${response}". This is a fallback 'none' intent, so you have free range to respond accordingly.`;
+    return `The original response was "${response}". This is a fallback 'none' intent, so you have free range to respond accordingly`;
   }
 
   return `The original response was "${response}"`;
+};
+
+const getContextStatement = (loadedContext: string[]) => {
+  if (loadedContext.length > 0) {
+    return `Here is some additional context that might be helpful in formulating your answer: ${loadedContext.join(
+      ", "
+    )}.`;
+  }
+  return "";
 };
 
 const getFormattedPrompt = async (
@@ -157,9 +165,7 @@ const getFormattedPrompt = async (
     none_fallback
   )}.
 
-  Here is some additional context that might be helpful in formulating your answer: ${contextLoaded.join(
-    ", "
-  )}.`;
+  ${getContextStatement(contextLoaded)}`;
 };
 
 export const getSpicedUpAnswer = async (
@@ -314,102 +320,6 @@ export const enhanceChatIfNecessary = async ({
         session_id,
         confidence,
         none_fallback,
-      });
-
-      return {
-        answer: newAnswer,
-        enhanced: true,
-      };
-    }
-
-    return {
-      answer,
-      enhanced: false,
-    };
-  } catch (err) {
-    console.error(err);
-    return {
-      answer,
-      enhanced: false,
-    };
-  }
-};
-
-export const getGpt4AllPrompt = async (
-  message: string,
-  answer: string,
-  intent: string,
-  confidence: number
-) => {
-  return `
-  ${message}
-  `;
-};
-
-export const getSpicedUpAnswerWithGPT4All = async (
-  message: string,
-  {
-    intent,
-    response,
-    session_id,
-    confidence,
-  }: {
-    intent: string;
-    response: string;
-    session_id: string;
-    confidence: number;
-  }
-) => {
-  try {
-    const useablePrompt = await getGpt4AllPrompt(
-      message,
-      response,
-      intent,
-      confidence
-    );
-
-    const generatedResponse = await getModelResponse(useablePrompt);
-
-    return generatedResponse;
-  } catch (err) {
-    console.error(err);
-    return message;
-  }
-};
-
-export const enhanceChatIfNecessaryWithGPT4All = async ({
-  botId,
-  message,
-  answer,
-  intent,
-  confidence,
-  session_id,
-}: {
-  botId: number;
-  message: string;
-  answer: string;
-  intent: string;
-  confidence: number;
-  session_id: string;
-}): Promise<{
-  answer: string;
-  enhanced: boolean;
-}> => {
-  try {
-    const intentData = await getDataForIntent(botId, intent);
-    if (!intentData || !intentData.enhance) {
-      return {
-        answer,
-        enhanced: false,
-      };
-    }
-
-    if (intentData.enhance) {
-      const newAnswer = await getSpicedUpAnswerWithGPT4All(message, {
-        intent,
-        response: answer,
-        session_id,
-        confidence,
       });
 
       return {
