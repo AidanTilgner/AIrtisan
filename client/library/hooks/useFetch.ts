@@ -32,7 +32,7 @@ function useFetch<B, D>({
   query,
   bustCache,
   runOnMount = false,
-  useBotId = true,
+  useBotId = true, // ! this is a terrible default
   dependencies = [],
   runOnDependencies = [],
 }: UseFetchConfig<B, D>) {
@@ -48,8 +48,8 @@ function useFetch<B, D>({
       };
 
   const readyToRun = useCallback(() => {
-    if (useBotId && !bot_id) {
-      return false;
+    if (useBotId || bot_id) {
+      return !!bot_id;
     }
     return true;
   }, [bot_id, useBotId]);

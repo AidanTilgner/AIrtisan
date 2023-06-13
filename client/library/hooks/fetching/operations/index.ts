@@ -1,6 +1,11 @@
-import { Context, Corpus, Feedback, Model } from "../../../documentation/main";
-import useFetch, { UseFetchConfig } from "../useFetch";
-import { Template } from "../../../documentation/main";
+import {
+  Context,
+  Corpus,
+  Feedback,
+  Model,
+} from "../../../../documentation/main";
+import useFetch, { UseFetchConfig } from "../../useFetch";
+import { Template } from "../../../../documentation/main";
 
 export const useSubmitFeedback = (
   {

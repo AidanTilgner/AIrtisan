@@ -192,7 +192,7 @@ export const getTemplateModelFile = async (id: Template["id"]) => {
     const modelFile = readFileSync(
       `${templateOutputLocation}/${template.model_file}`
     );
-    return JSON.parse(modelFile.toString());
+    return JSON.parse(modelFile.toString()) as Model;
   } catch (error) {
     console.error(error);
     return null;
@@ -206,7 +206,7 @@ export const getTemplateCorpusFile = async (id: Template["id"]) => {
     const corpusFile = readFileSync(
       `${templateOutputLocation}/${template.corpus_file}`
     );
-    return JSON.parse(corpusFile.toString());
+    return JSON.parse(corpusFile.toString()) as Corpus;
   } catch (error) {
     console.error(error);
     return null;
@@ -220,7 +220,7 @@ export const getTemplateContextFile = async (id: Template["id"]) => {
     const contextFile = readFileSync(
       `${templateOutputLocation}/${template.context_file}`
     );
-    return JSON.parse(contextFile.toString());
+    return JSON.parse(contextFile.toString()) as Context;
   } catch (error) {
     console.error(error);
     return null;

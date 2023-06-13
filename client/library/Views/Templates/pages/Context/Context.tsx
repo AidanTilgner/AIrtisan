@@ -5,7 +5,6 @@ import { useBot } from "../../../../contexts/Bot";
 import styles from "./Context.module.scss";
 import { Button, Tooltip } from "@mantine/core";
 import ContextForm from "../../../../components/Forms/Context/ContextForm";
-import AutogenerateContext from "../../../../components/Forms/Context/Autogenerate";
 import { PencilSimple, TrashSimple } from "@phosphor-icons/react";
 import { showNotification } from "@mantine/notifications";
 import { useParams } from "react-router-dom";
@@ -23,6 +22,7 @@ function Context() {
     url: `/operations/templates/${template_id}/context`,
     onSuccess,
     runOnMount: true,
+    useBotId: false,
   });
 
   const reloadData = async () => {
@@ -34,7 +34,6 @@ function Context() {
   const formattedContext = contextFile ? Object.entries(contextFile) : [];
 
   const [addingNewContext, setAddingNewContext] = useState(false);
-  const [autogenerateForm, setAutogenerateForm] = useState(false);
 
   const [editingContext, setEditingContext] = useState<string>();
 
@@ -46,26 +45,10 @@ function Context() {
           <Button
             onClick={() => {
               setAddingNewContext(!addingNewContext);
-              setAutogenerateForm(false);
             }}
             variant={addingNewContext ? "outline" : "filled"}
           >
             {addingNewContext ? "Cancel" : "Add New Context"}
-          </Button>
-          <Button
-            onClick={() => {
-              setAutogenerateForm(!autogenerateForm);
-              setAddingNewContext(false);
-            }}
-            variant={autogenerateForm ? "outline" : "filled"}
-          >
-            {autogenerateForm ? (
-              "Cancel"
-            ) : (
-              <span>
-                Autogenerate <span className="beta">Beta</span>
-              </span>
-            )}
           </Button>
         </div>
       </div>
@@ -81,18 +64,8 @@ function Context() {
             }}
             loadContextItem={editingContext}
             currentContext={contextFile}
-          />
-        </div>
-      )}
-      {autogenerateForm && (
-        <div className={styles.contextFormContainer}>
-          <AutogenerateContext
-            afterSubmit={() => {
-              reloadData();
-            }}
-            onClose={() => {
-              setAutogenerateForm(false);
-            }}
+            submitUrl={`/operations/templates/${template_id}/context`}
+            omitBotId
           />
         </div>
       )}
@@ -133,14 +106,16 @@ export const ContextPair = ({
   reloadData: () => Promise<void>;
   setEditingContext: (key: string) => void;
 }) => {
+  const { template_id } = useParams();
   const [selected, setSelected] = useState(false);
 
   const { load: deleteContextItem } = useFetch<{ key: string }, Context>({
-    url: "/training/context",
+    url: `/operations/templates/${template_id}/context`,
     method: "DELETE",
     body: {
       key: label,
     },
+    dependencies: [label, template_id],
   });
 
   const deleteContext = async (key: string) => {

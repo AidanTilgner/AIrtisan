@@ -4,8 +4,11 @@ import {
   removeDuplicatesFromObjects,
   removeDuplicatesFromStrings,
 } from "../utils/methods";
-import { getBotCorpus, updateBotCorpus } from "../database/functions/bot";
-import { Corpus, CorpusDataPoint } from "../types/lib";
+import { CorpusDataPoint } from "../types/lib";
+import {
+  getTemplateCorpusFile,
+  updateTemplateCorpus,
+} from "../database/functions/templates";
 
 type corpusDataPoint = {
   intent: string;
@@ -17,8 +20,8 @@ type corpusDataPoint = {
 
 const getDefaultCorpus = async (id: number) => {
   try {
-    const botFile = await getBotCorpus(id);
-    return botFile as unknown as Corpus;
+    const botFile = await getTemplateCorpusFile(id);
+    return botFile;
   } catch (error) {
     console.error(error);
   }
@@ -88,7 +91,7 @@ export const addData = async (newData: {
       return null;
     }
 
-    const newCorpus = await updateBotCorpus(id, {
+    const newCorpus = await updateTemplateCorpus(id, {
       ...corpus,
       data: sortedCorpusData,
     });
@@ -135,7 +138,7 @@ export const addResponseToIntent = async (
       return null;
     }
 
-    const newCorpus = await updateBotCorpus(id, {
+    const newCorpus = await updateTemplateCorpus(id, {
       ...corpus,
       data: sortedCorpusData,
     });
@@ -182,7 +185,7 @@ export const removeResponseFromIntent = async (
       return null;
     }
 
-    const newCorpus = await updateBotCorpus(id, {
+    const newCorpus = await updateTemplateCorpus(id, {
       ...corpus,
       data: sortedCorpusData,
     });
@@ -246,7 +249,7 @@ export const addOrUpdateUtteranceOnIntent = async (
       return null;
     }
 
-    const newCorpus = await updateBotCorpus(botId, {
+    const newCorpus = await updateTemplateCorpus(botId, {
       ...corpus,
       data: sortedCorpusData,
     });
@@ -295,7 +298,7 @@ export const removeUtteranceFromIntent = async (
       return null;
     }
 
-    const newCorpus = await updateBotCorpus(id, {
+    const newCorpus = await updateTemplateCorpus(id, {
       ...corpus,
       data: sortedCorpusData,
     });
@@ -348,7 +351,7 @@ export const addUtteranceToIntent = async (
       return null;
     }
 
-    const newCorpus = await updateBotCorpus(id, {
+    const newCorpus = await updateTemplateCorpus(id, {
       ...corpus,
       data: sortedCorpusData,
     });
@@ -392,7 +395,7 @@ export const enhanceIntent = async (
       return null;
     }
 
-    const newCorpus = await updateBotCorpus(id, {
+    const newCorpus = await updateTemplateCorpus(id, {
       ...corpus,
       data: sortedCorpusData,
     });
@@ -437,7 +440,7 @@ export const updateButtonsOnIntent = async (
       return null;
     }
 
-    const newCorpus = await updateBotCorpus(id, {
+    const newCorpus = await updateTemplateCorpus(id, {
       ...corpus,
       data: sortedCorpusData,
     });
@@ -484,7 +487,7 @@ export const removeButtonFromIntentByType = async (
       return null;
     }
 
-    const newCorpus = await updateBotCorpus(id, {
+    const newCorpus = await updateTemplateCorpus(id, {
       ...corpus,
       data: sortedCorpusData,
     });
@@ -522,7 +525,7 @@ export const deleteDataPoint = async (id: number, intent: string) => {
       return null;
     }
 
-    const newCorpus = await updateBotCorpus(id, {
+    const newCorpus = await updateTemplateCorpus(id, {
       ...corpus,
       data: sortedCorpusData,
     });
@@ -563,7 +566,7 @@ export const renameIntent = async (
       return null;
     }
 
-    const newCorpus = await updateBotCorpus(id, {
+    const newCorpus = await updateTemplateCorpus(id, {
       ...corpus,
       data: sortedCorpusData,
     });
@@ -613,7 +616,7 @@ export const addContextToDatapoint = async (
       return null;
     }
 
-    await updateBotCorpus(id, {
+    await updateTemplateCorpus(id, {
       ...corpus,
       data: sortedCorpusData,
     });
@@ -654,7 +657,7 @@ export const removeContextFromDatapoint = async (
       console.error("Corpus not found");
       return null;
     }
-    await updateBotCorpus(id, {
+    await updateTemplateCorpus(id, {
       ...corpus,
       data: sortedCorpusData,
     });

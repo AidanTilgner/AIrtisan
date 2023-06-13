@@ -22,6 +22,20 @@ import {
   updateTemplateModel,
   deleteTemplateContextItem,
 } from "../../database/functions/templates";
+import {
+  addContextToDatapoint,
+  addData,
+  addResponseToIntent,
+  addUtteranceToIntent,
+  deleteDataPoint,
+  enhanceIntent,
+  removeButtonFromIntentByType,
+  removeResponseFromIntent,
+  removeUtteranceFromIntent,
+  renameIntent,
+  updateButtonsOnIntent,
+  removeContextFromDatapoint,
+} from "../../nlu/templates";
 
 const router = Router();
 
@@ -503,6 +517,399 @@ router.delete(
     });
 
     return;
+  }
+);
+
+router.delete(
+  "/:template_id/corpus/intents/response",
+  hasAccessToTemplate,
+  async (req, res) => {
+    try {
+      const { template_id } = req.params;
+      const { intent, answer } = req.body;
+
+      if (!template_id || !intent || !answer) {
+        res.status(400).send({ message: "Invalid request" });
+        return;
+      }
+
+      const data = await removeResponseFromIntent(
+        Number(template_id),
+        intent,
+        answer
+      );
+
+      const toSend = {
+        message: "Response removed",
+        success: true,
+        data,
+      };
+
+      res.send(toSend);
+    } catch (error) {
+      templatesLogger.error("Error removing response from intent: ", error);
+      res.status(500).send({ message: "Internal server error." });
+    }
+  }
+);
+
+router.delete(
+  "/:template_id/corpus/intents/utterance",
+  hasAccessToTemplate,
+  async (req, res) => {
+    try {
+      const { template_id } = req.params;
+      const { intent, utterance } = req.body;
+
+      if (!template_id || !intent || !utterance) {
+        res.status(400).send({ message: "Invalid request" });
+        return;
+      }
+
+      const data = await removeUtteranceFromIntent(
+        Number(template_id),
+        intent,
+        utterance
+      );
+
+      const toSend = {
+        message: "Utterance removed",
+        success: true,
+        data,
+      };
+
+      res.send(toSend);
+    } catch (error) {
+      templatesLogger.error("Error removing utterance from intent: ", error);
+      res.status(500).send({ message: "Internal server error." });
+    }
+  }
+);
+
+router.delete(
+  "/:template_id/corpus/intents",
+  hasAccessToTemplate,
+  async (req, res) => {
+    try {
+      const { template_id } = req.params;
+      const { intent } = req.body;
+
+      if (!template_id || !intent) {
+        res.status(400).send({ message: "Invalid request" });
+        return;
+      }
+
+      const data = await deleteDataPoint(Number(template_id), intent);
+
+      const toSend = {
+        message: "Intent removed",
+        success: true,
+        data,
+      };
+
+      res.send(toSend);
+    } catch (error) {
+      templatesLogger.error("Error removing intent: ", error);
+      res.status(500).send({ message: "Internal server error." });
+    }
+  }
+);
+
+router.delete(
+  "/:template_id/corpus/intents/context",
+  hasAccessToTemplate,
+  async (req, res) => {
+    try {
+      const { template_id } = req.params;
+      const { intent, context } = req.body;
+
+      if (!template_id || !intent || !context) {
+        res.status(400).send({ message: "Invalid request" });
+        return;
+      }
+
+      const data = await removeContextFromDatapoint(
+        Number(template_id),
+        intent,
+        context
+      );
+
+      const toSend = {
+        message: "Context removed",
+        success: true,
+        data,
+      };
+
+      res.send(toSend);
+    } catch (error) {
+      templatesLogger.error("Error removing context from intent: ", error);
+      res.status(500).send({ message: "Internal server error." });
+    }
+  }
+);
+
+router.delete(
+  "/:template_id/corpus/intents/buttons",
+  hasAccessToTemplate,
+  async (req, res) => {
+    try {
+      const { template_id } = req.params;
+      const { intent, button } = req.body;
+
+      if (!template_id || !intent || !button) {
+        res.status(400).send({ message: "Invalid request" });
+        return;
+      }
+
+      const data = await removeButtonFromIntentByType(
+        Number(template_id),
+        intent,
+        button
+      );
+
+      const toSend = {
+        message: "Button removed",
+        success: true,
+        data,
+      };
+
+      res.send(toSend);
+    } catch (error) {
+      templatesLogger.error("Error removing button from intent: ", error);
+      res.status(500).send({ message: "Internal server error." });
+    }
+  }
+);
+
+router.post(
+  "/:template_id/corpus/intents/utterance",
+  hasAccessToTemplate,
+  async (req, res) => {
+    try {
+      const { template_id } = req.params;
+      const { intent, utterance } = req.body;
+
+      if (!template_id || !intent || !utterance) {
+        res.status(400).send({ message: "Invalid request" });
+        return;
+      }
+
+      const data = await addUtteranceToIntent(
+        Number(template_id),
+        intent,
+        utterance
+      );
+
+      const toSend = {
+        message: "Utterance added",
+        success: true,
+        data,
+      };
+
+      res.send(toSend);
+    } catch (error) {
+      templatesLogger.error("Error adding utterance to intent: ", error);
+      res.status(500).send({ message: "Internal server error." });
+    }
+  }
+);
+
+router.post(
+  "/:template_id/corpus/intents/response",
+  hasAccessToTemplate,
+  async (req, res) => {
+    try {
+      const { template_id } = req.params;
+
+      const { intent, answer } = req.body;
+
+      if (!template_id || !intent || !answer) {
+        res.status(400).send({ message: "Invalid request" });
+        return;
+      }
+
+      const data = await addResponseToIntent(
+        Number(template_id),
+        intent,
+        answer
+      );
+
+      const toSend = {
+        message: "Response added",
+        success: true,
+        data,
+      };
+
+      res.send(toSend);
+    } catch (error) {
+      templatesLogger.error("Error adding response to intent: ", error);
+      res.status(500).send({ message: "Internal server error." });
+    }
+  }
+);
+
+router.post(
+  "/:template_id/corpus/intents/context",
+  hasAccessToTemplate,
+  async (req, res) => {
+    try {
+      const { template_id } = req.params;
+
+      const { intent, context } = req.body;
+
+      if (!template_id || !intent || !context) {
+        res.status(400).send({ message: "Invalid request" });
+        return;
+      }
+
+      const data = await addContextToDatapoint(
+        Number(template_id),
+        intent,
+        context
+      );
+
+      const toSend = {
+        message: "Context added",
+        success: true,
+        data,
+      };
+
+      res.send(toSend);
+    } catch (error) {
+      templatesLogger.error("Error adding context to intent: ", error);
+      res.status(500).send({ message: "Internal server error." });
+    }
+  }
+);
+
+router.put(
+  "/:template_id/corpus/intents/buttons",
+  hasAccessToTemplate,
+  async (req, res) => {
+    try {
+      const { template_id } = req.params;
+
+      const { intent, buttons } = req.body;
+
+      if (!template_id || !intent || !buttons) {
+        res.status(400).send({ message: "Invalid request" });
+        return;
+      }
+
+      const data = await updateButtonsOnIntent(
+        Number(template_id),
+        intent,
+        buttons
+      );
+
+      const toSend = {
+        message: "Buttons added",
+        success: true,
+        data,
+      };
+
+      res.send(toSend);
+    } catch (error) {
+      templatesLogger.error("Error adding buttons to intent: ", error);
+      res.status(500).send({ message: "Internal server error." });
+    }
+  }
+);
+
+router.post(
+  "/:template_id/corpus/intents",
+  hasAccessToTemplate,
+  async (req, res) => {
+    try {
+      const { template_id } = req.params;
+
+      const { intent, utterance, answer, buttons } = req.body;
+
+      if (!template_id || !intent || !utterance || !answer) {
+        res.status(400).send({ message: "Invalid request" });
+        return;
+      }
+
+      const data = await addData({
+        id: Number(template_id),
+        intent,
+        utterances: [utterance],
+        answers: [answer],
+        enhance: false,
+        buttons,
+      });
+
+      const toSend = {
+        message: "Intent added",
+        success: true,
+        data,
+      };
+
+      res.send(toSend);
+    } catch (error) {
+      templatesLogger.error("Error adding intent: ", error);
+      res.status(500).send({ message: "Internal server error." });
+    }
+  }
+);
+
+router.put(
+  "/:template_id/corpus/intents/enhance",
+  hasAccessToTemplate,
+  async (req, res) => {
+    try {
+      const { template_id } = req.params;
+
+      const { intent, enhance } = req.body;
+
+      if (!template_id || !intent) {
+        res.status(400).send({ message: "Invalid request" });
+        return;
+      }
+
+      const data = await enhanceIntent(Number(template_id), intent, enhance);
+
+      const toSend = {
+        message: "Intent enhanced",
+        success: true,
+        data,
+      };
+
+      res.send(toSend);
+    } catch (error) {
+      templatesLogger.error("Error enhancing intent: ", error);
+      res.status(500).send({ message: "Internal server error." });
+    }
+  }
+);
+
+router.put(
+  "/:template_id/corpus/intents/rename",
+  hasAccessToTemplate,
+  async (req, res) => {
+    try {
+      const { template_id } = req.params;
+
+      const { intent, new_intent } = req.body;
+
+      if (!template_id || !intent || !new_intent) {
+        res.status(400).send({ message: "Invalid request" });
+        return;
+      }
+
+      const data = await renameIntent(Number(template_id), intent, new_intent);
+
+      const toSend = {
+        message: "Intent renamed",
+        success: true,
+        data,
+      };
+
+      res.send(toSend);
+    } catch (error) {
+      templatesLogger.error("Error renaming intent: ", error);
+      res.status(500).send({ message: "Internal server error." });
+    }
   }
 );
 

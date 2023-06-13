@@ -10,6 +10,8 @@ interface ContextFormProps {
   onClose?: () => void;
   loadContextItem?: string;
   currentContext?: Context;
+  submitUrl?: string;
+  omitBotId?: boolean;
 }
 
 function ContextForm({
@@ -17,6 +19,8 @@ function ContextForm({
   onClose,
   loadContextItem,
   currentContext,
+  submitUrl,
+  omitBotId,
 }: ContextFormProps) {
   const [formState, setFormState] = React.useState<{
     label: string;
@@ -48,17 +52,19 @@ function ContextForm({
     },
     Context
   >({
-    url: "/training/context",
+    url: submitUrl ? submitUrl : "/training/context",
     method: "PUT",
     body: {
       context: { [formState.label]: formState.data },
     },
-    dependencies: [formState],
+    dependencies: [formState, submitUrl],
+    useBotId: !omitBotId,
   });
 
   const { data: contextFile, load: reload } = useFetch<undefined, Context>({
-    url: "/training/context",
+    url: submitUrl ? submitUrl : "/training/context",
     runOnMount: true,
+    useBotId: !omitBotId,
   });
 
   const formattedContext = contextFile ? Object.keys(contextFile) : [];
