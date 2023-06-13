@@ -57,8 +57,17 @@ function Converse() {
     if (!urlSearchParams.get("load_conversation")) {
       return;
     }
-    setLoading(true);
 
+    if (!Number(conversationId)) {
+      showNotification({
+        title: "Error",
+        message: "Failed to load conversation",
+        color: "red",
+      });
+      updateSearchParams(new Map([["load_conversation", ""]]));
+      return;
+    }
+    setLoading(true);
     getInitialConversation()
       .then((response) => {
         if (!response || !response.data) {
@@ -471,6 +480,7 @@ const ChatPair = ({
               assistant.intent === "None" ? "new" : "existing"
             }
             onClose={closeModal}
+            module="bot"
           />
         </div>
       ),
