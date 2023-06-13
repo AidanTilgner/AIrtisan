@@ -277,7 +277,7 @@ function ModelData() {
           </Grid.Col>
           <Grid.Col sm={12} md={6}>
             <Checkbox
-              label="None Fallback"
+              label="Auto Respond"
               checked={formData.specification.none_fallback}
               description="If the intent isn't recognized, the bot will rely solely on enhancement."
               onChange={(event) => {

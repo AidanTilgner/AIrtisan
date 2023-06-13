@@ -24,15 +24,22 @@ const getInitialPrompt = async (bot_id: number, model: Model) => {
   }
 
   return `
-  You are a chatbot named ${model.personality.name}. You work for ${model.works_for.name}, which is a company described "${model.works_for.description}".
+  You are a chatbot named ${
+    model.personality.name
+  }. You have been described as follows:
   
-  Utilizing the tagline "${model.works_for.tagline}", you are tasked with conversing with users on behalf of ${model.works_for.name}.
-
-  You should act as a normal assistant, but not hide that you are a robot.
+  "${model.personality.description}".
   
-  There is no need to be rude or offensive, but you should not be afraid to be blunt if you need to be.
+  You work for ${model.works_for.name || "an entity"}, ${
+    model.works_for.description &&
+    `which is described as follows:
   
-  You should also not be afraid to be charismatic and funny.
+  "${model.works_for.description}"`
+  }.
+  
+  You are tasked with conversing with users on behalf of ${
+    model.works_for.name || "this entity"
+  }.
 
   If you do not know the answer to a question, you should respond with something like:
   "I'm sorry, I don't know the answer to that question."
@@ -50,16 +57,23 @@ const getInitialPrompt = async (bot_id: number, model: Model) => {
   Example Output:
   "Hello, how can I help you on this wonderful day?"
 
-  Be sure to carefully follow the instructions, and follow them carefully. They will tell you how much to adhere to the original response, and how much creative liberty you may take.
+  Be sure to carefully follow the instructions. They will tell you how much to adhere to the original response, and how much creative liberty you may take.
+
+  HARD RULES:
+  - Do not make up facts about the entity you work for. If you do not know the answer to a question, simply say so.
+  - Do not make up facts about yourself. If you do not know the answer to a question, simply say so.
+  - Do not make up facts about the world. If you do not know the answer to a question, simply say so.
+  - Do not conceal that you are a chatbot, try to remind the user that you are an "AI language model" or something similar.
   `;
 };
+
 const confidenceMapper = (
   conf: number,
   none_fallback: boolean,
   intent: string
 ) => {
   if (none_fallback && intent.toLowerCase() === "none") {
-    return "extremely low";
+    return "extremely low due to the lack of an intent";
   }
 
   if (conf < 0.5) {
@@ -73,7 +87,14 @@ const confidenceMapper = (
   return "high";
 };
 
-const intructionsStatement = (conf: number) => {
+const intructionsStatement = (
+  conf: number,
+  intent: string,
+  none_fallback: boolean
+) => {
+  if (none_fallback && intent.toLowerCase() === "none") {
+    return "Instructions: Please provide a response that makes sense in context, and sounds natural.";
+  }
   if (conf < 0.5) {
     return "Instructions: Please provide a response that makes sense in context, and sounds natural.";
   }
@@ -85,6 +106,33 @@ const intructionsStatement = (conf: number) => {
   return "Instructions: Please provide a variation on the original response, keeping in mind the intent.";
 };
 
+const getIntentStatement = (
+  intent: string,
+  confidence: number,
+  none_fallback: boolean
+) => {
+  if (none_fallback && intent.toLowerCase() === "none") {
+    return `The intent was classified as "none" with a confidence of ${confidence}%. This is a fallback 'none' intent, so you have free range to respond naturally to their message.`;
+  }
+  return `The intent was classified as "${intent}" with a confidence of ${confidence}%, which is ${confidenceMapper(
+    confidence,
+    none_fallback,
+    intent
+  )}`;
+};
+
+const getResponseStatement = (
+  response: string,
+  intent: string,
+  none_fallback: boolean
+) => {
+  if (none_fallback && intent.toLowerCase() === "none") {
+    return `The original response was "${response}". This is a fallback 'none' intent, so you have free range to respond accordingly.`;
+  }
+
+  return `The original response was "${response}"`;
+};
+
 const getFormattedPrompt = async (
   message: string,
   intent: string,
@@ -94,23 +142,22 @@ const getFormattedPrompt = async (
   none_fallback: boolean
 ) => {
   const userStatement = `A user said: "${message}"`;
-  const intentStatement = `The intent was classified as "${intent}" with a confidence of ${confidence}%, which is ${confidenceMapper(
-    confidence,
-    none_fallback,
-    intent
-  )}`;
-  const responseStatement = `The original response was "${response}"`;
+  const intentStatement = getIntentStatement(intent, confidence, none_fallback);
+  const responseStatement = getResponseStatement(
+    response,
+    intent,
+    none_fallback
+  );
 
   const contextLoaded = await getIntentContextLoaded(botId, intent);
 
-  const noneFallbackDisclaimer =
-    none_fallback && intent.toLowerCase() === "none"
-      ? "This is a fallback 'none' intent, so you have free range to respond accordingly."
-      : "";
-
   return `${userStatement}. ${intentStatement}. ${responseStatement}. ${intructionsStatement(
-    confidence
-  )}. ${noneFallbackDisclaimer}. Here is some additional context that might be helpful in formulating your answer: ${contextLoaded.join(
+    confidence,
+    intent,
+    none_fallback
+  )}.
+
+  Here is some additional context that might be helpful in formulating your answer: ${contextLoaded.join(
     ", "
   )}.`;
 };
@@ -216,7 +263,7 @@ export const enhanceChatIfNecessary = async ({
   try {
     const { ALLOW_CHAT_ENHANCEMENT } = process.env;
 
-    if (ALLOW_CHAT_ENHANCEMENT !== "true") {
+    if (ALLOW_CHAT_ENHANCEMENT?.toLowerCase() !== "true") {
       return {
         answer,
         enhanced: false,

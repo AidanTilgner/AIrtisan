@@ -2,10 +2,10 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  overflow: hidden;
   align-items: center;
   padding-inline: 24px;
   padding-bottom: 56px;
+  min-height: 100vh;
 
   @media (min-width: 768px) {
     padding-inline: 56px;
@@ -71,6 +71,7 @@
 
 .conversation_interface {
   width: 100%;
+  position: relative;
 
   @media (min-width: 768px) {
     display: flex;
@@ -111,7 +112,6 @@
   cursor: pointer;
   transition: all 0.2s ease-in-out;
   position: relative;
-  overflow: hidden;
   margin-bottom: 14px;
   animation: conversationIn 0.5s ease-in-out forwards;
 
@@ -208,6 +208,7 @@
 .opened_conversation {
   // outline: 1px solid rgb(34, 86, 242, 0.8);
   border: 1px solid var(--background-contrast);
+  background-color: var(--background-color);
   height: 70vh;
   overflow-y: scroll;
   box-sizing: border-box;
