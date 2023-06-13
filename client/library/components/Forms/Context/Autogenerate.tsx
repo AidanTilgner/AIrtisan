@@ -7,6 +7,7 @@ import {
 } from "../../../hooks/fetching/common";
 import { showNotification } from "@mantine/notifications";
 import { Info, TrashSimple } from "@phosphor-icons/react";
+import Disclaimer from "../../Utils/Disclaimer/Disclaimer";
 
 interface AutogenerateContextProps {
   afterSubmit: () => void;
@@ -108,7 +109,7 @@ function AutogenerateContext({
       <Grid>
         <Grid.Col span={12}>
           <h2>
-            Autogenerate Context <span className="beta">Beta</span>
+            Autogenerate Context <Disclaimer type="experimental" size="md" />
           </h2>
           <p className="disclaimer">
             This is an experimental feature. It may not work as expected, and

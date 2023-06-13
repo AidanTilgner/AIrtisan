@@ -7,6 +7,7 @@ import { Button, Chip, Flex, Grid, Title } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
 import Search from "../../components/Search/Search";
 import { useSearch } from "../../contexts/Search";
+import Disclaimer from "../../components/Utils/Disclaimer/Disclaimer";
 
 // should probably abstract this list view structure
 function index() {
@@ -58,7 +59,9 @@ function index() {
       <Grid>
         <Grid.Col span={12}>
           <Flex align="center" justify="space-between">
-            <Title order={2}>Templates</Title>
+            <Title order={2}>
+              Templates <Disclaimer type="beta" size="md" />
+            </Title>
             <Button
               onClick={() => {
                 navigate("/templates/create");

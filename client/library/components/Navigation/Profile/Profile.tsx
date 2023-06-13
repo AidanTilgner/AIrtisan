@@ -15,6 +15,7 @@ import { Menu } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../../helpers/auth";
 import { useUser } from "../../../contexts/User";
+import Disclaimer from "../../Utils/Disclaimer/Disclaimer";
 
 function Profile({ alwaysScrolled }: { alwaysScrolled?: boolean }) {
   const navigate = useNavigate();
@@ -108,7 +109,7 @@ function Profile({ alwaysScrolled }: { alwaysScrolled?: boolean }) {
               navigate("/templates");
             }}
           >
-            Templates
+            Templates <Disclaimer type="beta" size="sm" />
           </Menu.Item>
           {isSuperAdmin && (
             <Menu.Item

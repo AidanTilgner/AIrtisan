@@ -28,7 +28,8 @@ const watch = async () => {
         name: "development-server",
         setup: (build) => {
           build.onEnd(() => {
-            console.info("Rebuilt...");
+            const now = new Date().toLocaleTimeString();
+            console.info(`Build finished at ${now}. Watching for changes...`);
             // make post request to /esbuild-rebuilt
             const req = http.request(
               {

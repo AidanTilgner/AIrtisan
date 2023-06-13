@@ -8,6 +8,7 @@ import {
 } from "./previews";
 import { Prism } from "@mantine/prism";
 import { useBot } from "../../../../../contexts/Bot";
+import Disclaimer from "../../../../../components/Utils/Disclaimer/Disclaimer";
 
 function Preview() {
   useLayoutEffect(() => {
@@ -65,7 +66,13 @@ function Preview() {
             key={p.name + p.rootId}
           >
             <h2>
-              {p.name} {p.version && <span className="beta">{p.version}</span>}
+              {p.name}{" "}
+              {p.version && (
+                <Disclaimer
+                  type={p.version as "beta" | "alpha" | "stable"}
+                  size="sm"
+                />
+              )}
             </h2>
             <p className="disclaimer no-border">{p.disclaimer}</p>
             {p.rootId && (

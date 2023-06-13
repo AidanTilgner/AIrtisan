@@ -8,6 +8,7 @@ import ContextForm from "../../../../../components/Forms/Context/ContextForm";
 import AutogenerateContext from "../../../../../components/Forms/Context/Autogenerate";
 import { PencilSimple, TrashSimple } from "@phosphor-icons/react";
 import { showNotification } from "@mantine/notifications";
+import Disclaimer from "../../../../../components/Utils/Disclaimer/Disclaimer";
 
 function Context() {
   const [contextFile, setcontextFile] = useState<Context>();
@@ -60,7 +61,7 @@ function Context() {
               "Cancel"
             ) : (
               <span>
-                Autogenerate <span className="beta">Beta</span>
+                Autogenerate <Disclaimer type="experimental" size="sm" />
               </span>
             )}
           </Button>

@@ -13,6 +13,8 @@ import { Button, Grid } from "@mantine/core";
 import Widget from "../../components/Cards/Widget/Widget";
 import { useGetMyRecentBots } from "../../hooks/fetching/bot";
 import { useGetAdminOrganizations } from "../../hooks/fetching/admin";
+import { getFormattedAdminName } from "../../helpers/formating";
+import Disclaimer from "../../components/Utils/Disclaimer/Disclaimer";
 
 function Dashboard() {
   const getWelcomeMessage = () => {
@@ -49,11 +51,6 @@ function Dashboard() {
 
   const navigate = useNavigate();
 
-  const formattedDisplayName = (n: string) => {
-    const [first] = n.split(" ");
-    return `${first}`;
-  };
-
   const { data: myRecentBots = [] } = useGetMyRecentBots({
     runOnMount: true,
   });
@@ -72,13 +69,12 @@ function Dashboard() {
           {welcomeMessage.message} <WelcomeIcon />
         </p>
         <h1 className={styles.big_text}>
-          Hey{" "}
-          <strong>
-            {user?.display_name
-              ? formattedDisplayName(user.display_name)
-              : user?.username}
-          </strong>
-          !
+          Hey <strong>{user ? getFormattedAdminName(user) : "there"}</strong>!
+          <Disclaimer
+            type="beta"
+            size="lg"
+            title="Looks like you're a beta tester!"
+          />
         </h1>
         <div className={styles.quickActions}>
           <button
