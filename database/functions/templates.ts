@@ -384,7 +384,7 @@ export const deleteTemplateContextItem = async (
       })
     );
 
-    return contents;
+    return contents as Context;
   } catch (error) {
     console.error(error);
     return null;
@@ -409,7 +409,7 @@ export const updateTemplateModel = async (id: Template["id"], model: Model) => {
         parser: "json",
       })
     );
-    return updatedContents;
+    return updatedContents as Model;
   } catch (error) {
     console.error(error);
     return null;

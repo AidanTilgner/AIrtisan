@@ -71,8 +71,7 @@ function Create() {
       if (!res || !res.data) {
         showNotification({
           title: "Error",
-          message:
-            "There was an error creating your template. Please try again later.",
+          message: "There was an error creating your template.",
           color: "red",
         });
         return;
@@ -87,8 +86,7 @@ function Create() {
       console.error(error);
       showNotification({
         title: "Error",
-        message:
-          "There was an error creating your template. Please try again later.",
+        message: "There was an error creating your template.",
         color: "red",
       });
     }
@@ -179,13 +177,13 @@ function Create() {
                         }),
                         {
                           label: "None",
-                          value: "",
+                          value: "none",
                         },
                       ]
                     : [
                         {
                           label: "No bots found",
-                          value: "",
+                          value: "none",
                         },
                       ]
                 }

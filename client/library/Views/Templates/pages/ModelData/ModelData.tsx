@@ -75,6 +75,7 @@ function ModelData() {
   }, [modelFile]);
 
   const { load: updateData } = useFetch<{ model: Model }, Model>({
+    useBotId: false,
     url: `/operations/templates/${template_id}/model`,
     method: "PUT",
     onSuccess,
@@ -113,9 +114,6 @@ function ModelData() {
 
     setChanged(false);
   };
-
-  console.log("FormData", formData);
-  console.log("FormChanged", changed);
 
   return (
     <div className={styles.Model}>

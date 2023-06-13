@@ -112,7 +112,7 @@ router.post("/", checkIsAdmin, async (req, res) => {
           owner_id: templateFields.owner_id,
           owner_type: templateFields.owner_type,
         })
-      : createTemplate({
+      : await createTemplate({
           name: templateFields.name,
           description: templateFields.description,
           owner_id: templateFields.owner_id,
@@ -385,13 +385,16 @@ router.put(
         ...templateModel.model,
       });
 
-      res.status(200).send({
+      if (!updatedTemplate) {
+        res.status(400).send({ message: "Template not found." });
+        return;
+      }
+
+      return res.status(200).send({
         message: "Template updated successfully.",
         success: true,
         data: updatedTemplate,
       });
-
-      return;
     } catch (error) {
       templatesLogger.error("Error updating template model: ", error);
       res.status(500).send({ message: "Internal server error." });

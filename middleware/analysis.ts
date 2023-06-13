@@ -71,6 +71,7 @@ export const logPerformance = (
   next: NextFunction
 ) => {
   const start = Date.now();
+
   res.on("finish", () => {
     const end = Date.now();
     const time = end - start;
