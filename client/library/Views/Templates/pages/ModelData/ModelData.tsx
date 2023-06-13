@@ -75,7 +75,7 @@ function ModelData() {
   }, [modelFile]);
 
   const { load: updateData } = useFetch<{ model: Model }, Model>({
-    url: "/training/model",
+    url: `/operations/templates/${template_id}/model`,
     method: "PUT",
     onSuccess,
     body: {
@@ -114,10 +114,13 @@ function ModelData() {
     setChanged(false);
   };
 
+  console.log("FormData", formData);
+  console.log("FormChanged", changed);
+
   return (
     <div className={styles.Model}>
       <div className={styles.header}>
-        <h1>{bot?.name} Model Configuration</h1>
+        <h1>{bot?.name || "Template"} Model Configuration</h1>
       </div>
       <div>
         <Grid>
@@ -127,7 +130,7 @@ function ModelData() {
           <Grid.Col sm={12} md={6}>
             <TextInput
               label="Name"
-              value={formData.personality.name}
+              value={formData.personality?.name || ""}
               onChange={(event) => {
                 setFormData({
                   ...formData,
@@ -144,7 +147,7 @@ function ModelData() {
           <Grid.Col sm={12} md={6}>
             <Textarea
               label="Bot Identity"
-              value={formData.personality.description}
+              value={formData.personality?.description || ""}
               description="How would you describe to your bot it's purpose and identity?"
               placeholder="Describe your bot's purpose and identity..."
               onChange={(event) => {
@@ -182,7 +185,7 @@ function ModelData() {
           <Grid.Col sm={12} md={6}>
             <TextInput
               label="Name"
-              value={formData.works_for.name}
+              value={formData.works_for?.name || ""}
               onChange={(event) => {
                 setFormData({
                   ...formData,
@@ -207,7 +210,7 @@ function ModelData() {
           <Grid.Col sm={12} md={6}>
             <Textarea
               label="Description"
-              value={formData.works_for.description}
+              value={formData.works_for?.description || ""}
               onChange={(event) => {
                 setFormData({
                   ...formData,
@@ -232,7 +235,7 @@ function ModelData() {
           <Grid.Col sm={12} md={6}>
             <TextInput
               label="Site URL"
-              value={formData.works_for.site_url}
+              value={formData.works_for?.site_url || ""}
               onChange={(event) => {
                 setFormData({
                   ...formData,
@@ -257,7 +260,7 @@ function ModelData() {
           <Grid.Col sm={12} md={6}>
             <TextInput
               label="Tagline"
-              value={formData.works_for.tagline}
+              value={formData.works_for?.tagline || ""}
               onChange={(event) => {
                 setFormData({
                   ...formData,
@@ -287,7 +290,7 @@ function ModelData() {
           <Grid.Col sm={12} md={6}>
             <Checkbox
               label="None Fallback"
-              checked={formData.specification.none_fallback}
+              checked={formData.specification?.none_fallback || false}
               description="If the intent isn't recognized, the bot will rely solely on enhancement."
               onChange={(event) => {
                 setFormData({
@@ -313,7 +316,7 @@ function ModelData() {
                   </Anchor>
                 </>
               }
-              checked={formData.specification.hipaa_compliant}
+              checked={formData.specification?.hipaa_compliant || false}
               description={
                 <>
                   Sensitive user information will be scrubbed from conversation
@@ -345,7 +348,7 @@ function ModelData() {
           <Grid.Col sm={12} md={6}>
             <TextInput
               label="Domains"
-              value={formData.security.domain_whitelist.join(", ")}
+              value={formData.security?.domain_whitelist.join(", ") || ""}
               description="A comma-separated list of domains that are allowed to use your bot."
               placeholder="example.com, example.org"
               onChange={(event) => {
@@ -364,7 +367,7 @@ function ModelData() {
           <Grid.Col sm={12} md={6}>
             <Checkbox
               label="Allow Widgets"
-              checked={formData.security.allow_widgets}
+              checked={formData.security?.allow_widgets || false}
               description="Allow your bot to be accessed publically. This is required for widgets, otherwise your bot will only be accessible via the API."
               onChange={(event) => {
                 setFormData({

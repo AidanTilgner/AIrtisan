@@ -82,7 +82,7 @@ function Create() {
         title: "Success",
         message: "Your template has been created!",
       });
-      // navigate(`/templates/${template.id}`);
+      navigate(`/templates/${template.id}`);
     } catch (error) {
       console.error(error);
       showNotification({
@@ -170,20 +170,26 @@ function Create() {
                 description="The data from this bot will be turned into a template."
                 data={
                   allAdminBots?.length
-                    ? allAdminBots.map((bot) => {
-                        return {
-                          label: bot.name as string,
-                          value: String(bot.id),
-                        };
-                      })
+                    ? [
+                        ...allAdminBots.map((bot) => {
+                          return {
+                            label: bot.name as string,
+                            value: String(bot.id),
+                          };
+                        }),
+                        {
+                          label: "None",
+                          value: "",
+                        },
+                      ]
                     : [
                         {
                           label: "No bots found",
-                          value: "none",
+                          value: "",
                         },
                       ]
                 }
-                value={String(formData.bot_id) || "none"}
+                value={String(formData.bot_id) || ""}
                 onChange={(e) =>
                   setFormData({ ...formData, bot_id: Number(e) })
                 }

@@ -1,7 +1,7 @@
 import { writeFileSync } from "fs";
 import path from "path";
 import { format } from "prettier";
-import { AllowedChatModels, Model } from "../types/lib";
+import { AllowedChatModels, Context, Corpus, Model } from "../types/lib";
 import {
   getBotContext,
   getBotCorpus,
@@ -172,7 +172,9 @@ export const generateTemplateFiles = async (
   name: string
 ) => {
   try {
-    const contextFile = bot_id ? await getBotContext(bot_id) : {};
+    const contextFile: Context = bot_id
+      ? (await getBotContext(bot_id)) || {}
+      : {};
     if (!contextFile) return null;
     const contextFileName = `template-${slug}-context.json`;
     writeFileSync(
@@ -180,7 +182,7 @@ export const generateTemplateFiles = async (
       format(JSON.stringify(contextFile), { parser: "json" })
     );
 
-    const corpusFile = bot_id
+    const corpusFile: Corpus = bot_id
       ? (await getBotCorpus(bot_id)) || {
           name: "",
           locale: "",
@@ -199,7 +201,55 @@ export const generateTemplateFiles = async (
       format(JSON.stringify(corpusFile), { parser: "json" })
     );
 
-    const modelFile = bot_id ? await getBotModel(bot_id) : {};
+    const modelFile: Model = bot_id
+      ? (await getBotModel(bot_id)) || {
+          personality: {
+            name: "",
+            description: "",
+            initial_prompt: "",
+          },
+          works_for: {
+            name: "",
+            description: "",
+            site_url: "",
+            tagline: "",
+            metadata: {},
+          },
+          specification: {
+            model: "gpt-3.5-turbo",
+            version: "1.0.0",
+            none_fallback: false,
+            hipaa_compliant: false,
+          },
+          security: {
+            domain_whitelist: [],
+            allow_widgets: true,
+          },
+        }
+      : {
+          personality: {
+            name: "",
+            description: "",
+            initial_prompt: "",
+          },
+          works_for: {
+            name: "",
+            description: "",
+            site_url: "",
+            tagline: "",
+            metadata: {},
+          },
+          specification: {
+            model: "gpt-3.5-turbo",
+            version: "1.0.0",
+            none_fallback: false,
+            hipaa_compliant: false,
+          },
+          security: {
+            domain_whitelist: [],
+            allow_widgets: true,
+          },
+        };
     if (!modelFile) return null;
     const modelFileName = `template-${slug}-model.json`;
     writeFileSync(
