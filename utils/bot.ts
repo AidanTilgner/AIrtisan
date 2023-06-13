@@ -166,9 +166,13 @@ export const getBotModelFileContents = async (bot: {
 
 const templateOutputLocation = "datastore/templates/documents";
 
-export const generateTemplateFiles = async (bot_id: number, slug: string) => {
+export const generateTemplateFiles = async (
+  bot_id: number | null,
+  slug: string,
+  name: string
+) => {
   try {
-    const contextFile = await getBotContext(bot_id);
+    const contextFile = bot_id ? await getBotContext(bot_id) : {};
     if (!contextFile) return null;
     const contextFileName = `template-${slug}-context.json`;
     writeFileSync(
@@ -176,7 +180,18 @@ export const generateTemplateFiles = async (bot_id: number, slug: string) => {
       format(JSON.stringify(contextFile), { parser: "json" })
     );
 
-    const corpusFile = await getBotCorpus(bot_id);
+    const corpusFile = bot_id
+      ? (await getBotCorpus(bot_id)) || {
+          name: "",
+          locale: "",
+          data: [],
+        }
+      : {
+          name: "",
+          locale: "",
+          data: [],
+        };
+    corpusFile.name = name;
     if (!corpusFile) return null;
     const corpusFileName = `template-${slug}-corpus.json`;
     writeFileSync(
@@ -184,7 +199,7 @@ export const generateTemplateFiles = async (bot_id: number, slug: string) => {
       format(JSON.stringify(corpusFile), { parser: "json" })
     );
 
-    const modelFile = await getBotModel(bot_id);
+    const modelFile = bot_id ? await getBotModel(bot_id) : {};
     if (!modelFile) return null;
     const modelFileName = `template-${slug}-model.json`;
     writeFileSync(

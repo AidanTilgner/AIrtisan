@@ -1,12 +1,7 @@
 import { Router } from "express";
 import { Logger } from "../../utils/logger";
-import {
-  checkIsAdmin,
-  hasAccessToBot,
-  hasAccessToTemplate,
-} from "../../middleware/auth";
+import { checkIsAdmin, hasAccessToTemplate } from "../../middleware/auth";
 import { Admin } from "../../database/models/admin";
-import { Bot } from "../../database/models/bot";
 import { Context, Corpus, Model, OwnerTypes } from "../../types/lib";
 import { checkAdminIsInOrganization } from "../../database/functions/organization";
 import {
@@ -21,6 +16,7 @@ import {
   updateTemplateCorpus,
   updateTemplateModel,
   deleteTemplateContextItem,
+  createTemplate,
 } from "../../database/functions/templates";
 import {
   addContextToDatapoint,
@@ -36,6 +32,7 @@ import {
   updateButtonsOnIntent,
   removeContextFromDatapoint,
 } from "../../nlu/templates";
+import { checkAdminHasAccessToBot } from "../../database/functions/bot";
 
 const router = Router();
 
@@ -43,10 +40,20 @@ const templatesLogger = new Logger({
   name: "Operations Router",
 });
 
-router.post("/", checkIsAdmin, hasAccessToBot, async (req, res) => {
+router.post("/", checkIsAdmin, async (req, res) => {
   try {
     const admin = req["admin"] as Admin;
-    const bot = req["bot"] as Bot;
+
+    const bot_id = req.body.bot_id as number;
+
+    const hasAccessToBot = bot_id
+      ? await checkAdminHasAccessToBot(admin.id, bot_id)
+      : true;
+
+    if (!hasAccessToBot) {
+      res.status(400).send({ message: "Unauthorized." });
+      return;
+    }
 
     const templateFields = req.body as {
       bot_id: number | undefined;
@@ -70,11 +77,6 @@ router.post("/", checkIsAdmin, hasAccessToBot, async (req, res) => {
         .json({ error: "Users can only create bots for themselves" });
     }
 
-    if (!bot || (templateFields.bot_id && templateFields.bot_id !== bot.id)) {
-      res.status(400).send({ message: "Unauthorized." });
-      return;
-    }
-
     if (templateFields.owner_type === "organization") {
       const belongs = await checkAdminIsInOrganization(admin.id, admin.id);
       if (!belongs) {
@@ -85,26 +87,37 @@ router.post("/", checkIsAdmin, hasAccessToBot, async (req, res) => {
       }
     }
 
-    [
+    const invalid = [
       (fields: typeof templateFields) => fields.name,
       (fields: typeof templateFields) => fields.description,
       (fields: typeof templateFields) => fields.owner_id,
       (fields: typeof templateFields) =>
         fields.owner_type === "organization" || fields.owner_type === "admin",
-    ].forEach((field) => {
+    ].some((field) => {
       if (!field(templateFields)) {
-        res.status(400).send({ message: "Invalid template fields." });
-        return;
+        return true;
       }
     });
 
-    const template = await createTemplateFromBot({
-      bot_id: bot.id,
-      name: templateFields.name,
-      description: templateFields.description,
-      owner_id: templateFields.owner_id,
-      owner_type: templateFields.owner_type,
-    });
+    if (invalid) {
+      res.status(400).send({ message: "Invalid request." });
+      return;
+    }
+
+    const template = bot_id
+      ? await createTemplateFromBot({
+          bot_id,
+          name: templateFields.name,
+          description: templateFields.description,
+          owner_id: templateFields.owner_id,
+          owner_type: templateFields.owner_type,
+        })
+      : createTemplate({
+          name: templateFields.name,
+          description: templateFields.description,
+          owner_id: templateFields.owner_id,
+          owner_type: templateFields.owner_type,
+        });
 
     if (!template) {
       res.status(500).send({ message: "Internal server error." });

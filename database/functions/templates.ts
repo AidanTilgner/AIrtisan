@@ -35,7 +35,42 @@ export const createTemplateFromBot = async ({
     template.name = name;
     template.description = description;
     template.slug = getRandomID();
-    const files = await generateTemplateFiles(bot.id, template.slug);
+    const files = await generateTemplateFiles(bot.id, template.slug, name);
+    if (!files) return null;
+    template.context_file = files.context_file;
+    template.corpus_file = files.corpus_file;
+    template.model_file = files.model_file;
+    template.owner_id = owner_id;
+    template.owner_type = owner_type;
+    template.visibility = visibility;
+
+    await dataSource.manager.save(template);
+    return template;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+export const createTemplate = async ({
+  name,
+  description,
+  owner_id,
+  owner_type,
+  visibility = "private",
+}: {
+  name: Template["name"];
+  description: Template["description"];
+  owner_id: Template["owner_id"];
+  owner_type: Template["owner_type"];
+  visibility?: Template["visibility"];
+}) => {
+  try {
+    const template = new entities.Template();
+    template.name = name;
+    template.description = description;
+    template.slug = getRandomID();
+    const files = await generateTemplateFiles(null, template.slug, name);
     if (!files) return null;
     template.context_file = files.context_file;
     template.corpus_file = files.corpus_file;

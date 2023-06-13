@@ -308,7 +308,7 @@ export const getBotCorpus = async (id: Bot["id"]) => {
       path.join(storageLocation, bot.corpus_file),
       "utf8"
     ).toString();
-    const contents = JSON.parse(file);
+    const contents = JSON.parse(file) as Corpus;
     return contents;
   } catch (error) {
     console.error(error);
