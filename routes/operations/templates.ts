@@ -836,9 +836,9 @@ router.post(
     try {
       const { template_id } = req.params;
 
-      const { intent, utterance, answer, buttons } = req.body;
+      const { intent, utterances, answers, buttons } = req.body;
 
-      if (!template_id || !intent || !utterance || !answer) {
+      if (!template_id || !intent || !utterances || !answers) {
         res.status(400).send({ message: "Invalid request" });
         return;
       }
@@ -846,8 +846,8 @@ router.post(
       const data = await addData({
         id: Number(template_id),
         intent,
-        utterances: [utterance],
-        answers: [answer],
+        utterances: utterances,
+        answers: answers,
         enhance: false,
         buttons,
       });

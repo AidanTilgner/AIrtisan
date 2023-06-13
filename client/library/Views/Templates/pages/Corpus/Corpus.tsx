@@ -161,6 +161,7 @@ function Corpus() {
             onClose={() => {
               setAddingIntent(false);
             }}
+            module="template"
           />
         </div>
       )}

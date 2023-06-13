@@ -157,6 +157,7 @@ function Corpus() {
             onClose={() => {
               setAddingIntent(false);
             }}
+            module="bot"
           />
         </div>
       )}

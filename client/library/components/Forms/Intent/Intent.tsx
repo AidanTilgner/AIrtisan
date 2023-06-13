@@ -15,7 +15,8 @@ import {
 import { Plus, X } from "@phosphor-icons/react";
 import { showNotification } from "@mantine/notifications";
 import { filterDuplicatesForStrings } from "../../../helpers/methods";
-import { useAddDataPoint } from "../../../hooks/fetching/common";
+import { useAddDataPoint as useAddBotDataPoint } from "../../../hooks/fetching/common";
+import { useAddDataPoint as useAddTemplateDataPoint } from "../../../hooks/fetching/operations/templates";
 import useFetch from "../../../hooks/useFetch";
 
 function Intent({
@@ -25,9 +26,11 @@ function Intent({
   loadedUtterances,
   loadedIntent,
   preSelectedForEither,
+  module,
 }: {
   afterSubmit: (intent: string, data: Corpus) => void;
   type: "add" | "update" | "either";
+  module: "bot" | "template";
   onClose?: () => void;
   loadedUtterances?: string[];
   loadedIntent?: string;
@@ -45,6 +48,7 @@ function Intent({
             onClose={onClose}
             afterSubmit={handleSubmit}
             loadedUtterances={loadedUtterances}
+            module={module}
           />
         );
       case "update":
@@ -54,6 +58,7 @@ function Intent({
             loadedUtterances={loadedUtterances}
             loadedIntent={loadedIntent}
             onClose={onClose}
+            module={module}
           />
         );
       case "either":
@@ -64,6 +69,7 @@ function Intent({
             loadedIntent={loadedIntent}
             preSelectForEither={preSelectedForEither}
             onClose={onClose}
+            module={module}
           />
         );
     }
@@ -95,12 +101,14 @@ function EitherForm({
   loadedIntent,
   preSelectForEither,
   onClose,
+  module,
 }: {
   afterSubmit: (intent: string, data: Corpus) => void;
   loadedUtterances?: string[];
   loadedIntent?: string;
   preSelectForEither?: "new" | "existing";
   onClose?: () => void;
+  module: "bot" | "template";
 }) {
   const [formType, setFormType] = React.useState<"new" | "existing">(
     preSelectForEither || "new"
@@ -114,6 +122,7 @@ function EitherForm({
             afterSubmit={afterSubmit}
             loadedUtterances={loadedUtterances}
             onClose={onClose}
+            module={module}
           />
         );
       case "existing":
@@ -123,6 +132,7 @@ function EitherForm({
             loadedUtterances={loadedUtterances}
             loadedIntent={loadedIntent}
             onClose={onClose}
+            module={module}
           />
         );
     }
@@ -150,10 +160,12 @@ function AddIntent({
   afterSubmit,
   onClose,
   loadedUtterances,
+  module,
 }: {
   afterSubmit: (intent: string, data: Corpus) => void;
   onClose?: () => void;
   loadedUtterances?: string[];
+  module: "bot" | "template";
 }) {
   const [formData, setFormData] = React.useState<Partial<CorpusDataPoint>>();
 
@@ -167,12 +179,20 @@ function AddIntent({
   const [newUtterance, setNewUtterance] = React.useState<string>("");
   const [newAnswer, setNewAnswer] = React.useState<string>("");
 
-  const { addDataPoint } = useAddDataPoint({
-    intent: formData?.intent || "",
-    utterances: formData?.utterances || [],
-    answers: formData?.answers || [],
-    enhance: !!formData?.enhance,
-  });
+  const { addDataPoint } =
+    module === "bot"
+      ? useAddBotDataPoint({
+          intent: formData?.intent || "",
+          utterances: formData?.utterances || [],
+          answers: formData?.answers || [],
+          enhance: !!formData?.enhance,
+        })
+      : useAddTemplateDataPoint({
+          intent: formData?.intent || "",
+          utterances: formData?.utterances || [],
+          answers: formData?.answers || [],
+          enhance: !!formData?.enhance,
+        });
 
   const handleSubmit = async () => {
     if (!formData?.intent) {
@@ -444,11 +464,13 @@ function UpdateIntent({
   loadedUtterances,
   onClose,
   loadedIntent,
+  module,
 }: {
   afterSubmit: (intent: string, data: Corpus) => void;
   loadedUtterances?: string[];
   onClose?: () => void;
   loadedIntent?: string;
+  module: "bot" | "template";
 }) {
   const [formData, setFormData] = React.useState<Partial<CorpusDataPoint>>();
 
@@ -469,12 +491,20 @@ function UpdateIntent({
   const [newUtterance, setNewUtterance] = React.useState<string>();
   const [newAnswer, setNewAnswer] = React.useState<string>();
 
-  const { addDataPoint } = useAddDataPoint({
-    intent: formData?.intent || "",
-    utterances: formData?.utterances || [],
-    answers: formData?.answers || [],
-    enhance: !!formData?.enhance,
-  });
+  const { addDataPoint } =
+    module === "bot"
+      ? useAddBotDataPoint({
+          intent: formData?.intent || "",
+          utterances: formData?.utterances || [],
+          answers: formData?.answers || [],
+          enhance: !!formData?.enhance,
+        })
+      : useAddTemplateDataPoint({
+          intent: formData?.intent || "",
+          utterances: formData?.utterances || [],
+          answers: formData?.answers || [],
+          enhance: !!formData?.enhance,
+        });
 
   const handleSubmit = async () => {
     if (!formData?.intent) {

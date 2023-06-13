@@ -1,3 +1,4 @@
+import { useParams } from "react-router-dom";
 import {
   ButtonType,
   Corpus,
@@ -303,14 +304,14 @@ export const useAddContextToIntent = (
   >
 ) => {
   const { load, data, success } = useFetch<
-    { intent: string; context: string; retrain: boolean },
+    { intent: string; context: string },
     CorpusDataPoint
   >({
     useBotId: false,
     ...config,
     url: `/operations/templates/${template_id}/corpus/intents/context`,
     method: "POST",
-    body: { intent, context, retrain: true },
+    body: { intent, context },
   });
 
   return {
@@ -328,19 +329,19 @@ export const useAddDataPoint = (
     buttons,
     enhance,
     template_id,
-  }: CorpusDataPoint & { template_id: string },
+  }: CorpusDataPoint & { template_id?: string },
   config?: Partial<UseFetchConfig<CorpusDataPoint, Corpus>>
 ) => {
-  interface CorpusDataPointWithRetrain extends CorpusDataPoint {
-    retrain: boolean;
-  }
+  const { template_id: paramsTemplateId } = useParams();
 
-  const { load, data, success } = useFetch<CorpusDataPointWithRetrain, Corpus>({
+  const useTemplateID = template_id || paramsTemplateId;
+
+  const { load, data, success } = useFetch<CorpusDataPoint, Corpus>({
     useBotId: false,
     ...config,
-    url: `/operations/templates/${template_id}/corpus/intents`,
+    url: `/operations/templates/${useTemplateID}/corpus/intents`,
     method: "POST",
-    body: { intent, utterances, answers, buttons, enhance, retrain: true },
+    body: { intent, utterances, answers, buttons, enhance },
   });
 
   return {
