@@ -64,7 +64,9 @@ Widget.Grid = function WidgetGrid({
                   <span className={styles.widget_grid_icon}>{item.icon}</span>
                   <span className={styles.widget_grid_label}>{item.label}</span>
                 </div>
-                <ArrowRight />
+                <div className={styles.widget_grid_arrow}>
+                  <ArrowRight weight="regular" />
+                </div>
               </button>
             );
           })}

@@ -5,6 +5,7 @@ import App from "./App";
 import { BrowserRouter } from "react-router-dom";
 import { UserProvider } from "./library/contexts/User";
 import { SearchProvider } from "./library/contexts/Search.js";
+import { SettingsProvider } from "./library/contexts/Settings";
 
 const accessToken = localStorage.getItem("accessToken");
 
@@ -23,9 +24,11 @@ const root = createRoot(domContainer);
 root.render(
   <BrowserRouter>
     <UserProvider>
-      <SearchProvider>
-        <App />
-      </SearchProvider>
+      <SettingsProvider>
+        <SearchProvider>
+          <App />
+        </SearchProvider>
+      </SettingsProvider>
     </UserProvider>
   </BrowserRouter>
 );

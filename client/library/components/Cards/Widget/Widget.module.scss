@@ -1,7 +1,9 @@
 .widget {
   border-radius: 5px;
   overflow: hidden;
-  background-color: var(--background-alt);
+  background-color: var(--background-color);
+  box-shadow: 0.2px 0.2px 24px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--background-contrast);
 
   &_title {
     padding: 18px 24px;
@@ -47,7 +49,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 8px 14px;
-    background-color: none;
+    background-color: transparent;
     border-radius: 5px;
     border: 1px solid var(--background-contrast);
     box-sizing: border-box;
@@ -56,6 +58,10 @@
 
     &:hover {
       background-color: var(--background-contrast);
+
+      .widget_grid_arrow {
+        transform: translateX(2px);
+      }
     }
   }
 
@@ -74,6 +80,15 @@
   &_label {
     font-family: var(--font-family);
     font-weight: 500;
+  }
+
+  &_arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: var(--text-color);
+    transition: all 0.2s ease-in-out;
   }
 
   .fallback {

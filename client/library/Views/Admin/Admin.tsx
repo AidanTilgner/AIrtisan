@@ -60,7 +60,8 @@ function Admin() {
           </Flex>
         </Grid.Col>
         <Grid.Col span={12}>
-          <Card>
+          <Card withBorder shadow="sm">
+            {" "}
             <p>
               There {allFeedback && allFeedback.length !== 1 ? "are" : "is"}{" "}
               <strong>{allFeedback?.length || 0}</strong> new feedback{" "}
@@ -85,7 +86,7 @@ function Admin() {
           </Flex>
         </Grid.Col>
         <Grid.Col span={12}>
-          <Card>
+          <Card withBorder shadow="sm">
             <p>
               There {allUsers && allUsers.length !== 1 ? "are" : "is"}{" "}
               <strong>{allUsers?.length || 0}</strong> users.
@@ -108,7 +109,7 @@ function Admin() {
           </Flex>
         </Grid.Col>
         <Grid.Col span={12}>
-          <Card>
+          <Card withBorder shadow="sm">
             <p>
               There {allBots && allBots.length !== 1 ? "are" : "is"} currently{" "}
               <strong>{allBots?.length || 0}</strong> bots.
@@ -131,7 +132,7 @@ function Admin() {
           </Flex>
         </Grid.Col>
         <Grid.Col span={12}>
-          <Card>
+          <Card withBorder shadow="sm">
             <p>
               There {allOrgs && allOrgs.length !== 1 ? "are" : "is"} currently{" "}
               <strong>{allOrgs?.length || 0}</strong>{" "}

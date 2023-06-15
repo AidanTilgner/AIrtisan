@@ -12,12 +12,13 @@
     font-family: "Quicksand", sans-serif;
     font-weight: 500;
     transition: all 0.2s ease-in-out;
-    background-color: var(--background-alt);
+    background-color: var(--background-color);
 
     &:focus {
       padding: 14px 24px;
       outline: none;
       border-radius: 0;
+      border: 1px solid var(--text-color-light);
     }
   }
 }

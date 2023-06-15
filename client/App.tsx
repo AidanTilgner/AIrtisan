@@ -24,15 +24,22 @@ import AdminBots from "./library/Views/Admin/Bots/Bots";
 import Templates from "./library/Views/Templates/";
 import TemplateCreate from "./library/Views/Templates/Create";
 import Template from "./library/Views/Templates/Template";
+import { useSettings } from "./library/contexts/Settings";
+import { useSetThemeVariables } from "./library/hooks/theme";
 
 function App() {
+  const {
+    theme: { current: currentTheme },
+  } = useSettings();
+  useSetThemeVariables();
+
   return (
     <div className={styles.App}>
       <MantineProvider
         withGlobalStyles
         withNormalizeCSS
         theme={{
-          colorScheme: "dark",
+          colorScheme: currentTheme,
           headings: {
             fontFamily: "Quicksand",
             fontWeight: 500,
