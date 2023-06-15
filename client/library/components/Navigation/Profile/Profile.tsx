@@ -10,6 +10,7 @@ import {
   MegaphoneSimple,
   Shield,
   Clipboard,
+  GearSix,
 } from "@phosphor-icons/react";
 import { Menu } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
@@ -122,14 +123,14 @@ function Profile({ alwaysScrolled }: { alwaysScrolled?: boolean }) {
             </Menu.Item>
           )}
 
-          {/* <Menu.Item
+          <Menu.Item
             icon={<GearSix />}
             onClick={() => {
               navigate("/settings");
             }}
           >
             Settings
-          </Menu.Item> */}
+          </Menu.Item>
 
           <Menu.Divider />
 
