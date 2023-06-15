@@ -224,6 +224,7 @@
   // a thin scrollbar
   scrollbar-width: thin;
   scrollbar-color: var(--background-contrast) transparent;
+  z-index: 10;
 
   @media (min-width: 768px) {
     position: absolute;

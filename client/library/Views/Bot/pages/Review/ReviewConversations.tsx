@@ -254,7 +254,7 @@ function ReviewConversations() {
         />
       </div>
       <div className={styles.searchContainer}>
-        <Search />
+        <Search placeholder="Search for messages, titles, etc." />
       </div>
       <div className={styles.filtersContainer}>
         <div className={styles.filter}>
