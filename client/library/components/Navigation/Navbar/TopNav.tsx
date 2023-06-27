@@ -23,9 +23,17 @@ function TopNav({ alwaysScrolled }: { alwaysScrolled?: boolean }) {
 
   const isMobile = window.innerWidth < 768;
 
+  const hasSeenDisclaimer =
+    localStorage.getItem("has_seen_disclaimer") === "true";
+  if (!hasSeenDisclaimer) {
+    localStorage.setItem("has_seen_disclaimer", "true");
+  }
+
   return (
     <div
-      className={`${styles.TopNav} ${alwaysScrolled ? styles.scrolled : ""}`}
+      className={`${styles.TopNav} ${alwaysScrolled ? styles.scrolled : ""} ${
+        !hasSeenDisclaimer ? styles.hasDisclaimer : ""
+      }`}
       ref={navRef}
     >
       <button
@@ -52,6 +60,16 @@ function TopNav({ alwaysScrolled }: { alwaysScrolled?: boolean }) {
           <div className={styles.breadcrumbsContainer}>
             <Breadcrumbs />
           </div>
+        </div>
+      )}
+      {!hasSeenDisclaimer && (
+        <div className={`${styles.disclaimer} ${styles.warning}`}>
+          <p>
+            Work has slowed on AIrtisan as {`I've`} moved to other projects.
+            Feel free to{" "}
+            <a href="mailto:aidantilgner02@gmail.com">contact me</a> for more
+            information or support for any reason.
+          </p>
         </div>
       )}
     </div>
