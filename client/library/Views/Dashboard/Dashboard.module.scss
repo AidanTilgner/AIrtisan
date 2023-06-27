@@ -1,0 +1,133 @@
+.Dashboard {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.top {
+  background-color: var(--background-alt);
+  border-bottom: 1px solid var(--background-contrast);
+  padding: 36px 24px;
+
+  @media (min-width: 768px) {
+    padding: 36px 56px;
+  }
+
+  .top_text {
+    margin: 0;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-color-light);
+
+    svg {
+      font-size: 18px;
+    }
+  }
+
+  .big_text {
+    margin: 0;
+    font-weight: 300;
+    font-family: "Lato", sans-serif;
+    margin-bottom: 36px;
+  }
+
+  .quickActions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 24px;
+
+    .quickAction {
+      border: none;
+      padding: 14px 24px;
+      font-size: 14px;
+      font-family: "QuickSand", sans-serif;
+      font-weight: 600;
+      border-radius: 5px;
+      box-shadow: 0.2px 0.2px 10px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+      box-sizing: border-box;
+
+      &:hover {
+        box-shadow: 0.2px 0.2px 10px rgba(0, 0, 0, 0.2);
+        transform: scale(1.02);
+      }
+
+      &:active {
+        box-shadow: 0.2px 0.2px 10px rgba(0, 0, 0, 0.3);
+        transform: translateY(2px) scale(0.98);
+      }
+    }
+
+    .btnPrimary {
+      background-color: var(--primary-color);
+      color: var(--primary-contrast);
+    }
+
+    .btnSecondary {
+      color: var(--text-color);
+      background-color: var(--background-color);
+    }
+  }
+}
+
+.content {
+  padding: 36px 24px;
+  background-color: var(--background-color);
+
+  @media (min-width: 768px) {
+    padding: 36px 56px;
+  }
+
+  h2 {
+    font-size: 20px;
+    font-weight: 500;
+  }
+}
+
+.jumpbots {
+  // on mobile 1 column, on tablet 2 columns
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+
+  @media (min-width: 768px) {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.jumpbot {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  display: flex;
+  background-color: var(--background-color);
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  border: 1px solid var(--background-contrast);
+  padding: 8px 18px;
+  border-radius: 5px;
+
+  &:hover {
+    opacity: 0.8;
+  }
+
+  span {
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-family);
+
+    svg {
+      font-size: 14px;
+      position: relative;
+      bottom: 1px;
+      opacity: 0.5;
+    }
+  }
+}

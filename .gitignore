@@ -1,0 +1,14 @@
+.env
+node_modules
+db
+api-keys.json
+*model.*
+build/*
+bundle.*
+datastore/database.sqlite
+storage/analytics/*
+storage/metadata/*
+storage/logs/*
+.secrets*
+public/widgets/chatboxes/*
+dist

@@ -1,0 +1,64 @@
+.preview {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-height: 100vh;
+}
+
+.header {
+  width: 100%;
+  border-bottom: 1px solid #e5e5e5;
+  margin-bottom: 24px;
+}
+
+.preview {
+  text-align: left;
+  width: 100%;
+
+  h2 {
+    font-weight: 500;
+    margin: 0;
+    width: 100%;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+}
+
+// .inline {
+
+// }
+
+.floating {
+  .chatboxContainer {
+    width: initial;
+    height: initial;
+  }
+}
+
+.chatboxContainer {
+  width: 100%;
+  height: 70vh;
+
+  @media (min-width: 768px) {
+    width: 80%;
+    height: 50vh;
+  }
+}
+
+.addToSite {
+  display: none;
+
+  @media (min-width: 768px) {
+    display: block;
+  }
+
+  h3 {
+    font-weight: 400;
+  }
+}
+
+.code {
+  text-align: left;
+}

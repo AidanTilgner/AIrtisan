@@ -1,0 +1,252 @@
+.Interactive {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-block: 64px;
+  padding-inline: 24px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.chat_bubble {
+  padding-block: 8px;
+  padding-inline: 14px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: flex-start;
+  box-sizing: border-box;
+  font-weight: 500;
+  font-size: 14px;
+  max-width: 80%;
+  text-align: left;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.chat_in {
+  margin-right: auto;
+  background-color: var(--primary-color);
+  color: var(--primary-contrast);
+}
+
+.chat_out {
+  margin-left: auto;
+  background-color: var(--background-color);
+  color: var(--primary-color);
+  border: 1px solid var(--background-contrast);
+}
+
+.answers {
+  .answer {
+    border-left: 1px solid #eaeaea;
+    padding-left: 8px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    position: relative;
+    width: fit-content;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    @media (max-width: 768px) {
+      .answer_icons {
+        visibility: initial !important;
+      }
+    }
+
+    &:hover {
+      padding-left: 10px;
+      border-color: #2256f2;
+
+      .answer_icons {
+        visibility: initial !important;
+      }
+    }
+
+    .answer_icons {
+      visibility: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    &_icon {
+      height: 24px;
+      transition: all 0.2s ease-in-out;
+      cursor: pointer;
+      border-radius: 50%;
+      aspect-ratio: 1/1;
+      margin-left: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    &_delete {
+      color: #eaeaea;
+
+      &:hover {
+        color: #c7411c;
+        background-color: #eaeaea;
+      }
+    }
+
+    &_copy {
+      color: #eaeaea;
+
+      &:hover {
+        color: #2256f2;
+        background-color: #eaeaea;
+      }
+    }
+  }
+}
+
+.utterances {
+  .utterance {
+    border-left: 1px solid #eaeaea;
+    padding-left: 8px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    position: relative;
+    width: fit-content;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    @media (max-width: 768px) {
+      .answer_icons {
+        visibility: initial !important;
+      }
+    }
+
+    &:hover {
+      padding-left: 10px;
+      border-color: #2256f2;
+
+      .utterance_icons {
+        visibility: initial !important;
+      }
+    }
+
+    .utterance_icons {
+      visibility: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    &_icon {
+      height: 24px;
+      transition: all 0.2s ease-in-out;
+      cursor: pointer;
+      border-radius: 50%;
+      aspect-ratio: 1/1;
+      margin-left: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    &_delete {
+      color: #eaeaea;
+
+      &:hover {
+        color: #c7411c;
+        background-color: #eaeaea;
+      }
+    }
+
+    &_copy {
+      color: #eaeaea;
+
+      &:hover {
+        color: #2256f2;
+        background-color: #eaeaea;
+      }
+    }
+
+    &_run {
+      color: #eaeaea;
+
+      &:hover {
+        color: #07b319;
+        background-color: #eaeaea;
+      }
+    }
+  }
+}
+
+.buttons {
+  .button {
+    border-left: 1px solid #eaeaea;
+    padding-left: 14px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    position: relative;
+    width: fit-content;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    @media (max-width: 768px) {
+      .answer_icons {
+        visibility: initial !important;
+      }
+    }
+
+    &:hover {
+      padding-left: 24px;
+      border-color: #2256f2;
+
+      .button_icons {
+        visibility: initial !important;
+      }
+    }
+
+    .button_icons {
+      visibility: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    &_icon {
+      height: 24px;
+      transition: all 0.2s ease-in-out;
+      cursor: pointer;
+      border-radius: 50%;
+      aspect-ratio: 1/1;
+      margin-left: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    &_delete {
+      color: #eaeaea;
+
+      &:hover {
+        color: #c7411c;
+        background-color: #eaeaea;
+      }
+    }
+
+    &_copy {
+      color: #eaeaea;
+
+      &:hover {
+        color: #2256f2;
+        background-color: #eaeaea;
+      }
+    }
+  }
+}

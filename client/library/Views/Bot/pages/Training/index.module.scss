@@ -1,0 +1,41 @@
+.training {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.training_type {
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.header {
+  padding-inline: 24px;
+  text-align: center;
+  width: 100%;
+
+  @media (min-width: 768px) {
+    padding-inline: 56px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 50%;
+    box-sizing: border-box;
+    padding-inline: 0;
+    position: sticky;
+    top: 0;
+    background-color: transparent;
+    backdrop-filter: blur(5px);
+    z-index: 10;
+    border-bottom: 1px solid var(--background-contrast);
+  }
+
+  h2 {
+    font-weight: 500;
+  }
+}

@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Quicksand:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <title>Log in to AIrtisan.</title>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="icon" href="/favicon" />
+    <style>
+      body {
+        font-family: "Quicksand", sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #1e1e1e;
+        color: #fff;
+      }
+
+      .formContainer {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        box-sizing: border-box;
+      }
+
+      .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        gap: 24px;
+        margin-bottom: 36px;
+      }
+
+      .header h2 {
+        font-size: 36px;
+        font-weight: 400;
+      }
+
+      .form {
+        display: flex;
+        flex-direction: column;
+        width: 300px;
+        border: 1px solid #3e3e3e;
+        padding: 36px 24px;
+        border-radius: 5px;
+        margin-bottom: 36px;
+      }
+
+      .formGroup {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 24px;
+      }
+
+      .formGroup label {
+        margin-bottom: 14px;
+        font-size: 18px;
+        font-weight: 300;
+        font-family: "Lato", sans-serif;
+      }
+
+      .formGroup input {
+        padding: 14px 18px;
+        border: 1px solid #3e3e3e;
+        transition: all 0.2s ease-in-out;
+        font-family: "Quicksand", sans-serif;
+        background-color: #2e2e2e;
+        color: #fff;
+      }
+
+      .formGroup input:focus {
+        padding: 14px 24px;
+        border: 1px solid #2256f2;
+        outline: none;
+      }
+
+      .formGroup button {
+        padding: 12px 24px;
+        border: 1px solid transparent;
+        border-radius: 2px;
+        cursor: pointer;
+        background-color: #2256f2;
+        color: white;
+        font-family: "QuickSand", sans-serif;
+        font-weight: 500;
+        font-size: 14px;
+        transition: all 0.2s ease-in-out;
+      }
+
+      .formGroup button:hover {
+        transform: scale(1.05);
+      }
+
+      .formGroup button:active {
+        transform: scale(0.95) translateY(2px);
+      }
+
+      .formGroup button:focus {
+        outline: none;
+      }
+
+      .submit {
+        align-items: center;
+        justify-content: flex-end;
+        flex-direction: row;
+        width: 100%;
+        margin: 0;
+        margin-top: 24px;
+      }
+
+      a {
+        color: #2256f2;
+      }
+
+      .passwordInput {
+        position: relative;
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      .passwordInput input {
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      #togglePassword {
+        position: absolute;
+        top: calc(50% - 9px);
+        right: 24px;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+        font-size: 16px;
+      }
+
+      #togglePassword:hover {
+        transform: scale(1.05);
+        opacity: 0.8;
+      }
+
+      #togglePassword:active {
+        transform: scale(0.95) translateY(2px);
+      }
+
+      #reason {
+        position: fixed;
+        top: 14px;
+        right: 24px;
+        left: 24px;
+        padding: 14px 24px;
+        font-size: 12px;
+        text-align: center;
+      }
+
+      #reason.error {
+        background-color: rgba(255, 0, 0, 0.25);
+        color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="reason"></div>
+    <div class="formContainer">
+      <div class="header">
+        <div class="icon">
+          <svg
+            width="56"
+            height="56"
+            viewBox="0 0 512 512"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect width="512" height="512" rx="124" fill="black" />
+            <path d="M192.349 397L115 256H192.349V397Z" fill="#1614DB" />
+            <path
+              d="M192.349 115V256H115L153.674 185.5L192.349 115Z"
+              fill="#1B44BF"
+            />
+            <path d="M397 115H192.349L318.846 256L397 115Z" fill="#2256F2" />
+            <path d="M192.349 256H318.846L192.349 115V256Z" fill="#120FA8" />
+          </svg>
+        </div>
+        <h2>Log in.</h2>
+      </div>
+      <div id="form" class="form">
+        <div class="formGroup">
+          <label for="username">Username</label>
+          <input
+            type="text"
+            name="username"
+            placeholder="Type your username..."
+            id="username"
+          />
+        </div>
+        <div class="formGroup">
+          <label for="password">Password</label>
+          <div class="passwordInput">
+            <input
+              type="password"
+              name="password"
+              placeholder="Type your password..."
+              id="password"
+            />
+            <span id="togglePassword" onclick="togglePasswordVisibility()">
+              <i class="ph-bold ph-eye" id="eyeIcon"></i>
+            </span>
+          </div>
+        </div>
+        <div class="formGroup submit">
+          <button id="loginbutton" type="button">Log in.</button>
+        </div>
+      </div>
+      <div class="otherOptions">
+        <p>Don't have an account? <a href="/signup">Sign up</a> instead.</p>
+      </div>
+    </div>
+    <script>
+      const urlReason = new URLSearchParams(window.location.search).get(
+        "reason"
+      );
+      const reasonElement = document.getElementById("reason");
+
+      const reasonMapping = {
+        unauthorized: {
+          type: "error",
+          message: "Your session has expired, please log in again.",
+        },
+      };
+
+      if (!urlReason) {
+        reasonElement.style.display = "none";
+      } else {
+        reasonElement.style.display = "block";
+        reasonElement.classList.add(reasonMapping[urlReason].type);
+        reasonElement.innerHTML = `<p>${reasonMapping[urlReason].message}</p>`;
+      }
+
+      function togglePasswordVisibility() {
+        const passwordInput = document.getElementById("password");
+        const eyeIcon = document.getElementById("eyeIcon");
+
+        if (passwordInput.type === "password") {
+          passwordInput.type = "text";
+          eyeIcon.classList.remove("ph-eye");
+          eyeIcon.classList.add("ph-eye-slash");
+        } else {
+          passwordInput.type = "password";
+          eyeIcon.classList.remove("ph-eye-slash");
+          eyeIcon.classList.add("ph-eye");
+        }
+      }
+
+      const loginButton = document.getElementById("loginbutton");
+      loginButton.addEventListener("click", async () => {
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+        if (!username || !password) {
+          alert("Please fill in all fields");
+          return;
+        }
+        fetch("/api/auth/admin/signin", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username,
+            password,
+          }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            const accessToken = data.data.access_token;
+            const refreshToken = data.data.refresh_token;
+            localStorage.setItem("accessToken", accessToken);
+            localStorage.setItem("refreshToken", refreshToken);
+            const redirectUrlSearchParam = new URLSearchParams(
+              window.location.search
+            ).get("redirectUrl");
+            const redirectUrl = redirectUrlSearchParam
+              ? decodeURIComponent(redirectUrlSearchParam)
+              : "/";
+            window.location.href = redirectUrl;
+          })
+          .catch((err) => {
+            console.log(err);
+            alert("Invalid username or password");
+          });
+      });
+
+      window.addEventListener("keydown", (e) => {
+        // if the key is enter, submit the form
+        if (e.key === "Enter") {
+          loginButton.click();
+        }
+      });
+
+      if (localStorage.getItem("accessToken")) {
+        fetch("/auth/check", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-access-token": localStorage.getItem("accessToken"),
+          },
+          body: JSON.stringify({
+            access_token: localStorage.getItem("accessToken"),
+          }),
+        }).then(async (res) => {
+          const response = await res.json();
+          if (response.data.authenticated) {
+            const redirectUrlSearchParam = new URLSearchParams(
+              window.location.search
+            ).get("redirectUrl");
+            const redirectUrl = redirectUrlSearchParam
+              ? decodeURIComponent(redirectUrlSearchParam)
+              : "/";
+            window.location.href = redirectUrl;
+          }
+        });
+      }
+    </script>
+  </body>
+</html>

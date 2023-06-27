@@ -1,0 +1,152 @@
+.Auth {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  h2 {
+    font-weight: 400;
+  }
+}
+
+.admins {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+  gap: 24px;
+  margin-bottom: 36px;
+
+  @media (min-width: 768px) {
+    width: 50%;
+  }
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 14px 24px;
+  border: 1px solid var(--background-contrast);
+  box-shadow: 0.2px 0.2px 10px rgba($color: #000000, $alpha: 0.15);
+  width: 100%;
+  box-sizing: border-box;
+  position: relative;
+
+  .toptext {
+    font-weight: 600;
+    font-size: 18px;
+  }
+
+  .bottomtext {
+    font-size: 14px;
+    color: #a0a0a0;
+  }
+
+  .options {
+    position: absolute;
+    right: 24px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+    top: calc(50% - 8px);
+
+    .delete_button {
+      border: none;
+      background-color: transparent;
+      cursor: pointer;
+      font-size: 14px;
+      color: var(--text-color-light);
+      transition: all 0.3s ease-in-out;
+
+      &:hover {
+        color: var(--danger-color);
+      }
+
+      &:active {
+        color: var(--danger-color);
+      }
+    }
+
+    .copy_button {
+      border: none;
+      background-color: transparent;
+      cursor: pointer;
+      font-size: 14px;
+      color: var(--text-color-light);
+      transition: all 0.3s ease-in-out;
+
+      &:hover {
+        color: var(--success-color);
+      }
+
+      &:active {
+        color: var(--success-color);
+      }
+    }
+  }
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 24px auto;
+  width: 100%;
+  box-sizing: border-box;
+
+  @media (min-width: 768px) {
+    width: 50%;
+  }
+
+  .input {
+    width: 100%;
+    margin-bottom: 24px;
+    border: none;
+    border-bottom: 1px solid var(--background);
+    box-sizing: border-box;
+    padding: 14px 24px;
+    font-family: var(--font-family);
+  }
+
+  .select {
+    width: 100%;
+    margin-bottom: 24px;
+    border: none;
+    box-sizing: border-box;
+    padding: 14px 24px;
+    font-family: var(--font-family);
+  }
+
+  .add_button {
+    width: 100%;
+    margin-bottom: 24px;
+    border: none;
+    box-sizing: border-box;
+    padding: 14px 24px;
+    font-family: var(--font-family);
+    background-color: var(--background-alt);
+    cursor: pointer;
+
+    &:hover {
+      background-color: var(--background-contrast);
+    }
+  }
+}
+
+.apiKeys {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+  gap: 24px;
+  margin-bottom: 36px;
+
+  @media (min-width: 768px) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+}

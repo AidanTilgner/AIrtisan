@@ -1,0 +1,67 @@
+.AdminCard {
+  box-sizing: border-box;
+  border: 1px solid var(--background-contrast);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  font-family: var(--font-family);
+  width: 100%;
+  box-sizing: border-box;
+  background-color: var(--background-alt);
+  border-radius: var(--card-border-radius);
+
+  &:hover {
+    background-color: var(--background);
+    border-radius: var(--card-border-radius-hover);
+  }
+}
+
+.top {
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 8px;
+  position: relative;
+
+  .icon {
+    opacity: 0.5;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+  }
+
+  .name {
+    font-size: 20px;
+    font-weight: 500;
+  }
+}
+
+.body {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 8px 24px;
+}
+
+.tags {
+  display: flex;
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  margin: 0;
+
+  .tag {
+    border-radius: 5px;
+    font-size: 12px;
+    padding: 4px 8px;
+    color: var(--text-color);
+    font-weight: 600;
+    background-color: var(--background-color);
+    opacity: 0.8;
+  }
+}
+
+.owner {
+  margin: 0;
+  font-weight: 500;
+}

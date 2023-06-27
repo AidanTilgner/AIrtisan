@@ -1,0 +1,92 @@
+.ConversationCard {
+  box-sizing: border-box;
+  border: 1px solid var(--background-contrast);
+  background-color: var(--background-color);
+  margin: 0;
+  width: 100%;
+  box-shadow: 0.2px 0.2px 18px rgba(0, 0, 0, 0.1);
+}
+
+.top {
+  padding: 14px 24px;
+
+  .title {
+    margin: 0;
+    padding: 0;
+    font-size: 18px;
+    font-weight: 400;
+  }
+}
+
+.middle {
+  padding: 14px 24px;
+  width: 100%;
+
+  .chatsPreview {
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--background-alt);
+    gap: 8px;
+    border: 1px solid var(--background-contrast);
+    width: 100%;
+
+    & span {
+      font-size: 14px;
+      display: inline-block;
+      width: 200px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+
+      @media (min-width: 768px) {
+        width: 250px;
+      }
+    }
+  }
+}
+
+.bottom {
+  padding: 18px 24px;
+  position: relative;
+
+  .timestamp {
+    font-size: 14px;
+    opacity: 0.5;
+    position: absolute;
+    bottom: 14px;
+    left: 24px;
+    padding: 0;
+    margin: 0;
+    font-weight: 500;
+  }
+
+  .options {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  .bottomOption {
+    background-color: transparent;
+    display: flex;
+    place-content: center;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+
+    &:hover {
+      transform: scale(1.01);
+    }
+
+    &:active {
+      transform: scale(0.99) translateY(2px);
+    }
+  }
+
+  .go {
+    color: var(--primary-color);
+  }
+}

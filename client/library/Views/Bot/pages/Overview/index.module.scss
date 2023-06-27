@@ -1,0 +1,154 @@
+.Home {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.top {
+  // box-shadow: 0.2px 0.2px 18px rgba(0, 0, 0, 0.1);
+  background-color: var(--background);
+  padding: 36px 24px;
+  border-bottom: 1px solid var(--background-contrast);
+
+  @media (min-width: 768px) {
+    padding: 36px 82px;
+  }
+
+  .top_text {
+    margin: 0;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    svg {
+      font-size: 18px;
+    }
+  }
+
+  .big_text {
+    margin: 0;
+    font-weight: 300;
+    font-family: "Lato", sans-serif;
+  }
+}
+
+.quickActions {
+  padding: 36px 24px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+
+  @media (min-width: 768px) {
+    padding: 36px 82px;
+  }
+
+  .quickAction {
+    border: none;
+    padding: 14px 24px;
+    font-size: 14px;
+    font-family: "QuickSand", sans-serif;
+    font-weight: 600;
+    border-radius: 5px;
+    box-shadow: 0.2px 0.2px 10px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    box-sizing: border-box;
+
+    &:hover {
+      box-shadow: 0.2px 0.2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    &:active {
+      box-shadow: 0.2px 0.2px 10px rgba(0, 0, 0, 0.3);
+      transform: translateY(2px);
+    }
+  }
+
+  .btnPrimary {
+    background-color: var(--primary-color);
+    color: var(--primary-contrast);
+  }
+
+  .btnSecondary {
+    background-color: var(--background-alt);
+    color: var(--text-color-light);
+  }
+
+  .btnStartup {
+    background-color: var(--success-color);
+    color: var(--success-contrast);
+  }
+
+  .btnPause {
+    background-color: var(--danger-color);
+    color: var(--danger-contrast);
+  }
+
+  .btnDanger {
+    background-color: var(--danger-color);
+    color: var(--danger-contrast);
+  }
+}
+
+.iconContainer {
+  svg {
+    vertical-align: middle;
+  }
+}
+
+.shake {
+  @keyframes iconShake {
+    0% {
+      transform: rotate(0);
+    }
+    25% {
+      transform: rotate(10deg);
+    }
+    50% {
+      transform: rotate(-10deg);
+    }
+    100% {
+      transform: rotate(0);
+    }
+  }
+  height: fit-content;
+
+  svg {
+    animation-name: iconShake;
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+    animation-timing-function: ease-in-out;
+    vertical-align: middle;
+  }
+}
+
+.content {
+  background-color: var(--background-alt);
+}
+
+.recentConversations {
+  padding: 36px 24px;
+
+  @media (min-width: 768px) {
+    padding: 36px 82px;
+  }
+
+  h2 {
+    margin: 0;
+    margin-bottom: 24px;
+    font-weight: 400;
+    font-size: 24px;
+  }
+}
+
+.cardList {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+
+  @media (min-width: 768px) {
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+}

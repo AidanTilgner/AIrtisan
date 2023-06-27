@@ -1,0 +1,147 @@
+.TopNav {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  box-sizing: border-box;
+  padding: 24px 24px;
+  display: flex;
+  align-items: center;
+  z-index: 100;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0.2px 0.2px 15px rgba(0, 0, 0, 0.1);
+
+  @media (min-width: 768px) {
+    padding: 24px 56px;
+  }
+}
+
+.hasDisclaimer {
+  margin-bottom: 82px;
+
+  @media (min-width: 768px) {
+    margin-top: 56px;
+    margin-bottom: initial;
+  }
+}
+
+.scrolled {
+  padding: 18px 24px;
+  box-shadow: 0.2px 0.2px 15px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid var(--background-contrast);
+
+  @media (min-width: 768px) {
+    padding: 18px 56px;
+  }
+}
+
+.logo {
+  height: 36px;
+  width: 36px;
+  display: flex;
+  place-content: center;
+  padding: 0;
+  margin: 0;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0.2px 0.2px 12px rgba(87, 22, 249, 0.25);
+  border-radius: 5px;
+
+  &:hover {
+    box-shadow: 0.2px 0.2px 15px rgba(87, 22, 249, 0.35);
+  }
+
+  &:active {
+    transform: scale(0.99) translateY(1px);
+  }
+}
+
+.navigation {
+  margin-left: 24px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.backbutton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: transparent;
+  border: none;
+  font-family: var(--font-family);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    svg {
+      transform: translateX(-2px);
+    }
+  }
+
+  &:active {
+    transform: scale(0.99) translateY(1px);
+  }
+
+  svg {
+    transition: all 0.2s ease-in-out;
+    position: relative;
+    font-size: 14px;
+  }
+}
+
+@keyframes disclaimerIn {
+  0% {
+    opacity: 0.25;
+    transform: translateX(-50%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.disclaimer {
+  position: absolute;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  padding-inline: 24px;
+  top: calc(100%);
+  left: 0;
+  right: 0;
+  height: 82px;
+  animation-name: disclaimerIn;
+  animation-duration: 1s;
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: forwards;
+
+  @media (min-width: 768px) {
+    top: initial;
+    bottom: calc(100%);
+    height: 56px;
+    padding-left: 56px;
+  }
+
+  p {
+    font-weight: 500;
+    font-size: 12px;
+
+    @media (min-width: 768px) {
+      font-size: 14px;
+    }
+
+    a {
+      color: inherit;
+    }
+  }
+
+  &.warning {
+    background-color: rgba($color: orange, $alpha: 0.5);
+  }
+}
