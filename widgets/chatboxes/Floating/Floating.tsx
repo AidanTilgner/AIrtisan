@@ -65,17 +65,14 @@ const postChat = async (chat: {
     const { answer, botChat, attachments } = data.data;
     const buttons = attachments?.buttons || [];
     return {
-      answer:
-        answer ||
-        "There was an error, it has been reported, please try again later.",
+      answer: answer || "There was an error, it has been reported, please try again later.",
       botChat: botChat || null,
       buttons,
     };
   } catch (error) {
     console.error(error);
     return {
-      answer:
-        "There was an error, it has been reported, please try again later.",
+      answer: "There was an error, it has been reported, please try again later.",
       botChat: null,
       buttons: [],
     };
@@ -112,9 +109,7 @@ function Index() {
     }
     // if the mouse position is more than 100px from the element, then move it
 
-    const distanceFromElement = Math.abs(
-      mousePosition.y - (elementPosition || 0)
-    );
+    const distanceFromElement = Math.abs(mousePosition.y - (elementPosition || 0));
 
     if (distanceFromElement > 100) {
       const newTimeout = setTimeout(() => {
@@ -215,18 +210,14 @@ function Index() {
           <div className={styles.backgroundCircleTwo} />
           <div className={styles.backgroundCircleThree} />
           <div className={styles.backgroundCircleFour} />
-          <div
-            className={`${styles.container} ${
-              opened ? styles.containerOpen : ""
-            }`}
-          >
+          <div className={`${styles.container} ${opened ? styles.containerOpen : ""}`}>
             {opened ? <X /> : <ChatIcon />}
           </div>
         </div>
         {opened && <ChatInterface />}
       </>
     ),
-    [clicked, opened, elementPosition, isMobile, focusTrap]
+    [clicked, opened, elementPosition, isMobile, focusTrap],
   );
 }
 
@@ -259,8 +250,7 @@ function ChatBox() {
 
   const disclaimers: JSX.Element[] = [
     <p className={chatStyles.disclaimer} key="disclaimer2">
-      If you see any weird responses, please hit the <Warning weight="bold" />{" "}
-      icon to report it.
+      If you see any weird responses, please hit the <Warning weight="bold" /> icon to report it.
     </p>,
     <p className={chatStyles.disclaimer} key="disclaimer3">
       Conversations may be recorded for quality assurance purposes.
@@ -283,8 +273,7 @@ function ChatBox() {
   ]);
 
   useEffect(() => {
-    const sessionId =
-      sessionStorage.getItem("session_id") || generateRandomSessionId();
+    const sessionId = sessionStorage.getItem("session_id") || generateRandomSessionId();
     sessionStorage.setItem("session_id", sessionId);
 
     const savedMessages = sessionStorage.getItem("messages");
@@ -379,22 +368,13 @@ function ChatBox() {
                 d="M18.1875 0H5.8125C2.60234 0 0 2.60234 0 5.8125V18.1875C0 21.3977 2.60234 24 5.8125 24H18.1875C21.3977 24 24 21.3977 24 18.1875V5.8125C24 2.60234 21.3977 0 18.1875 0Z"
                 fill="black"
               />
-              <path
-                d="M9.01636 18.6094L5.39062 12H9.01636V18.6094Z"
-                fill="#1614DB"
-              />
+              <path d="M9.01636 18.6094L5.39062 12H9.01636V18.6094Z" fill="#1614DB" />
               <path
                 d="M9.01636 5.39062V12H5.39062L7.20347 8.69531L9.01636 5.39062Z"
                 fill="#1B44BF"
               />
-              <path
-                d="M18.6094 5.39062H9.01636L14.9459 12L18.6094 5.39062Z"
-                fill="#2256F2"
-              />
-              <path
-                d="M9.01636 12H14.9459L9.01636 5.39062V12Z"
-                fill="#120FA8"
-              />
+              <path d="M18.6094 5.39062H9.01636L14.9459 12L18.6094 5.39062Z" fill="#2256F2" />
+              <path d="M9.01636 12H14.9459L9.01636 5.39062V12Z" fill="#120FA8" />
             </g>
             <defs>
               <clipPath id="clip0_102_10">
@@ -416,9 +396,7 @@ function ChatBox() {
             id={message.chat_id}
           />
         ))}
-        {botMessageLoading && (
-          <Chat content="..." side="bot" loading={true} id={null} />
-        )}
+        {botMessageLoading && <Chat content="..." side="bot" loading={true} id={null} />}
       </div>
       <div className={chatStyles.chatBoxInput}>
         <div className={chatStyles.buttons}>
@@ -427,8 +405,7 @@ function ChatBox() {
               return b.type in buttonMappings;
             })
             .map((button, index) => {
-              const mappedButton =
-                button.type in buttonMappings && buttonMappings[button.type];
+              const mappedButton = button.type in buttonMappings && buttonMappings[button.type];
               if (!mappedButton) return null;
               const setMessage = (message: string) => {
                 handleSubmitMessage(message);
@@ -441,9 +418,7 @@ function ChatBox() {
                     mappedButton.action(setMessage, button.metadata);
                     // setShowButtons([]);
                   }}
-                  className={`${chatStyles.button} ${
-                    chatStyles[mappedButton.type]
-                  }`}
+                  className={`${chatStyles.button} ${chatStyles[mappedButton.type]}`}
                 >
                   <span>{mappedButton.label}</span>
                 </button>
@@ -502,22 +477,13 @@ function ChatBox() {
                 d="M18.1875 0H5.8125C2.60234 0 0 2.60234 0 5.8125V18.1875C0 21.3977 2.60234 24 5.8125 24H18.1875C21.3977 24 24 21.3977 24 18.1875V5.8125C24 2.60234 21.3977 0 18.1875 0Z"
                 fill="black"
               />
-              <path
-                d="M9.01636 18.6094L5.39062 12H9.01636V18.6094Z"
-                fill="#1614DB"
-              />
+              <path d="M9.01636 18.6094L5.39062 12H9.01636V18.6094Z" fill="#1614DB" />
               <path
                 d="M9.01636 5.39062V12H5.39062L7.20347 8.69531L9.01636 5.39062Z"
                 fill="#1B44BF"
               />
-              <path
-                d="M18.6094 5.39062H9.01636L14.9459 12L18.6094 5.39062Z"
-                fill="#2256F2"
-              />
-              <path
-                d="M9.01636 12H14.9459L9.01636 5.39062V12Z"
-                fill="#120FA8"
-              />
+              <path d="M18.6094 5.39062H9.01636L14.9459 12L18.6094 5.39062Z" fill="#2256F2" />
+              <path d="M9.01636 12H14.9459L9.01636 5.39062V12Z" fill="#120FA8" />
             </g>
             <defs>
               <clipPath id="clip0_102_10">
@@ -527,11 +493,7 @@ function ChatBox() {
           </svg>
           <p>
             Powered by{" "}
-            <a
-              href="https://www.airtisan.app"
-              target="_blank"
-              rel="noreferrer noopener"
-            >
+            <a href="https://airtisan.app" target="_blank" rel="noreferrer noopener">
               AIrtisan
             </a>
             .
@@ -580,9 +542,7 @@ function Chat({
   };
 
   return (
-    <div
-      className={`${chatStyles.chat} ${chatStyles[side]} ${chatStyles.chatLoading}`}
-    >
+    <div className={`${chatStyles.chat} ${chatStyles[side]} ${chatStyles.chatLoading}`}>
       {loading ? (
         <div className={chatStyles["lds-ring"]}>
           <div></div>

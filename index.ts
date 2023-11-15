@@ -31,12 +31,9 @@ app.use(
   }),
   (req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
-    res.header(
-      "Access-Control-Allow-Headers",
-      "Origin, X-Requested-With, Content-Type, Accept"
-    );
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
-  }
+  },
 );
 
 app.use(Express.json());
@@ -81,19 +78,13 @@ app.get("/help/support", (req, res) => {
 app.use("/help", Express.static(path.join(__dirname, "public", "help")));
 
 app.get("/build/bundle.js", (req, res) => {
-  res.sendFile(
-    path.join(__dirname, "public", "training", "build", "bundle.js")
-  );
+  res.sendFile(path.join(__dirname, "public", "training", "build", "bundle.js"));
 });
 app.get("/build/bundle.js.map", (req, res) => {
-  res.sendFile(
-    path.join(__dirname, "public", "training", "build", "bundle.js.map")
-  );
+  res.sendFile(path.join(__dirname, "public", "training", "build", "bundle.js.map"));
 });
 app.get("/build/bundle.css", (req, res) => {
-  res.sendFile(
-    path.join(__dirname, "public", "training", "build", "bundle.css")
-  );
+  res.sendFile(path.join(__dirname, "public", "training", "build", "bundle.css"));
 });
 
 app.use("/", Express.static(path.join(__dirname, "public", "training")));

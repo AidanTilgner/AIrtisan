@@ -10,7 +10,7 @@ import { SettingsProvider } from "./library/contexts/Settings";
 const accessToken = localStorage.getItem("accessToken");
 
 if (!accessToken) {
-  window.location.replace("https://www.airtisan.app");
+  window.location.replace("https://airtisan.app/login");
 }
 
 const domContainer = document.querySelector("#root");
@@ -30,5 +30,5 @@ root.render(
         </SearchProvider>
       </SettingsProvider>
     </UserProvider>
-  </BrowserRouter>
+  </BrowserRouter>,
 );
